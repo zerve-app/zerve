@@ -1,0 +1,12 @@
+{
+  "name": "agent-core",
+  "version": "0.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "devDependencies": {
+    "config": "*",
+    "tsconfig": "*",
+    "typescript": "^4.5.3"
+  },
+  "dependencies": {}
+}

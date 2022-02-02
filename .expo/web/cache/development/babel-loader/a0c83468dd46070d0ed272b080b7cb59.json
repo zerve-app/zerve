@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { usePreventScroll } from '@react-aria/overlays';","map":{"version":3,"sources":["usePreventScroll.web.ts"],"names":[],"mappings":"AAAA,SAAA,gBAAA,QAAA,sBAAA","sourcesContent":["export { usePreventScroll } from '@react-aria/overlays';\n"]},"metadata":{},"sourceType":"module"}

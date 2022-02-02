@@ -8,9 +8,11 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
+    "dev": "concurrently \"yarn workspace server dev\" \"yarn workspace web dev\"",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "restart": "pm2 restart ecosystem.config.js",
+    "borked_turbo_dev": "turbo run dev --parallel"
   },
   "devDependencies": {
     "prettier": "^2.5.1",
@@ -33,6 +35,12 @@
       "dev": {
         "cache": false
       }
+    }
+  },
+  "importSort": {
+    ".js, .jsx, .ts, .tsx": {
+      "style": "module",
+      "parser": "typescript"
     }
   },
   "engines": {

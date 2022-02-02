@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { useOverlayTrigger } from '@react-aria/overlays';","map":{"version":3,"sources":["useOverlayTrigger.web.ts"],"names":[],"mappings":"AAAA,SAAA,iBAAA,QAAA,sBAAA","sourcesContent":["export { useOverlayTrigger } from '@react-aria/overlays';\n"]},"metadata":{},"sourceType":"module"}

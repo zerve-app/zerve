@@ -1,0 +1,28 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true
+  },
+  "emmet.excludeLanguages": ["javascript", "typescript-react", "*"],
+  "emmet.showExpandedAbbreviation": "never",
+  "emmet.triggerExpansionOnTab": false,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true
+  },
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#ade7f4",
+    "titleBar.activeForeground": "#2a0b2b",
+    "titleBar.inactiveBackground": "#c2dde3",
+    "titleBar.inactiveForeground": "#2a0b2b"
+  }
+}

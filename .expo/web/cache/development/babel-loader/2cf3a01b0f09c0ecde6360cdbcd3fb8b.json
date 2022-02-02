@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { useOverlayPosition } from \"./web/overlays/src/useOverlayPosition\";","map":{"version":3,"sources":["useOverlayPosition.web.ts"],"names":[],"mappings":"AAAA,SAAA,kBAAA","sourcesContent":["export { useOverlayPosition } from './web/overlays/src/useOverlayPosition';\n"]},"metadata":{},"sourceType":"module"}
