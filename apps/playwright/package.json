@@ -1,0 +1,11 @@
+{
+  "name": "playwright",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "dependencies": {
+    "playwright": "^1.18.1"
+  }
+}

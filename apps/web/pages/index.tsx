@@ -1,9 +1,13 @@
+import Head from "next/head";
 import { Text, View } from "react-native";
 import { Button } from "ui";
 
 export default function Web() {
   return (
     <View style={{ backgroundColor: "lightblue", flex: 1 }}>
+      <Head>
+        <title>Agent App</title>
+      </Head>
       <Text>Agent</Text>
 
       <Text style={{}} accessibilityRole="link" href={`/display`}>

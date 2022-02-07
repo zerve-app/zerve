@@ -1,16 +1,33 @@
-import stringify from "json-stable-stringify";
 import { createHash } from "crypto";
 
-const HASH_ENCODING = 'hex'
-const HASH_FORMAT = 'sha256'
+import stringify from "json-stable-stringify";
 
-export async function createJSONBlock(value: any) {
+const BLOCK_ID_FORMATS = {
+  z: { encoding: "hex", algorithm: "sha256" },
+} as const;
 
+export async function createJSONBlock(
+  value: any,
+  formatKey: keyof typeof BLOCK_ID_FORMATS = "z"
+) {
+  const format = formatKey || "z";
+  const { encoding, algorithm } = BLOCK_ID_FORMATS[format];
   const jsonValue = stringify(value, {
     space: 2,
   });
 
-  const hash = createHash(HASH_FORMAT).update(jsonValue, "utf8").digest().toString(HASH_ENCODING);
+  const hash = createHash(algorithm)
+    .update(jsonValue, "utf8")
+    .digest()
+    .toString(encoding);
 
-  return { jsonValue, value, hash, hashAlgorithm: HASH_FORMAT, hashEncoding: HASH_ENCODING };
+  return {
+    jsonValue,
+    value,
+    valueBuffer: Buffer.from(jsonValue),
+    hash,
+    hashAlgorithm: algorithm,
+    hashEncoding: encoding,
+    id: `${format}.${hash}`,
+  };
 }
