@@ -1,5 +1,8 @@
-import * as React from "react";
 import Head from "next/head";
+import * as React from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -7,7 +10,9 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Component {...pageProps} />
+      <QueryClientProvider client={queryClient}>
+        <Component {...pageProps} />
+      </QueryClientProvider>
     </>
   );
 }

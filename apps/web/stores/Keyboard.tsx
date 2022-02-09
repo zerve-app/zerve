@@ -6,7 +6,6 @@ export function addKeyboardHandler(
   channel: string,
   handler: () => void
 ): () => void {
-  console.log("HANDKLER SET UP");
   if (!handlers.has(channel)) {
     handlers.set(channel, new Set());
   }

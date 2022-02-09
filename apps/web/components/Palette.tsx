@@ -4,23 +4,23 @@ import { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import { Button } from "ui";
 
+import { useAppDispatch } from "../stores/Dispatch";
+
 type PaletteAction = {
   key: string;
   type: "LocalAction";
   actionType: string;
   label: (args: { query }) => string;
   payload?: any;
+  requiresStringInput?: boolean;
 };
 
 function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
   const [actionKey, setActionKey] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
   const [pendingAction, setPendingAction] = useState<null | PaletteAction>(
     null
   );
-
-  function handleAction(action: PaletteAction) {
-    console.log("aayo handling", action);
-  }
 
   function handleUp() {
     if (actionKey === null || actionKey === actions[0]?.key) {
@@ -41,9 +41,7 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
   }
 
   function handleSubmit() {
-    handleAction(
-      actionKey ? actions.find((a) => a.key === actionKey) : actions[0]
-    );
+    dispatch(actionKey ? actions.find((a) => a.key === actionKey) : actions[0]);
   }
   function handleSpace() {
     const queryLower = query.toLowerCase();
@@ -78,6 +76,7 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
       payload: { name: query },
       label: ({ query }) => `Create Doc: ${query}`,
       key: "create",
+      requiresStringInput: true,
     },
     {
       type: "LocalAction",
@@ -85,6 +84,7 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
       payload: { name: query },
       label: ({ query }) => `Open: ${query}`,
       key: "open",
+      requiresStringInput: true,
     },
     {
       type: "LocalAction",
@@ -116,7 +116,6 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
       ? pendingAction.key
       : nonPendingSelectedActionKey,
     setSelectedActionKey: setActionKey,
-    handleAction,
     handleUp,
     handleDown,
     handleDelete,
@@ -131,7 +130,6 @@ export default function Palette({ onClose }: { onClose: () => void }) {
 
   const {
     actions,
-    handleAction,
     selectedActionKey,
     setSelectedActionKey,
     handleUp,

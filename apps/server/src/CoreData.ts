@@ -3,13 +3,16 @@ import { join } from "path";
 import { createJSONBlock } from "agent-crypto";
 import { mkdirp, readFile, readdir, rename, stat, writeFile } from "fs-extra";
 
-import * as Actions from "./actions";
+import { Actions } from "./actions";
+import { ServerContext } from "./ServerContext";
 
 export type ServerActions = {
   CreateBlock: { value: any };
-  SetRef: { name: string; value: any };
-  DeleteRef: { name: string };
+  SetDoc: { name: string; value: any };
+  DeleteDoc: { name: string };
   DeleteBlock: { id: string };
+  AppendChain: { name: string; value: any; message?: string };
+  GetBlockJSON: { id: string };
 };
 
 export type BlockRef = {
@@ -17,42 +20,23 @@ export type BlockRef = {
   id: string;
 };
 
-export type ServerContext = {
-  blocksDir: string;
-  refsDir: string;
-  trashDir: string;
-  port: number;
+export type Commit<V> = {
+  type: "Commit";
+  on: string | null;
+  value: V;
+  message?: string;
+  time: number;
 };
 
-export async function createServerContext(
-  port: number,
-  overrideAgentDir?: string
-): Promise<ServerContext> {
-  const homeDir = process.env.HOME;
-  const defaultAgentDir = `${homeDir}/.agent`;
-
-  const agentDir = overrideAgentDir || defaultAgentDir;
-  await mkdirp(agentDir);
-
-  const blocksDir = `${agentDir}/blocks`;
-  await mkdirp(blocksDir);
-
-  const refsDir = `${agentDir}/refs`;
-  await mkdirp(refsDir);
-
-  const trashDir = `${agentDir}/trash`;
-  await mkdirp(trashDir);
-
-  return { port, blocksDir, refsDir, trashDir };
-}
-
-export function createCoreData({
-  blocksDir,
-  refsDir,
-  trashDir,
-}: ServerContext) {
+export function createCoreData(
+  { blocksDir, docsDir, trashDir }: ServerContext,
+  onNextDispatch: (
+    anonActionType: any, // crap, string??? wtf
+    anonActionPayload: any // whopsie any!!
+  ) => Promise<any> // whopsie any!!
+) {
   async function createBlock(
-    payload: ServerActions["SetRef"]
+    payload: ServerActions["CreateBlock"]
   ): Promise<BlockRef> {
     const block = await createJSONBlock(payload.value);
     const blockFile = join(blocksDir, block.id);
@@ -69,16 +53,23 @@ export function createCoreData({
     };
   }
 
-  async function setRef(payload: ServerActions["SetRef"]) {
-    const refFile = join(refsDir, payload.name);
-    await writeFile(refFile, JSON.stringify(payload.value));
+  async function getBlockJSON(payload: ServerActions["GetBlockJSON"]) {
+    const blockFile = join(blocksDir, payload.id);
+    const blockData = await readFile(blockFile, { encoding: "utf8" });
+    const blockJSON = JSON.parse(blockData);
+    return blockJSON;
+  }
+
+  async function setDoc(payload: ServerActions["SetDoc"]) {
+    const docFile = join(docsDir, payload.name);
+    await writeFile(docFile, JSON.stringify(payload.value));
     return {};
   }
 
-  async function deleteRef(payload: ServerActions["DeleteRef"]) {
-    const refFile = join(refsDir, payload.name);
-    const trashedFile = join(trashDir, `ref-${payload.name}`);
-    await rename(refFile, trashedFile);
+  async function deleteDoc(payload: ServerActions["DeleteDoc"]) {
+    const docFile = join(docsDir, payload.name);
+    const trashedFile = join(trashDir, `doc-${payload.name}`);
+    await rename(docFile, trashedFile);
   }
 
   async function deleteBlock(payload: ServerActions["DeleteBlock"]) {
@@ -95,9 +86,54 @@ export function createCoreData({
     return { children: blockList };
   }
 
-  async function listRefs() {
-    const refList = await readdir(refsDir);
-    return { children: refList };
+  async function listDocs() {
+    const docList = await readdir(docsDir);
+    return { children: docList };
+  }
+
+  async function appendChain({
+    name,
+    value,
+    message,
+  }: ServerActions["AppendChain"]) {
+    let on: string | null = null;
+    const time = Date.now();
+    const prevDoc = await getDoc(name);
+    if (prevDoc.value !== undefined) {
+      if (prevDoc.value.type === "BlockRef" && prevDoc.value.id) {
+        on = (prevDoc.value as BlockRef).id;
+      } else
+        throw new Error(
+          `AppendChain only works when the doc is BlockRef type (to a Commit type block). Instead the "${name}" doc is of type "${prevDoc.value?.type}"`
+        );
+    }
+    const commitValue: Commit<typeof value> = {
+      type: "Commit",
+      value,
+      on,
+      message,
+      time,
+    };
+    const commitBlock = await createBlock({
+      value: commitValue,
+    });
+    await setDoc({
+      name,
+      value: {
+        type: "BlockRef",
+        id: commitBlock.id,
+      },
+    });
+    return {
+      on,
+      time,
+      commitId: commitBlock.id,
+      name,
+    };
+  }
+
+  function Unchain(prevState: any, action: any) {
+    return [...(prevState || []), action];
   }
 
   async function dispatch<ActionType extends keyof ServerActions>(
@@ -105,40 +141,125 @@ export function createCoreData({
     actionPayload: ServerActions[ActionType]
   ) {
     switch (actionType) {
-      case "CreateBlock":
+      case "CoreData/CreateBlock":
         return await createBlock(actionPayload as any);
-      case "SetRef":
-        return await setRef(actionPayload as any);
-      case "DeleteRef":
-        return await deleteRef(actionPayload as any);
-      case "DeleteBlock":
+      case "CoreData/SetDoc":
+        return await setDoc(actionPayload as any);
+      case "CoreData/DeleteDoc":
+        return await deleteDoc(actionPayload as any);
+      case "CoreData/DeleteBlock":
         return await deleteBlock(actionPayload as any);
+      case "CoreData/AppendChain":
+        return await appendChain(actionPayload as any);
+      case "GetBlockJSON":
+        return await getBlockJSON(actionPayload as any);
+      default:
+        return await onNextDispatch(actionType, actionPayload);
     }
   }
 
-  async function getEval(evalPath: string) {
-    console.log("EVAL! evalPath: ", evalPath);
+  async function rollupBlocksInCommitChain<V>(commitValue: Commit<V>) {
+    if (commitValue.type !== "Commit") {
+      throw new Error("Cannot roll up non-commit block");
+    }
+    let walkId: string | null = commitValue.on;
+    const rollup: Array<Commit<any>> = [commitValue];
+    while (walkId) {
+      const walkBlockValue = await getBlockJSON({ id: walkId });
+      rollup.push(walkBlockValue);
+      if (walkBlockValue.type !== "Commit") {
+        walkId = null;
+      }
+      walkId = walkBlockValue.on;
+    }
+    return rollup;
+  }
+
+  type TreeState<V> = {
+    value: V;
+    children: Record<string, BlockRef>;
+  };
+
+  async function evalCommitStep<V>(
+    state: TreeState<any>,
+    action: any
+  ): Promise<TreeState<any>> {
     return {
-      response: {},
+      value: null,
+      children: {},
     };
   }
 
-  async function getRef(name: string) {
-    const refFile = join(refsDir, name);
-    const fileValue = await readFile(refFile);
-    const value = JSON.parse(fileValue.toString("utf-8"));
-    return { value, name };
+  async function evalCommitChain<V>(commitValue: Commit<V>) {
+    const blocksInChain = await rollupBlocksInCommitChain(commitValue);
+    let walkReduceValue: any = undefined;
+    for (
+      let blockIndex = blocksInChain.length - 1;
+      (blockIndex -= 1);
+      blockIndex >= 0
+    ) {
+      const stepBlock = blocksInChain[blockIndex];
+      const nextValue = await evalCommitStep(walkReduceValue, stepBlock);
+      walkReduceValue = nextValue;
+    }
+    return walkReduceValue;
+  }
+
+  async function getEval(evalPath: string) {
+    // cache shit here!!
+
+    const evalPathTerms = evalPath.split("/");
+    const [thisPathTerm, ...restTerms] = evalPathTerms;
+    const doc = await getDoc(thisPathTerm);
+
+    let evalValue = doc.value;
+    let contextId: string | null = null;
+
+    while (evalValue.type === "DocRef") {
+      // follow doc ref with getDoc(evalValue.something)
+    }
+    if (evalValue.type === "BlockRef") {
+      contextId = evalValue.id;
+      evalValue = await getBlockJSON({ id: evalValue.id });
+      // todo try this block json and fall back to BlockRef in case of binary file
+    }
+
+    if (evalValue.type === "Commit") {
+      return {
+        response: await evalCommitChain(evalValue),
+      };
+    }
+
+    return {
+      response: evalValue,
+    };
+  }
+
+  async function getDoc(name: string) {
+    const docFile = join(docsDir, name);
+    try {
+      const fileValue = await readFile(docFile);
+      const value = JSON.parse(fileValue.toString("utf-8"));
+      return { value, name };
+    } catch (e: any) {
+      if (e.code === "ENOENT") {
+        return { value: undefined, name };
+      }
+      throw e;
+    }
   }
 
   return {
     createBlock,
-    setRef,
-    deleteRef,
-    getRef,
+    setDoc,
+    deleteDoc,
+    getDoc,
+    getBlockJSON,
     getEval,
     deleteBlock,
+    appendChain,
     listBlocks,
-    listRefs,
+    listDocs,
     dispatch,
   };
 }

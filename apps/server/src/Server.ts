@@ -1,7 +1,9 @@
 import { json } from "body-parser";
 import express, { Request, Response } from "express";
 
-import { createCoreData, createServerContext } from "./CoreData";
+import { Actions } from "./actions";
+import { createCoreData } from "./CoreData";
+import { createServerContext } from "./ServerContext";
 
 function createJSONHandler(
   handler: (req: Request) => Promise<{ response: any }>
@@ -25,15 +27,35 @@ function createJSONHandler(
 
 export async function createApp(port: number, overrideAgentDir?: string) {
   const app = express();
+
+  app.use((req, res, next) => {
+    // todo proper cors policy
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+  });
+
   const context = await createServerContext(port, overrideAgentDir);
-  const data = createCoreData(context);
+
+  async function onNextDispatch(
+    anonActionType: keyof typeof Actions,
+    anonActionPayload: any
+  ) {
+    const actionDef = Actions[anonActionType];
+    if (!actionDef) {
+      return;
+    }
+    await actionDef.call(anonActionPayload);
+  }
+
+  const data = createCoreData(context, onNextDispatch);
 
   app.get(
     "/",
     createJSONHandler(async () => ({
       response: {
         ".blocks": null,
-        ".refs": null,
+        ".docs": null,
         ".action": null,
       },
     }))
@@ -48,16 +70,16 @@ export async function createApp(port: number, overrideAgentDir?: string) {
   app.use("/.blocks", express.static(context.blocksDir));
 
   app.get(
-    "/.refs",
-    createJSONHandler(async function listRefs() {
-      return { response: await data.listRefs() };
+    "/.docs",
+    createJSONHandler(async function listDocs() {
+      return { response: await data.listDocs() };
     })
   );
   app.get(
-    "/.refs/:refName",
-    createJSONHandler(async function getRef({ params: { refName } }: Request) {
+    "/.docs/:docName",
+    createJSONHandler(async function getRef({ params: { docName } }: Request) {
       return {
-        response: await data.getRef(refName),
+        response: await data.getDoc(docName),
       };
     })
   );

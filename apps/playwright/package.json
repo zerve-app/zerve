@@ -6,6 +6,7 @@
     "start": "node ./index.js"
   },
   "dependencies": {
+    "fs-extra": "^10.0.0",
     "playwright": "^1.18.1"
   }
 }

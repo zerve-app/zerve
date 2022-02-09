@@ -1,2 +1,7 @@
-export * from "./CreateFile";
-export * from "./Commit";
+import { CreateDirectory } from "./CreateDirectory";
+import { WriteFile } from "./WriteFile";
+
+export const Actions = {
+  WriteFile,
+  CreateDirectory,
+};
