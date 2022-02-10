@@ -12,8 +12,10 @@ function singulateString(s: string[] | string) {
 }
 
 function DocPage() {
-  const { query } = useRouter();
-  const { data, isLoading } = useDoc(singulateString(query.docId));
+  const { query, isReady } = useRouter();
+  const docId = singulateString(query.docId);
+  const { data, isLoading } = useDoc(docId);
+
   if (isLoading) return null;
   return (
     <>

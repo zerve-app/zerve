@@ -49,6 +49,7 @@ export function useDocListQuery() {
 
 export function useDoc(name: string) {
   return useQuery(["docs", "children", name, "value"], async () => {
+    if (!name) return undefined;
     return await getDoc(name);
   });
 }

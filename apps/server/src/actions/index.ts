@@ -4,4 +4,4 @@ import { WriteFile } from "./WriteFile";
 export const Actions = {
   WriteFile,
   CreateDirectory,
-};
+} as const;

@@ -1,9 +1,11 @@
 import { join } from "path";
 
-import { createJSONBlock } from "agent-crypto";
+import { JSONBlock, createJSONBlock } from "agent-crypto";
 import { mkdirp, readFile, readdir, rename, stat, writeFile } from "fs-extra";
 
 import { Actions } from "./actions";
+import { BlockRef, TreeState } from "./CoreActions";
+import { RequestError } from "./HTTP";
 import { ServerContext } from "./ServerContext";
 
 export type ServerActions = {
@@ -15,11 +17,6 @@ export type ServerActions = {
   GetBlockJSON: { id: string };
 };
 
-export type BlockRef = {
-  type: "BlockRef";
-  id: string;
-};
-
 export type Commit<V> = {
   type: "Commit";
   on: string | null;
@@ -29,7 +26,7 @@ export type Commit<V> = {
 };
 
 export function createCoreData(
-  { blocksDir, docsDir, trashDir }: ServerContext,
+  { blocksDir, docsDir, trashDir, blockCacheDir, stateCacheDir }: ServerContext,
   onNextDispatch: (
     anonActionType: any, // crap, string??? wtf
     anonActionPayload: any // whopsie any!!
@@ -175,41 +172,81 @@ export function createCoreData(
     return rollup;
   }
 
-  type TreeState<V> = {
-    value: V;
-    children: Record<string, BlockRef>;
-  };
+  type DeepBlockState = any;
+
+  type BlockCache = Map<string, JSONBlock>;
+
+  async function extractBlocksToCache(
+    deepState: DeepBlockState,
+    blockCache: BlockCache
+  ): Promise<any> {
+    if (deepState === null) return null;
+    if (Array.isArray(deepState))
+      return Promise.all(
+        deepState.map((d) => extractBlocksToCache(d, blockCache))
+      );
+    if (typeof deepState === "object") {
+      if (deepState.type === "Block" && deepState.jsonValue !== undefined) {
+        const block = await createJSONBlock(deepState.jsonValue);
+        blockCache.set(block.id, block);
+        return { type: "BlockRef", id: block.id };
+      }
+      return Object.fromEntries(
+        await Promise.all(
+          Object.entries(deepState).map(async ([k, v]) => [
+            k,
+            await extractBlocksToCache(v, blockCache),
+          ])
+        )
+      );
+    }
+    return deepState;
+  }
 
   async function evalCommitStep<V>(
     state: TreeState<any>,
-    action: any
+    commit: any,
+    blockCache: BlockCache
   ): Promise<TreeState<any>> {
+    const matchedAction = Actions[commit.value.type as keyof typeof Actions];
+    if (matchedAction) {
+      const nextDeepState = matchedAction.handler(state, commit.value);
+      const result = await extractBlocksToCache(nextDeepState, blockCache);
+      return result;
+    }
     return {
       value: null,
       children: {},
     };
   }
 
-  async function evalCommitChain<V>(commitValue: Commit<V>) {
+  async function evalCommitChain<V>(
+    commitValue: Commit<V>,
+    blockCache: BlockCache
+  ) {
     const blocksInChain = await rollupBlocksInCommitChain(commitValue);
     let walkReduceValue: any = undefined;
     for (
       let blockIndex = blocksInChain.length - 1;
-      (blockIndex -= 1);
-      blockIndex >= 0
+      blockIndex >= 0;
+      blockIndex -= 1
     ) {
       const stepBlock = blocksInChain[blockIndex];
-      const nextValue = await evalCommitStep(walkReduceValue, stepBlock);
+      const nextValue = await evalCommitStep(
+        walkReduceValue,
+        stepBlock,
+        blockCache
+      );
       walkReduceValue = nextValue;
     }
     return walkReduceValue;
   }
 
   async function getEval(evalPath: string) {
-    // cache shit here!!
-
     const evalPathTerms = evalPath.split("/");
     const [thisPathTerm, ...restTerms] = evalPathTerms;
+    const evalBlockCache: BlockCache = new Map();
+
     const doc = await getDoc(thisPathTerm);
 
     let evalValue = doc.value;
@@ -218,6 +255,7 @@ export function createCoreData(
     while (evalValue.type === "DocRef") {
       // follow doc ref with getDoc(evalValue.something)
     }
+
     if (evalValue.type === "BlockRef") {
       contextId = evalValue.id;
       evalValue = await getBlockJSON({ id: evalValue.id });
@@ -225,14 +263,24 @@ export function createCoreData(
     }
 
     if (evalValue.type === "Commit") {
-      return {
-        response: await evalCommitChain(evalValue),
-      };
+      evalValue = await evalCommitChain(evalValue, evalBlockCache);
+      if (restTerms[0] === ".blocks") {
+        const matchedBlock = evalBlockCache.get(restTerms[1]);
+        if (restTerms.length > 2) {
+          throw new RequestError("Must query for .blocks/BLOCK_ID");
+        }
+        if (matchedBlock) {
+          return matchedBlock.value;
+        }
+        return { response: null };
+      }
     }
 
-    return {
-      response: evalValue,
-    };
+    if (restTerms.length) {
+      return undefined;
+    }
+
+    return evalValue;
   }
 
   async function getDoc(name: string) {

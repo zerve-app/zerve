@@ -41,13 +41,7 @@ export function PageWithPalette({
       >
         <Text style={{ fontSize: 28 }}>Test Title</Text>
       </View>
-      {paletteOpen && (
-        <Palette
-          onClose={() => {
-            setPaletteOpen(false);
-          }}
-        />
-      )}
+
       <View style={{ flex: 1, flexDirection: "row" }}>
         <View
           style={{
@@ -59,6 +53,13 @@ export function PageWithPalette({
         </View>
         <View style={{ padding: 16 }}>{children}</View>
       </View>
+      {paletteOpen && (
+        <Palette
+          onClose={() => {
+            setPaletteOpen(false);
+          }}
+        />
+      )}
     </View>
   );
 }

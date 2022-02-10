@@ -25,7 +25,7 @@ export async function createServerContext(
   const stateCacheDir = `${agentDir}/cache/state`;
   const blockCacheDir = `${agentDir}/cache/blocks`;
 
-  const shouldResetCache = true; // todo, lol obviously
+  const shouldResetCache = false; // todo, lol obviously
   if (shouldResetCache) {
     try {
       await rmdir(cacheDir, { recursive: true });

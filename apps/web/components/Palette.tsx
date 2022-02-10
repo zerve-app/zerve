@@ -1,10 +1,13 @@
 import { useAction } from "agent-react";
 import { useCallback } from "react";
+import { useRef } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Button } from "ui";
 
 import { useAppDispatch } from "../stores/Dispatch";
+import { useKeyboardEffect } from "../stores/Keyboard";
 
 type PaletteAction = {
   key: string;
@@ -13,14 +16,20 @@ type PaletteAction = {
   label: (args: { query }) => string;
   payload?: any;
   requiresStringInput?: boolean;
+  inputPlaceholder?: string;
+  description?: string;
 };
 
-function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
+export default function Palette({ onClose }: { onClose: () => void }) {
+  const [query, setQuery] = useState("");
+
   const [actionKey, setActionKey] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   const [pendingAction, setPendingAction] = useState<null | PaletteAction>(
     null
   );
+
+  useKeyboardEffect("escape", onClose);
 
   function handleUp() {
     if (actionKey === null || actionKey === actions[0]?.key) {
@@ -32,7 +41,9 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
   }
 
   function handleDown() {
-    if (actionKey === null || actionKey === actions[actions.length - 1].key) {
+    if (actionKey === null) {
+      setActionKey(actions[1]?.key);
+    } else if (actionKey === actions[actions.length - 1].key) {
       setActionKey(actions[0]?.key);
     } else {
       const currentIndex = actions.findIndex((a) => a.key === actionKey);
@@ -41,7 +52,10 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
   }
 
   function handleSubmit() {
-    dispatch(actionKey ? actions.find((a) => a.key === actionKey) : actions[0]);
+    const selectedAction = actionKey
+      ? actions.find((a) => a.key === actionKey)
+      : actions[0];
+    dispatch(selectedAction);
   }
   function handleSpace() {
     const queryLower = query.toLowerCase();
@@ -50,23 +64,21 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
 
     if (matchedAction) {
       setPendingAction(matchedAction);
-      setPaletteQuery("");
+      setQuery("");
     }
-    console.log("space", matchedAction);
     return !!matchedAction;
   }
   function handleTab() {
     if (!pendingAction) {
       const action = actionKey ? actions[actionKey] : actions[0];
       setPendingAction(action);
-      setPaletteQuery("");
+      setQuery("");
     }
   }
   function handleDelete() {
     if (query === "" && pendingAction) {
       setPendingAction(null);
     }
-    console.log("Delete");
     return false;
   }
   const allActions: PaletteAction[] = [
@@ -76,6 +88,8 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
       payload: { name: query },
       label: ({ query }) => `Create Doc: ${query}`,
       key: "create",
+      description: "create a local doc",
+      inputPlaceholder: "doc name",
       requiresStringInput: true,
     },
     {
@@ -84,6 +98,8 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
       payload: { name: query },
       label: ({ query }) => `Open: ${query}`,
       key: "open",
+      description: "open a file, directory, block",
+      inputPlaceholder: "name or block id",
       requiresStringInput: true,
     },
     {
@@ -105,41 +121,11 @@ function useActionQuery(query: string, setPaletteQuery: (s: string) => void) {
     return false;
   });
   const actions = matchedActions.length ? matchedActions : allActions;
-  if (!matchedActions.length) {
-  }
 
-  const nonPendingSelectedActionKey = actionKey ? actionKey : actions[0].key;
-  return {
-    pendingAction,
-    actions: pendingAction ? [pendingAction] : actions,
-    selectedActionKey: pendingAction
-      ? pendingAction.key
-      : nonPendingSelectedActionKey,
-    setSelectedActionKey: setActionKey,
-    handleUp,
-    handleDown,
-    handleDelete,
-    handleSubmit,
-    handleSpace,
-    handleTab,
-  };
-}
+  const selectedActionKey = actionKey ? actionKey : actions[0].key;
 
-export default function Palette({ onClose }: { onClose: () => void }) {
-  const [paletteQuery, setPaletteQuery] = useState("");
-
-  const {
-    actions,
-    selectedActionKey,
-    setSelectedActionKey,
-    handleUp,
-    handleDown,
-    handleDelete,
-    handleSubmit,
-    handleSpace,
-    handleTab,
-    pendingAction,
-  } = useActionQuery(paletteQuery, setPaletteQuery);
+  const blurEffectRef = useRef<"close" | "ignore">("close");
+  const textInputRef = useRef<TextInput | null>(null);
 
   return (
     <View
@@ -153,6 +139,7 @@ export default function Palette({ onClose }: { onClose: () => void }) {
     >
       <View
         style={{
+          overflow: "hidden",
           backgroundColor: "#333",
           width: 700,
           borderRadius: 12,
@@ -171,7 +158,7 @@ export default function Palette({ onClose }: { onClose: () => void }) {
           {pendingAction && (
             <View
               style={{
-                backgroundColor: "#6662",
+                backgroundColor: "#666",
                 justifyContent: "center",
               }}
             >
@@ -192,7 +179,7 @@ export default function Palette({ onClose }: { onClose: () => void }) {
             style={{
               flex: 1,
               alignSelf: "stretch",
-              backgroundColor: "#0000",
+              backgroundColor: "#000",
               outlineColor: "#cde",
               color: "#eee",
               fontSize: 42,
@@ -201,11 +188,19 @@ export default function Palette({ onClose }: { onClose: () => void }) {
               margin: 16,
             }}
             autoFocus
-            value={paletteQuery}
-            onChangeText={setPaletteQuery}
-            onSubmitEditing={handleSubmit}
+            value={query}
+            ref={textInputRef}
+            onChangeText={setQuery}
+            onSubmitEditing={(e) => {
+              handleSubmit();
+              blurEffectRef.current = "ignore";
+              e.preventDefault();
+            }}
             onBlur={() => {
-              onClose();
+              if (blurEffectRef.current === "ignore") return;
+              if (blurEffectRef.current === "close") {
+                onClose();
+              }
             }}
             onKeyPress={(e) => {
               if (e.nativeEvent.key === "ArrowDown") {
@@ -224,40 +219,52 @@ export default function Palette({ onClose }: { onClose: () => void }) {
                 e.preventDefault();
                 handleTab();
               } else {
-                console.log(e.nativeEvent.key);
+                // console.log(e.nativeEvent.key);
               }
             }}
-            placeholder="action/file search (or new doc)"
+            placeholder={
+              pendingAction?.inputPlaceholder
+                ? pendingAction?.inputPlaceholder
+                : "action/file search (or new doc)"
+            }
           />
         </View>
+        {pendingAction && <Text>{pendingAction.description}</Text>}
 
-        {actions.map((action, index) => {
-          const isSelected = selectedActionKey
-            ? action.key === selectedActionKey
-            : index === 0;
+        {!pendingAction &&
+          actions.map((action, index) => {
+            const isSelected = selectedActionKey
+              ? action.key === selectedActionKey
+              : index === 0;
 
-          return (
-            <View
-              style={{
-                padding: 12,
-                marginVertical: 4,
-                marginHorizontal: 16,
-                backgroundColor: isSelected ? "#fcfcfc" : "#0000",
-                borderRadius: 8,
-              }}
-              key={action.key}
-            >
-              <Text
-                style={{
-                  color: isSelected ? "#222" : "#eee",
-                  fontSize: 26,
+            return (
+              <TouchableOpacity
+                key={action.key}
+                onPress={() => {
+                  setPendingAction(action);
                 }}
               >
-                {action.label({ query: paletteQuery })}
-              </Text>
-            </View>
-          );
-        })}
+                <View
+                  style={{
+                    padding: 12,
+                    marginVertical: 4,
+                    marginHorizontal: 16,
+                    backgroundColor: isSelected ? "#fcfcfc" : "#0000",
+                    borderRadius: 8,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: isSelected ? "#222" : "#eee",
+                      fontSize: 26,
+                    }}
+                  >
+                    {action.label({ query: query })}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
       </View>
     </View>
   );

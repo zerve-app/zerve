@@ -16,12 +16,14 @@ export function addKeyboardHandler(
   };
 }
 
-const channels: Record<
-  string,
-  { matchPress?: (e: any) => boolean; matchDown?: (e: any) => boolean }
-> = {
+const channels = {
+  escape: {
+    matchDown: (e: KeyboardEvent) => {
+      return e.key === "Escape";
+    },
+  },
   palette: {
-    matchDown: (e) => {
+    matchDown: (e: KeyboardEvent) => {
       return e.key === "p" && e.metaKey;
     },
   },
@@ -30,6 +32,7 @@ const channels: Record<
 function keydownHandler(e) {
   for (let channelId in channels) {
     const matched = channels[channelId].matchDown?.(e);
+    console.log(channelId + " " + matched);
     if (matched) {
       const channelHandlers = handlers.get(channelId);
       channelHandlers.forEach((handle) => handle());
@@ -38,8 +41,10 @@ function keydownHandler(e) {
   }
 }
 function keypressHandler(e) {
+  console.log("keyPress " + e.key);
   for (let channelId in channels) {
     const matched = channels[channelId].matchPress?.(e);
+    console.log(channelId + " " + matched);
     if (matched) {
       const channelHandlers = handlers.get(channelId);
       channelHandlers.forEach((handle) => handle());
@@ -52,6 +57,9 @@ if (global.window) {
   window.addEventListener("keypress", keypressHandler);
 }
 
-export function useKeyboardEffect(channel: string, handler: () => void) {
+export function useKeyboardEffect(
+  channel: keyof typeof channels,
+  handler: () => void
+) {
   useEffect(() => addKeyboardHandler(channel, handler), [channel, handler]);
 }
