@@ -1,11 +1,12 @@
 import { join } from "path";
 
 import { JSONBlock, createJSONBlock } from "agent-crypto";
+import { readJSONFile, writeJSONFile } from "agent-node";
 import { mkdirp, readFile, readdir, rename, stat, writeFile } from "fs-extra";
 
 import { Actions } from "./actions";
 import { BlockRef, TreeState } from "./CoreActions";
-import { RequestError } from "./HTTP";
+import { NotFoundError, RequestError } from "./HTTP";
 import { ServerContext } from "./ServerContext";
 
 export type ServerActions = {
@@ -25,6 +26,14 @@ export type Commit<V> = {
   time: number;
 };
 
+export type Chain = {
+  type: "Chain";
+  head: BlockRef;
+  // eval: 'FileTree' |
+
+  // todo, add eval settings such as cache pruning behavior
+};
+
 export function createCoreData(
   { blocksDir, docsDir, trashDir, blockCacheDir, stateCacheDir }: ServerContext,
   onNextDispatch: (
@@ -32,16 +41,33 @@ export function createCoreData(
     anonActionPayload: any // whopsie any!!
   ) => Promise<any> // whopsie any!!
 ) {
+  async function cacheBlocks(blockCache: BlockCache) {
+    const remainder = blockCache.entries();
+    let allSaveOps = Promise.resolve();
+    let nextEntry = remainder.next();
+    while (!nextEntry.done) {
+      const [id, blockValue] = nextEntry.value;
+      const blockPath = join(blockCacheDir, id);
+      allSaveOps.then(() => writeFile(blockPath, blockValue.jsonValue));
+      nextEntry = remainder.next();
+    }
+    await allSaveOps;
+  }
+
   async function createBlock(
     payload: ServerActions["CreateBlock"]
   ): Promise<BlockRef> {
     const block = await createJSONBlock(payload.value);
     const blockFile = join(blocksDir, block.id);
     try {
+      // attempt to "stat" the file, or query for the low-level fs info, the most low-impact way to see if a file exists (error if it does not exist)
       const blockFilePrev = await stat(blockFile);
-      if (blockFilePrev.size !== block.valueBuffer.byteLength)
-        throw new Error("Persisted block does not match!");
+
+      // this check is nice but may be excessive because it creates a buffer to determine the byte length of this value:
+      // if (blockFilePrev.size !== Buffer.from(block.jsonValue).byteLength)
+      //   throw new Error("Persisted block does not match!");
     } catch (e) {
+      // e.code === ENOENT is inferred here, but it could also be the "Persisted block does not match" error
       await writeFile(blockFile, block.jsonValue);
     }
     return {
@@ -242,6 +268,20 @@ export function createCoreData(
     return walkReduceValue;
   }
 
+  function aggregateLinkedAccessibleBlocks(
+    tree: TreeState<any>,
+    blockCache: BlockCache,
+    outputBlocks: BlockCache
+  ) {
+    const childrenRefs = Object.values(tree.children);
+    childrenRefs.forEach((child) => {
+      if (child.type === "BlockRef") {
+        const cached = blockCache.get(child.id);
+        if (cached) outputBlocks.set(child.id, cached);
+      }
+    });
+  }
+
   async function getEval(evalPath: string) {
     const evalPathTerms = evalPath.split("/");
     const [thisPathTerm, ...restTerms] = evalPathTerms;
@@ -250,29 +290,56 @@ export function createCoreData(
     const doc = await getDoc(thisPathTerm);
 
     let evalValue = doc.value;
-    let contextId: string | null = null;
+    let evalBlockId: string | null = null;
 
     while (evalValue.type === "DocRef") {
       // follow doc ref with getDoc(evalValue.something)
     }
 
     if (evalValue.type === "BlockRef") {
-      contextId = evalValue.id;
+      evalBlockId = evalValue.id;
       evalValue = await getBlockJSON({ id: evalValue.id });
       // todo try this block json and fall back to BlockRef in case of binary file
+    } else if (evalValue.type === "Blockchain") {
+      evalBlockId = evalValue.head.id;
     }
 
     if (evalValue.type === "Commit") {
-      evalValue = await evalCommitChain(evalValue, evalBlockCache);
+      const evalCachePath = join(stateCacheDir, `eval-${evalBlockId}`);
+      const cachedResult = await readJSONFile(evalCachePath);
+      if (cachedResult) {
+        console.log("USING CACHED EVAL RESULT");
+        evalValue = cachedResult;
+      } else {
+        console.log("PERFORMING EVAL");
+        evalValue = await evalCommitChain(evalValue, evalBlockCache);
+        const cachableBlocks: BlockCache = new Map();
+        aggregateLinkedAccessibleBlocks(
+          evalValue,
+          evalBlockCache,
+          cachableBlocks
+        );
+        await writeJSONFile(evalCachePath, evalValue);
+        await cacheBlocks(cachableBlocks);
+      }
+
       if (restTerms[0] === ".blocks") {
-        const matchedBlock = evalBlockCache.get(restTerms[1]);
+        const blockId = restTerms[1];
+        const matchedBlock = evalBlockCache.get(blockId);
         if (restTerms.length > 2) {
           throw new RequestError("Must query for .blocks/BLOCK_ID");
         }
         if (matchedBlock) {
           return matchedBlock.value;
         }
-        return { response: null };
+        try {
+          const cachedBlockData = await readJSONFile(
+            join(blockCacheDir, blockId)
+          );
+          return cachedBlockData;
+        } catch (e) {
+          throw new NotFoundError();
+        }
       }
     }
 

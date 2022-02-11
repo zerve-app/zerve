@@ -17,7 +17,6 @@ export const CreateDirectory = defineAction({
   payloadSchema,
   handler: (state = emptyTreeState, payload) => {
     if (!payload.name) return state;
-    console.log("hellooo CreateDirectory", payload.name);
     return {
       ...state,
       children: {

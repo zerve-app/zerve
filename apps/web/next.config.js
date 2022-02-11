@@ -1,4 +1,10 @@
-const withTM = require("next-transpile-modules")(["ui", 'agent-core', 'agent-crypto', 'agent-react']);
+const withTM = require("next-transpile-modules")([
+  "ui",
+  "agent-core",
+  "agent-crypto",
+  "agent-node",
+  "agent-react",
+]);
 
 module.exports = withTM({
   reactStrictMode: true,

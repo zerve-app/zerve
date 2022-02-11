@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "agent-core": "*",
+    "agent-node": "*",
     "ajv": "^8.10.0",
     "body-parser": "^1.19.1",
     "crypto": "*",
