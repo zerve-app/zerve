@@ -94,6 +94,17 @@ export async function createApp(port: number, overrideAgentDir?: string) {
     })
   );
 
+  app.get(
+    "/.action",
+    createJSONHandler(async function postAction({}: Request) {
+      return {
+        response: {
+          children: {},
+        },
+      };
+    })
+  );
+
   app.post(
     "/.action",
     json(),
@@ -101,7 +112,7 @@ export async function createApp(port: number, overrideAgentDir?: string) {
       const result = await data.dispatch(body.type, body.payload);
       return {
         response: {
-          result,
+          Actions,
         },
       };
     })

@@ -32,7 +32,6 @@ const channels = {
 function keydownHandler(e) {
   for (let channelId in channels) {
     const matched = channels[channelId].matchDown?.(e);
-    console.log(channelId + " " + matched);
     if (matched) {
       const channelHandlers = handlers.get(channelId);
       channelHandlers.forEach((handle) => handle());
@@ -41,10 +40,8 @@ function keydownHandler(e) {
   }
 }
 function keypressHandler(e) {
-  console.log("keyPress " + e.key);
   for (let channelId in channels) {
     const matched = channels[channelId].matchPress?.(e);
-    console.log(channelId + " " + matched);
     if (matched) {
       const channelHandlers = handlers.get(channelId);
       channelHandlers.forEach((handle) => handle());

@@ -1,11 +1,12 @@
 import { join } from "path";
 
+import { createActionSet } from "agent-core";
 import { JSONBlock, createJSONBlock } from "agent-crypto";
 import { readJSONFile, writeJSONFile } from "agent-node";
 import { mkdirp, readFile, readdir, rename, stat, writeFile } from "fs-extra";
 
 import { Actions } from "./actions";
-import { BlockRef, TreeState } from "./CoreActions";
+import { BlockLink, TreeState } from "./CoreActions";
 import { NotFoundError, RequestError } from "./HTTP";
 import { ServerContext } from "./ServerContext";
 
@@ -28,7 +29,7 @@ export type Commit<V> = {
 
 export type Chain = {
   type: "Chain";
-  head: BlockRef;
+  head: BlockLink;
   // eval: 'FileTree' |
 
   // todo, add eval settings such as cache pruning behavior
@@ -56,7 +57,7 @@ export function createCoreData(
 
   async function createBlock(
     payload: ServerActions["CreateBlock"]
-  ): Promise<BlockRef> {
+  ): Promise<BlockLink> {
     const block = await createJSONBlock(payload.value);
     const blockFile = join(blocksDir, block.id);
     try {
@@ -71,7 +72,7 @@ export function createCoreData(
       await writeFile(blockFile, block.jsonValue);
     }
     return {
-      type: "BlockRef",
+      type: "BlockLink",
       id: block.id,
     };
   }
@@ -123,11 +124,11 @@ export function createCoreData(
     const time = Date.now();
     const prevDoc = await getDoc(name);
     if (prevDoc.value !== undefined) {
-      if (prevDoc.value.type === "BlockRef" && prevDoc.value.id) {
-        on = (prevDoc.value as BlockRef).id;
+      if (prevDoc.value.type === "BlockLink" && prevDoc.value.id) {
+        on = (prevDoc.value as BlockLink).id;
       } else
         throw new Error(
-          `AppendChain only works when the doc is BlockRef type (to a Commit type block). Instead the "${name}" doc is of type "${prevDoc.value?.type}"`
+          `AppendChain only works when the doc is BlockLink type (to a Commit type block). Instead the "${name}" doc is of type "${prevDoc.value?.type}"`
         );
     }
     const commitValue: Commit<typeof value> = {
@@ -143,7 +144,7 @@ export function createCoreData(
     await setDoc({
       name,
       value: {
-        type: "BlockRef",
+        type: "BlockLink",
         id: commitBlock.id,
       },
     });
@@ -174,12 +175,21 @@ export function createCoreData(
         return await deleteBlock(actionPayload as any);
       case "CoreData/AppendChain":
         return await appendChain(actionPayload as any);
-      case "GetBlockJSON":
+      case "CoreData/GetBlockJSON":
         return await getBlockJSON(actionPayload as any);
       default:
         return await onNextDispatch(actionType, actionPayload);
     }
   }
+
+  // const actions = createActionSet("CoreData", {
+  //   createBlock,
+  //   setDoc,
+  //   deleteDoc,
+  //   deleteBlock,
+  //   appendChain,
+  //   getBlockJSON,
+  // });
 
   async function rollupBlocksInCommitChain<V>(commitValue: Commit<V>) {
     if (commitValue.type !== "Commit") {
@@ -215,7 +225,7 @@ export function createCoreData(
       if (deepState.type === "Block" && deepState.jsonValue !== undefined) {
         const block = await createJSONBlock(deepState.jsonValue);
         blockCache.set(block.id, block);
-        return { type: "BlockRef", id: block.id };
+        return { type: "BlockLink", id: block.id };
       }
       return Object.fromEntries(
         await Promise.all(
@@ -275,7 +285,7 @@ export function createCoreData(
   ) {
     const childrenRefs = Object.values(tree.children);
     childrenRefs.forEach((child) => {
-      if (child.type === "BlockRef") {
+      if (child.type === "BlockLink") {
         const cached = blockCache.get(child.id);
         if (cached) outputBlocks.set(child.id, cached);
       }
@@ -289,17 +299,35 @@ export function createCoreData(
 
     const doc = await getDoc(thisPathTerm);
 
+    async function getEvalBlock(blockId: string) {
+      const matchedBlock = evalBlockCache.get(blockId);
+      if (restTerms.length > 2) {
+        throw new RequestError("Must query for .blocks/BLOCK_ID");
+      }
+      if (matchedBlock) {
+        return matchedBlock.value;
+      }
+      try {
+        const cachedBlockData = await readJSONFile(
+          join(blockCacheDir, blockId)
+        );
+        return cachedBlockData;
+      } catch (e) {
+        throw new NotFoundError();
+      }
+    }
+
     let evalValue = doc.value;
     let evalBlockId: string | null = null;
 
-    while (evalValue.type === "DocRef") {
+    while (evalValue.type === "DocLink") {
       // follow doc ref with getDoc(evalValue.something)
     }
 
-    if (evalValue.type === "BlockRef") {
+    if (evalValue.type === "BlockLink") {
       evalBlockId = evalValue.id;
       evalValue = await getBlockJSON({ id: evalValue.id });
-      // todo try this block json and fall back to BlockRef in case of binary file
+      // todo try this block json and fall back to BlockLink in case of binary file
     } else if (evalValue.type === "Blockchain") {
       evalBlockId = evalValue.head.id;
     }
@@ -308,10 +336,8 @@ export function createCoreData(
       const evalCachePath = join(stateCacheDir, `eval-${evalBlockId}`);
       const cachedResult = await readJSONFile(evalCachePath);
       if (cachedResult) {
-        console.log("USING CACHED EVAL RESULT");
         evalValue = cachedResult;
       } else {
-        console.log("PERFORMING EVAL");
         evalValue = await evalCommitChain(evalValue, evalBlockCache);
         const cachableBlocks: BlockCache = new Map();
         aggregateLinkedAccessibleBlocks(
@@ -325,29 +351,29 @@ export function createCoreData(
 
       if (restTerms[0] === ".blocks") {
         const blockId = restTerms[1];
-        const matchedBlock = evalBlockCache.get(blockId);
-        if (restTerms.length > 2) {
-          throw new RequestError("Must query for .blocks/BLOCK_ID");
-        }
-        if (matchedBlock) {
-          return matchedBlock.value;
-        }
-        try {
-          const cachedBlockData = await readJSONFile(
-            join(blockCacheDir, blockId)
-          );
-          return cachedBlockData;
-        } catch (e) {
-          throw new NotFoundError();
-        }
+        return await getEvalBlock(blockId);
       }
     }
 
-    if (restTerms.length) {
-      return undefined;
+    let resultingValue = evalValue;
+
+    for (let termIndex = 0; termIndex < restTerms.length; termIndex += 1) {
+      const pathTerm = restTerms[termIndex];
+      const child = resultingValue?.children?.[pathTerm];
+      if (child?.type !== "BlockLink") {
+        throw new Error(`Cannot query for "${pathTerm}" in result`);
+      }
+      const childId = child?.id;
+      if (!childId) {
+        throw new Error(
+          `Cannot get child query id... what a confusing error description!`
+        );
+      }
+      const childBlock = await getEvalBlock(childId);
+      resultingValue = childBlock;
     }
 
-    return evalValue;
+    return resultingValue;
   }
 
   async function getDoc(name: string) {

@@ -2,8 +2,8 @@ import Ajv from "ajv";
 import { JSONSchema } from "json-schema-to-ts";
 import { FromSchema } from "json-schema-to-ts";
 
-export type BlockRef = {
-  type: "BlockRef";
+export type BlockLink = {
+  type: "BlockLink";
   id: string;
 };
 export type Block = {
@@ -13,7 +13,7 @@ export type Block = {
 
 export type TreeState<V> = {
   value: V;
-  children: Record<string, Block | BlockRef>;
+  children: Record<string, Block | BlockLink>;
 };
 
 const ajv = new Ajv();

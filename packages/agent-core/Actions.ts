@@ -1,23 +1,20 @@
-export type ChainActions = {
-  WriteFile: {
-    name: string;
-    value: any;
-  };
+import { JSONSchema } from "json-schema-to-ts";
+
+export type ActionDefinition = {
+  payloadSchema: JSONSchema;
 };
 
-export type AgentActions = ChainActions & {
-  ChangeScene: {
-    // type: 'ChangeScene',
-    sceneKey: string;
+export function createActionSet<
+  Actions extends Readonly<Record<string, ActionDefinition>>,
+  SetName extends string
+>(setName: SetName, actions: Actions) {
+  function dispatch<ActionType extends string>(action: {
+    type: `${SetName}/${ActionType}`;
+    payload: Actions[ActionType];
+  }) {}
+  return {
+    setName,
+    actions,
+    dispatch,
   };
-  TakeFullTitle: {
-    // type: 'TakeFullTitle',
-  };
-  SetTitle: {
-    // type: 'SetTitle',
-    title: string;
-    subTitle?: string;
-  };
-};
-
-export type Action = AgentActions[keyof AgentActions];
+}
