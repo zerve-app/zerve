@@ -20,9 +20,9 @@
     "**/.DS_Store": true
   },
   "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#ade7f4",
-    "titleBar.activeForeground": "#2a0b2b",
-    "titleBar.inactiveBackground": "#c2dde3",
-    "titleBar.inactiveForeground": "#2a0b2b"
+    "titleBar.activeBackground": "#265397",
+    "titleBar.activeForeground": "#fff",
+    "titleBar.inactiveBackground": "#416497",
+    "titleBar.inactiveForeground": "#fff"
   }
 }

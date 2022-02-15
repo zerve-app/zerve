@@ -112,7 +112,7 @@ export async function createApp(port: number, overrideAgentDir?: string) {
       const result = await data.dispatch(body.type, body.payload);
       return {
         response: {
-          Actions,
+          result,
         },
       };
     })
