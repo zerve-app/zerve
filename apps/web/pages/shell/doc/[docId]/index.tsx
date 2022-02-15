@@ -28,7 +28,7 @@ export default function Web() {
   return (
     <PageWithPalette navigator={<Navigator />}>
       <Head>
-        <title>Agent Doc</title>
+        <title>Z Doc</title>
       </Head>
       <DocPage />
     </PageWithPalette>

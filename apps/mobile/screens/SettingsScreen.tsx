@@ -3,7 +3,7 @@ import { Platform, StyleSheet } from "react-native";
 import React from "react";
 
 import { View } from "../components/Themed";
-import { Button } from "ui";
+import { Button } from "@zerve/ui";
 import { RootStackScreenProps } from "../navigation/Links";
 
 export default function SettingsScreen({

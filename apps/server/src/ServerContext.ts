@@ -1,34 +1,34 @@
-import { mkdirp, rmdir } from "fs-extra";
+import { mkdirp, rm } from "fs-extra";
 
 export type ServerContext = Awaited<ReturnType<typeof createServerContext>>;
 
 export async function createServerContext(
   port: number,
-  overrideAgentDir?: string
+  overrideDataDir?: string
 ) {
   const homeDir = process.env.HOME;
-  const defaultAgentDir = `${homeDir}/.agent`;
+  const defaultZDataDir = `${homeDir}/.zerve`;
 
-  const agentDir = overrideAgentDir || defaultAgentDir;
-  await mkdirp(agentDir);
+  const zDataDir = overrideDataDir || defaultZDataDir;
+  await mkdirp(zDataDir);
 
-  const blocksDir = `${agentDir}/blocks`;
+  const blocksDir = `${zDataDir}/blocks`;
   await mkdirp(blocksDir);
 
-  const docsDir = `${agentDir}/docs`;
+  const docsDir = `${zDataDir}/docs`;
   await mkdirp(docsDir);
 
-  const trashDir = `${agentDir}/trash`;
+  const trashDir = `${zDataDir}/trash`;
   await mkdirp(trashDir);
 
-  const cacheDir = `${agentDir}/cache`;
-  const stateCacheDir = `${agentDir}/cache/state`;
-  const blockCacheDir = `${agentDir}/cache/blocks`;
+  const cacheDir = `${zDataDir}/cache`;
+  const stateCacheDir = `${zDataDir}/cache/state`;
+  const blockCacheDir = `${zDataDir}/cache/blocks`;
 
   const shouldResetCache = true; // todo, lol obviously
   if (shouldResetCache) {
     try {
-      await rmdir(cacheDir, { recursive: true });
+      await rm(cacheDir, { recursive: true });
     } catch (e: any) {
       if (e.code !== "ENOENT") throw e;
     }

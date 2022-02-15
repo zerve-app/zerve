@@ -1,16 +1,14 @@
 {
-  "name": "agent-react",
+  "name": "@zerve/core",
   "version": "0.0.0",
   "main": "./index.tsx",
   "types": "./index.tsx",
   "devDependencies": {
-    "@types/react": "^17.0.37",
     "config": "*",
     "tsconfig": "*",
     "typescript": "^4.5.3"
   },
   "dependencies": {
-    "agent-core": "*",
-    "react": "*"
+    "json-schema-to-ts": "^1.6.5"
   }
 }

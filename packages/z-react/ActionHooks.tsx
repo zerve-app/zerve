@@ -1,4 +1,3 @@
-import { AgentActions } from "agent-core";
 import { useEffect } from "react";
 
 export function useAction(actionKey: any) {

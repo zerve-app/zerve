@@ -25,7 +25,7 @@ function createJSONHandler(
   };
 }
 
-export async function createApp(port: number, overrideAgentDir?: string) {
+export async function createApp(port: number, overrideDataDir?: string) {
   const app = express();
 
   app.use((req, res, next) => {
@@ -35,7 +35,7 @@ export async function createApp(port: number, overrideAgentDir?: string) {
     next();
   });
 
-  const context = await createServerContext(port, overrideAgentDir);
+  const context = await createServerContext(port, overrideDataDir);
 
   async function onNextDispatch(
     anonActionType: keyof typeof Actions,

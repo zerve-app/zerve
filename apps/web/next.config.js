@@ -1,10 +1,17 @@
-const withTM = require("next-transpile-modules")([
-  "ui",
-  "agent-core",
-  "agent-crypto",
-  "agent-node",
-  "agent-react",
-]);
+const { readdirSync, readFileSync } = require("fs");
+
+const packageDirNames = readdirSync("../../packages");
+const packageJsons = packageDirNames.map((pkgName) =>
+  JSON.parse(
+    readFileSync(`../../packages/${pkgName}/package.json`, {
+      encoding: "utf-8",
+    })
+  )
+);
+
+const withTM = require("next-transpile-modules")(
+  packageJsons.map((p) => p.name)
+);
 
 module.exports = withTM({
   reactStrictMode: true,

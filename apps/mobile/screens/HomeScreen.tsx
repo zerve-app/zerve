@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Button } from "ui";
+import { Button } from "@zerve/ui";
 
 import { Text, View } from "../components/Themed";
 import { RootStackScreenProps } from "../navigation/Links";
@@ -11,7 +11,7 @@ export default function HomeScreen({
 }: RootStackScreenProps<"Home">) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agent Home</Text>
+      <Text style={styles.title}>Zerve Home</Text>
       <View
         style={styles.separator}
         lightColor="#eee"

@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "z-web",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -11,16 +11,16 @@
   "dependencies": {
     "@tiptap/react": "^2.0.0-beta.108",
     "@tiptap/starter-kit": "^2.0.0-beta.183",
-    "agent-core": "*",
-    "agent-node": "*",
-    "agent-react": "*",
+    "@zerve/core": "*",
+    "@zerve/node": "*",
+    "@zerve/react": "*",
     "next": "12.0.9",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-native-web": "^0.17.5",
     "react-query": "^3.34.14",
     "socket.io": "^4.4.1",
-    "ui": "*"
+    "@zerve/ui": "*"
   },
   "devDependencies": {
     "@types/react": "17.0.37",

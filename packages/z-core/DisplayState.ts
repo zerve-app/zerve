@@ -1,5 +1,3 @@
-import { AgentActions } from ".";
-
 type TitleLayoutState = {
   layout: "Title";
   title: string | null;
@@ -19,11 +17,11 @@ export const InitialDisplayState: DisplayState = {
   title: null,
   subTitle: null,
 };
-
-export function DisplayStateReducer<ActionType extends keyof AgentActions>(
+type ActionPayloads = {};
+export function DisplayStateReducer<ActionType extends keyof ActionPayloads>(
   state: DisplayState,
   actionType: ActionType,
-  actionPayload: AgentActions[ActionType]
+  actionPayload: ActionPayloads[ActionType]
 ): DisplayState {
   switch (actionType) {
     case "SetTitle":

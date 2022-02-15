@@ -17,7 +17,7 @@ export default function Web() {
   return (
     <PageWithPalette navigator={<Navigator />}>
       <Head>
-        <title>Agent App</title>
+        <title>Zerve App</title>
       </Head>
       <IndexDoc />
     </PageWithPalette>

@@ -1,8 +1,8 @@
 import { join } from "path";
 
-import { createActionSet } from "agent-core";
-import { JSONBlock, createJSONBlock } from "agent-crypto";
-import { readJSONFile, writeJSONFile } from "agent-node";
+import { createActionSet } from "@zerve/core";
+import { JSONBlock, createJSONBlock } from "@zerve/crypto";
+import { readJSONFile, writeJSONFile } from "@zerve/node";
 import { mkdirp, readFile, readdir, rename, stat, writeFile } from "fs-extra";
 
 import { Actions } from "./actions";

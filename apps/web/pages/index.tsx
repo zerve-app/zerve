@@ -1,14 +1,14 @@
 import Head from "next/head";
 import { Text, View } from "react-native";
-import { Button } from "ui";
+import { Button } from "@zerve/ui";
 
 export default function Web() {
   return (
     <View style={{ backgroundColor: "lightblue", flex: 1 }}>
       <Head>
-        <title>Agent App</title>
+        <title>Zerve App</title>
       </Head>
-      <Text>Agent</Text>
+      <Text>Zerve</Text>
 
       <Text style={{}} accessibilityRole="link" href={`/display`}>
         Display

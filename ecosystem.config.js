@@ -1,14 +1,14 @@
 module.exports = {
   apps: [
     {
-      name: "agent-web",
+      name: "zerve-web",
       script: "yarn workspace web start",
       env: {
         PORT: 3999,
       },
     },
     {
-      name: "agent-server",
+      name: "zerve-server",
       script: "yarn workspace server start",
       env: {
         PORT: 3998,

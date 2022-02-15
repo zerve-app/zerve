@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { ScrollView, Text, View } from "react-native";
-import { Button } from "ui";
+import { Button } from "@zerve/ui";
 
 import { useAppDispatch } from "../stores/Dispatch";
 import { useDocListQuery } from "./Query";
