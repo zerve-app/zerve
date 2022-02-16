@@ -18,6 +18,7 @@ export const InitialDisplayState: DisplayState = {
   subTitle: null,
 };
 type ActionPayloads = {};
+
 export function DisplayStateReducer<ActionType extends keyof ActionPayloads>(
   state: DisplayState,
   actionType: ActionType,

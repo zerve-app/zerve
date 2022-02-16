@@ -11,6 +11,7 @@ import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import { navigationLinking } from "./navigation/Links";
 import RootNavigator from "./navigation/RootNavigator";
+import { MMKV } from "react-native-mmkv";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -30,3 +31,5 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+export const storage = new MMKV();

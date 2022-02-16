@@ -1,20 +1,40 @@
-import { JSONSchema } from "json-schema-to-ts";
+import { FromSchema, JSONSchema } from "json-schema-to-ts";
 
-export type ActionDefinition = {
-  payloadSchema: JSONSchema;
+export type ActionDefinition<Schema extends JSONSchema, Returns> = {
+  payloadSchema: Schema;
+  handle: (payload: FromSchema<Schema>) => Promise<Returns>;
+  description?: string;
 };
 
-export function createActionSet<
-  Actions extends Readonly<Record<string, ActionDefinition>>,
-  SetName extends string
->(setName: SetName, actions: Actions) {
-  function dispatch<ActionType extends string>(action: {
-    type: `${SetName}/${ActionType}`;
-    payload: Actions[ActionType];
-  }) {}
+export type ActionSet = Record<string, ActionDefinition<any, any>>;
+
+// export function createActionSet(
+//   setName: string,
+//   actions:
+// ) {
+//   async function dispatch<ActionType extends keyof typeof actions>(action: {
+//     type: `${typeof setName}/${ActionType}`;
+//     payload: typeof actions[ActionType];
+//   }) {
+//     const matchedAction = actions[action.type];
+//     if (!matchedAction) throw new Error("Action not found");
+//     return await matchedAction.handle(action.payload);
+//   }
+//   return {
+//     setName,
+//     actions,
+//     dispatch,
+//   };
+// }
+
+export function defineAction<Schema extends JSONSchema, Returns>(
+  payloadSchema: Schema,
+  handle: (payload: FromSchema<Schema>) => Promise<Returns>,
+  description?: string
+): ActionDefinition<Schema, Returns> {
   return {
-    setName,
-    actions,
-    dispatch,
+    payloadSchema,
+    handle,
+    description,
   };
 }

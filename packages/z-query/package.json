@@ -1,0 +1,15 @@
+{
+  "name": "@zerve/query",
+  "version": "0.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "devDependencies": {
+    "@types/react": "^17.0.37",
+    "config": "*",
+    "tsconfig": "*",
+    "typescript": "^4.5.3"
+  },
+  "dependencies": {
+    "react-query": "^3.34.15"
+  }
+}

@@ -13,12 +13,12 @@
     "@tiptap/starter-kit": "^2.0.0-beta.183",
     "@zerve/core": "*",
     "@zerve/node": "*",
+    "@zerve/query": "*",
     "@zerve/react": "*",
     "next": "12.0.9",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-native-web": "^0.17.5",
-    "react-query": "^3.34.14",
     "socket.io": "^4.4.1",
     "@zerve/ui": "*"
   },

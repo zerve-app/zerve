@@ -1,7 +1,6 @@
 import { json } from "body-parser";
 import express, { Request, Response } from "express";
 
-import { Actions } from "./actions";
 import { createCoreData } from "./CoreData";
 import { createServerContext } from "./ServerContext";
 
@@ -37,18 +36,7 @@ export async function createApp(port: number, overrideDataDir?: string) {
 
   const context = await createServerContext(port, overrideDataDir);
 
-  async function onNextDispatch(
-    anonActionType: keyof typeof Actions,
-    anonActionPayload: any
-  ) {
-    const actionDef = Actions[anonActionType];
-    if (!actionDef) {
-      return;
-    }
-    await actionDef.call(anonActionPayload);
-  }
-
-  const data = createCoreData(context, onNextDispatch);
+  const data = createCoreData(context);
 
   app.get(
     "/",
