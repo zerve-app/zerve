@@ -28,14 +28,11 @@ export default function RootNavigator() {
         component={NotFoundScreen}
         options={{ title: "Oops!" }}
       />
-      <RootStack.Group
-        screenOptions={{
-          presentation: "modal",
-          headerShown: false,
-        }}
-      >
-        <RootStack.Screen name="Settings" component={SettingsScreen} />
-      </RootStack.Group>
+      <RootStack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ presentation: "modal", headerShown: false }}
+      />
     </RootStack.Navigator>
   );
 }

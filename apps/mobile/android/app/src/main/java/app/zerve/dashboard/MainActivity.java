@@ -1,4 +1,4 @@
-package app.zerve.main;
+package app.zerve.dashboard;
 
 import android.os.Build;
 import android.os.Bundle;

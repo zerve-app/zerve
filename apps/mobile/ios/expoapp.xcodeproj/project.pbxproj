@@ -320,8 +320,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.zerve.main;
-				PRODUCT_NAME = "expoapp";
+				PRODUCT_BUNDLE_IDENTIFIER = app.zerve.dashboard;
+				PRODUCT_NAME = expoapp;
 				SWIFT_OBJC_BRIDGING_HEADER = "expoapp/expoapp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -346,8 +346,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.zerve.main;
-				PRODUCT_NAME = "expoapp";
+				PRODUCT_BUNDLE_IDENTIFIER = app.zerve.dashboard;
+				PRODUCT_NAME = expoapp;
 				SWIFT_OBJC_BRIDGING_HEADER = "expoapp/expoapp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

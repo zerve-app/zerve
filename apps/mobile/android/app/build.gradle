@@ -132,7 +132,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'app.zerve.main'
+        applicationId 'app.zerve.dashboard'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
