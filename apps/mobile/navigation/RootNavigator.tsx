@@ -31,7 +31,7 @@ export default function RootNavigator() {
       <RootStack.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{ presentation: "modal", headerShown: false }}
+        options={{ presentation: "modal" }}
       />
     </RootStack.Navigator>
   );

@@ -30,9 +30,6 @@ PODS:
     - React-jsi (= 0.64.3)
     - ReactCommon/turbomodule/core (= 0.64.3)
   - glog (0.3.5)
-  - MMKV (1.2.12):
-    - MMKVCore (~> 1.2.12)
-  - MMKVCore (1.2.12)
   - RCT-Folly (2020.01.13.00):
     - boost-for-react-native
     - DoubleConversion
@@ -226,9 +223,6 @@ PODS:
     - React-jsi (= 0.64.3)
     - React-perflogger (= 0.64.3)
   - React-jsinspector (0.64.3)
-  - react-native-mmkv (2.1.0):
-    - MMKV
-    - React-Core
   - react-native-safe-area-context (3.4.0):
     - React-Core
   - React-perflogger (0.64.3)
@@ -355,7 +349,6 @@ DEPENDENCIES:
   - React-jsi (from `../../../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../../../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../../node_modules/react-native/ReactCommon/jsinspector`)
-  - react-native-mmkv (from `../../../node_modules/react-native-mmkv`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - React-perflogger (from `../../../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../../../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -376,8 +369,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - boost-for-react-native
-    - MMKV
-    - MMKVCore
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -428,8 +419,6 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../../../node_modules/react-native/ReactCommon/jsinspector"
-  react-native-mmkv:
-    :path: "../../../node_modules/react-native-mmkv"
   react-native-safe-area-context:
     :path: "../../../node_modules/react-native-safe-area-context"
   React-perflogger:
@@ -478,8 +467,6 @@ SPEC CHECKSUMS:
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971
   FBReactNativeSpec: 177d5bea167f5a86ebe5347ff732dfeebc1de603
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
-  MMKV: f281020c9d9be5eb7a03ae746dc4deb570e46c23
-  MMKVCore: df0565f6b58463604731a68ba6cd89bc0b2d1d55
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: d34bf57e17cb6e3b2681f4809b13843c021feb6c
   RCTTypeSafety: 8dab4933124ed39bb0c1d88d74d61b1eb950f28f
@@ -491,7 +478,6 @@ SPEC CHECKSUMS:
   React-jsi: a8b09c29521c798f1783348b37b511ba7b3dbeb3
   React-jsiexecutor: df6abc9fafbecb8e5b7a5fbc5e6d4bd017d594d5
   React-jsinspector: 34e23860273a23695342f58eed3ffd3ba10c31e0
-  react-native-mmkv: e92ed3dfb337b01afd411fa7a9b65be05fec36be
   react-native-safe-area-context: f4f7cc09d81ae2d39dfd13e764d718969af07080
   React-perflogger: cc76a4254d19640f1d8ad1c66fdee800414b805c
   React-RCTActionSheet: 7448f049318d8d7e8a9a1ebb742ada721757eea8

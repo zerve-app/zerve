@@ -1,8 +1,8 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Button } from "react-native";
 import React from "react";
 
 import { Text, View } from "../components/Themed";
-import { Button } from "@zerve/ui";
+
 import { RootStackScreenProps } from "../navigation/Links";
 
 export default function DocScreen({

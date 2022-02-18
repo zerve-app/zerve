@@ -1,3 +1,4 @@
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 type ButtonProps = { title: string; onPress: () => void };
@@ -7,7 +8,7 @@ export function Button({ title, onPress }: ButtonProps) {
     <TouchableOpacity onPress={onPress}>
       <View
         style={{
-          backgroundColor: "#222",
+          backgroundColor: "green",
           borderWidth: 1,
           borderColor: "#ccc",
           borderRadius: 5,
