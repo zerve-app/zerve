@@ -1,6 +1,6 @@
 # Zerve
 
-Eric's hobby project. Please don't ask any "what" or "why" questions.
+Eric's hobby project. Please don't ask any "what" or "why" questions. The only goal is to have fun building
 
 ## Web App
 
