@@ -9,9 +9,9 @@ const packageJsons = packageDirNames.map((pkgName) =>
   )
 );
 
-const withTM = require("next-transpile-modules")(
-  packageJsons.map((p) => p.name)
-);
+const localPackageNames = packageJsons.map((p) => p.name);
+
+const withTM = require("next-transpile-modules")(localPackageNames);
 
 module.exports = withTM({
   reactStrictMode: true,

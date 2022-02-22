@@ -4,7 +4,7 @@ import { Text } from "react-native";
 
 import Navigator from "../../../../components/Navigator";
 import { PageWithPalette } from "../../../../components/Page";
-import { useDoc } from "../../../../components/Query";
+import { useDoc } from "@zerve/query";
 
 function singulateString(s: string[] | string) {
   if (Array.isArray(s)) return s[0];

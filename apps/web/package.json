@@ -15,12 +15,13 @@
     "@zerve/node": "*",
     "@zerve/query": "*",
     "@zerve/react": "*",
+    "@zerve/ui": "*",
     "next": "12.0.9",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-native-web": "^0.17.5",
-    "socket.io": "^4.4.1",
-    "@zerve/ui": "*"
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-native-gesture-handler": "^2.2.0",
+    "react-native-web": "^0.17.6",
+    "socket.io": "^4.4.1"
   },
   "devDependencies": {
     "@types/react": "17.0.37",
@@ -29,6 +30,6 @@
     "eslint": "7.32.0",
     "next-transpile-modules": "9.0.0",
     "tsconfig": "*",
-    "typescript": "^4.5.3"
+    "typescript": "^4.5.5"
   }
 }

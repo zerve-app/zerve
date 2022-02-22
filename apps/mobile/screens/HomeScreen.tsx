@@ -2,12 +2,14 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { Button } from "@zerve/ui";
 
-import { View } from "../components/Themed";
+import { Text, View } from "../components/Themed";
 import { RootStackScreenProps } from "../navigation/Links";
+import { useBlueGreen } from "@zerve/native";
 
 export default function HomeScreen({
   navigation,
 }: RootStackScreenProps<"Home">) {
+  const [color, onToggle] = useBlueGreen();
   return (
     <View style={styles.container}>
       <Button
@@ -16,7 +18,13 @@ export default function HomeScreen({
         }}
         title="Open Settings"
       />
-
+      <Text>{color}</Text>
+      <Button
+        onPress={() => {
+          onToggle();
+        }}
+        title="Toggle Color"
+      />
       <Button
         onPress={() => {
           navigation.navigate("Doc", { name: "LOL" });

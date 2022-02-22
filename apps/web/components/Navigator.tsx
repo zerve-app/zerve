@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from "react-native";
 import { Button } from "@zerve/ui";
 
 import { useAppDispatch } from "../stores/Dispatch";
-import { useDocListQuery } from "./Query";
+import { useDocListQuery } from "@zerve/query";
 
 export default function Navigator() {
   const { data, isLoading } = useDocListQuery();

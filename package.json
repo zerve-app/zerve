@@ -9,7 +9,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "concurrently \"yarn workspace z-server dev\" \"yarn workspace z-web dev\"",
-    "mobile": "yarn workspace z-mobile start",
+    "dev:mobile": "watchman watch-del-all && yarn workspace z-mobile start",
+    "dev:ios": "yarn workspace z-mobile expo prebuild && open apps/mobile/ios/expoapp.xcworkspace",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "restart": "pm2 restart ecosystem.config.js",

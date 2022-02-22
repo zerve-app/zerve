@@ -1,0 +1,17 @@
+{
+  "name": "@zerve/native",
+  "version": "0.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "devDependencies": {
+    "@types/react": "^17.0.37",
+    "config": "*",
+    "tsconfig": "*",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "react-native-mmkv": "^2.1.0",
+    "react-native": "*"
+  }
+}
