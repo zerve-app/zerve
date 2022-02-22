@@ -11,8 +11,9 @@
     "config": "*",
     "typescript": "^4.5.3"
   },
-  "dependencies": {
-    "react-native": "*",
-    "react-native-web": "*"
+  "dependencies": {},
+  "peerDependencies": {
+    "react-native-web": "*",
+    "react-native": "*"
   }
 }

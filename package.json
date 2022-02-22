@@ -15,6 +15,9 @@
     "restart": "pm2 restart ecosystem.config.js",
     "borked_turbo_dev": "turbo run dev --parallel"
   },
+  "dependencies": {
+    "react-native": "0.64.3"
+  },
   "devDependencies": {
     "prettier": "^2.5.1",
     "turbo": "latest"
