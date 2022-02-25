@@ -13,3 +13,8 @@ export async function listDocs() {
 export async function getDoc(name: string) {
   return await serverGet(`.docs/${name}`);
 }
+
+export async function getActions(category?: string) {
+  if (category) return await serverGet(`.actions/${category}`);
+  return await serverGet(`.actions`);
+}

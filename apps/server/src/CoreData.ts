@@ -1,18 +1,12 @@
 import { join } from "path";
+import { mkdirp, readFile, readdir, rename, stat, writeFile } from "fs-extra";
 
-import {
-  ActionDefinition,
-  ActionSet,
-  createActionSet,
-  defineAction,
-} from "@zerve/core";
+import { NotFoundError, RequestError, defineAction } from "@zerve/core";
 import { JSONBlock, createJSONBlock } from "@zerve/crypto";
 import { readJSONFile, writeJSONFile } from "@zerve/node";
-import { mkdirp, readFile, readdir, rename, stat, writeFile } from "fs-extra";
 
 import { Actions } from "./ChainActions";
 import { BlockLink, TreeState } from "./CoreActions";
-import { NotFoundError, RequestError } from "./HTTP";
 import { ServerContext } from "./ServerContext";
 
 export type Commit<V> = {
@@ -34,6 +28,8 @@ export type Chain = {
 type DeepBlockState = any;
 
 type BlockCache = Map<string, JSONBlock>;
+
+export type CoreData = ReturnType<typeof createCoreData>;
 
 export function createCoreData(serverContext: ServerContext) {
   async function _cacheBlocks(blockCache: BlockCache) {
@@ -316,7 +312,9 @@ export function createCoreData(serverContext: ServerContext) {
     async function getEvalBlock(blockId: string) {
       const matchedBlock = evalBlockCache.get(blockId);
       if (restTerms.length > 2) {
-        throw new RequestError("Must query for .blocks/BLOCK_ID");
+        throw new RequestError("PathError", "Must query for .blocks/BLOCK_ID", {
+          terms: restTerms,
+        });
       }
       if (matchedBlock) {
         return matchedBlock.value;
@@ -327,7 +325,9 @@ export function createCoreData(serverContext: ServerContext) {
         );
         return cachedBlockData;
       } catch (e) {
-        throw new NotFoundError();
+        throw new NotFoundError("EvalNotFound", "Not Found.", {
+          path: evalPath,
+        });
       }
     }
 

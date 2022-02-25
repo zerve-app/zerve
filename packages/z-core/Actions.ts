@@ -1,8 +1,13 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
+import Ajv from "ajv";
+import { RequestError } from ".";
+
+const ajv = Ajv();
 
 export type ActionDefinition<Schema extends JSONSchema, Returns> = {
   payloadSchema: Schema;
   handle: (payload: FromSchema<Schema>) => Promise<Returns>;
+  handleUnsafe: (payload: any) => Promise<Returns>;
   description?: string;
 };
 
@@ -32,9 +37,26 @@ export function defineAction<Schema extends JSONSchema, Returns>(
   handle: (payload: FromSchema<Schema>) => Promise<Returns>,
   description?: string
 ): ActionDefinition<Schema, Returns> {
+  const validate = ajv.compile(payloadSchema);
+  function handleUnsafe(payload: any): Promise<Returns> {
+    if (!validate(payload)) {
+      const validationError = validate.errors?.[0];
+      throw new RequestError(
+        "ValidationError",
+        `Validation Error: ${validationError?.message}`,
+        {
+          ...validationError,
+          schema: payloadSchema,
+        }
+      );
+    }
+    return handle(payload);
+  }
+
   return {
     payloadSchema,
     handle,
+    handleUnsafe,
     description,
   };
 }
