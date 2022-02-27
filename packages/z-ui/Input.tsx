@@ -2,6 +2,7 @@ import { TextInput, View } from "react-native";
 import { ThemedText } from "./Themed";
 import Layout from "./Layout";
 import { useColors } from "./useColorScheme";
+import { smallShadow } from "./Style";
 
 type ButtonProps = { title: string; onPress: () => void };
 
@@ -12,6 +13,7 @@ export function Input({
   placeholder,
   autoCapitalize,
   autoFocus,
+  disabled,
 }: {
   value: string;
   onValue: (value: string) => void;
@@ -19,6 +21,7 @@ export function Input({
   placeholder?: string;
   autoCapitalize?: "characters" | "words" | "none" | "sentences";
   autoFocus?: boolean;
+  disabled?: boolean;
 }) {
   const colors = useColors();
   return (
@@ -35,10 +38,12 @@ export function Input({
           color: colors.text,
           borderColor: colors.text,
           backgroundColor: colors.background,
-          borderWidth: 2,
           borderRadius: Layout.borderRadius,
+          ...smallShadow,
           padding: 12,
         }}
+        focusable={!disabled}
+        editable={!disabled}
         autoCapitalize={autoCapitalize}
         value={value}
         placeholder={placeholder}

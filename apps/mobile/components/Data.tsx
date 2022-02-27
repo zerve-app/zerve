@@ -1,0 +1,3 @@
+// import
+
+export function createDoc() {}

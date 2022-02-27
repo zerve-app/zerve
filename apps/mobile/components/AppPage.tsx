@@ -5,13 +5,19 @@ import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 
 export default function AppPage({ children }: { children: ReactNode }) {
-  const { canGoBack, goBack } = useNavigation();
-
+  const { canGoBack, goBack, getState } = useNavigation();
+  const backable = canGoBack();
+  const index = getState().index;
   return (
     <Page>
-      {canGoBack() && (
+      {backable && (
         <IconButton
-          icon={(props) => <FontAwesome {...props} name="close" />}
+          icon={(props) => (
+            <FontAwesome
+              {...props}
+              name={index === 0 ? "close" : "chevron-left"}
+            />
+          )}
           altTitle="close"
           onPress={goBack}
         />

@@ -1,18 +1,22 @@
-import { mutateStorage, useStorage } from "@zerve/native";
+import { mutateStorage, useStorage, useStored } from "@zerve/native";
 import { useCallback } from "react";
 
-type Connection = {
+export type Connection = {
   key: string;
   name: string;
   url: string;
 };
 
 const DefaultConnections: Connection[] = [
-  {
-    key: "dev",
-    name: "Dev Server",
-    url: "http://localhost:3888",
-  },
+  ...(__DEV__
+    ? [
+        {
+          key: "dev",
+          name: "[TEST] Local Dev Server",
+          url: "http://localhost:3888",
+        },
+      ]
+    : []),
   {
     key: "main",
     name: "Zerve Public Server",
@@ -21,8 +25,7 @@ const DefaultConnections: Connection[] = [
 ];
 
 export function useConnections() {
-  const storage = useStorage("Connections", DefaultConnections);
-  return storage;
+  return useStored("Connections", DefaultConnections);
 }
 
 export function useConnection(connectionKey: string) {

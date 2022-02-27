@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { MMKV } from "react-native-mmkv";
 
-export const storage = new MMKV();
+const storage = new MMKV();
 
 type Doc = { name: string; id: string };
 type BlockLink = { type: "BlockLink"; id: string };
 type DocList = Doc[];
 
+export function dangerouslyClearAllStorage() {
+  storage.clearAll();
+}
+
 function getStoredJSON(key: string) {
   const stored = storage.getString(key);
-  console.log("LOADED FROM DISK BABY", key);
   if (stored === undefined) return undefined;
   return JSON.parse(stored);
 }
@@ -79,17 +82,26 @@ export function useStorage<V>(key: string, defaultValue: V) {
       storageNode.updateHandlers.delete(setInternal);
     };
   }, [key]);
+  return [componentStorageState, storageNode.set] as const;
+}
+
+export function useStored<V>(key: string, defaultValue: V) {
+  const storageNode = getStorageNode(key, defaultValue);
+  const [componentStorageState, setComponentStorageState] = useState<V>(
+    storageNode.get()
+  );
+
+  const setInternal = useCallback(
+    (value: V) => {
+      setComponentStorageState(value);
+    },
+    [key]
+  );
+  useEffect(() => {
+    storageNode.updateHandlers.add(setInternal);
+    return () => {
+      storageNode.updateHandlers.delete(setInternal);
+    };
+  }, [key]);
   return componentStorageState;
-}
-
-export function useDocList() {
-  return useStorage("z:doc:list", []);
-}
-
-export function useBlueGreen() {
-  const [state, set] = useStorage<"blue" | "green">("BlueOrGreen", "blue");
-  const toggle = useCallback(() => {
-    set(state === "green" ? "blue" : "green");
-  }, [state]);
-  return [state, toggle] as const;
 }

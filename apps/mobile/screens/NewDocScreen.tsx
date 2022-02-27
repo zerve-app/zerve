@@ -3,37 +3,29 @@ import React from "react";
 import { Button, Input, Page, PageTitle, VStack } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { HomeStackScreenProps } from "../navigation/Links";
-import { createConnection } from "../components/Connection";
+import { createDoc } from "../components/Data";
 
-export default function NewConnectionScreen({
+export default function NewDocScreen({
   navigation,
-}: HomeStackScreenProps<"NewConnection">) {
+}: HomeStackScreenProps<"NewDoc">) {
   const [name, setName] = React.useState("");
-  const [url, setUrl] = React.useState("");
   return (
     <AppPage>
-      <PageTitle title="New Connection" />
+      <PageTitle title="New Document" />
       <VStack>
         <Input
           value={name}
           label="Name"
           onValue={setName}
           autoFocus
-          placeholder="My Server"
-        />
-        <Input
-          value={url}
-          label="URL"
-          onValue={setUrl}
-          autoCapitalize="none"
-          placeholder="https://zerve.app"
+          placeholder="My Doc"
         />
         <Button
           title="Create"
           primary
           onPress={() => {
-            createConnection(name, url);
-            navigation.goBack();
+            // createDoc(name);
+            navigation.replace("Doc", { name });
           }}
         />
       </VStack>

@@ -12,7 +12,9 @@ import HomeScreen from "../screens/HomeScreen";
 import DocScreen from "../screens/DocScreen";
 import KitchenSinkScreen from "../screens/KitchenSinkScreen";
 import NewConnectionScreen from "../screens/NewConnectionScreen";
-import ConnectionScreen from "../screens/ConnectionScreen";
+import ConnectionInfoScreen from "../screens/ConnectionInfoScreen";
+import NewDocScreen from "../screens/NewDocScreen";
+import ConnectionsScreen from "../screens/ConnectionsScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -25,18 +27,13 @@ function HomeNavigator() {
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
+        name="NewDoc"
+        component={NewDocScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
         name="Doc"
         component={DocScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="NewConnection"
-        component={NewConnectionScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="Connection"
-        component={ConnectionScreen}
         options={DefaultScreenOptions}
       />
     </HomeStack.Navigator>
@@ -61,6 +58,21 @@ function SettingsNavigator() {
       <SettingsStack.Screen
         name="KitchenSink"
         component={KitchenSinkScreen}
+        options={DefaultScreenOptions}
+      />
+      <SettingsStack.Screen
+        name="Connections"
+        component={ConnectionsScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="NewConnection"
+        component={NewConnectionScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="ConnectionInfo"
+        component={ConnectionInfoScreen}
         options={DefaultScreenOptions}
       />
     </SettingsStack.Navigator>

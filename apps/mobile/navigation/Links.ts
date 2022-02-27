@@ -1,4 +1,7 @@
-import { LinkingOptions } from "@react-navigation/native";
+import {
+  LinkingOptions,
+  NavigatorScreenParams,
+} from "@react-navigation/native";
 import * as Linking from "expo-linking";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -11,19 +14,21 @@ declare global {
 
 export type SettingsStackParamList = {
   Settings: undefined;
+  Connections: undefined;
+  NewConnection: undefined;
+  ConnectionInfo: { connection: string };
   KitchenSink: undefined;
 };
 
 export type HomeStackParamList = {
   Home: undefined;
-  NewConnection: undefined;
-  Connection: { connection: string };
+  NewDoc: undefined;
   Doc: { name: string };
 };
 
 export type RootStackParamList = {
-  HomeStack: undefined;
-  SettingsStack: undefined;
+  HomeStack: NavigatorScreenParams<HomeStackParamList>;
+  SettingsStack: NavigatorScreenParams<SettingsStackParamList>;
   NotFound: undefined;
 };
 
