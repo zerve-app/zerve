@@ -8,9 +8,9 @@ import {
 } from "@react-navigation/native";
 
 import useCachedResources from "./hooks/useCachedResources";
-import useColorScheme from "./hooks/useColorScheme";
 import { navigationLinking } from "./navigation/Links";
 import RootNavigator from "./navigation/RootNavigator";
+import { useColorScheme } from "@zerve/ui";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();

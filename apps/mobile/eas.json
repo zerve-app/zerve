@@ -12,6 +12,15 @@
         "buildConfiguration": "Debug"
       }
     },
+    "internal": {
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Release"
+      }
+    },
     "preview": {
       "distribution": "internal",
       "ios": {

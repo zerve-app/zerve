@@ -9,23 +9,39 @@ declare global {
   }
 }
 
-export type RootStackParamList = {
-  Home: undefined;
-  Doc: { name: string };
+export type SettingsStackParamList = {
   Settings: undefined;
+  KitchenSink: undefined;
+};
+
+export type HomeStackParamList = {
+  Home: undefined;
+  NewConnection: undefined;
+  Doc: { name: string };
+};
+
+export type RootStackParamList = {
+  HomeStack: undefined;
+  SettingsStack: undefined;
   NotFound: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
+export type HomeStackScreenProps<Screen extends keyof HomeStackParamList> =
+  NativeStackScreenProps<HomeStackParamList, Screen>;
+
+export type SettingsStackScreenProps<
+  Screen extends keyof SettingsStackParamList
+> = NativeStackScreenProps<SettingsStackParamList, Screen>;
+
 export const navigationLinking: LinkingOptions<RootStackParamList> = {
   prefixes: [Linking.makeUrl("/")],
   config: {
     screens: {
-      Home: "",
-      Doc: "doc",
-      Settings: "settings",
+      HomeStack: "",
+      SettingsStack: "settings",
       NotFound: "*",
     },
   },
