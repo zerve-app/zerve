@@ -13,6 +13,7 @@
   },
   "peerDependencies": {
     "react-native": "*",
-    "react-native-web": "*"
+    "react-native-web": "*",
+    "react-native-reanimated": "*"
   }
 }

@@ -50,6 +50,17 @@ function getStorageNode<ValueType>(key: string, defaultValue: ValueType) {
   return node;
 }
 
+export function mutateStorage<ValueType>(
+  key: string,
+  defaultValue: ValueType,
+  mutator: (value: ValueType) => ValueType
+) {
+  const storageNode = getStorageNode<ValueType>(key, defaultValue);
+  const previousValue = storageNode.get();
+  const newValue = mutator(previousValue);
+  storageNode.set(newValue);
+}
+
 export function useStorage<V>(key: string, defaultValue: V) {
   const storageNode = getStorageNode(key, defaultValue);
   const [componentStorageState, setComponentStorageState] = useState<V>(
@@ -68,7 +79,7 @@ export function useStorage<V>(key: string, defaultValue: V) {
       storageNode.updateHandlers.delete(setInternal);
     };
   }, [key]);
-  return [componentStorageState, storageNode.set] as const;
+  return componentStorageState;
 }
 
 export function useDocList() {

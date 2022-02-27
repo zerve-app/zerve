@@ -17,6 +17,7 @@ export type SettingsStackParamList = {
 export type HomeStackParamList = {
   Home: undefined;
   NewConnection: undefined;
+  Connection: { connection: string };
   Doc: { name: string };
 };
 

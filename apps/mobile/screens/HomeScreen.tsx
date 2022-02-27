@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, ScrollView } from "react-native";
-import { Button, HStack, PageSection, PageTitle } from "@zerve/ui";
+import {
+  Button,
+  HStack,
+  PageSection,
+  PageTitle,
+  useColors,
+  VStack,
+} from "@zerve/ui";
 
 import { Text, View } from "@zerve/ui/Themed";
 import {
@@ -9,7 +16,7 @@ import {
   RootStackParamList,
   RootStackScreenProps,
 } from "../navigation/Links";
-import { useBlueGreen } from "@zerve/native";
+import { useBlueGreen, useStorage } from "@zerve/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppPage from "../components/AppPage";
 import {
@@ -17,17 +24,58 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useConnections } from "../components/Connection";
+import { FontAwesome } from "@expo/vector-icons";
 
-function ConnectionsSection() {
-  const navigation = useNavigation();
+function SettingsButton({ onPress }: { onPress: () => void }) {
+  const colors = useColors();
   return (
-    <PageSection title="Connections">
-      <Button
-        onPress={() => {
-          navigation.navigate("NewConnection");
-        }}
-        title="New Connection"
-      />
+    <Button
+      left={<FontAwesome name="gear" size={24} color={colors.text} />}
+      title="Settings"
+      onPress={onPress}
+    />
+  );
+}
+
+function LocalDocsSection({}: {}) {
+  return (
+    <PageSection title="Local Documents">
+      <VStack>
+        <Button onPress={() => {}} title="New Document" />
+        <Button onPress={() => {}} title="Add Files" />
+      </VStack>
+    </PageSection>
+  );
+}
+
+function ConnectionsSection({
+  onNewConnection,
+  onOpenConnection,
+}: {
+  onNewConnection: () => void;
+  onOpenConnection: (key: string) => void;
+}) {
+  const connections = useConnections();
+  return (
+    <PageSection title="Server Connections">
+      <VStack>
+        {connections.map((connection) => (
+          <Button
+            key={connection.key}
+            title={connection.name}
+            onPress={() => {
+              onOpenConnection(connection.key);
+            }}
+          />
+        ))}
+        <Button
+          onPress={() => {
+            onNewConnection();
+          }}
+          title="New Connection"
+        />
+      </VStack>
     </PageSection>
   );
 }
@@ -40,17 +88,24 @@ export default function HomeScreen() {
         NativeStackNavigationProp<HomeStackParamList, "Home">
       >
     >();
-  const [color, onToggle] = useBlueGreen();
   return (
     <AppPage>
       <PageTitle title="Zerve Home" />
-      <ConnectionsSection />
+      <LocalDocsSection />
+      <ConnectionsSection
+        onNewConnection={() => {
+          navigation.navigate("NewConnection");
+        }}
+        onOpenConnection={(connection) => {
+          navigation.navigate("Connection", { connection });
+        }}
+      />
       <HStack>
-        <Button
+        <SettingsButton
           onPress={() => {
             navigation.navigate("SettingsStack");
           }}
-          title="Open Settings"
+          title="Settings"
         />
         <Button
           onPress={() => {

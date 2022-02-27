@@ -26,8 +26,6 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="myapp"/>
-        <data android:scheme="app.zerve.dashboard"/>
         <data android:scheme="zerve"/>
         <data android:scheme="app.zerve.mobile"/>
       </intent-filter>

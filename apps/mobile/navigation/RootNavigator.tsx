@@ -12,6 +12,7 @@ import HomeScreen from "../screens/HomeScreen";
 import DocScreen from "../screens/DocScreen";
 import KitchenSinkScreen from "../screens/KitchenSinkScreen";
 import NewConnectionScreen from "../screens/NewConnectionScreen";
+import ConnectionScreen from "../screens/ConnectionScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -33,6 +34,11 @@ function HomeNavigator() {
         component={NewConnectionScreen}
         options={DefaultScreenOptions}
       />
+      <HomeStack.Screen
+        name="Connection"
+        component={ConnectionScreen}
+        options={DefaultScreenOptions}
+      />
     </HomeStack.Navigator>
   );
 }
@@ -41,6 +47,7 @@ const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 
 const DefaultScreenOptions = {
   headerShown: false,
+  fullScreenGestureEnabled: true,
 };
 
 function SettingsNavigator() {
@@ -78,7 +85,12 @@ export default function RootNavigator() {
       <RootStack.Screen
         name="SettingsStack"
         component={SettingsNavigator}
-        options={{ ...DefaultScreenOptions, presentation: "modal" }}
+        options={{
+          ...DefaultScreenOptions,
+          presentation: "modal",
+          statusBarStyle: "light",
+          statusBarAnimation: "fade",
+        }}
       />
     </RootStack.Navigator>
   );
