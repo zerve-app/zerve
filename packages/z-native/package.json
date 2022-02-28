@@ -10,7 +10,8 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "@zerve/core": "*"
+    "@zerve/core": "*",
+    "buffer": "^6.0.3"
   },
   "peerDependencies": {
     "expo-crypto": "*",

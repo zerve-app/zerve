@@ -21,7 +21,7 @@
     "@zerve/core": "*",
     "@zerve/native": "*",
     "@zerve/query": "*",
-    "expo": "~44.0.6",
+    "expo": ">=44.0.0-0 <45.0.0",
     "expo-asset": "~8.4.6",
     "expo-constants": "~13.0.2",
     "expo-crypto": "~10.1.1",
