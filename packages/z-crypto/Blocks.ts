@@ -1,17 +1,12 @@
 import { createHash } from "crypto";
+import { BLOCK_ID_FORMATS, JSONBlock } from "@zerve/core";
 
 import stringify from "json-stable-stringify";
-
-const BLOCK_ID_FORMATS = {
-  z: { encoding: "hex", algorithm: "sha256" },
-} as const;
-
-export type JSONBlock = Awaited<ReturnType<typeof createJSONBlock>>;
 
 export async function createJSONBlock(
   value: any,
   formatKey: keyof typeof BLOCK_ID_FORMATS = "z"
-) {
+): Promise<JSONBlock> {
   const format = formatKey || "z";
   const { encoding, algorithm } = BLOCK_ID_FORMATS[format];
   const jsonValue = stringify(value, {

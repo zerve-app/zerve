@@ -4,8 +4,6 @@ import Layout from "./Layout";
 import { useColors } from "./useColorScheme";
 import { smallShadow } from "./Style";
 
-type ButtonProps = { title: string; onPress: () => void };
-
 export function Input({
   value,
   onValue,

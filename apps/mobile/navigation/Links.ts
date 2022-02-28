@@ -5,6 +5,7 @@ import {
 import * as Linking from "expo-linking";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { GenericError } from "@zerve/core";
 
 declare global {
   namespace ReactNavigation {
@@ -29,6 +30,7 @@ export type HomeStackParamList = {
 export type RootStackParamList = {
   HomeStack: NavigatorScreenParams<HomeStackParamList>;
   SettingsStack: NavigatorScreenParams<SettingsStackParamList>;
+  Error: { error: GenericError<any, any> };
   NotFound: undefined;
 };
 

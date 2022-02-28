@@ -1,20 +1,6 @@
+import { TreeState } from "@zerve/core";
 import Ajv from "ajv";
-import { JSONSchema } from "json-schema-to-ts";
-import { FromSchema } from "json-schema-to-ts";
-
-export type BlockLink = {
-  type: "BlockLink";
-  id: string;
-};
-export type Block = {
-  type: "Block";
-  jsonValue: any;
-};
-
-export type TreeState<V> = {
-  value: V;
-  children: Record<string, Block | BlockLink>;
-};
+import { JSONSchema, FromSchema } from "json-schema-to-ts";
 
 const ajv = new Ajv();
 

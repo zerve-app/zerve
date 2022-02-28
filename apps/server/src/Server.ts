@@ -3,7 +3,7 @@ import { json } from "body-parser";
 import express, { Request, Response } from "express";
 import { createAuth } from "./Auth";
 
-import { createCoreData } from "./CoreData";
+import { createDataBase } from "./DataBase";
 import { createServerContext } from "./ServerContext";
 
 function createJSONHandler(
@@ -40,12 +40,12 @@ export async function createApp(port: number, overrideDataDir?: string) {
 
   const context = await createServerContext(port, overrideDataDir);
 
-  const data = createCoreData(context);
+  const data = createDataBase(context);
 
   const auth = createAuth(data);
 
   const ActionRegistry = {
-    CoreData: data.actions,
+    DataBase: data.actions,
     Auth: auth.actions,
   } as const;
   const ActionRegistryGroups = Object.keys(ActionRegistry);

@@ -15,6 +15,7 @@ import NewConnectionScreen from "../screens/NewConnectionScreen";
 import ConnectionInfoScreen from "../screens/ConnectionInfoScreen";
 import NewDocScreen from "../screens/NewDocScreen";
 import ConnectionsScreen from "../screens/ConnectionsScreen";
+import ErrorScreen from "../screens/ErrorScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -92,6 +93,11 @@ export default function RootNavigator() {
       <RootStack.Screen
         name="NotFound"
         component={NotFoundScreen}
+        options={DefaultScreenOptions}
+      />
+      <RootStack.Screen
+        name="Error"
+        component={ErrorScreen}
         options={DefaultScreenOptions}
       />
       <RootStack.Screen

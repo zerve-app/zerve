@@ -36,7 +36,15 @@ export function IconButton({
     </Pressable>
   );
 }
-
+export type ButtonProps = {
+  left?: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
+  right?: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
+  title: string;
+  primary?: boolean;
+  danger?: boolean;
+  onPress: () => void;
+  border?: number;
+};
 export function Button({
   title,
   left,
@@ -45,15 +53,7 @@ export function Button({
   danger,
   onPress,
   border,
-}: {
-  left?: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
-  right?: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
-  title: string;
-  primary?: boolean;
-  danger?: boolean;
-  onPress: () => void;
-  border?: number;
-}) {
+}: ButtonProps) {
   const colors = useColors();
   const pressHeight = useSharedValue(0.5); // 0.5 = inactive, 1 = hover/active, 0 = pressed
   const containerStyle = useAnimatedStyle(() => ({

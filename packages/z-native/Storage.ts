@@ -18,37 +18,66 @@ function getStoredJSON(key: string) {
 }
 
 function saveJSON(key: string, value: Parameters<typeof JSON.stringify>[0]) {
+  console.log("lol saveJSON", key, value);
   storage.set(key, JSON.stringify(value));
 }
 
 type StorageNode<ValueType> = {
+  key: string;
   get: () => ValueType;
   set: (v: ValueType) => void;
+  mutate: (mutator: (v: ValueType) => ValueType) => void;
   updateHandlers: Set<(v: ValueType) => void>;
+  destroy: () => void;
 };
 
 function createLocalStorageNode<ValueType>(
   key: string,
   defaultValue: ValueType
 ): StorageNode<ValueType> {
-  const updateHandlers = new Set<() => ValueType>();
-  let value: ValueType = getStoredJSON(key) || defaultValue;
+  const updateHandlers = new Set<(v: ValueType) => void>();
+  let isDestroyed = false;
+  const storedValue = getStoredJSON(key);
+  let value: ValueType = storedValue;
+  if (value === undefined) {
+    value = defaultValue;
+    if (defaultValue !== undefined) {
+      saveJSON(key, defaultValue);
+    }
+  }
   function get(): ValueType {
+    if (isDestroyed) throw new Error("Storage node has been destroyed");
     return value;
   }
   function set(v: ValueType) {
+    if (isDestroyed) throw new Error("Storage node has been destroyed");
     saveJSON(key, v);
     value = v;
     updateHandlers.forEach((handler) => handler(v));
   }
-  return { get, set, updateHandlers };
+  function mutate(mutator: (v: ValueType) => ValueType) {
+    if (isDestroyed) throw new Error("Storage node has been destroyed");
+    const newValue = mutator(value);
+    if (value === newValue) return;
+    saveJSON(key, newValue);
+    value = newValue;
+    updateHandlers.forEach((handler) => handler(newValue));
+  }
+  function destroy() {
+    isDestroyed = true;
+    storage.delete(key);
+  }
+  return { key, get, set, mutate, destroy, updateHandlers };
 }
 
 const localStorageNodes: Record<string, StorageNode<any>> = {};
 
-function getStorageNode<ValueType>(key: string, defaultValue: ValueType) {
+export function getStorageNode<ValueType>(
+  key: string,
+  defaultValue: ValueType
+): StorageNode<ValueType> {
   if (localStorageNodes[key]) return localStorageNodes[key];
-  const node = createLocalStorageNode(key, defaultValue);
+  const node = createLocalStorageNode<ValueType>(key, defaultValue);
   localStorageNodes[key] = node;
   return node;
 }
@@ -64,24 +93,28 @@ export function mutateStorage<ValueType>(
   storageNode.set(newValue);
 }
 
-export function useStorage<V>(key: string, defaultValue: V) {
-  const storageNode = getStorageNode(key, defaultValue);
+export function useNodeState<V>(node: StorageNode<V>) {
   const [componentStorageState, setComponentStorageState] = useState<V>(
-    storageNode.get()
+    node.get()
   );
-
   const setInternal = useCallback(
     (value: V) => {
       setComponentStorageState(value);
     },
-    [key]
+    [node.key]
   );
   useEffect(() => {
-    storageNode.updateHandlers.add(setInternal);
+    node.updateHandlers.add(setInternal);
     return () => {
-      storageNode.updateHandlers.delete(setInternal);
+      node.updateHandlers.delete(setInternal);
     };
-  }, [key]);
+  }, [node.key]);
+  return componentStorageState;
+}
+
+export function useStorage<V>(key: string, defaultValue: V) {
+  const storageNode = getStorageNode(key, defaultValue);
+  const componentStorageState = useNodeState(storageNode);
   return [componentStorageState, storageNode.set] as const;
 }
 

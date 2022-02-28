@@ -1,9 +1,10 @@
 import React from "react";
 
-import { Button, Input, Page, PageTitle, VStack } from "@zerve/ui";
+import { Input, Page, PageTitle, VStack } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { HomeStackScreenProps } from "../navigation/Links";
-import { createDoc } from "../components/Data";
+import { appendChain } from "@zerve/native";
+import { AsyncButton } from "../components/Button";
 
 export default function NewDocScreen({
   navigation,
@@ -11,20 +12,24 @@ export default function NewDocScreen({
   const [name, setName] = React.useState("");
   return (
     <AppPage>
-      <PageTitle title="New Document" />
+      <PageTitle title="New Project" />
       <VStack>
         <Input
           value={name}
           label="Name"
           onValue={setName}
           autoFocus
-          placeholder="My Doc"
+          placeholder="My Project"
         />
-        <Button
+        <AsyncButton
           title="Create"
           primary
-          onPress={() => {
-            // createDoc(name);
+          onPress={async () => {
+            await appendChain(name, {
+              type: "WriteFile",
+              name: "ReadMe.md",
+              value: "Welcome to your new project",
+            });
             navigation.replace("Doc", { name });
           }}
         />

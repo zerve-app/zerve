@@ -3,7 +3,6 @@ import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import { useColors } from "./useColorScheme";
 import { ThemedText } from "./Themed";
 import { bigShadow } from "./Style";
-import { HStack } from "./Stack";
 
 export function Page({ children }: { children: ReactNode }) {
   const colors = useColors();

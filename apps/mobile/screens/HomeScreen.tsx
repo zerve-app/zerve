@@ -20,6 +20,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Connection, useConnections } from "../components/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
+import { useDocs } from "@zerve/native";
 
 function SettingsButton({ onPress }: { onPress: () => void }) {
   const colors = useColors();
@@ -35,10 +36,13 @@ function SettingsButton({ onPress }: { onPress: () => void }) {
 function LocalDocsSection({}: {}) {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList, "Home">>();
-
+  const docs = useDocs();
   return (
     <PageSection title="Local Projects">
       <HStack>
+        {docs?.map((name) => (
+          <Button key={name} title={name} onPress={() => {}} />
+        ))}
         <Button
           onPress={() => {
             navigation.navigate("NewDoc");

@@ -9,10 +9,13 @@
     "tsconfig": "*",
     "typescript": "^4.5.5"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@zerve/core": "*"
+  },
   "peerDependencies": {
-    "react-native-mmkv": "^2.1.0",
+    "expo-crypto": "*",
+    "react": "*",
     "react-native": "*",
-    "react": "*"
+    "react-native-mmkv": "^2.1.0"
   }
 }

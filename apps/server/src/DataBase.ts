@@ -1,37 +1,25 @@
 import { join } from "path";
 import { mkdirp, readFile, readdir, rename, stat, writeFile } from "fs-extra";
 
-import { NotFoundError, RequestError, defineAction } from "@zerve/core";
-import { JSONBlock, createJSONBlock } from "@zerve/crypto";
+import {
+  NotFoundError,
+  RequestError,
+  defineAction,
+  BlockCache,
+  BlockLink,
+  Commit,
+  TreeState,
+  DeepBlockState,
+} from "@zerve/core";
+import { createJSONBlock } from "@zerve/crypto";
 import { readJSONFile, writeJSONFile } from "@zerve/node";
 
 import { Actions } from "./ChainActions";
-import { BlockLink, TreeState } from "./CoreActions";
 import { ServerContext } from "./ServerContext";
 
-export type Commit<V> = {
-  type: "Commit";
-  on: string | null;
-  value: V;
-  message?: string;
-  time: number;
-};
+export type DataBase = ReturnType<typeof createDataBase>;
 
-export type Chain = {
-  type: "Chain";
-  head: BlockLink;
-  // eval: 'FileTree' |
-
-  // todo, add eval settings such as cache pruning behavior
-};
-
-type DeepBlockState = any;
-
-type BlockCache = Map<string, JSONBlock>;
-
-export type CoreData = ReturnType<typeof createCoreData>;
-
-export function createCoreData(serverContext: ServerContext) {
+export function createDataBase(serverContext: ServerContext) {
   async function _cacheBlocks(blockCache: BlockCache) {
     const remainder = blockCache.entries();
     let allSaveOps = Promise.resolve();

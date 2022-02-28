@@ -1,7 +1,7 @@
 import { defineAction } from "@zerve/core";
-import { CoreData } from "./CoreData";
+import { DataBase } from "./DataBase";
 
-export function createAuth(data: CoreData) {
+export function createAuth(data: DataBase) {
   const IntroduceUser = defineAction(
     {
       type: "object",

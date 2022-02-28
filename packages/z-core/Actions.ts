@@ -1,6 +1,6 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
 import Ajv from "ajv";
-import { RequestError } from ".";
+import { RequestError } from "./Errors";
 
 const ajv = Ajv();
 
