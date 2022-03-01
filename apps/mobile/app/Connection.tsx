@@ -1,4 +1,11 @@
-import { mutateStorage, useStorage, useStored } from "@zerve/native";
+import { defineKeySource } from "@zerve/core";
+import {
+  getStorageNode,
+  mutateStorage,
+  useNodeState,
+  useStorage,
+  useStored,
+} from "@zerve/native";
 import { useCallback } from "react";
 
 export type Connection = {
@@ -24,8 +31,14 @@ const DefaultConnections: Connection[] = [
   },
 ];
 
+const connectionsNode = getStorageNode("Connections", DefaultConnections);
+
 export function useConnections() {
-  return useStored("Connections", DefaultConnections);
+  return useNodeState(connectionsNode);
+}
+
+export function getConnection(connectionKey: string) {
+  return connectionsNode.get().find((conn) => conn.key === connectionKey);
 }
 
 export function useConnection(connectionKey: string) {
@@ -43,15 +56,6 @@ export function destroyConnection(key: string) {
   mutateConnections((connections) =>
     connections.filter((conn) => conn.key !== key)
   );
-}
-
-function defineKeySource(label: string) {
-  const prefix = `${label}-${Date.now()}-`;
-  let index = Math.floor(Math.random() * 1000);
-  return () => {
-    index += 1;
-    return `${prefix}${index}`;
-  };
 }
 
 const getConnectionKey = defineKeySource("Connection");

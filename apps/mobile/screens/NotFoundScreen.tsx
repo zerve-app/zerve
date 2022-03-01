@@ -1,7 +1,7 @@
 import { TouchableOpacity } from "react-native";
 import React from "react";
 
-import { RootStackScreenProps } from "../navigation/Links";
+import { RootStackScreenProps } from "../app/Links";
 import { Button, Page, Paragraph } from "@zerve/ui";
 
 export default function NotFoundScreen({

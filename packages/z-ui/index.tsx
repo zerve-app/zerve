@@ -7,4 +7,5 @@ export * from "./Layout";
 export * from "./Themed";
 export * from "./Stack";
 export * from "./Input";
+export * from "./Spinner";
 export * from "./useColorScheme";

@@ -1,7 +1,7 @@
 import React from "react";
 
-import { RootStackScreenProps } from "../navigation/Links";
-import { Button, Page, PageTitle } from "@zerve/ui";
+import { RootStackScreenProps } from "../app/Links";
+import { PageTitle } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 
 export default function KitchenSinkScreen({

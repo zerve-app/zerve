@@ -1,6 +1,6 @@
 import React from "react";
 
-import { RootStackScreenProps } from "../navigation/Links";
+import { RootStackScreenProps } from "../app/Links";
 import { Page, PageTitle, Paragraph } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 

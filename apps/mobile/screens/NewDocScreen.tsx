@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Input, Page, PageTitle, VStack } from "@zerve/ui";
+import { Input, PageTitle, VStack } from "@zerve/ui";
 import AppPage from "../components/AppPage";
-import { HomeStackScreenProps } from "../navigation/Links";
+import { HomeStackScreenProps } from "../app/Links";
 import { appendChain } from "@zerve/native";
 import { AsyncButton } from "../components/Button";
 

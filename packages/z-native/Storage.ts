@@ -18,7 +18,6 @@ function getStoredJSON(key: string) {
 }
 
 function saveJSON(key: string, value: Parameters<typeof JSON.stringify>[0]) {
-  console.log("lol saveJSON", key, value);
   storage.set(key, JSON.stringify(value));
 }
 

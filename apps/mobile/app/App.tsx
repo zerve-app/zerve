@@ -6,10 +6,11 @@ import {
   DarkTheme,
 } from "@react-navigation/native";
 
-import useCachedResources from "./hooks/useCachedResources";
-import { navigationLinking } from "./navigation/Links";
-import RootNavigator from "./navigation/RootNavigator";
+import useCachedResources from "./useCachedResources";
+import { navigationLinking } from "./Links";
+import RootNavigator from "./RootNavigator";
 import { useColorScheme } from "@zerve/ui";
+import { BottomSheetProvider } from "./BottomSheet";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -20,12 +21,14 @@ export default function App() {
   }
   return (
     <SafeAreaProvider>
-      <NavigationContainer
-        linking={navigationLinking}
-        theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-      >
-        <RootNavigator />
-      </NavigationContainer>
+      <BottomSheetProvider>
+        <NavigationContainer
+          linking={navigationLinking}
+          theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <RootNavigator />
+        </NavigationContainer>
+      </BottomSheetProvider>
     </SafeAreaProvider>
   );
 }

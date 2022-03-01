@@ -1,13 +1,11 @@
 import React from "react";
 
-import {
-  RootStackScreenProps,
-  SettingsStackScreenProps,
-} from "../navigation/Links";
-import { Button, Page, PageSection, PageTitle, VStack } from "@zerve/ui";
+import { SettingsStackScreenProps } from "../app/Links";
+import { Button, PageSection, PageTitle, VStack } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { dangerouslyClearAllStorage } from "@zerve/native";
 import { FontAwesome } from "@expo/vector-icons";
+import { reloadAsync } from "expo-updates";
 
 export default function SettingsScreen({
   navigation,
@@ -45,9 +43,23 @@ export default function SettingsScreen({
           <Button title="Export Local Database" onPress={() => {}} />
           <Button title="Import Local Database" onPress={() => {}} />
           <Button
+            left={({ color }) => (
+              <FontAwesome name="trash" color={color} size={24} />
+            )}
+            title="Run Garbage Collection"
+            onPress={() => {}}
+          />
+          <Button
             title="Reset All Local Data"
+            left={({ color }) => (
+              <FontAwesome name="trash" color={color} size={24} />
+            )}
+            danger
             onPress={() => {
               dangerouslyClearAllStorage();
+              reloadAsync().then(() => {
+                alert("App has been reset.");
+              });
             }}
           />
         </VStack>

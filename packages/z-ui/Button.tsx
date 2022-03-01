@@ -56,10 +56,17 @@ export function Button({
 }: ButtonProps) {
   const colors = useColors();
   const pressHeight = useSharedValue(0.5); // 0.5 = inactive, 1 = hover/active, 0 = pressed
+
+  const color = danger
+    ? colors.dangerText
+    : primary
+    ? colors.tint
+    : colors.text;
+  const borderWidth = border !== undefined ? border : primary || danger ? 4 : 0;
   const containerStyle = useAnimatedStyle(() => ({
-    backgroundColor: primary ? colors.tint : colors.background,
-    borderWidth: border,
-    borderColor: colors.text,
+    backgroundColor: colors.background,
+    borderWidth,
+    borderColor: `${color}88`,
     borderRadius: Layout.borderRadius,
     padding: 12,
     paddingHorizontal: 18,
@@ -71,7 +78,6 @@ export function Button({
     transform: [{ translateY: -pressHeight.value * 3 }],
   }));
   const pressBounceTimeout = useRef<null | ReturnType<typeof setTimeout>>(null);
-  const color = danger ? colors.dangerText : colors.text;
   const appendageProps = { color, size: 24 };
 
   return (

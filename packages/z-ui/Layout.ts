@@ -10,4 +10,6 @@ export default {
   },
   isSmallDevice: width < 375,
   borderRadius: 6,
+  paddingHorizontal: 12,
+  paddingVertical: 6,
 };

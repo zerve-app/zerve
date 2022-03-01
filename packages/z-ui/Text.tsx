@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, View } from "react-native";
 import { useColors } from "./useColorScheme";
 import { ThemedText } from "./Themed";
 
@@ -17,6 +17,20 @@ export function PageTitle({ title }: { title: string }) {
         {title}
       </ThemedText>
     </View>
+  );
+}
+
+export function Label({
+  children,
+  style,
+}: {
+  children: ReactNode;
+  style?: StyleProp<Text>;
+}) {
+  return (
+    <ThemedText style={[{ fontWeight: "bold", fontSize: 16 }, style]}>
+      {children}
+    </ThemedText>
   );
 }
 

@@ -26,3 +26,7 @@ export default function AppPage({ children }: { children: ReactNode }) {
     </Page>
   );
 }
+
+export function BareAppPage({ children }: { children: ReactNode }) {
+  return <Page>{children}</Page>;
+}

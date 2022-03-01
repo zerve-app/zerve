@@ -1,8 +1,7 @@
 import { TextInput, View } from "react-native";
-import { ThemedText } from "./Themed";
-import Layout from "./Layout";
 import { useColors } from "./useColorScheme";
-import { smallShadow } from "./Style";
+import { Label } from "./Text";
+import { marginHInset, marginVInset, RowStyles } from "./Row";
 
 export function Input({
   value,
@@ -14,7 +13,7 @@ export function Input({
   disabled,
 }: {
   value: string;
-  onValue: (value: string) => void;
+  onValue?: (value: string) => void;
   label: string;
   placeholder?: string;
   autoCapitalize?: "characters" | "words" | "none" | "sentences";
@@ -24,21 +23,15 @@ export function Input({
   const colors = useColors();
   return (
     <View style={{}}>
-      <ThemedText
-        style={{ marginHorizontal: 12, marginVertical: 6, fontWeight: "bold" }}
-      >
-        {label}
-      </ThemedText>
+      <Label style={[marginHInset, marginVInset]}>{label}</Label>
       <TextInput
         placeholderTextColor={colors.lightText}
         autoFocus={autoFocus}
         style={{
+          ...RowStyles,
           color: colors.text,
           borderColor: colors.text,
           backgroundColor: colors.background,
-          borderRadius: Layout.borderRadius,
-          ...smallShadow,
-          padding: 12,
         }}
         focusable={!disabled}
         editable={!disabled}

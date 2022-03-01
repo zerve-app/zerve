@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Button,
@@ -8,12 +8,60 @@ import {
   PageTitle,
   Paragraph,
   Separator,
+  Spinner,
   VStack,
 } from "@zerve/ui";
 import AppPage from "../components/AppPage";
-import { SettingsStackScreenProps } from "../navigation/Links";
-import { destroyConnection, useConnection } from "../components/Connection";
+import { SettingsStackScreenProps } from "../app/Links";
+import {
+  Connection,
+  destroyConnection,
+  useConnection,
+} from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
+import { InfoRow } from "@zerve/ui/Row";
+
+function useConnectionStatus(connection: Connection) {
+  let [isConnected, setIsConnected] = useState(false);
+  let [isLoading, setIsLoading] = useState(true);
+
+  function doUpdateStatus(connectionUrl: string) {
+    setIsLoading(true);
+    fetch(connectionUrl)
+      .then((resp) => {
+        setIsConnected(resp.status === 200);
+      })
+      .catch((e) => {
+        setIsConnected(false);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+  useEffect(() => {
+    doUpdateStatus(connection.url);
+    const updateStatusInterval = setInterval(() => {
+      doUpdateStatus(connection.url);
+    }, 5_000);
+    return () => {
+      clearInterval(updateStatusInterval);
+    };
+  }, [connection.url]);
+  return { isConnected, isLoading };
+}
+
+function ConnectionStatusRow({ connection }: { connection: Connection }) {
+  const { isConnected, isLoading } = useConnectionStatus(connection);
+  return (
+    <InfoRow
+      label="Status"
+      value={isConnected ? "🟢 Connected" : "🔴 Not Connected"}
+    >
+      {isLoading && <Spinner />}
+    </InfoRow>
+  );
+}
 
 export default function ConnectionInfoScreen({
   navigation,
@@ -25,7 +73,9 @@ export default function ConnectionInfoScreen({
     <AppPage>
       <PageTitle title={`Connection: ${conn?.name}`} />
       <VStack>
-        <Input label="URL" value={conn?.url} disabled />
+        <ConnectionStatusRow connection={conn} />
+
+        <InfoRow label="URL" value={conn?.url} />
       </VStack>
       <PageSection title="Delete Connection">
         <VStack>

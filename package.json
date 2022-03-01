@@ -10,7 +10,7 @@
     "build": "turbo run build",
     "dev": "concurrently \"yarn workspace z-server dev\" \"yarn workspace z-web dev\"",
     "dev:mobile": "watchman watch-del-all && yarn workspace z-mobile start",
-    "dev:ios": "yarn workspace z-mobile expo prebuild && open apps/mobile/ios/Zerve.xcworkspace",
+    "dev:ios": "yarn workspace z-mobile prebuild && open apps/mobile/ios/Zerve.xcworkspace",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "restart": "pm2 restart ecosystem.config.js",

@@ -1,26 +1,10 @@
-import React, { useState } from "react";
-import { StyleSheet, ScrollView } from "react-native";
-import {
-  Button,
-  HStack,
-  PageSection,
-  PageTitle,
-  useColors,
-  VStack,
-} from "@zerve/ui";
+import React from "react";
+import { Button, PageTitle, VStack } from "@zerve/ui";
 
-import {
-  HomeStackParamList,
-  HomeStackScreenProps,
-  RootStackParamList,
-  RootStackScreenProps,
-} from "../navigation/Links";
-import {
-  CompositeNavigationProp,
-  useNavigation,
-} from "@react-navigation/native";
+import { RootStackParamList } from "../app/Links";
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useConnections } from "../components/Connection";
+import { useConnections } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import AppPage from "../components/AppPage";
 

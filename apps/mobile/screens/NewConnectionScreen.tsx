@@ -2,12 +2,12 @@ import React from "react";
 
 import { Button, Input, Page, PageTitle, VStack } from "@zerve/ui";
 import AppPage from "../components/AppPage";
-import { HomeStackScreenProps } from "../navigation/Links";
-import { createConnection } from "../components/Connection";
+import { SettingsStackScreenProps } from "../app/Links";
+import { createConnection } from "../app/Connection";
 
 export default function NewConnectionScreen({
   navigation,
-}: HomeStackScreenProps<"NewConnection">) {
+}: SettingsStackScreenProps<"NewConnection">) {
   const [name, setName] = React.useState("");
   const [url, setUrl] = React.useState("");
   return (
