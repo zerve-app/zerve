@@ -1,0 +1,11 @@
+{
+  "name": "experiment-pdf2html",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "dependencies": {
+    "pdf2html": "^2.6.3"
+  }
+}

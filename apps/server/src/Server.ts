@@ -66,15 +66,12 @@ export async function createApp(port: number, overrideDataDir?: string) {
   app.get(
     "/",
     createJSONHandler(async () => ({
-      response: {
-        ".blocks": null,
-        ".docs": null,
-        ".action": null,
-      },
+      response: "Coming Soon.",
     }))
   );
+
   app.get(
-    "/.blocks",
+    "/.z/.blocks",
     createJSONHandler(async function listBlocks() {
       return { response: await data.listBlocks() };
     })
@@ -83,32 +80,14 @@ export async function createApp(port: number, overrideDataDir?: string) {
   app.use("/.blocks", express.static(context.blocksDir));
 
   app.get(
-    "/.docs",
+    "/.z",
     createJSONHandler(async function listDocs() {
       return { response: await data.listDocs() };
     })
   );
-  app.get(
-    "/.docs/:docName",
-    createJSONHandler(async function getRef({ params: { docName } }: Request) {
-      return {
-        response: await data.getDoc(docName),
-      };
-    })
-  );
-  app.get(
-    "/.eval/*",
-    createJSONHandler(async function getEval({
-      params: { 0: evalPath },
-    }: Request) {
-      return {
-        response: await data.getEval(evalPath),
-      };
-    })
-  );
 
   app.get(
-    "/.action",
+    "/.z/.action",
     createJSONHandler(async function postAction({}: Request) {
       return {
         response: {
@@ -119,7 +98,7 @@ export async function createApp(port: number, overrideDataDir?: string) {
   );
 
   app.get(
-    "/.action/:category",
+    "/.z/.action:/category",
     createJSONHandler(async function postAction({
       params: { category },
     }: Request) {
@@ -151,7 +130,7 @@ export async function createApp(port: number, overrideDataDir?: string) {
   );
 
   app.post(
-    "/.action",
+    "/.z/.action",
     json(),
     createJSONHandler(async function postAction({ body }: Request) {
       const actionDef = AllActions[body.type];
@@ -170,6 +149,33 @@ export async function createApp(port: number, overrideDataDir?: string) {
     })
   );
 
+  app.get(
+    "/.z/.eval/*",
+    createJSONHandler(async function getEval({
+      params: { 0: evalPath },
+    }: Request) {
+      return {
+        response: await data.getEval(evalPath),
+      };
+    })
+  );
+
+  app.get(
+    "/.z/:docName",
+    createJSONHandler(async function getRef({ params: { docName } }: Request) {
+      const doc = await data.getDoc(docName);
+      if (doc.value === undefined) {
+        throw new NotFoundError(
+          "NotFoundError",
+          `Doc "${docName}" could not be found.`,
+          { docName }
+        );
+      }
+      return {
+        response: doc,
+      };
+    })
+  );
   await new Promise<void>((resolve, reject) => {
     app.listen(context.port, () => {
       console.log(`Server listening at http://localhost:${port}`);
