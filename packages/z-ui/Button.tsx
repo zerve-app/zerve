@@ -14,23 +14,35 @@ export function IconButton({
   onPress,
   altTitle,
   color,
+  size = "md",
 }: {
   icon: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
   altTitle: string;
   onPress: () => void;
   color?: string;
+  size?: "sm" | "md";
 }) {
   const colors = useColors();
-  const finalColor = color || colors.lightText;
+  const finalColor = color || colors.secondaryText;
+  const iconSize = size === "sm" ? 12 : 24;
+  const padding = size === "sm" ? 8 : 12;
   return (
     <Pressable
       onPress={onPress}
       onPressIn={() => {}}
       accessibilityLabel={altTitle}
     >
-      <View style={{ padding: 12 }}>
+      <View
+        style={{
+          padding,
+          width: iconSize + padding * 2,
+          height: iconSize + padding * 2,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         {typeof icon === "function"
-          ? icon({ color: finalColor, size: 24 })
+          ? icon({ color: finalColor, size: iconSize })
           : icon}
       </View>
     </Pressable>

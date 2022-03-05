@@ -1,30 +1,10 @@
 import { useRouter } from "next/router";
 import { ScrollView, Text, View } from "react-native";
-import { Button } from "@zerve/ui";
+import { Button, DisclosureSection, Label } from "@zerve/ui";
 
 import { useAppDispatch } from "../stores/Dispatch";
-import { useDocListQuery } from "@zerve/query";
+import { useDocList } from "@zerve/query";
 import { ReactNode } from "react";
-
-function SmallSectionTitle({ children }: { children: ReactNode }) {
-  return <Text style={{ fontWeight: "bold", color: "#444" }}>{children}</Text>;
-}
-
-function DisclosureSection({
-  children,
-  header,
-}: {
-  children: ReactNode;
-  header: ReactNode;
-}) {
-  // add disclosure arrow here and state for isOpen
-  return (
-    <View>
-      {header}
-      {children}
-    </View>
-  );
-}
 
 function SmallSection({
   children,
@@ -34,14 +14,14 @@ function SmallSection({
   title: string;
 }) {
   return (
-    <DisclosureSection header={<SmallSectionTitle>{title}</SmallSectionTitle>}>
+    <DisclosureSection header={<Label>{title}</Label>}>
       {children}
     </DisclosureSection>
   );
 }
 
 function DocListSection() {
-  const { data, isLoading } = useDocListQuery();
+  const { data, isLoading } = useDocList();
   const { query } = useRouter();
 
   return isLoading ? null : (

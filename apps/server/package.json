@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./build/index.js",
     "start:watch": "nodemon ./build/index.js",
-    "build": "esbuild ./index.js --bundle --platform=node --outfile=build/index.js",
+    "build": "esbuild ./index.ts --bundle --platform=node --outfile=build/index.js",
     "build:watch": "yarn build --watch",
     "dev": "concurrently \"yarn start:watch\" \"yarn build:watch\"",
     "typecheck": "tsc",
@@ -15,6 +15,7 @@
     "lint:fix": "yarn lint:fix"
   },
   "dependencies": {
+    "@zerve/modules": "*",
     "@zerve/core": "*",
     "@zerve/node": "*",
     "ajv": "^8.10.0",
@@ -24,7 +25,6 @@
     "fs-extra": "^10.0.0",
     "json-schema-to-ts": "^1.6.4",
     "next-compose-plugins": "^2.2.1",
-    "obs-websocket-js": "^4.0.3",
     "react-native-web": "^0.17.6",
     "socket.io": "^4.4.1"
   },

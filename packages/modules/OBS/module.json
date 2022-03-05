@@ -1,0 +1,6 @@
+{
+  "actions": "./OBS.actions",
+  "npmDependencies": {
+    "obs-websocket-js": "^4.0.3"
+  }
+}

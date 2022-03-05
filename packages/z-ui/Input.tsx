@@ -25,7 +25,7 @@ export function Input({
     <View style={{}}>
       <Label style={[marginHInset, marginVInset]}>{label}</Label>
       <TextInput
-        placeholderTextColor={colors.lightText}
+        placeholderTextColor={colors.secondaryText}
         autoFocus={autoFocus}
         style={{
           ...RowStyles,

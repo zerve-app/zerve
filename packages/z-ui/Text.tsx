@@ -20,15 +20,28 @@ export function PageTitle({ title }: { title: string }) {
   );
 }
 
+export function SmallSectionTitle({ children }: { children: ReactNode }) {
+  return (
+    <ThemedText style={{ fontWeight: "bold", fontSize: 14 }}>
+      {children}
+    </ThemedText>
+  );
+}
+
 export function Label({
   children,
   style,
+  secondary,
 }: {
   children: ReactNode;
+  secondary?: boolean;
   style?: StyleProp<Text>;
 }) {
   return (
-    <ThemedText style={[{ fontWeight: "bold", fontSize: 16 }, style]}>
+    <ThemedText
+      secondary={secondary}
+      style={[{ fontWeight: "bold", fontSize: 16 }, style]}
+    >
       {children}
     </ThemedText>
   );
@@ -52,7 +65,7 @@ export function Separator({}: {}) {
     >
       <View
         style={{
-          backgroundColor: colors.lightText,
+          backgroundColor: colors.secondaryText,
           height: StyleSheet.hairlineWidth,
         }}
       />

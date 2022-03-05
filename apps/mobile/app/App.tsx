@@ -11,6 +11,7 @@ import { navigationLinking } from "./Links";
 import RootNavigator from "./RootNavigator";
 import { useColorScheme } from "@zerve/ui";
 import { BottomSheetProvider } from "./BottomSheet";
+import { QueryProvider } from "@zerve/query";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -20,15 +21,17 @@ export default function App() {
     return null;
   }
   return (
-    <SafeAreaProvider>
-      <BottomSheetProvider>
-        <NavigationContainer
-          linking={navigationLinking}
-          theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <RootNavigator />
-        </NavigationContainer>
-      </BottomSheetProvider>
-    </SafeAreaProvider>
+    <QueryProvider>
+      <SafeAreaProvider>
+        <BottomSheetProvider>
+          <NavigationContainer
+            linking={navigationLinking}
+            theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <RootNavigator />
+          </NavigationContainer>
+        </BottomSheetProvider>
+      </SafeAreaProvider>
+    </QueryProvider>
   );
 }

@@ -9,7 +9,9 @@ import React, {
   useState,
 } from "react";
 import { View } from "react-native";
-import BottomSheet from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  useBottomSheetDynamicSnapPoints,
+} from "@gorhom/bottom-sheet";
 import { defineKeySource } from "@zerve/core";
 import { Pressable } from "react-native";
 import Animated, {
@@ -18,13 +20,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useColors } from "@zerve/ui";
-import { AbsoluteFill } from "@zerve/ui/Style";
+import { AbsoluteFill, smallShadow } from "@zerve/ui/Style";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type BottomSheetContext = {
-  open: (
-    node: (opts: { onClose: () => void }) => ReactNode,
-    snapPoints: string[] | undefined
-  ) => void;
+  open: (node: (opts: { onClose: () => void }) => ReactNode) => void;
   close: () => void;
 };
 
@@ -32,7 +32,6 @@ export const BottomSheetCtx = createContext<null | BottomSheetContext>(null);
 
 type SheetConfig = {
   key: string;
-  snapPoints: string[] | undefined;
   children: ReactNode;
 };
 
@@ -45,7 +44,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
   const layerVisibility = useSharedValue(0);
   const layerStyles = useAnimatedStyle(() => ({
     ...AbsoluteFill,
-    opacity: layerVisibility.value * 0.3,
+    opacity: layerVisibility.value * 0.5,
     backgroundColor: colors.background,
   }));
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -59,12 +58,8 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
   }, []);
   const context = useMemo(
     () => ({
-      open: (
-        renderNode: (opts: { onClose: () => void }) => ReactNode,
-        snapPoints: string[] | undefined
-      ) => {
+      open: (renderNode: (opts: { onClose: () => void }) => ReactNode) => {
         setSheetConfig({
-          snapPoints,
           children: renderNode({ onClose: close }),
           key: getBottomSheetKey(),
         });
@@ -73,6 +68,13 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
     }),
     [setSheetConfig, close]
   );
+  const {
+    animatedHandleHeight,
+    animatedSnapPoints,
+    animatedContentHeight,
+    handleContentLayout,
+  } = useBottomSheetDynamicSnapPoints(useMemo(() => ["CONTENT_HEIGHT"], []));
+
   useEffect(() => {
     if (sheetConfig) {
       layerVisibility.value = withTiming(1, { duration: 25 });
@@ -90,14 +92,21 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
         <Animated.View style={layerStyles} pointerEvents="none" />
         {sheetConfig && (
           <BottomSheet
+            style={smallShadow}
             key={sheetConfig.key}
             enablePanDownToClose
             ref={bottomSheetRef}
+            snapPoints={animatedSnapPoints}
+            handleHeight={animatedHandleHeight}
+            contentHeight={animatedContentHeight}
             index={0}
-            snapPoints={sheetConfig.snapPoints || ["100%"]}
             onChange={handleSheetChanges}
           >
-            {sheetConfig.children}
+            <View onLayout={handleContentLayout}>
+              <SafeAreaView edges={["right", "bottom", "left"]}>
+                {sheetConfig.children}
+              </SafeAreaView>
+            </View>
           </BottomSheet>
         )}
       </View>
@@ -106,8 +115,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
 }
 
 export function useBottomSheet(
-  renderNode: (opts: { onClose: () => void }) => ReactNode,
-  snapPoints: undefined | string[]
+  renderNode: (opts: { onClose: () => void }) => ReactNode
 ) {
   const context = useContext(BottomSheetCtx);
   if (!context)
@@ -116,6 +124,6 @@ export function useBottomSheet(
     );
 
   return () => {
-    context.open(renderNode, snapPoints);
+    context.open(renderNode);
   };
 }

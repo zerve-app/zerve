@@ -7,6 +7,7 @@ import { useDocEval } from "../app/Doc";
 import { deleteDoc } from "@zerve/native";
 import { View, Text, StyleSheet } from "react-native";
 import { useBottomSheet } from "../app/BottomSheet";
+import { useBottomSheetDynamicSnapPoints } from "@gorhom/bottom-sheet";
 
 function DocOptionsMenu({
   name,
@@ -18,7 +19,7 @@ function DocOptionsMenu({
   navigation: HomeStackScreenProps<"Doc">["navigation"];
 }) {
   return (
-    <VStack style={{ backgroundColor: "blue" }}>
+    <VStack style={{}}>
       <Button title="New Folder" onPress={() => {}} />
       <Button
         title="Delete Project"
@@ -40,12 +41,9 @@ export default function DocScreen({
 }: HomeStackScreenProps<"Doc">) {
   const { connection, name } = route.params;
   const doc = useDocEval(connection, name);
-  const onOptions = useBottomSheet(
-    ({ onClose }) => (
-      <DocOptionsMenu name={name} navigation={navigation} onClose={onClose} />
-    ),
-    ["40%"]
-  );
+  const onOptions = useBottomSheet(({ onClose }) => (
+    <DocOptionsMenu name={name} navigation={navigation} onClose={onClose} />
+  ));
   return (
     <AppPage>
       <PageTitle title={name} />

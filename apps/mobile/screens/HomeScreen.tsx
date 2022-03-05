@@ -1,9 +1,12 @@
 import React from "react";
 import {
   Button,
+  DisclosureSection,
   HStack,
   IconButton,
+  Label,
   PageSection,
+  Paragraph,
   useColors,
   VStack,
 } from "@zerve/ui";
@@ -19,6 +22,13 @@ import { Connection, useConnections } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
+import {
+  QueryConnectionProvider,
+  useDocList,
+  useModuleList,
+} from "@zerve/query";
+import { Icon } from "@zerve/ui/Icon";
+import { useBottomSheet } from "../app/BottomSheet";
 
 function SettingsButton({ onPress }: { onPress: () => void }) {
   const colors = useColors();
@@ -75,6 +85,57 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "Home">
 >;
 
+function ConnectionDocListSection() {
+  const { data, refetch, isLoading } = useDocList();
+  const list = data?.docs?.children;
+  const onOptions = useBottomSheet(({ onClose }) => (
+    <VStack>
+      <Button
+        title="Reload"
+        onPress={() => {
+          refetch();
+          onClose();
+        }}
+      />
+    </VStack>
+  ));
+  return (
+    <DisclosureSection
+      isLoading={isLoading}
+      header={<Label secondary>Docs</Label>}
+      right={
+        <IconButton
+          altTitle="Options"
+          onPress={onOptions}
+          icon={(p) => <Icon name="ellipsis-h" {...p} />}
+        />
+      }
+    >
+      <VStack>
+        {data?.docs?.children?.map((m) => (
+          <Button key={m} title={m} onPress={() => {}} />
+        ))}
+        {!list?.length && <Paragraph>No Docs loaded..</Paragraph>}
+      </VStack>
+    </DisclosureSection>
+  );
+}
+
+function ConnectionModulesListSection() {
+  const { data } = useModuleList();
+  const list = data?.modules;
+  return (
+    <DisclosureSection header={<Label secondary>Modules</Label>}>
+      <VStack>
+        {list?.map((m) => (
+          <Button key={m} title={m} onPress={() => {}} />
+        ))}
+        {!list?.length && <Paragraph>No Modules loaded..</Paragraph>}
+      </VStack>
+    </DisclosureSection>
+  );
+}
+
 function ConnectionSection({
   connection,
   navigation,
@@ -90,7 +151,7 @@ function ConnectionSection({
         <IconButton
           altTitle="Connection Info"
           icon={(props) => (
-            <FontAwesome name="info-circle" {...props} color={colors.tint} />
+            <Icon name="info-circle" {...props} color={colors.tint} />
           )}
           onPress={() =>
             navigation.navigate("SettingsStack", {
@@ -101,7 +162,10 @@ function ConnectionSection({
         />
       }
     >
-      <VStack>{null}</VStack>
+      <VStack>
+        <ConnectionDocListSection />
+        <ConnectionModulesListSection />
+      </VStack>
     </PageSection>
   );
 }
@@ -118,11 +182,9 @@ export default function HomeScreen({
       <LocalDocsSection />
 
       {connections.map((connection) => (
-        <ConnectionSection
-          navigation={navigation}
-          connection={connection}
-          key={connection.key}
-        />
+        <QueryConnectionProvider key={connection.key} value={connection}>
+          <ConnectionSection navigation={navigation} connection={connection} />
+        </QueryConnectionProvider>
       ))}
 
       <HStack>

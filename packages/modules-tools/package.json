@@ -1,0 +1,14 @@
+{
+  "name": "@zerve/modules-tools",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "esbuild ./prepareModules.ts --bundle --platform=node --outfile=build/prepareModules.js",
+    "run:prepareModules": "node ./build/prepareModules.js",
+    "prepareModules": "yarn build && yarn run:prepareModules"
+  },
+  "dependencies": {
+    "esbuild": "^0.14.13",
+    "fs-extra": "^10.0.1"
+  }
+}

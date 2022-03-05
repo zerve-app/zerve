@@ -1,7 +1,7 @@
 type Color = string;
 type ColorTheme = {
   text: Color;
-  lightText: Color;
+  secondaryText: Color;
   dangerText: Color;
   background: Color;
   backgroundDim: Color;
@@ -12,7 +12,7 @@ type ColorTheme = {
 export default {
   light: {
     text: "#000",
-    lightText: "#202020",
+    secondaryText: "#202020",
     dangerText: "#812313",
     background: "#fff",
     backgroundDim: "#fdfafd",
@@ -21,7 +21,7 @@ export default {
   } as ColorTheme,
   dark: {
     text: "#fff",
-    lightText: "#dfdfdf",
+    secondaryText: "#dfdfdf",
     dangerText: "#F95A3E",
     background: "#19141c",
     backgroundDim: "#000",

@@ -1,20 +1,25 @@
-import { serverGet, serverPost } from "./Connection";
+import { serverGet, serverPost, QueryContext } from "./Connection";
 
 export async function serverAction<Action, Response>(
+  context: QueryContext,
   action: Action
 ): Promise<Response> {
-  return await serverPost(".z/action", action);
+  return await serverPost(context, ".z/.action", action);
 }
 
-export async function listDocs() {
-  return await serverGet(`.z`);
+export async function listDocs(context: QueryContext) {
+  return await serverGet(context, `.z`);
 }
 
-export async function getDoc(name: string) {
-  return await serverGet(`.z/${name}`);
+export async function getDoc(context: QueryContext, name: string) {
+  return await serverGet(context, `.z/${name}`);
 }
 
-export async function getActions(category?: string) {
-  if (category) return await serverGet(`.z/action/${category}`);
-  return await serverGet(`.z/action`);
+export async function getActions(context: QueryContext, category?: string) {
+  if (category) return await serverGet(context, `.z/.action/${category}`);
+  return await serverGet(context, `.z/.action`);
+}
+
+export async function getModuleList(context: QueryContext) {
+  return await serverGet(context, `.z/.module`);
 }

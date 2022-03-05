@@ -15,7 +15,7 @@ import { createJSONBlock } from "@zerve/crypto";
 import { readJSONFile, writeJSONFile } from "@zerve/node";
 
 import { Actions } from "./ChainActions";
-import { ServerContext } from "./ServerContext";
+import { ServerContext } from "@zerve/node/ServerContext";
 
 export type DataBase = ReturnType<typeof createDataBase>;
 

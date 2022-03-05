@@ -16,7 +16,7 @@ export function VStack({
   style,
 }: {
   children: ReactNode;
-  style: ViewStyle;
+  style?: ViewStyle;
 }) {
   return (
     <View
