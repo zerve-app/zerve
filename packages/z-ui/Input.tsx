@@ -1,5 +1,5 @@
 import { TextInput, View } from "react-native";
-import { useColors } from "./useColorScheme";
+import { useColors } from "./useColors";
 import { Label } from "./Text";
 import { marginHInset, marginVInset, RowStyles } from "./Row";
 

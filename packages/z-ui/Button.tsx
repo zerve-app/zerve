@@ -5,8 +5,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import Layout from "./Layout";
-import { ReactNode, useRef } from "react";
-import { useColors } from "./useColorScheme";
+import React, { ReactNode, useRef } from "react";
+import { useColors } from "./useColors";
 import { smallShadow } from "./Style";
 
 export function IconButton({

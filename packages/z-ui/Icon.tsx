@@ -1,6 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { ComponentProps } from "react";
-import { useColors } from "./useColorScheme";
+import React, { ComponentProps } from "react";
+import { useColors } from "./useColors";
 
 export function Icon({
   name,

@@ -4,7 +4,7 @@ import Layout from "./Layout";
 import { smallShadow } from "./Style";
 import { Label } from "./Text";
 import { ThemedText } from "./Themed";
-import { useColors } from "./useColorScheme";
+import { useColors } from "./useColors";
 
 export const RowStyles = {
   ...smallShadow,

@@ -1,5 +1,6 @@
 const { readdirSync, readFileSync } = require("fs");
-
+const { join, resolve } = require("path");
+const { withPlugins } = require("next-compose-plugins");
 const packageDirNames = readdirSync("../../packages");
 const packageJsons = packageDirNames.map((pkgName) =>
   JSON.parse(
@@ -11,11 +12,19 @@ const packageJsons = packageDirNames.map((pkgName) =>
 
 const localPackageNames = packageJsons.map((p) => p.name);
 
-const withTM = require("next-transpile-modules")(localPackageNames);
+const withTM = require("next-transpile-modules")([
+  ...localPackageNames,
+  "react-native-web",
+  "react-native-reanimated",
+  "react-native-gesture-handler",
+  "expo-modules-core",
+  "expo-font",
+  "@expo/vector-icons",
+]);
 
-module.exports = withTM({
+module.exports = withPlugins([withTM], {
   reactStrictMode: true,
-  webpack: (config) => {
+  webpack: (config, options) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
       // Transform all direct `react-native` imports to `react-native-web`
@@ -27,6 +36,22 @@ module.exports = withTM({
       ".web.tsx",
       ...config.resolve.extensions,
     ];
+    // config.module.rules.push({
+    //   test: /\.js$/,
+    //   exclude:
+    //     /node_modules\/(?!(react-native-elements|react-native-vector-icons|\@expo\/vector-icons)\/).*/,
+    //   loader: options.defaultLoaders.babel,
+    // });
+    config.module.rules.push({
+      test: /\.ttf$/,
+      loader: "url-loader",
+      // include: /node_modules\/react-native-vector-icons\/*/,
+      // include: resolve(
+      //   __dirname,
+      //   "../../node_modules/react-native-vector-icons"
+      // ),
+    });
+
     return config;
   },
 });

@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
-import { useColors } from "./useColorScheme";
+import { useColors } from "./useColors";
 import { ThemedText } from "./Themed";
 import { bigShadow } from "./Style";
 

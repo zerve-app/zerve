@@ -7,6 +7,7 @@
     "prebuild": "expo prebuild && install-expo-modules --non-interactive",
     "build:internal": "eas build --platform=ios --profile=internal",
     "android": "expo run:android",
+    "clear:xcode": "rm -rf ~/Library/Developer/Xcode/DerivedData",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eject": "expo eject",

@@ -1,3 +1,4 @@
+import { PageTitle, Title, useColors } from "@zerve/ui";
 import { useCallback } from "react";
 import { useState } from "react";
 import { ReactNode } from "react";
@@ -21,13 +22,14 @@ export function PageWithPalette({
     "palette",
     useCallback(() => setPaletteOpen(true), [setPaletteOpen])
   );
+  const colors = useColors();
   return (
-    <View style={{ backgroundColor: "#f0f0f0", flex: 1 }}>
+    <View style={{ backgroundColor: colors.backgroundDim, flex: 1 }}>
       <View
         style={{
           height: 50,
-          backgroundColor: "white",
-          shadowColor: "#000",
+          backgroundColor: colors.background,
+          shadowColor: colors.text,
           shadowOffset: {
             width: 0,
             height: 1,
@@ -39,7 +41,7 @@ export function PageWithPalette({
           paddingVertical: 7,
         }}
       >
-        <Text style={{ fontSize: 28 }}>Test Title</Text>
+        <Title title={"Zerve Shell"} />
       </View>
 
       <View style={{ flex: 1, flexDirection: "row" }}>

@@ -1,5 +1,6 @@
 import { ActivityIndicator } from "react-native";
-import { useColors } from "./useColorScheme";
+import React from "react";
+import { useColors } from "./useColors";
 
 export function Spinner() {
   const colors = useColors();

@@ -1,21 +1,35 @@
-import { ReactNode } from "react";
-import { StyleProp, StyleSheet, View } from "react-native";
-import { useColors } from "./useColorScheme";
+import React, { ReactNode } from "react";
+import { StyleProp, StyleSheet, TextStyle, View } from "react-native";
+import { useColors } from "./useColors";
 import { ThemedText } from "./Themed";
+
+export function Title({ title, style }: { title: string; style?: TextStyle }) {
+  return (
+    <ThemedText
+      style={[
+        {
+          fontWeight: "bold",
+          fontSize: 36,
+        },
+        style,
+      ]}
+    >
+      {title}
+    </ThemedText>
+  );
+}
 
 export function PageTitle({ title }: { title: string }) {
   return (
     <View>
-      <ThemedText
+      <Title
         style={{
           fontSize: 42,
           margin: 12,
-          fontWeight: "bold",
           marginBottom: 24,
         }}
-      >
-        {title}
-      </ThemedText>
+        title={title}
+      />
     </View>
   );
 }

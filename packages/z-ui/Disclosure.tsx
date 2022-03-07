@@ -1,9 +1,6 @@
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { View } from "react-native";
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { Spinner } from "./Spinner";
 import { IconButton } from "./Button";
 import { Icon } from "./Icon";
@@ -32,19 +29,6 @@ export function DisclosureSection({
           alignSelf: "stretch",
         }}
       >
-        <IconButton
-          onPress={toggleDisclosure}
-          size={"sm"}
-          altTitle={isOpen ? "Hide Section" : "Open Section"}
-          icon={(props) =>
-            isOpen ? (
-              <Icon {...props} name="chevron-down" />
-            ) : (
-              <Icon {...props} name="chevron-right" />
-            )
-          }
-        />
-
         <TouchableOpacity
           onPress={toggleDisclosure}
           containerStyle={{ flex: 1 }}
@@ -53,7 +37,15 @@ export function DisclosureSection({
           {header}
         </TouchableOpacity>
         {isLoading && <Spinner />}
-        {right}
+        {!isOpen && (
+          <IconButton
+            onPress={toggleDisclosure}
+            size={"sm"}
+            altTitle={isOpen ? "Hide Section" : "Open Section"}
+            icon={(props) => <Icon {...props} name="chevron-down" />}
+          />
+        )}
+        {isOpen && right}
       </View>
 
       {isOpen && <View style={{ paddingLeft: 12 }}>{children}</View>}

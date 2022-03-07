@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { ScrollView, Text, View } from "react-native";
-import { Button, DisclosureSection, Label } from "@zerve/ui";
+import { Button, DisclosureSection, Label, useColors, VStack } from "@zerve/ui";
 
 import { useAppDispatch } from "../stores/Dispatch";
 import { useDocList } from "@zerve/query";
@@ -49,14 +49,14 @@ function ActionsSection() {
 
 export default function Navigator() {
   const dispatch = useAppDispatch();
-
+  const colors = useColors();
   return (
     <View
       style={{
         borderRadius: 8,
         margin: 16,
         flex: 1,
-        backgroundColor: "#ecf8ff",
+        backgroundColor: colors.background,
         padding: 20,
         shadowColor: "#000",
         shadowOffset: {
@@ -74,14 +74,14 @@ export default function Navigator() {
         <SmallSection title="Server Info">{null}</SmallSection>
       </ScrollView>
 
-      <View style={{ backgroundColor: "#ccc", height: 50 }}>
+      <VStack>
         <Button
           onPress={() => {
             dispatch({});
           }}
           title="Create Doc"
         />
-      </View>
+      </VStack>
     </View>
   );
 }

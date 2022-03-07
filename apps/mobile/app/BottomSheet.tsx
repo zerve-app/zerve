@@ -20,7 +20,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useColors } from "@zerve/ui";
-import { AbsoluteFill, smallShadow } from "@zerve/ui/Style";
+import { AbsoluteFill, bigShadow, smallShadow } from "@zerve/ui/Style";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type BottomSheetContext = {
@@ -92,7 +92,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
         <Animated.View style={layerStyles} pointerEvents="none" />
         {sheetConfig && (
           <BottomSheet
-            style={smallShadow}
+            style={bigShadow}
             key={sheetConfig.key}
             enablePanDownToClose
             ref={bottomSheetRef}

@@ -2,6 +2,16 @@ import Head from "next/head";
 import * as React from "react";
 import { QueryProvider } from "@zerve/query";
 
+if (!global.requestAnimationFrame) {
+  global.requestAnimationFrame = (cb) => {
+    setTimeout(cb, 1);
+  };
+}
+
+if (global.__DEV__ == undefined) {
+  global.__DEV__ = true;
+}
+
 function MyApp({ Component, pageProps }) {
   return (
     <>
