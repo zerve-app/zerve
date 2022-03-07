@@ -1,21 +1,17 @@
-// chaos activity log, move to a better place
+// Hades Dev Setup / Log
 
-// $10/mo DO server w/
+// $10/mo DO server w/ Debian 11
 
 apt update
 apt upgrade -y
 apt install -y mosh
-
-// can now mosh chaos
-
-apt update
-apt upgrade -y
 apt install -y git
 
 ssh-keygen -f /root/.ssh/id_rsa -N ''
 
 # Now go use /root/.ssh/id_rsa.pub in the repo deployment key
 
+git config pull.rebase true
 git clone git@github.com:zerve-app/zerve.git zerve
 
 # from https://github.com/nodesource/distributions/blob/master/README.md
@@ -40,3 +36,55 @@ apt install -y caddy
 # use "GECOS" to make this command noninteractive. it is a list of "Full name,Room number,Work phone,Home phone" but we just provide the name
 
 adduser --disabled-password --gecos "Zerve User" zerve
+
+cd zerve
+
+yarn --offline
+
+adduser eric
+usermod -a -G sudo eric
+
+su eric
+cd ~
+mkdir .ssh
+vi .ssh/authorized_keys
+
+# add ssh keys, yo
+
+git config --global pull.rebase true
+git config --global user.name "Eric Vicenti"
+git config --global user.email "eric@vicenti.net"
+
+ssh-keygen -f ~/.ssh/id_rsa -N ''
+
+cat ~/.ssh/id_rsa.pub
+
+# add key to GitHub
+
+# set up code server
+
+# https://coder.com/docs/code-server/latest/install#debian-ubuntu
+
+# VERSION=4.1.0
+
+curl -fOL https://github.com/coder/code-server/releases/download/v4.1.0/code-server_4.1.0_amd64.deb
+sudo dpkg -i code-server_4.1.0_amd64.deb
+sudo systemctl enable --now code-server@$USER
+
+# Now visit http://127.0.0.1:8080. Your password is in ~/.config/code-server/config.yaml
+
+vi ~/.config/code-server/config.yaml
+
+bind-addr: 127.0.0.1:9988
+auth: password
+password: SET_PW_HERE
+cert: false
+
+Caddyfile
+sudo vi /etc/caddy/Caddyfile
+
+hades.main.zerve.dev {
+reverse_proxy 127.0.0.1:9988
+}
+
+caddy reload -config /etc/caddy/Caddyfile
