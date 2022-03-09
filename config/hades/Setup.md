@@ -88,3 +88,11 @@ reverse_proxy 127.0.0.1:9988
 }
 
 caddy reload -config /etc/caddy/Caddyfile
+
+yarn global add eas-cli expo-cli
+
+as root: apt install -y zsh pu
+
+as eric:
+
+chsh -s $(which zsh)
