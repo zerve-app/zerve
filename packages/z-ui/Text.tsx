@@ -49,7 +49,7 @@ export function Label({
 }: {
   children: ReactNode;
   secondary?: boolean;
-  style?: StyleProp<Text>;
+  style?: StyleProp<TextStyle>;
 }) {
   return (
     <ThemedText

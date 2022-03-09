@@ -5,4 +5,6 @@ export * from "./Errors";
 export * from "./Blocks";
 export * from "./Data";
 export * from "./Keys";
-export * from "./Module";
+export * from "./Zot";
+
+export type { FromSchema, JSONSchema } from "json-schema-to-ts";

@@ -9,11 +9,11 @@ export default function Web() {
         <title>Zerve App</title>
       </Head>
       <Text>Zerve</Text>
-
+      {/* @ts-ignore */}
       <Text style={{}} accessibilityRole="link" href={`/display`}>
         Display
       </Text>
-
+      {/* @ts-ignore */}
       <Text style={{}} accessibilityRole="link" href={`/control`}>
         Control Panel
       </Text>

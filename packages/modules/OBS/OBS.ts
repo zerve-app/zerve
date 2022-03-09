@@ -1,3 +1,4 @@
+import { defineStaticContainerZot } from "@zerve/core";
 import ObsWebSocket from "obs-websocket-js";
 
 let connectedObs: null | ObsWebSocket = null;
@@ -24,3 +25,7 @@ export async function switchScene() {
   obs.send("SetCurrentScene", { "scene-name": "Camera" });
   // console.log("lol scenes", scenes);
 }
+
+const OBS = defineStaticContainerZot(() => ({}));
+
+export default OBS;

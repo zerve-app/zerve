@@ -1,4 +1,5 @@
 {
+  "module": "./SystemFiles",
   "npmDependencies": {
     "fs-extra": "*"
   }

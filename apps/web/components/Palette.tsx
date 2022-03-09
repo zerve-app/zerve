@@ -180,6 +180,7 @@ export default function Palette({ onClose }: { onClose: () => void }) {
               flex: 1,
               alignSelf: "stretch",
               backgroundColor: "#000",
+              // @ts-ignore
               outlineColor: "#cde",
               color: "#eee",
               fontSize: 42,

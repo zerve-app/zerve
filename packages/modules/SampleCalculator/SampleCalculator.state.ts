@@ -1,7 +1,7 @@
-import { defineModuleState } from "@zerve/core";
+// import { defineModuleState } from "@zerve/core";
 
-const state = defineModuleState({
-  type: "number",
-});
+// const state = defineModuleState({
+//   type: "number",
+// });
 
-export default state;
+// export default state;

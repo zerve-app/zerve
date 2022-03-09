@@ -1,4 +1,3 @@
 {
-  "actions": "./SampleCalculator.actions",
-  "state": "./SampleCalculator.state"
+  "module": "./SampleCalculator"
 }
