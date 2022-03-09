@@ -1,15 +1,13 @@
 {
-  "name": "script-server-setup",
+  "name": "script-fleet",
   "private": true,
   "version": "0.0.0",
-  "types": "index.ts",
-  "main": "index.ts",
   "scripts": {
-    "start": "node ./build/ScriptServerSetup.js",
-    "build": "esbuild ./ScriptServerSetup.ts --bundle --platform=node --outfile=build/ScriptServerSetup.js",
-    "go": "yarn build && node ./build/ScriptServerSetup.js"
+    "apply": "esbuild ./ApplyFleet.ts --bundle --platform=node --outfile=build/ApplyFleet.js && node ./build/ApplyFleet.js"
   },
   "dependencies": {
+    "@zerve/core": "*",
+    "@zerve/modules": "*",
     "@apexearth/egrep": "^1.0.9",
     "axios": "^0.26.0",
     "fs-extra": "^10.0.0"

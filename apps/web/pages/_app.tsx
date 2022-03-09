@@ -3,12 +3,15 @@ import * as React from "react";
 import { QueryProvider } from "@zerve/query";
 
 if (!global.requestAnimationFrame) {
+  // @ts-ignore
   global.requestAnimationFrame = (cb) => {
     setTimeout(cb, 1);
   };
 }
 
+// @ts-ignore
 if (global.__DEV__ == undefined) {
+  // @ts-ignore
   global.__DEV__ = true;
 }
 

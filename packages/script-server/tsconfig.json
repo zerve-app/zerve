@@ -1,0 +1,10 @@
+{
+  "extends": "tsconfig/base.json",
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../../packages/z-node/ServerContext.ts"
+  ],
+  "exclude": ["node_modules", "build"]
+}

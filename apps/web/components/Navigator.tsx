@@ -30,6 +30,7 @@ function DocListSection() {
         <View style={{}} key={childDocName}>
           <Text
             accessibilityRole="link"
+            // @ts-ignore
             href={`/shell/doc/${childDocName}`}
             style={{
               color: query.docId === childDocName ? "#000" : "blue",

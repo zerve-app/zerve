@@ -14,6 +14,7 @@ const normalizeNextElements = `
 class MyDocument extends Document {
   static async getInitialProps({ renderPage }) {
     AppRegistry.registerComponent("main", () => Main);
+    // @ts-ignore
     const { getStyleElement } = AppRegistry.getApplication("main");
     const page = await renderPage();
     const styles = [
