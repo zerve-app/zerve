@@ -31,9 +31,9 @@ const ApplySystemConfig = defineActionZot(CaddySpecSchema, async (spec) => {
   console.log("LOL", spec);
 });
 
-const SystemCaddy = defineStaticContainerZot((args: void) => ({
+const SystemCaddy = defineStaticContainerZot({
   ApplySystemConfig,
-}));
+});
 
 export type SystemCaddyModule = ReturnType<typeof SystemCaddy>;
 

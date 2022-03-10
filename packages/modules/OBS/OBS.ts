@@ -26,6 +26,6 @@ export async function switchScene() {
   // console.log("lol scenes", scenes);
 }
 
-const OBS = defineStaticContainerZot(() => ({}));
+const OBS = defineStaticContainerZot({});
 
 export default OBS;

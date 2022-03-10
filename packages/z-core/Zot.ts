@@ -5,30 +5,30 @@ export type ModuleSpec = {
   npmDependencies?: Record<string, string>;
 };
 
-type ActionZot<ActionSchema extends JSONSchema, ActionResponse> = {
+export type ActionZot<ActionSchema extends JSONSchema, ActionResponse> = {
   zType: "Action";
   payloadSchema: ActionSchema;
   call: (payload: FromSchema<ActionSchema>) => Promise<ActionResponse>;
 };
 
-type StaticContainerZot<Zots extends Record<string, AnyZot>> = {
+export type StaticContainerZot<Zots extends Record<string, AnyZot>> = {
   zType: "StaticContainer";
   zots: Zots;
   get: <S extends keyof Zots>(zotKey: S) => Promise<Zots[S]>;
 };
 
-type ContainerZot<ChildZot extends AnyZot> = {
+export type ContainerZot<ChildZot extends AnyZot> = {
   zType: "Container";
-  get: (zotKey: string) => Promise<AnyZot>;
+  get: (zotKey: string) => Promise<ChildZot | undefined>;
 };
 
-type GetZot<StateSchema extends JSONSchema, GetOptions> = {
+export type GetZot<StateSchema extends JSONSchema, GetOptions> = {
   zType: "Get";
   valueSchema: StateSchema;
   get: (options: GetOptions) => Promise<FromSchema<StateSchema>>;
 };
 
-type AnyZot =
+export type AnyZot =
   | ActionZot<any, any>
   | StaticContainerZot<any>
   | ContainerZot<any>
@@ -51,36 +51,25 @@ export function defineGetZot<StateSchema, GetOptions>(
   return { zType: "Get", get, valueSchema };
 }
 
-export function defineStaticContainerZot<
-  ZotOptions,
-  Zots extends Record<string, AnyZot>
->(
-  getStaticZots: (options: ZotOptions) => Zots
-): (options: ZotOptions) => StaticContainerZot<Zots> {
-  return (options: ZotOptions) => {
-    const zots = getStaticZots(options);
-    return {
-      zType: "StaticContainer",
-      zots,
-      get: async (zotKey) => {
-        if (zots[zotKey] === undefined)
-          throw new Error(`Cannot find ${zotKey} in Zots`);
-        return zots[zotKey];
-      },
-    };
+export function defineStaticContainerZot<Zots extends Record<string, AnyZot>>(
+  zots: Zots
+): StaticContainerZot<Zots> {
+  return {
+    zType: "StaticContainer",
+    zots,
+    get: async (zotKey) => {
+      if (zots[zotKey] === undefined)
+        throw new Error(`Cannot find ${zotKey} in Zots`);
+      return zots[zotKey];
+    },
   };
 }
 
-export function defineContainerZot<ZotOptions, ChildZotType extends AnyZot>(
-  childZotGetter: (
-    options: ZotOptions
-  ) => (key: string) => Promise<ChildZotType>
-): (options: ZotOptions) => ContainerZot<ChildZotType> {
-  return (options: ZotOptions) => {
-    const getChildZot = childZotGetter(options);
-    return {
-      zType: "Container",
-      get: getChildZot,
-    };
+export function defineContainerZot<ChildZotType extends AnyZot>(
+  getChildZot: (key: string) => Promise<ChildZotType | undefined>
+): ContainerZot<ChildZotType> {
+  return {
+    zType: "Container",
+    get: getChildZot,
   };
 }
