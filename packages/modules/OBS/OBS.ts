@@ -1,4 +1,4 @@
-import { createZContainer } from "@zerve/core";
+import { createZContainer, createZService } from "@zerve/core";
 import ObsWebSocket from "obs-websocket-js";
 
 let connectedObs: null | ObsWebSocket = null;
@@ -26,6 +26,14 @@ export async function switchScene() {
   // console.log("lol scenes", scenes);
 }
 
-const OBS = createZContainer({});
+const createOBS = createZService(async () => {
+  // const state = createZState()
+  return {
+    stop: async () => {},
+    z: createZContainer({
+      // state,
+    }),
+  };
+});
 
-export default OBS;
+export default createOBS;

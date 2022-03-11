@@ -5,6 +5,7 @@ export * from "./Errors";
 export * from "./Blocks";
 export * from "./Data";
 export * from "./Keys";
-export * from "./Zot";
+export * from "./Zed";
+export * from "./ZedService";
 
 export type { FromSchema, JSONSchema } from "json-schema-to-ts";

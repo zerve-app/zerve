@@ -11,15 +11,15 @@ export type ZAction<ActionSchema extends JSONSchema, ActionResponse> = {
   call: (payload: FromSchema<ActionSchema>) => Promise<ActionResponse>;
 };
 
-export type ZContainer<Zots extends Record<string, AnyZot>> = {
+export type ZContainer<Zeds extends Record<string, AnyZed>> = {
   zType: "Container";
-  zots: Zots;
-  get: <S extends keyof Zots>(zotKey: S) => Promise<Zots[S]>;
+  zeds: Zeds;
+  get: <S extends keyof Zeds>(zedKey: S) => Promise<Zeds[S]>;
 };
 
-export type ZGroup<ChildZot extends AnyZot, ListOptions, ListResponse> = {
+export type ZGroup<ChildZed extends AnyZed, ListOptions, ListResponse> = {
   zType: "Group";
-  getChild: (zotKey: string) => Promise<ChildZot | undefined>;
+  getChild: (zedKey: string) => Promise<ChildZed | undefined>;
   get: (options: ListOptions) => Promise<ListResponse>;
 };
 
@@ -34,7 +34,7 @@ export type ZStatic<Value> = {
   value: Value;
 };
 
-export type AnyZot =
+export type AnyZed =
   | ZAction<any, any>
   | ZContainer<any>
   | ZGroup<any, any, any>
@@ -55,38 +55,38 @@ export function createZGettable<StateSchema, GetOptions>(
   return { zType: "Gettable", get, valueSchema };
 }
 
-export function createZContainer<Zots extends Record<string, AnyZot>>(
-  zots: Zots
-): ZContainer<Zots> {
+export function createZContainer<Zeds extends Record<string, AnyZed>>(
+  zeds: Zeds
+): ZContainer<Zeds> {
   return {
     zType: "Container",
-    zots,
-    get: async (zotKey) => {
-      if (zots[zotKey] === undefined)
-        throw new Error(`Cannot find ${zotKey} in Zots`);
-      return zots[zotKey];
+    zeds,
+    get: async (zedKey) => {
+      if (zeds[zedKey] === undefined)
+        throw new Error(`Cannot find ${zedKey} in Zeds`);
+      return zeds[zedKey];
     },
   };
 }
 
-export function createZGroup<ChildZotType extends AnyZot>(
-  getChild: (key: string) => Promise<ChildZotType | undefined>
-): ZGroup<ChildZotType, undefined, undefined> {
+export function createZGroup<ChildZType extends AnyZed>(
+  getChild: (key: string) => Promise<ChildZType | undefined>
+): ZGroup<ChildZType, undefined, null> {
   return {
     zType: "Group",
     getChild,
-    get: () => null,
+    get: async () => null,
   };
 }
 
 export function createZListableGroup<
-  ChildZotType extends AnyZot,
+  ChildZType extends AnyZed,
   ListOptions,
   ListResponse
 >(
-  getChild: (key: string) => Promise<ChildZotType | undefined>,
+  getChild: (key: string) => Promise<ChildZType | undefined>,
   getList: (options: ListOptions) => Promise<ListResponse>
-): ZGroup<ChildZotType, ListOptions, ListResponse> {
+): ZGroup<ChildZType, ListOptions, ListResponse> {
   return {
     zType: "Group",
     getChild,

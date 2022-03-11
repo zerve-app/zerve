@@ -1,5 +1,5 @@
 import { join } from "path";
-import { startZotServer } from "@zerve/node";
+import { startZedServer } from "@zerve/node";
 
 import {
   createZAction,
@@ -9,7 +9,8 @@ import {
   createZContainer,
   ZGettable,
 } from "@zerve/core";
-import { CoreData } from "@zerve/modules";
+import { CoreData, SystemFiles } from "@zerve/modules";
+import SystemCommands from "@zerve/modules/SystemCommands/SystemCommands";
 
 const portLOL = process.env.PORT ? Number(process.env.PORT) : 3888;
 const dataDir =
@@ -20,6 +21,11 @@ const dataDir =
 
 export async function startApp() {
   const primaryDataZ = await CoreData.createCoreData(dataDir);
+
+  const Files = SystemFiles.createSystemFiles("/");
+
+  const Commands = SystemCommands.createSystemCommands();
+
   // const data = createDataBase(context);
 
   // const testDataZ = createZGettable(
@@ -59,8 +65,12 @@ export async function startApp() {
   // console.log({ foo });
 
   const rootZot = createZContainer({
+    Internal: createZContainer({
+      Files,
+      Commands,
+    }),
     ...primaryDataZ,
-    types: createZContainer({
+    Types: createZContainer({
       Color: createZStatic({
         type: "object",
         properties: {
@@ -72,7 +82,7 @@ export async function startApp() {
     }),
   });
 
-  await startZotServer(portLOL, rootZot);
+  await startZedServer(portLOL, rootZot);
 }
 
 startApp().catch((e) => {

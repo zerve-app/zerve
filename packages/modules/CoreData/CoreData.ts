@@ -20,6 +20,10 @@ import {
 } from "fs-extra";
 import { join } from "path";
 
+export type ChildrenList = {
+  children: string[];
+};
+
 async function prepareDataDirs(dataDir?: string) {
   const homeDir = process.env.HOME;
   const defaultZDataDir = `${homeDir}/.zerve`;
@@ -72,34 +76,44 @@ const DocValueSchema: JSONSchema = {
   },
 } as const;
 
-async function createCoreData(dataDir?: string) {
-  const dataDirs = await prepareDataDirs(dataDir);
+export type CoreDataModule = Awaited<ReturnType<typeof createCoreData>>;
 
-  const docs = createZListableGroup<ZGettable<typeof DocValueSchema, void>>(
+async function createCoreData(dataDir?: string) {
+  const _dataDirs = await prepareDataDirs(dataDir);
+
+  const Docs = createZListableGroup<
+    ZGettable<typeof DocValueSchema, void>,
+    void,
+    ChildrenList
+  >(
     async (name: string) => {
       return createZGettable(DocValueSchema, async () => {
-        const doc = await getDoc(name);
+        const doc = await _getDocValue(name);
         return doc;
       });
     },
     async () => {
-      return await listDocs();
+      return await _listDocs();
     }
   );
 
-  const blocks = createZListableGroup<ZGettable<typeof DocValueSchema, void>>(
+  const Blocks = createZListableGroup<
+    ZGettable<typeof DocValueSchema, void>,
+    void,
+    ChildrenList
+  >(
     async (id: string) => {
       return createZGettable({}, async () => {
-        const blockValue = await getBlockJSON.call({ id });
+        const blockValue = await GetBlockJSON.call({ id });
         return blockValue;
       });
     },
     async () => {
-      return await listBlocks();
+      return await _listBlocks();
     }
   );
 
-  const createBlock = createZAction(
+  const CreateBlock = createZAction(
     {
       type: "object",
       properties: {
@@ -110,7 +124,7 @@ async function createCoreData(dataDir?: string) {
     } as const,
     async (payload) => {
       const block = await createJSONBlock(payload.value);
-      const blockFile = join(dataDirs.blocksDir, block.id);
+      const blockFile = join(_dataDirs.blocksDir, block.id);
       try {
         // attempt to "stat" the file, or query for the low-level fs info, the most low-impact way to see if a file exists (error if it does not exist)
         const blockFilePrev = await stat(blockFile);
@@ -129,7 +143,7 @@ async function createCoreData(dataDir?: string) {
     }
   );
 
-  const getBlockJSON = createZAction(
+  const GetBlockJSON = createZAction(
     {
       type: "object",
       properties: {
@@ -139,7 +153,7 @@ async function createCoreData(dataDir?: string) {
       additionalProperties: false,
     } as const,
     async ({ id }) => {
-      const blockFile = join(dataDirs.blocksDir, id);
+      const blockFile = join(_dataDirs.blocksDir, id);
       try {
         const blockData = await readFile(blockFile, { encoding: "utf8" });
         const blockJSON = JSON.parse(blockData);
@@ -152,7 +166,7 @@ async function createCoreData(dataDir?: string) {
     }
   );
 
-  const setDoc = createZAction(
+  const SetDoc = createZAction(
     {
       type: "object",
       properties: {
@@ -163,13 +177,13 @@ async function createCoreData(dataDir?: string) {
       additionalProperties: false,
     } as const,
     async ({ name, value }) => {
-      const docFile = join(dataDirs.docsDir, name);
+      const docFile = join(_dataDirs.docsDir, name);
       await writeFile(docFile, JSON.stringify(value));
       return {};
     }
   );
 
-  const deleteDoc = createZAction(
+  const DeleteDoc = createZAction(
     {
       type: "object",
       properties: {
@@ -179,13 +193,13 @@ async function createCoreData(dataDir?: string) {
       additionalProperties: false,
     } as const,
     async ({ name }) => {
-      const docFile = join(dataDirs.docsDir, name);
-      const trashedFile = join(dataDirs.trashDir, `doc-${name}`);
+      const docFile = join(_dataDirs.docsDir, name);
+      const trashedFile = join(_dataDirs.trashDir, `doc-${name}`);
       await rename(docFile, trashedFile);
     }
   );
 
-  const deleteBlock = createZAction(
+  const DeleteBlock = createZAction(
     {
       type: "object",
       properties: {
@@ -195,48 +209,50 @@ async function createCoreData(dataDir?: string) {
       additionalProperties: false,
     } as const,
     async ({ id }) => {
-      const blockFile = join(dataDirs.blocksDir, id);
-      const trashedFile = join(dataDirs.trashDir, `block-${id}`);
+      const blockFile = join(_dataDirs.blocksDir, id);
+      const trashedFile = join(_dataDirs.trashDir, `block-${id}`);
       await rename(blockFile, trashedFile);
     }
   );
 
-  async function listBlocks() {
-    const blockList = (await readdir(dataDirs.blocksDir)).filter((fileName) => {
-      if (fileName[0] === ".") return false;
-      return true;
-    });
+  async function _listBlocks() {
+    const blockList = (await readdir(_dataDirs.blocksDir)).filter(
+      (fileName) => {
+        if (fileName[0] === ".") return false;
+        return true;
+      }
+    );
     return { children: blockList };
   }
 
-  async function listDocs() {
-    const docList = await readdir(dataDirs.docsDir);
+  async function _listDocs(): Promise<ChildrenList> {
+    const docList = await readdir(_dataDirs.docsDir);
     return { children: docList };
   }
 
-  async function getDoc(name: string) {
-    const docFile = join(dataDirs.docsDir, name);
+  async function _getDocValue(name: string) {
+    const docFile = join(_dataDirs.docsDir, name);
     try {
       const fileValue = await readFile(docFile);
       const value = JSON.parse(fileValue.toString("utf-8"));
-      return { value, name };
+      return value;
     } catch (e: any) {
       if (e.code === "ENOENT") {
-        return { value: undefined, name };
+        return undefined;
       }
       throw e;
     }
   }
 
   return {
-    docs,
-    blocks,
-    actions: createZContainer({
-      createBlock,
-      deleteDoc,
-      deleteBlock,
-      setDoc,
-      getBlockJSON,
+    Docs,
+    Blocks,
+    Actions: createZContainer({
+      CreateBlock,
+      DeleteDoc,
+      DeleteBlock,
+      SetDoc,
+      GetBlockJSON,
     }),
   } as const;
 }

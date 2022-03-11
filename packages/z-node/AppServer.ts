@@ -1,5 +1,5 @@
 import {
-  AnyZot,
+  AnyZed,
   NotFoundError,
   WrongMethodError,
   JSONSchema,
@@ -14,7 +14,7 @@ import { createJSONHandler } from "./Server";
 import { json } from "body-parser";
 import { ParsedQs } from "qs";
 
-export async function startZotServer(port: number, zot: AnyZot) {
+export async function startZedServer(port: number, zot: AnyZed) {
   const app = express();
 
   app.use((req, res, next) => {
@@ -31,42 +31,42 @@ export async function startZotServer(port: number, zot: AnyZot) {
     }))
   );
 
-  async function handleGetZotRequest<
+  async function handleGetZedRequest<
     StateSchema extends JSONSchema,
     GetOptions
   >(
-    zot: ZGettable<StateSchema, GetOptions>,
+    zed: ZGettable<StateSchema, GetOptions>,
     method: Request["method"],
     query: GetOptions
   ) {
     if (method === "GET") {
-      const value = await zot.get(query);
+      const value = await zed.get(query);
       return value;
     }
     throw new WrongMethodError("WrongMethod", "Method not available", {});
   }
 
-  async function handleActionZotRequest<Schema, Response>(
-    zot: ZAction<Schema, Response>,
+  async function handleActionZedRequest<Schema, Response>(
+    zed: ZAction<Schema, Response>,
     method: Request["method"],
     body: any
   ) {
     if (method === "GET") {
-      return { payload: zot.payloadSchema };
+      return { zType: "Action", payload: zed.payloadSchema };
     } else if (method === "POST") {
-      const result = await zot.call(body);
+      const result = await zed.call(body);
       return result;
     } else {
       throw new WrongMethodError("WrongMethod", "Method not available", {});
     }
   }
 
-  async function handleZContainerRequest<Z extends Record<string, AnyZot>>(
-    zot: ZContainer<Z>,
+  async function handleZContainerRequest<Z extends Record<string, AnyZed>>(
+    zed: ZContainer<Z>,
     method: Request["method"]
   ) {
     if (method === "GET") {
-      return { children: Object.keys(zot.zots) };
+      return { zType: "Container", children: Object.keys(zed.zeds) };
     }
     throw new WrongMethodError(
       "WrongMethod",
@@ -75,14 +75,14 @@ export async function startZotServer(port: number, zot: AnyZot) {
     );
   }
 
-  async function handleZGroupRequest<Z extends AnyZot, O extends ParsedQs, R>(
+  async function handleZGroupRequest<Z extends AnyZed, O extends ParsedQs, R>(
     zot: ZGroup<Z, O, R>,
     method: Request["method"],
     query: O
   ) {
     if (method === "GET") {
       const listValue = await zot.get(query);
-      return listValue;
+      return { zType: "Group", children: listValue };
     }
     throw new WrongMethodError(
       "WrongMethod",
@@ -116,32 +116,32 @@ export async function startZotServer(port: number, zot: AnyZot) {
   }
 
   async function handleZotNodeRequest(
-    zot: AnyZot,
+    zed: AnyZed,
     query: ParsedQs,
     method: Request["method"],
     headers: Request["headers"],
     body: any
   ) {
-    if (zot.zType === "Gettable") {
-      return await handleGetZotRequest(zot, method, query);
+    if (zed.zType === "Gettable") {
+      return await handleGetZedRequest(zed, method, query);
     }
-    if (zot.zType === "Action") {
-      return await handleActionZotRequest(zot, method, body);
+    if (zed.zType === "Action") {
+      return await handleActionZedRequest(zed, method, body);
     }
-    if (zot.zType === "Group") {
-      return await handleZGroupRequest(zot, method, query);
+    if (zed.zType === "Group") {
+      return await handleZGroupRequest(zed, method, query);
     }
-    if (zot.zType === "Container") {
-      return await handleZContainerRequest(zot, method);
+    if (zed.zType === "Container") {
+      return await handleZContainerRequest(zed, method);
     }
-    if (zot.zType === "Static") {
-      return await handleZStaticRequest(zot);
+    if (zed.zType === "Static") {
+      return await handleZStaticRequest(zed);
     }
-    throw new Error("unknown zot");
+    throw new Error("unknown zed");
   }
 
-  async function handleZotRequest(
-    zot: AnyZot,
+  async function handleZedRequest<Z extends AnyZed>(
+    zot: Z,
     path: string[],
     query: ParsedQs,
     method: Request["method"],
@@ -154,12 +154,12 @@ export async function startZotServer(port: number, zot: AnyZot) {
     if (zot.zType === "Container") {
       const [pathTerm, ...restPathTerms] = path;
 
-      const child = zot.zots[pathTerm];
+      const child = zot.zeds[pathTerm];
       if (!child)
         throw new NotFoundError("NotFound", "Not found in container", {
           pathTerm,
         });
-      return await handleZotRequest(
+      return await handleZedRequest(
         child,
         restPathTerms,
         query,
@@ -177,7 +177,7 @@ export async function startZotServer(port: number, zot: AnyZot) {
         throw new NotFoundError("NotFound", "Not found in container", {
           pathTerm,
         });
-      return await handleZotRequest(
+      return await handleZedRequest(
         child,
         restPathTerms,
         query,
@@ -206,7 +206,7 @@ export async function startZotServer(port: number, zot: AnyZot) {
       jsonHandler(req, res, () => {
         handleJSONPromise(
           res,
-          handleZotRequest(
+          handleZedRequest(
             zot,
             pathSegments,
             req.query,
@@ -219,7 +219,7 @@ export async function startZotServer(port: number, zot: AnyZot) {
     } else {
       handleJSONPromise(
         res,
-        handleZotRequest(
+        handleZedRequest(
           zot,
           pathSegments,
           req.query,
