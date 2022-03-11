@@ -5,57 +5,61 @@ export type ModuleSpec = {
   npmDependencies?: Record<string, string>;
 };
 
-export type ActionZot<ActionSchema extends JSONSchema, ActionResponse> = {
+export type ZAction<ActionSchema extends JSONSchema, ActionResponse> = {
   zType: "Action";
   payloadSchema: ActionSchema;
   call: (payload: FromSchema<ActionSchema>) => Promise<ActionResponse>;
 };
 
-export type StaticContainerZot<Zots extends Record<string, AnyZot>> = {
-  zType: "StaticContainer";
+export type ZContainer<Zots extends Record<string, AnyZot>> = {
+  zType: "Container";
   zots: Zots;
   get: <S extends keyof Zots>(zotKey: S) => Promise<Zots[S]>;
 };
 
-export type ContainerZot<ChildZot extends AnyZot> = {
-  zType: "Container";
-  get: (zotKey: string) => Promise<ChildZot | undefined>;
+export type ZGroup<ChildZot extends AnyZot, ListOptions, ListResponse> = {
+  zType: "Group";
+  getChild: (zotKey: string) => Promise<ChildZot | undefined>;
+  get: (options: ListOptions) => Promise<ListResponse>;
 };
 
-export type GetZot<StateSchema extends JSONSchema, GetOptions> = {
-  zType: "Get";
+export type ZGettable<StateSchema extends JSONSchema, GetOptions> = {
+  zType: "Gettable";
   valueSchema: StateSchema;
   get: (options: GetOptions) => Promise<FromSchema<StateSchema>>;
 };
 
-export type AnyZot =
-  | ActionZot<any, any>
-  | StaticContainerZot<any>
-  | ContainerZot<any>
-  | GetZot<any, any>;
+export type ZStatic<Value> = {
+  zType: "Static";
+  value: Value;
+};
 
-export function defineActionZot<
-  ActionSchema extends JSONSchema,
-  ActionResponse
->(
+export type AnyZot =
+  | ZAction<any, any>
+  | ZContainer<any>
+  | ZGroup<any, any, any>
+  | ZGettable<any, any>
+  | ZStatic<any>;
+
+export function createZAction<ActionSchema extends JSONSchema, ActionResponse>(
   payloadSchema: ActionSchema,
   call: (payload: FromSchema<ActionSchema>) => Promise<ActionResponse>
-): ActionZot<ActionSchema, ActionResponse> {
+): ZAction<ActionSchema, ActionResponse> {
   return { zType: "Action", payloadSchema, call };
 }
 
-export function defineGetZot<StateSchema, GetOptions>(
+export function createZGettable<StateSchema, GetOptions>(
   valueSchema: StateSchema,
   get: (o: GetOptions) => Promise<FromSchema<StateSchema>>
-): GetZot<StateSchema, GetOptions> {
-  return { zType: "Get", get, valueSchema };
+): ZGettable<StateSchema, GetOptions> {
+  return { zType: "Gettable", get, valueSchema };
 }
 
-export function defineStaticContainerZot<Zots extends Record<string, AnyZot>>(
+export function createZContainer<Zots extends Record<string, AnyZot>>(
   zots: Zots
-): StaticContainerZot<Zots> {
+): ZContainer<Zots> {
   return {
-    zType: "StaticContainer",
+    zType: "Container",
     zots,
     get: async (zotKey) => {
       if (zots[zotKey] === undefined)
@@ -65,11 +69,31 @@ export function defineStaticContainerZot<Zots extends Record<string, AnyZot>>(
   };
 }
 
-export function defineContainerZot<ChildZotType extends AnyZot>(
-  getChildZot: (key: string) => Promise<ChildZotType | undefined>
-): ContainerZot<ChildZotType> {
+export function createZGroup<ChildZotType extends AnyZot>(
+  getChild: (key: string) => Promise<ChildZotType | undefined>
+): ZGroup<ChildZotType, undefined, undefined> {
   return {
-    zType: "Container",
-    get: getChildZot,
+    zType: "Group",
+    getChild,
+    get: () => null,
   };
+}
+
+export function createZListableGroup<
+  ChildZotType extends AnyZot,
+  ListOptions,
+  ListResponse
+>(
+  getChild: (key: string) => Promise<ChildZotType | undefined>,
+  getList: (options: ListOptions) => Promise<ListResponse>
+): ZGroup<ChildZotType, ListOptions, ListResponse> {
+  return {
+    zType: "Group",
+    getChild,
+    get: getList,
+  };
+}
+
+export function createZStatic<V>(value: V): ZStatic<V> {
+  return { zType: "Static", value };
 }

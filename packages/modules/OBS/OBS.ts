@@ -1,4 +1,4 @@
-import { defineStaticContainerZot } from "@zerve/core";
+import { createZContainer } from "@zerve/core";
 import ObsWebSocket from "obs-websocket-js";
 
 let connectedObs: null | ObsWebSocket = null;
@@ -26,6 +26,6 @@ export async function switchScene() {
   // console.log("lol scenes", scenes);
 }
 
-const OBS = defineStaticContainerZot({});
+const OBS = createZContainer({});
 
 export default OBS;

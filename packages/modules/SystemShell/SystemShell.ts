@@ -1,5 +1,5 @@
-import { defineStaticContainerZot } from "@zerve/core";
+import { createZContainer } from "@zerve/core";
 
-const SystemShell = defineStaticContainerZot(() => ({}));
+const SystemShell = createZContainer(() => ({}));
 
 export default SystemShell;

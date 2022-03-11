@@ -1,5 +1,5 @@
-import { defineStaticContainerZot } from "@zerve/core";
+import { createZContainer } from "@zerve/core";
 
-const SampleCalculator = defineStaticContainerZot({});
+const SampleCalculator = createZContainer({});
 
 export default SampleCalculator;

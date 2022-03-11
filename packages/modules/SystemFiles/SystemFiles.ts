@@ -1,16 +1,16 @@
 import {
-  defineActionZot,
-  defineContainerZot,
-  defineGetZot,
-  defineStaticContainerZot,
-  GetZot,
+  createZAction,
+  createZGroup,
+  createZGettable,
+  createZContainer,
+  ZGettable,
 } from "@zerve/core";
 import { join } from "path";
 import { writeFile, stat, readdir, readFile } from "fs-extra";
 
 const rootPath = "/";
 
-const WriteFile = defineActionZot(
+const WriteFile = createZAction(
   {
     type: "object",
     required: ["name", "value"],
@@ -25,7 +25,7 @@ const WriteFile = defineActionZot(
   }
 );
 
-const Stat = defineActionZot(
+const Stat = createZAction(
   {
     type: "object",
     required: ["name"],
@@ -46,8 +46,8 @@ const FileZotValueSchema = {
 
 function prepareFileZot(
   path: string
-): GetZot<typeof FileZotValueSchema, undefined> {
-  return defineGetZot({ type: "string" }, async () => {
+): ZGettable<typeof FileZotValueSchema, undefined> {
+  return createZGettable({ type: "string" }, async () => {
     const stats = await stat(path);
     if (stats.isDirectory()) {
       return { type: "directory", children: await readdir(path) };
@@ -60,10 +60,10 @@ function prepareFileZot(
   });
 }
 
-const Files = defineContainerZot(async (filePath: string) => {
+const Files = createZGroup(async (filePath: string) => {
   return prepareFileZot(filePath);
 });
 
-const SystemFiles = defineStaticContainerZot({ WriteFile, Stat, Files });
+const SystemFiles = createZContainer({ WriteFile, Stat, Files });
 
 export default SystemFiles;

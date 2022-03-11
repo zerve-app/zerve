@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@zerve/core": "*",
+    "@zerve/crypto": "*",
     "obs-websocket-js": "^4.0.3",
     "fs-extra": "*"
   },

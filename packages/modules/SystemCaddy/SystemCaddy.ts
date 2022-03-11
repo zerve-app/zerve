@@ -1,8 +1,4 @@
-import {
-  defineActionZot,
-  defineStaticContainerZot,
-  FromSchema,
-} from "@zerve/core";
+import { createZAction, createZContainer, FromSchema } from "@zerve/core";
 
 const CaddySpecSchema = {
   type: "object",
@@ -27,11 +23,11 @@ const CaddySpecSchema = {
 
 export type CaddyConfig = FromSchema<typeof CaddySpecSchema>;
 
-const ApplySystemConfig = defineActionZot(CaddySpecSchema, async (spec) => {
+const ApplySystemConfig = createZAction(CaddySpecSchema, async (spec) => {
   console.log("LOL", spec);
 });
 
-const SystemCaddy = defineStaticContainerZot({
+const SystemCaddy = createZContainer({
   ApplySystemConfig,
 });
 
