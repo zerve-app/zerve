@@ -1,222 +1,246 @@
 import {
-  createZGroup,
   createZGettable,
   createZContainer,
   createZAction,
-  createZListableGroup,
   JSONSchema,
-  ZGettable,
   NotFoundError,
   DeepBlockState,
   BlockLink,
   BlockCache,
-  RequestError,
   TreeState,
   Commit,
+  FromSchema,
 } from "@zerve/core";
 import { createJSONBlock } from "@zerve/crypto";
-import {
-  mkdirp,
-  rm,
-  stat,
-  writeFile,
-  readdir,
-  readFile,
-  rename,
-} from "fs-extra";
-import { join } from "path";
 import { CoreDataModule } from "../CoreData/CoreData";
+import { SystemFilesModule } from "../SystemFiles/SystemFiles";
 
-async function _rollupBlocksInCommitChain<V>(commitValue: Commit<V>) {
-  if (commitValue.type !== "Commit") {
-    throw new Error("Cannot roll up non-commit block");
-  }
-  let walkId: string | null = commitValue.on;
-  const rollup: Array<Commit<any>> = [commitValue];
-  while (walkId) {
-    const walkBlockValue = await GetBlockJSON.handle({ id: walkId });
-    rollup.push(walkBlockValue);
-    if (walkBlockValue.type !== "Commit") {
-      walkId = null;
-    }
-    walkId = walkBlockValue.on;
-  }
-  return rollup;
+export type ZChainStateCalculator<
+  State,
+  Actions extends Record<string, ActionDefinition<State, any>>
+> = {
+  initialState: State;
+  actions: Actions;
+};
+
+export function createZChainStateCalculator<
+  State,
+  Actions extends Record<string, ActionDefinition<State, any>>
+>(
+  initialState: State,
+  actions: Actions
+): ZChainStateCalculator<State, Actions> {
+  return { initialState, actions } as const;
 }
 
-async function _extractBlocksToCache(
-  deepState: DeepBlockState,
-  blockCache: BlockCache
-): Promise<any> {
-  if (deepState === null) return null;
-  if (Array.isArray(deepState))
-    return Promise.all(
-      deepState.map((d) => _extractBlocksToCache(d, blockCache))
-    );
-  if (typeof deepState === "object") {
-    if (deepState.type === "Block" && deepState.jsonValue !== undefined) {
-      const block = await createJSONBlock(deepState.jsonValue);
-      blockCache.set(block.id, block);
-      return { type: "BlockLink", id: block.id };
-    }
-    return Object.fromEntries(
-      await Promise.all(
-        Object.entries(deepState).map(async ([k, v]) => [
-          k,
-          await _extractBlocksToCache(v, blockCache),
-        ])
-      )
-    );
-  }
-  return deepState;
-}
+export type ActionDefinition<State, PayloadSchema extends JSONSchema> = {
+  schema: PayloadSchema;
+  handler: (state: State, payload: FromSchema<PayloadSchema>) => State;
+};
 
-async function _evalCommitStep<V>(
-  state: TreeState<any>,
-  commit: any,
-  blockCache: BlockCache
-): Promise<TreeState<any>> {
-  const matchedAction = Actions[commit.value.type as keyof typeof Actions];
-  if (matchedAction) {
-    const nextDeepState = matchedAction.handler(state, commit.value);
-    const result = await _extractBlocksToCache(nextDeepState, blockCache);
-    return result;
-  }
-  return {
-    value: null,
-    children: {},
-  };
-}
-
-async function _evalCommitChain<V>(
-  commitValue: Commit<V>,
-  blockCache: BlockCache
+export async function createZChainState<
+  State,
+  Actions extends Record<string, ActionDefinition<State, any>>
+>(
+  data: CoreDataModule,
+  cacheFiles: SystemFilesModule,
+  docName: string,
+  calculator: ZChainStateCalculator<State, Actions>
 ) {
-  const blocksInChain = await _rollupBlocksInCommitChain(commitValue);
-  let walkReduceValue: any = undefined;
-  for (
-    let blockIndex = blocksInChain.length - 1;
-    blockIndex >= 0;
-    blockIndex -= 1
+  await cacheFiles.z.MakeDir.call({ path: "state" });
+  await cacheFiles.z.MakeDir.call({ path: "blocks" });
+
+  async function _rollupBlocksInCommitChain<V>(commitValue: Commit<V>) {
+    if (commitValue.type !== "Commit") {
+      throw new Error("Cannot roll up non-commit block");
+    }
+    let walkId: string | null = commitValue.on;
+    const rollup: Array<Commit<any>> = [commitValue];
+    while (walkId) {
+      const walkBlockValue = await data.Actions.z.GetBlockJSON.call({
+        id: walkId,
+      });
+      rollup.push(walkBlockValue);
+      if (walkBlockValue.type !== "Commit") {
+        walkId = null;
+      }
+      walkId = walkBlockValue.on;
+    }
+    return rollup;
+  }
+
+  async function _extractBlocksToCache(
+    deepState: DeepBlockState,
+    blockCache: BlockCache
+  ): Promise<any> {
+    if (deepState === null) return null;
+    if (Array.isArray(deepState))
+      return Promise.all(
+        deepState.map((d) => _extractBlocksToCache(d, blockCache))
+      );
+    if (typeof deepState === "object") {
+      if (deepState.type === "Block" && deepState.jsonValue !== undefined) {
+        const block = await createJSONBlock(deepState.jsonValue);
+        blockCache.set(block.id, block);
+        return { type: "BlockLink", id: block.id };
+      }
+      return Object.fromEntries(
+        await Promise.all(
+          Object.entries(deepState).map(async ([k, v]) => [
+            k,
+            await _extractBlocksToCache(v, blockCache),
+          ])
+        )
+      );
+    }
+    return deepState;
+  }
+
+  async function _evalCommitStep(
+    state: State,
+    commit: any,
+    blockCache: BlockCache
+  ): Promise<State> {
+    const matchedAction =
+      calculator.actions[commit.value.type as keyof typeof calculator.actions];
+    if (matchedAction) {
+      const nextDeepState = matchedAction.handler(state, commit.value);
+      const result = await _extractBlocksToCache(nextDeepState, blockCache);
+      return result;
+    }
+    return calculator.initialState;
+  }
+
+  async function _evalCommitChain<V>(
+    commitValue: Commit<V>,
+    blockCache: BlockCache
   ) {
-    const stepBlock = blocksInChain[blockIndex];
-    const nextValue = await _evalCommitStep(
-      walkReduceValue,
-      stepBlock,
-      blockCache
-    );
-    walkReduceValue = nextValue;
-  }
-  return walkReduceValue;
-}
-
-function _aggregateLinkedAccessibleBlocks(
-  tree: TreeState<any>,
-  blockCache: BlockCache,
-  outputBlocks: BlockCache
-) {
-  const children = Object.values(tree.children);
-  children.forEach((child) => {
-    if (child.type === "BlockLink") {
-      const cached = blockCache.get(child.id);
-      if (cached) outputBlocks.set(child.id, cached);
+    const blocksInChain = await _rollupBlocksInCommitChain(commitValue);
+    let walkReduceValue: any = undefined;
+    for (
+      let blockIndex = blocksInChain.length - 1;
+      blockIndex >= 0;
+      blockIndex -= 1
+    ) {
+      const stepBlock = blocksInChain[blockIndex];
+      const nextValue = await _evalCommitStep(
+        walkReduceValue,
+        stepBlock,
+        blockCache
+      );
+      walkReduceValue = nextValue;
     }
-  });
-}
+    return walkReduceValue;
+  }
 
-async function getEval(evalPath: string) {
-  const evalPathTerms = evalPath.split("/");
-  const [thisPathTerm, ...restTerms] = evalPathTerms;
-  const evalBlockCache: BlockCache = new Map();
+  function _aggregateLinkedAccessibleBlocks(
+    tree: TreeState<any>,
+    blockCache: BlockCache,
+    outputBlocks: BlockCache
+  ) {
+    const children = Object.values(tree.children);
+    children.forEach((child) => {
+      if (child.type === "BlockLink") {
+        const cached = blockCache.get(child.id);
+        if (cached) outputBlocks.set(child.id, cached);
+      }
+    });
+  }
 
-  const doc = await getDoc(thisPathTerm);
+  async function _getEval() {
+    const evalBlockCache: BlockCache = new Map();
 
-  async function getEvalBlock(blockId: string) {
-    const matchedBlock = evalBlockCache.get(blockId);
-    if (restTerms.length > 2) {
-      throw new RequestError("PathError", "Must query for .blocks/BLOCK_ID", {
-        terms: restTerms,
+    const doc = await data.Docs.getChild(docName);
+
+    if (!doc) return calculator.initialState;
+
+    async function getEvalBlock(blockId: string) {
+      const matchedBlock = evalBlockCache.get(blockId);
+      // if (restTerms.length > 2) {
+      //   throw new RequestError("PathError", "Must query for .blocks/BLOCK_ID", {
+      //     terms: restTerms,
+      //   });
+      // }
+      if (matchedBlock) {
+        return matchedBlock.value;
+      }
+      try {
+        const cachedBlockData = await cacheFiles.z.ReadJSON.call({
+          path: `blocks/${blockId}`,
+        });
+        return cachedBlockData;
+      } catch (e) {
+        throw new NotFoundError("EvalNotFound", "Not Found.", {
+          // path: evalPath,
+        });
+      }
+    }
+
+    let evalValue = await doc.get();
+    let evalBlockId: string | null = null;
+
+    while (evalValue.type === "DocLink") {
+      // follow doc ref with getDoc(evalValue.something)
+    }
+
+    if (evalValue.type === "BlockLink") {
+      evalBlockId = evalValue.id;
+      evalValue = await data.Actions.z.GetBlockJSON.call({ id: evalValue.id });
+      // todo try this block json and fall back to BlockLink in case of binary file
+    } else if (evalValue.type === "Blockchain") {
+      evalBlockId = evalValue.head.id;
+    }
+
+    if (evalValue.type === "Commit") {
+      const cachedResult = await cacheFiles.z.ReadJSON.call({
+        path: `state/eval-${evalBlockId}`,
       });
+      if (cachedResult) {
+        evalValue = cachedResult;
+      } else {
+        evalValue = await _evalCommitChain(evalValue, evalBlockCache);
+        const cachableBlocks: BlockCache = new Map();
+        _aggregateLinkedAccessibleBlocks(
+          evalValue,
+          evalBlockCache,
+          cachableBlocks
+        );
+        await cacheFiles.z.WriteJSON.call({
+          path: `state/eval-${evalBlockId}`,
+          value: evalValue,
+        });
+        // await _cacheBlocks(cachableBlocks);
+      }
+
+      // if (restTerms[0] === ".blocks") {
+      //   const blockId = restTerms[1];
+      //   return await getEvalBlock(blockId);
+      // }
     }
-    if (matchedBlock) {
-      return matchedBlock.value;
-    }
-    try {
-      const cachedBlockData = await readJSONFile(
-        join(serverContext.blockCacheDir, blockId)
-      );
-      return cachedBlockData;
-    } catch (e) {
-      throw new NotFoundError("EvalNotFound", "Not Found.", {
-        path: evalPath,
-      });
-    }
+
+    /// /// I think the following code was used to deeply query the resulting blocks of an eval
+    //   let resultingValue = evalValue;
+
+    //   for (let termIndex = 0; termIndex < restTerms.length; termIndex += 1) {
+    //     const pathTerm = restTerms[termIndex];
+    //     const child = resultingValue?.children?.[pathTerm];
+    //     if (child?.type !== "BlockLink") {
+    //       throw new Error(`Cannot query for "${pathTerm}" in result`);
+    //     }
+    //     const childId = child?.id;
+    //     if (!childId) {
+    //       throw new Error(
+    //         `Cannot get child query id... what a confusing error description!`
+    //       );
+    //     }
+    //     const childBlock = await getEvalBlock(childId);
+    //     resultingValue = childBlock;
+    //   }
+
+    //   return resultingValue;
   }
 
-  let evalValue = doc.value;
-  let evalBlockId: string | null = null;
-
-  while (evalValue.type === "DocLink") {
-    // follow doc ref with getDoc(evalValue.something)
-  }
-
-  if (evalValue.type === "BlockLink") {
-    evalBlockId = evalValue.id;
-    evalValue = await GetBlockJSON.handle({ id: evalValue.id });
-    // todo try this block json and fall back to BlockLink in case of binary file
-  } else if (evalValue.type === "Blockchain") {
-    evalBlockId = evalValue.head.id;
-  }
-
-  if (evalValue.type === "Commit") {
-    const evalCachePath = join(
-      serverContext.stateCacheDir,
-      `eval-${evalBlockId}`
-    );
-    const cachedResult = await readJSONFile(evalCachePath);
-    if (cachedResult) {
-      evalValue = cachedResult;
-    } else {
-      evalValue = await _evalCommitChain(evalValue, evalBlockCache);
-      const cachableBlocks: BlockCache = new Map();
-      _aggregateLinkedAccessibleBlocks(
-        evalValue,
-        evalBlockCache,
-        cachableBlocks
-      );
-      await writeJSONFile(evalCachePath, evalValue);
-      await _cacheBlocks(cachableBlocks);
-    }
-
-    if (restTerms[0] === ".blocks") {
-      const blockId = restTerms[1];
-      return await getEvalBlock(blockId);
-    }
-  }
-
-  let resultingValue = evalValue;
-
-  for (let termIndex = 0; termIndex < restTerms.length; termIndex += 1) {
-    const pathTerm = restTerms[termIndex];
-    const child = resultingValue?.children?.[pathTerm];
-    if (child?.type !== "BlockLink") {
-      throw new Error(`Cannot query for "${pathTerm}" in result`);
-    }
-    const childId = child?.id;
-    if (!childId) {
-      throw new Error(
-        `Cannot get child query id... what a confusing error description!`
-      );
-    }
-    const childBlock = await getEvalBlock(childId);
-    resultingValue = childBlock;
-  }
-
-  return resultingValue;
-}
-
-function createCoreChain(data: CoreDataModule) {
-  const appendChain = createZAction(
+  const AppendChain = createZAction(
     {
       type: "object",
       properties: {
@@ -230,14 +254,14 @@ function createCoreChain(data: CoreDataModule) {
     async ({ name, value, message }) => {
       let on: string | null = null;
       const time = Date.now();
-      const prevDoc = await data.docs.getChild(name);
-      const prevDocValue = await prevDoc.get();
+      const prevDoc = await data.Docs.getChild(name);
+      const prevDocValue = await prevDoc?.get();
       if (prevDocValue !== undefined) {
         if (prevDocValue.type === "BlockLink" && prevDocValue.id) {
           on = (prevDocValue as BlockLink).id;
         } else
           throw new Error(
-            `AppendChain only works when the doc is BlockLink type (to a Commit type block). Instead the "${name}" doc is of type "${prevDoc.value?.type}"`
+            `AppendChain only works when the doc is BlockLink type (to a Commit type block). Instead the "${name}" doc is of type "${prevDocValue?.type}"`
           );
       }
       const commitValue: Commit<typeof value> = {
@@ -247,10 +271,10 @@ function createCoreChain(data: CoreDataModule) {
         message,
         time,
       };
-      const commitBlock = await CreateBlock.handle({
+      const commitBlock = await data.Actions.z.CreateBlock.call({
         value: commitValue,
       });
-      await SetDoc.handle({
+      await data.Actions.z.SetDoc.call({
         name,
         value: {
           type: "BlockLink",
@@ -266,12 +290,19 @@ function createCoreChain(data: CoreDataModule) {
     }
   );
 
+  const CalculatedValue = createZGettable({} as const, async () => {
+    return _getEval();
+  });
+
   return createZContainer({
-    append,
+    AppendChain,
+    CalculatedValue,
   });
 }
 
 const CoreChain = {
-  createCoreChain,
+  createZChainState,
+  createZChainStateCalculator,
 };
+
 export default CoreChain;

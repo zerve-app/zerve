@@ -24,46 +24,8 @@ export type ChildrenList = {
   children: string[];
 };
 
-async function prepareDataDirs(dataDir?: string) {
-  const homeDir = process.env.HOME;
-  const defaultZDataDir = `${homeDir}/.zerve`;
-
-  const zDataDir = dataDir || defaultZDataDir;
-  await mkdirp(zDataDir);
-
-  const blocksDir = `${zDataDir}/blocks`;
-  await mkdirp(blocksDir);
-
-  const docsDir = `${zDataDir}/docs`;
-  await mkdirp(docsDir);
-
-  const trashDir = `${zDataDir}/trash`;
-  await mkdirp(trashDir);
-
-  const cacheDir = `${zDataDir}/cache`;
-  const stateCacheDir = `${zDataDir}/cache/state`;
-  const blockCacheDir = `${zDataDir}/cache/blocks`;
-
-  const shouldResetCache = true; // todo, lol obviously
-  if (shouldResetCache) {
-    try {
-      await rm(cacheDir, { recursive: true });
-    } catch (e: any) {
-      if (e.code !== "ENOENT") throw e;
-    }
-    await mkdirp(cacheDir);
-    await mkdirp(stateCacheDir);
-    await mkdirp(blockCacheDir);
-  }
-
-  return {
-    blocksDir,
-    docsDir,
-    trashDir,
-    cacheDir,
-    stateCacheDir,
-    blockCacheDir,
-  };
+export async function ensureDir(dir: string) {
+  await mkdirp(dir);
 }
 
 const DocValueSchema: JSONSchema = {
@@ -78,8 +40,13 @@ const DocValueSchema: JSONSchema = {
 
 export type CoreDataModule = Awaited<ReturnType<typeof createCoreData>>;
 
-async function createCoreData(dataDir?: string) {
-  const _dataDirs = await prepareDataDirs(dataDir);
+async function createCoreData(dataDir: string) {
+  const _blocksDir = `${dataDir}/blocks`;
+  const _docsDir = `${dataDir}/docs`;
+  const _trashDir = `${dataDir}/trash`;
+  await ensureDir(_blocksDir);
+  await ensureDir(_docsDir);
+  await ensureDir(_trashDir);
 
   const Docs = createZListableGroup<
     ZGettable<typeof DocValueSchema, void>,
@@ -124,7 +91,7 @@ async function createCoreData(dataDir?: string) {
     } as const,
     async (payload) => {
       const block = await createJSONBlock(payload.value);
-      const blockFile = join(_dataDirs.blocksDir, block.id);
+      const blockFile = join(_blocksDir, block.id);
       try {
         // attempt to "stat" the file, or query for the low-level fs info, the most low-impact way to see if a file exists (error if it does not exist)
         const blockFilePrev = await stat(blockFile);
@@ -153,7 +120,7 @@ async function createCoreData(dataDir?: string) {
       additionalProperties: false,
     } as const,
     async ({ id }) => {
-      const blockFile = join(_dataDirs.blocksDir, id);
+      const blockFile = join(_blocksDir, id);
       try {
         const blockData = await readFile(blockFile, { encoding: "utf8" });
         const blockJSON = JSON.parse(blockData);
@@ -177,7 +144,7 @@ async function createCoreData(dataDir?: string) {
       additionalProperties: false,
     } as const,
     async ({ name, value }) => {
-      const docFile = join(_dataDirs.docsDir, name);
+      const docFile = join(_docsDir, name);
       await writeFile(docFile, JSON.stringify(value));
       return {};
     }
@@ -193,8 +160,8 @@ async function createCoreData(dataDir?: string) {
       additionalProperties: false,
     } as const,
     async ({ name }) => {
-      const docFile = join(_dataDirs.docsDir, name);
-      const trashedFile = join(_dataDirs.trashDir, `doc-${name}`);
+      const docFile = join(_docsDir, name);
+      const trashedFile = join(_trashDir, `doc-${name}`);
       await rename(docFile, trashedFile);
     }
   );
@@ -209,29 +176,27 @@ async function createCoreData(dataDir?: string) {
       additionalProperties: false,
     } as const,
     async ({ id }) => {
-      const blockFile = join(_dataDirs.blocksDir, id);
-      const trashedFile = join(_dataDirs.trashDir, `block-${id}`);
+      const blockFile = join(_blocksDir, id);
+      const trashedFile = join(_trashDir, `block-${id}`);
       await rename(blockFile, trashedFile);
     }
   );
 
   async function _listBlocks() {
-    const blockList = (await readdir(_dataDirs.blocksDir)).filter(
-      (fileName) => {
-        if (fileName[0] === ".") return false;
-        return true;
-      }
-    );
+    const blockList = (await readdir(_blocksDir)).filter((fileName) => {
+      if (fileName[0] === ".") return false;
+      return true;
+    });
     return { children: blockList };
   }
 
   async function _listDocs(): Promise<ChildrenList> {
-    const docList = await readdir(_dataDirs.docsDir);
+    const docList = await readdir(_docsDir);
     return { children: docList };
   }
 
   async function _getDocValue(name: string) {
-    const docFile = join(_dataDirs.docsDir, name);
+    const docFile = join(_docsDir, name);
     try {
       const fileValue = await readFile(docFile);
       const value = JSON.parse(fileValue.toString("utf-8"));

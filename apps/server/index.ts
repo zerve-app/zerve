@@ -9,22 +9,38 @@ import {
   createZContainer,
   ZGettable,
 } from "@zerve/core";
-import { CoreData, SystemFiles } from "@zerve/modules";
+import { CoreData, SystemFiles, Ledger, CoreChain } from "@zerve/modules";
 import SystemCommands from "@zerve/modules/SystemCommands/SystemCommands";
+import { createZChainState } from "@zerve/modules/CoreChain/CoreChain";
 
 const portLOL = process.env.PORT ? Number(process.env.PORT) : 3888;
+
+const homeDir = process.env.HOME;
+const defaultZDataDir = `${homeDir}/.zerve`;
+
 const dataDir =
   process.env.ZERVE_DATA_DIR ||
   (process.env.NODE_ENV === "dev"
     ? join(process.cwd(), "dev-data")
-    : undefined);
+    : defaultZDataDir);
 
 export async function startApp() {
+  const InternalRootFiles = SystemFiles.createSystemFiles("/");
+
   const primaryDataZ = await CoreData.createCoreData(dataDir);
 
-  const Files = SystemFiles.createSystemFiles("/");
+  const ledgerCacheFiles = SystemFiles.createSystemFiles(
+    join(dataDir, "LedgerStateCache")
+  );
 
-  const Commands = SystemCommands.createSystemCommands();
+  const TestLedger = await CoreChain.createZChainState(
+    primaryDataZ,
+    ledgerCacheFiles,
+    "MyTestLedger",
+    Ledger.ChainLedgerCalculator
+  );
+
+  const InternalCommands = SystemCommands.createSystemCommands();
 
   // const data = createDataBase(context);
 
@@ -65,9 +81,10 @@ export async function startApp() {
   // console.log({ foo });
 
   const rootZot = createZContainer({
+    TestLedger,
     Internal: createZContainer({
-      Files,
-      Commands,
+      RootFiles: InternalRootFiles,
+      Commands: InternalCommands,
     }),
     ...primaryDataZ,
     Types: createZContainer({

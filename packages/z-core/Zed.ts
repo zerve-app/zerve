@@ -13,7 +13,7 @@ export type ZAction<ActionSchema extends JSONSchema, ActionResponse> = {
 
 export type ZContainer<Zeds extends Record<string, AnyZed>> = {
   zType: "Container";
-  zeds: Zeds;
+  z: Zeds;
   get: <S extends keyof Zeds>(zedKey: S) => Promise<Zeds[S]>;
 };
 
@@ -56,15 +56,15 @@ export function createZGettable<StateSchema, GetOptions>(
 }
 
 export function createZContainer<Zeds extends Record<string, AnyZed>>(
-  zeds: Zeds
+  z: Zeds
 ): ZContainer<Zeds> {
   return {
     zType: "Container",
-    zeds,
+    z,
     get: async (zedKey) => {
-      if (zeds[zedKey] === undefined)
+      if (z[zedKey] === undefined)
         throw new Error(`Cannot find ${zedKey} in Zeds`);
-      return zeds[zedKey];
+      return z[zedKey];
     },
   };
 }

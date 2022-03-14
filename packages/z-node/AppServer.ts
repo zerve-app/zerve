@@ -14,7 +14,7 @@ import { createJSONHandler } from "./Server";
 import { json } from "body-parser";
 import { ParsedQs } from "qs";
 
-export async function startZedServer(port: number, zot: AnyZed) {
+export async function startZedServer(port: number, zed: AnyZed) {
   const app = express();
 
   app.use((req, res, next) => {
@@ -66,7 +66,7 @@ export async function startZedServer(port: number, zot: AnyZed) {
     method: Request["method"]
   ) {
     if (method === "GET") {
-      return { zType: "Container", children: Object.keys(zed.zeds) };
+      return { zType: "Container", children: Object.keys(zed.z) };
     }
     throw new WrongMethodError(
       "WrongMethod",
@@ -76,12 +76,12 @@ export async function startZedServer(port: number, zot: AnyZed) {
   }
 
   async function handleZGroupRequest<Z extends AnyZed, O extends ParsedQs, R>(
-    zot: ZGroup<Z, O, R>,
+    zed: ZGroup<Z, O, R>,
     method: Request["method"],
     query: O
   ) {
     if (method === "GET") {
-      const listValue = await zot.get(query);
+      const listValue = await zed.get(query);
       return { zType: "Group", children: listValue };
     }
     throw new WrongMethodError(
@@ -91,10 +91,8 @@ export async function startZedServer(port: number, zot: AnyZed) {
     );
   }
 
-  async function handleZStaticRequest<V>(zot: ZStatic<V>) {
-    // return { zType: "Static", value: zot.value };
-    return zot.value;
-    // /.z/.types/Color
+  async function handleZStaticRequest<V>(zed: ZStatic<V>) {
+    return zed.value;
   }
 
   async function handleJSONPromise(res: Response, promisedValue: Promise<any>) {
@@ -115,7 +113,7 @@ export async function startZedServer(port: number, zot: AnyZed) {
       });
   }
 
-  async function handleZotNodeRequest(
+  async function handleZNodeRequest(
     zed: AnyZed,
     query: ParsedQs,
     method: Request["method"],
@@ -132,6 +130,7 @@ export async function startZedServer(port: number, zot: AnyZed) {
       return await handleZGroupRequest(zed, method, query);
     }
     if (zed.zType === "Container") {
+      console.log("HHI!!");
       return await handleZContainerRequest(zed, method);
     }
     if (zed.zType === "Static") {
@@ -140,8 +139,8 @@ export async function startZedServer(port: number, zot: AnyZed) {
     throw new Error("unknown zed");
   }
 
-  async function handleZedRequest<Z extends AnyZed>(
-    zot: Z,
+  async function handleZRequest<Z extends AnyZed>(
+    zed: Z,
     path: string[],
     query: ParsedQs,
     method: Request["method"],
@@ -149,17 +148,17 @@ export async function startZedServer(port: number, zot: AnyZed) {
     body: any
   ): Promise<any> {
     if (path.length === 0)
-      return await handleZotNodeRequest(zot, query, method, headers, body);
+      return await handleZNodeRequest(zed, query, method, headers, body);
 
-    if (zot.zType === "Container") {
+    if (zed.zType === "Container") {
       const [pathTerm, ...restPathTerms] = path;
 
-      const child = zot.zeds[pathTerm];
+      const child = zed.z[pathTerm];
       if (!child)
         throw new NotFoundError("NotFound", "Not found in container", {
           pathTerm,
         });
-      return await handleZedRequest(
+      return await handleZRequest(
         child,
         restPathTerms,
         query,
@@ -169,15 +168,15 @@ export async function startZedServer(port: number, zot: AnyZed) {
       );
     }
 
-    if (zot.zType === "Group") {
+    if (zed.zType === "Group") {
       const [pathTerm, ...restPathTerms] = path;
 
-      const child = await zot.getChild(pathTerm);
+      const child = await zed.getChild(pathTerm);
       if (!child)
         throw new NotFoundError("NotFound", "Not found in container", {
           pathTerm,
         });
-      return await handleZedRequest(
+      return await handleZRequest(
         child,
         restPathTerms,
         query,
@@ -192,7 +191,7 @@ export async function startZedServer(port: number, zot: AnyZed) {
 
   const jsonHandler = json();
 
-  function zotHandler(req: Request, res: Response) {
+  function zHandler(req: Request, res: Response) {
     const pathSegments = req.path
       .split("/")
       .filter((segment) => segment !== "");
@@ -206,8 +205,8 @@ export async function startZedServer(port: number, zot: AnyZed) {
       jsonHandler(req, res, () => {
         handleJSONPromise(
           res,
-          handleZedRequest(
-            zot,
+          handleZRequest(
+            zed,
             pathSegments,
             req.query,
             req.method,
@@ -219,8 +218,8 @@ export async function startZedServer(port: number, zot: AnyZed) {
     } else {
       handleJSONPromise(
         res,
-        handleZedRequest(
-          zot,
+        handleZRequest(
+          zed,
           pathSegments,
           req.query,
           req.method,
@@ -231,8 +230,8 @@ export async function startZedServer(port: number, zot: AnyZed) {
     }
   }
 
-  app.use("/.z", zotHandler);
-  app.use("/.z/*", zotHandler);
+  app.use("/.z", zHandler);
+  app.use("/.z/*", zHandler);
 
   await new Promise<void>((resolve, reject) => {
     app.listen(port, () => {
