@@ -3,12 +3,12 @@ export class GenericError<ErrorCode, Params> extends Error {
   httpStatus: number;
   params: Params;
   constructor({
-    httpStatus,
+    httpStatus = 500,
     code,
     message,
     params,
   }: {
-    httpStatus: number;
+    httpStatus?: number;
     code: ErrorCode;
     message: string;
     params: Params;

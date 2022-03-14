@@ -51,7 +51,7 @@ export function createZChainStateCalculator<
         throw new RequestError(
           "ValidationError",
           `cannot validate unknown action "${action.name}"`,
-          { name: action.name }
+          { name: action.name, actions: Object.keys(validators) }
         );
       const valid = validator(action.value);
       if (!valid) {
@@ -132,9 +132,9 @@ export async function createZChainState<
     blockCache: BlockCache
   ): Promise<State> {
     const matchedAction =
-      calculator.actions[commit.value.type as keyof typeof calculator.actions];
+      calculator.actions[commit.value.name as keyof typeof calculator.actions];
     if (matchedAction) {
-      const nextDeepState = matchedAction.handler(state, commit.value);
+      const nextDeepState = matchedAction.handler(state, commit.value.value);
       const result = await _extractBlocksToCache(nextDeepState, blockCache);
       return result;
     }
@@ -146,7 +146,7 @@ export async function createZChainState<
     blockCache: BlockCache
   ) {
     const blocksInChain = await _rollupBlocksInCommitChain(commitValue);
-    let walkReduceValue: any = undefined;
+    let walkReduceValue: any = calculator.initialState;
     for (
       let blockIndex = blocksInChain.length - 1;
       blockIndex >= 0;
@@ -168,13 +168,15 @@ export async function createZChainState<
     blockCache: BlockCache,
     outputBlocks: BlockCache
   ) {
-    const children = Object.values(tree.children);
-    children.forEach((child) => {
-      if (child.type === "BlockLink") {
-        const cached = blockCache.get(child.id);
-        if (cached) outputBlocks.set(child.id, cached);
-      }
-    });
+    // // todo, add back this sort of functionality.
+    // // this function was responsible for looking at the latest evaluated state and identifying all of the deeply-refereneced blocks, then copying them to a new cache so that the old cache can be garbage collected. (old computed blocks do not need to be retained)
+    // const children = Object.values(tree.children);
+    // children.forEach((child) => {
+    //   if (child.type === "BlockLink") {
+    //     const cached = blockCache.get(child.id);
+    //     if (cached) outputBlocks.set(child.id, cached);
+    //   }
+    // });
   }
 
   async function _getEval() {
@@ -220,7 +222,6 @@ export async function createZChainState<
     } else if (evalValue.type === "Blockchain") {
       evalBlockId = evalValue.head.id;
     }
-
     if (evalValue.type === "Commit") {
       const cachedResult = await cacheFiles.z.ReadJSON.call({
         path: `state/eval-${evalBlockId}`,
@@ -247,7 +248,7 @@ export async function createZChainState<
       //   return await getEvalBlock(blockId);
       // }
     }
-
+    return evalValue;
     /// /// I think the following code was used to deeply query the resulting blocks of an eval
     //   let resultingValue = evalValue;
 
@@ -320,13 +321,13 @@ export async function createZChainState<
     };
   });
 
-  const CalculatedValue = createZGettable({} as const, async () => {
+  const State = createZGettable({} as const, async () => {
     return _getEval();
   });
 
   return createZContainer({
     AppendChain,
-    CalculatedValue,
+    State,
   });
 }
 

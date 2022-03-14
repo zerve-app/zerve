@@ -81,8 +81,14 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
     async ({ path }) => {
       ensureNoPathEscape(path);
       const fullPath = join(filesRoot, path);
-      const data = await readFile(fullPath, { encoding: "utf8" });
-      return JSON.parse(data);
+      try {
+        const data = await readFile(fullPath, { encoding: "utf8" });
+        return JSON.parse(data);
+      } catch (e: any) {
+        if (e.code === "ENOENT") {
+          return undefined;
+        } else throw e;
+      }
     }
   );
 
