@@ -10,6 +10,8 @@ import {
   TreeState,
   Commit,
   FromSchema,
+  ajv,
+  RequestError,
 } from "@zerve/core";
 import { createJSONBlock } from "@zerve/crypto";
 import { CoreDataModule } from "../CoreData/CoreData";
@@ -17,30 +19,58 @@ import { SystemFilesModule } from "../SystemFiles/SystemFiles";
 
 export type ZChainStateCalculator<
   State,
-  Actions extends Record<string, ActionDefinition<State, any>>
+  Actions extends Record<string, ZActionDefinition<State, any>>
 > = {
   initialState: State;
   actions: Actions;
+  validateAction: <ActionName extends keyof Actions>(
+    action: any
+  ) => FromSchema<Actions[ActionName]["schema"]>;
 };
 
 export function createZChainStateCalculator<
   State,
-  Actions extends Record<string, ActionDefinition<State, any>>
+  Actions extends Record<string, ZActionDefinition<State, any>>
 >(
   initialState: State,
   actions: Actions
 ): ZChainStateCalculator<State, Actions> {
-  return { initialState, actions } as const;
+  const validators = Object.fromEntries(
+    Object.entries(actions).map(([actionName, actionDef]) => {
+      return [actionName, ajv.compile(actionDef.schema)];
+    })
+  );
+  return {
+    initialState,
+    actions,
+    validateAction: <ActionName extends keyof Actions>(
+      action: any
+    ): FromSchema<Actions[ActionName]["schema"]> => {
+      const validator = validators[action.name];
+      if (!validator)
+        throw new RequestError(
+          "ValidationError",
+          `cannot validate unknown action "${action.name}"`,
+          { name: action.name }
+        );
+      const valid = validator(action.value);
+      if (!valid) {
+        console.log("INVALD", { valid, e: validator.errors });
+        throw new Error("lol");
+      }
+      return action;
+    },
+  } as const;
 }
 
-export type ActionDefinition<State, PayloadSchema extends JSONSchema> = {
+export type ZActionDefinition<State, PayloadSchema extends JSONSchema> = {
   schema: PayloadSchema;
   handler: (state: State, payload: FromSchema<PayloadSchema>) => State;
 };
 
 export async function createZChainState<
   State,
-  Actions extends Record<string, ActionDefinition<State, any>>
+  Actions extends Record<string, ZActionDefinition<State, any>>
 >(
   data: CoreDataModule,
   cacheFiles: SystemFilesModule,
@@ -240,55 +270,55 @@ export async function createZChainState<
     //   return resultingValue;
   }
 
-  const AppendChain = createZAction(
-    {
-      type: "object",
-      properties: {
-        name: { type: "string" },
-        value: {},
-        message: { type: "string" },
-      },
-      required: ["name", "value"],
-      additionalProperties: false,
-    } as const,
-    async ({ name, value, message }) => {
-      let on: string | null = null;
-      const time = Date.now();
-      const prevDoc = await data.Docs.getChild(name);
-      const prevDocValue = await prevDoc?.get();
-      if (prevDocValue !== undefined) {
-        if (prevDocValue.type === "BlockLink" && prevDocValue.id) {
-          on = (prevDocValue as BlockLink).id;
-        } else
-          throw new Error(
-            `AppendChain only works when the doc is BlockLink type (to a Commit type block). Instead the "${name}" doc is of type "${prevDocValue?.type}"`
-          );
-      }
-      const commitValue: Commit<typeof value> = {
-        type: "Commit",
-        value,
-        on,
-        message,
-        time,
-      };
-      const commitBlock = await data.Actions.z.CreateBlock.call({
-        value: commitValue,
-      });
-      await data.Actions.z.SetDoc.call({
-        name,
-        value: {
-          type: "BlockLink",
-          id: commitBlock.id,
-        },
-      });
+  // const availableActionKeys = Object.keys(calculator.actions);
+
+  const allActionsSchema = {
+    oneOf: Object.entries(calculator.actions).map(([actionKey, actionDef]) => {
       return {
-        on,
-        time,
-        commitId: commitBlock.id,
-        name,
+        type: { const: actionKey },
+        value: actionDef.schema,
       };
+    }),
+  };
+
+  const AppendChain = createZAction(allActionsSchema, async (action) => {
+    let on: string | null = null;
+    const time = Date.now();
+    const prevDoc = await data.Docs.getChild(docName);
+    calculator.validateAction(action);
+    const prevDocValue = await prevDoc?.get();
+    if (prevDocValue !== undefined) {
+      if (prevDocValue.type === "BlockLink" && prevDocValue.id) {
+        on = (prevDocValue as BlockLink).id;
+      } else
+        throw new Error(
+          `AppendChain only works when the doc is BlockLink type (to a Commit type block). Instead the "${docName}" doc is of type "${prevDocValue?.type}"`
+        );
     }
-  );
+    const commitValue: Commit<any> = {
+      type: "Commit",
+      value: action,
+      on,
+      message: "...",
+      time,
+    };
+    const commitBlock = await data.Actions.z.CreateBlock.call({
+      value: commitValue,
+    });
+    await data.Actions.z.SetDoc.call({
+      name: docName,
+      value: {
+        type: "BlockLink",
+        id: commitBlock.id,
+      },
+    });
+    return {
+      on,
+      time,
+      commitId: commitBlock.id,
+      name: docName,
+    };
+  });
 
   const CalculatedValue = createZGettable({} as const, async () => {
     return _getEval();
