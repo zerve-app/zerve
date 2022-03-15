@@ -17,10 +17,10 @@ export type ZContainer<Zeds extends Record<string, AnyZed>> = {
   get: <S extends keyof Zeds>(zedKey: S) => Promise<Zeds[S]>;
 };
 
-export type ZGroup<ChildZed extends AnyZed, ListOptions, ListResponse> = {
+export type ZGroup<ChildZed extends AnyZed, GetOptions, GetResponse> = {
   zType: "Group";
   getChild: (zedKey: string) => Promise<ChildZed | undefined>;
-  get: (options: ListOptions) => Promise<ListResponse>;
+  get: (options: GetOptions) => Promise<GetResponse>;
 };
 
 export type ZGettable<StateSchema extends JSONSchema, GetOptions> = {
@@ -79,18 +79,18 @@ export function createZGroup<ChildZType extends AnyZed>(
   };
 }
 
-export function createZListableGroup<
+export function createZGettableGroup<
   ChildZType extends AnyZed,
-  ListOptions,
-  ListResponse
+  GetOptions,
+  GetResponse
 >(
   getChild: (key: string) => Promise<ChildZType | undefined>,
-  getList: (options: ListOptions) => Promise<ListResponse>
-): ZGroup<ChildZType, ListOptions, ListResponse> {
+  get: (options: GetOptions) => Promise<GetResponse>
+): ZGroup<ChildZType, GetOptions, GetResponse> {
   return {
     zType: "Group",
     getChild,
-    get: getList,
+    get,
   };
 }
 

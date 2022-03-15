@@ -12,6 +12,8 @@ import {
   FromSchema,
   ajv,
   RequestError,
+  createZGettableGroup,
+  ZGroup,
 } from "@zerve/core";
 import { createJSONBlock } from "@zerve/crypto";
 import { CoreDataModule } from "../CoreData/CoreData";
@@ -321,9 +323,33 @@ export async function createZChainState<
     };
   });
 
-  const State = createZGettable({} as const, async () => {
-    return _getEval();
-  });
+  function createZEval(path: string[]): ZGroup<any, void, any> {
+    return createZGettableGroup(
+      async (childKey: string) => {
+        console.log({ childKey });
+        return createZEval([...path, childKey]);
+      },
+      async () => {
+        let evalResult = await _getEval();
+        for (let pathIndex in path) {
+          const pathTerm = path[pathIndex];
+          if (Array.isArray(evalResult)) {
+            evalResult = evalResult[Number(pathTerm)];
+          } else if (evalResult === null) {
+            // deliberately check for null before typeof === 'object', because typeof null is object. ffs, js
+            throw new NotFoundError("NotFound", "Not Found.", { path });
+          } else if (typeof evalResult === "object") {
+            evalResult = evalResult[pathTerm];
+          } else {
+            throw new NotFoundError("NotFound", "Not Found.", { path });
+          }
+        }
+        return evalResult;
+      }
+    );
+  }
+
+  const State = createZEval([]);
 
   return createZContainer({
     AppendChain,

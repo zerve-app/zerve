@@ -3,7 +3,7 @@ import {
   createZGettable,
   createZContainer,
   createZAction,
-  createZListableGroup,
+  createZGettableGroup,
   JSONSchema,
   ZGettable,
   NotFoundError,
@@ -48,7 +48,7 @@ async function createCoreData(dataDir: string) {
   await ensureDir(_docsDir);
   await ensureDir(_trashDir);
 
-  const Docs = createZListableGroup<
+  const Docs = createZGettableGroup<
     ZGettable<typeof DocValueSchema, void>,
     void,
     ChildrenList
@@ -64,7 +64,7 @@ async function createCoreData(dataDir: string) {
     }
   );
 
-  const Blocks = createZListableGroup<
+  const Blocks = createZGettableGroup<
     ZGettable<typeof DocValueSchema, void>,
     void,
     ChildrenList
