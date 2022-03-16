@@ -21,8 +21,10 @@ import { SystemFilesModule } from "../SystemFiles/SystemFiles";
 
 export type ZChainStateCalculator<
   State,
-  Actions extends Record<string, ZActionDefinition<State, any>>
+  Actions extends Record<string, ZActionDefinition<State, any>>,
+  StateSchema extends JSONSchema
 > = {
+  stateSchema: StateSchema;
   initialState: State;
   actions: Actions;
   validateAction: <ActionName extends keyof Actions>(
@@ -32,8 +34,10 @@ export type ZChainStateCalculator<
 
 export function createZChainStateCalculator<
   State,
-  Actions extends Record<string, ZActionDefinition<State, any>>
+  Actions extends Record<string, ZActionDefinition<State, any>>,
+  StateSchema extends JSONSchema
 >(
+  stateSchema: StateSchema,
   initialState: State,
   actions: Actions
 ): ZChainStateCalculator<State, Actions> {
@@ -43,6 +47,7 @@ export function createZChainStateCalculator<
     })
   );
   return {
+    stateSchema,
     initialState,
     actions,
     validateAction: <ActionName extends keyof Actions>(

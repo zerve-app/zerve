@@ -9,7 +9,14 @@ import {
   createZContainer,
   ZGettable,
 } from "@zerve/core";
-import { CoreData, SystemFiles, Ledger, CoreChain } from "@zerve/modules";
+import {
+  CoreData,
+  SystemFiles,
+  Ledger,
+  CoreChain,
+  MessageSMS,
+  SystemFetch,
+} from "@zerve/modules";
 import SystemCommands from "@zerve/modules/SystemCommands/SystemCommands";
 import { createZChainState } from "@zerve/modules/CoreChain/CoreChain";
 
@@ -24,6 +31,9 @@ const dataDir =
     ? join(process.cwd(), "dev-data")
     : defaultZDataDir);
 
+const secretsFile =
+  process.env.ZERVE_SECRETS_JSON || join(process.cwd(), "../../secrets.json");
+
 export async function startApp() {
   const InternalRootFiles = SystemFiles.createSystemFiles("/");
 
@@ -32,6 +42,23 @@ export async function startApp() {
   const ledgerCacheFiles = SystemFiles.createSystemFiles(
     join(dataDir, "LedgerStateCache")
   );
+  const secrets = await InternalRootFiles.z.ReadJSON.call({
+    path: secretsFile,
+  });
+  function requireSecret(secretKey: string): string {
+    const secret = secrets[secretKey];
+    if (typeof secret === "string") return secret;
+    throw new Error(
+      `Failed to require secret string "${secretKey}" from secrets json`
+    );
+  }
+
+  const SMS = MessageSMS.createZMessageSMS({
+    twilioAccountSid: requireSecret("TwilioAccountSid"),
+    twilioKeySid: requireSecret("TwilioKeySid"),
+    twilioKeySecret: requireSecret("TwilioKeySecret"),
+    fromNumber: requireSecret("TwilioFromNumber"),
+  });
 
   const TestLedger = await CoreChain.createZChainState(
     primaryDataZ,
@@ -83,8 +110,10 @@ export async function startApp() {
   const rootZot = createZContainer({
     TestLedger,
     Internal: createZContainer({
+      Fetch: SystemFetch.Fetch,
       RootFiles: InternalRootFiles,
       Commands: InternalCommands,
+      SMS,
     }),
     ...primaryDataZ,
     Types: createZContainer({

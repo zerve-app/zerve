@@ -139,6 +139,41 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new Error("unknown zed");
   }
 
+  function handleZNodeTypeRequest(zed: AnyZed) {
+    if (zed.zType === "Gettable") {
+      return {
+        type: "Gettable",
+        schema: zed.valueSchema,
+      };
+    }
+    if (zed.zType === "Action") {
+      return {
+        type: "Action",
+        schema: zed.payloadSchema,
+      };
+    }
+    if (zed.zType === "Group") {
+      return {
+        type: "Group",
+        schema: zed.valueSchema,
+      };
+    }
+    if (zed.zType === "Container") {
+      return {
+        type: "Container",
+        children: Object.fromEntries(
+          Object.entries(zed.z).map(([childKey, childZed]) => {
+            return [childKey, handleZNodeTypeRequest(childZed)];
+          })
+        ),
+      };
+    }
+    if (zed.zType === "Static") {
+      return { type: "Static" };
+    }
+    throw new Error("unknown zed");
+  }
+
   async function handleZRequest<Z extends AnyZed>(
     zed: Z,
     path: string[],
@@ -150,6 +185,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
     if (path.length === 0)
       return await handleZNodeRequest(zed, query, method, headers, body);
 
+    if (path.length === 1 && path[0] === ".type") {
+      return await handleZNodeTypeRequest(zed, query, method, headers, body);
+    }
+
     if (zed.zType === "Container") {
       const [pathTerm, ...restPathTerms] = path;
 
@@ -158,6 +197,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         throw new NotFoundError("NotFound", "Not found in container", {
           pathTerm,
         });
+
       return await handleZRequest(
         child,
         restPathTerms,

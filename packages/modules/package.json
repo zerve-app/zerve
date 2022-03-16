@@ -6,6 +6,7 @@
   "dependencies": {
     "@zerve/core": "*",
     "@zerve/crypto": "*",
+    "axios": "*",
     "obs-websocket-js": "^4.0.3",
     "fs-extra": "*"
   },

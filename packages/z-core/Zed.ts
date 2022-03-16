@@ -17,16 +17,21 @@ export type ZContainer<Zeds extends Record<string, AnyZed>> = {
   get: <S extends keyof Zeds>(zedKey: S) => Promise<Zeds[S]>;
 };
 
-export type ZGroup<ChildZed extends AnyZed, GetOptions, GetResponse> = {
+export type ZGroup<
+  ChildZed extends AnyZed,
+  GetOptions,
+  GetSchema extends JSONSchema
+> = {
   zType: "Group";
   getChild: (zedKey: string) => Promise<ChildZed | undefined>;
-  get: (options: GetOptions) => Promise<GetResponse>;
+  get: (options: GetOptions) => Promise<FromSchema<GetSchema>>;
+  valueSchema: GetSchema;
 };
 
-export type ZGettable<StateSchema extends JSONSchema, GetOptions> = {
+export type ZGettable<GetSchema extends JSONSchema, GetOptions> = {
   zType: "Gettable";
-  valueSchema: StateSchema;
-  get: (options: GetOptions) => Promise<FromSchema<StateSchema>>;
+  valueSchema: GetSchema;
+  get: (options: GetOptions) => Promise<FromSchema<GetSchema>>;
 };
 
 export type ZStatic<Value> = {
@@ -69,11 +74,13 @@ export function createZContainer<Zeds extends Record<string, AnyZed>>(
   };
 }
 
+const NullSchema = { type: "null" } as const;
 export function createZGroup<ChildZType extends AnyZed>(
   getChild: (key: string) => Promise<ChildZType | undefined>
-): ZGroup<ChildZType, undefined, null> {
+): ZGroup<ChildZType, undefined, typeof NullSchema> {
   return {
     zType: "Group",
+    valueSchema: NullSchema,
     getChild,
     get: async () => null,
   };
@@ -82,13 +89,15 @@ export function createZGroup<ChildZType extends AnyZed>(
 export function createZGettableGroup<
   ChildZType extends AnyZed,
   GetOptions,
-  GetResponse
+  GetSchema extends JSONSchema
 >(
   getChild: (key: string) => Promise<ChildZType | undefined>,
-  get: (options: GetOptions) => Promise<GetResponse>
-): ZGroup<ChildZType, GetOptions, GetResponse> {
+  valueSchema: GetSchema,
+  get: (options: GetOptions) => Promise<FromSchema<GetSchema>>
+): ZGroup<ChildZType, GetOptions, GetSchema> {
   return {
     zType: "Group",
+    valueSchema,
     getChild,
     get,
   };
