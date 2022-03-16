@@ -8,6 +8,7 @@ import {
   ZGettable,
   ZGroup,
   ZStatic,
+  Z_PROTOCOL_VERSION,
 } from "@zerve/core";
 import express, { Request, Response } from "express";
 import { createJSONHandler } from "./Server";
@@ -81,8 +82,8 @@ export async function startZedServer(port: number, zed: AnyZed) {
     query: O
   ) {
     if (method === "GET") {
-      const listValue = await zed.get(query);
-      return { zType: "Group", children: listValue };
+      const getValue = await zed.get(query);
+      return getValue;
     }
     throw new WrongMethodError(
       "WrongMethod",
@@ -130,37 +131,46 @@ export async function startZedServer(port: number, zed: AnyZed) {
       return await handleZGroupRequest(zed, method, query);
     }
     if (zed.zType === "Container") {
-      console.log("HHI!!");
       return await handleZContainerRequest(zed, method);
     }
     if (zed.zType === "Static") {
       return await handleZStaticRequest(zed);
     }
+    console.log("fail!!", zed);
     throw new Error("unknown zed");
   }
+
+  const serviceInfo = {
+    // ".z": Z_PROTOCOL_VERSION,
+    ".v": "0.1.0",
+  };
 
   function handleZNodeTypeRequest(zed: AnyZed) {
     if (zed.zType === "Gettable") {
       return {
-        type: "Gettable",
+        ...serviceInfo,
+        ".t": "Gettable",
         schema: zed.valueSchema,
       };
     }
     if (zed.zType === "Action") {
       return {
-        type: "Action",
+        ...serviceInfo,
+        ".t": "Action",
         schema: zed.payloadSchema,
       };
     }
     if (zed.zType === "Group") {
       return {
-        type: "Group",
+        ...serviceInfo,
+        ".t": "Group",
         schema: zed.valueSchema,
       };
     }
     if (zed.zType === "Container") {
       return {
-        type: "Container",
+        ...serviceInfo,
+        ".t": "Container",
         children: Object.fromEntries(
           Object.entries(zed.z).map(([childKey, childZed]) => {
             return [childKey, handleZNodeTypeRequest(childZed)];
@@ -169,7 +179,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
       };
     }
     if (zed.zType === "Static") {
-      return { type: "Static" };
+      return {
+        ...serviceInfo,
+        ".t": "Static",
+      };
     }
     throw new Error("unknown zed");
   }
@@ -186,7 +199,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
       return await handleZNodeRequest(zed, query, method, headers, body);
 
     if (path.length === 1 && path[0] === ".type") {
-      return await handleZNodeTypeRequest(zed, query, method, headers, body);
+      return await handleZNodeTypeRequest(zed);
     }
 
     if (zed.zType === "Container") {

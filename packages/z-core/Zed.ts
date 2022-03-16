@@ -87,12 +87,12 @@ export function createZGroup<ChildZType extends AnyZed>(
 }
 
 export function createZGettableGroup<
+  GetSchema extends JSONSchema,
   ChildZType extends AnyZed,
-  GetOptions,
-  GetSchema extends JSONSchema
+  GetOptions
 >(
-  getChild: (key: string) => Promise<ChildZType | undefined>,
   valueSchema: GetSchema,
+  getChild: (key: string) => Promise<ChildZType | undefined>,
   get: (options: GetOptions) => Promise<FromSchema<GetSchema>>
 ): ZGroup<ChildZType, GetOptions, GetSchema> {
   return {

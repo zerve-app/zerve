@@ -11,6 +11,8 @@ import {
 } from "@zerve/core";
 import {
   CoreData,
+  CoreStore,
+  CoreTypes,
   SystemFiles,
   Ledger,
   CoreChain,
@@ -37,7 +39,7 @@ const secretsFile =
 export async function startApp() {
   const InternalRootFiles = SystemFiles.createSystemFiles("/");
 
-  const primaryDataZ = await CoreData.createCoreData(dataDir);
+  const Data = await CoreData.createCoreData(dataDir);
 
   const ledgerCacheFiles = SystemFiles.createSystemFiles(
     join(dataDir, "LedgerStateCache")
@@ -61,11 +63,25 @@ export async function startApp() {
   });
 
   const TestLedger = await CoreChain.createZChainState(
-    primaryDataZ,
+    Data,
     ledgerCacheFiles,
     "MyTestLedger",
     Ledger.ChainLedgerCalculator
   );
+
+  // const Types = await CoreTypes.createZTypesStore(
+  //   Data,
+  //   SystemFiles.createSystemFiles(join(dataDir, "TypeStateCache"))
+  // );
+
+  const Types = await CoreChain.createZChainState(
+    Data,
+    SystemFiles.createSystemFiles(join(dataDir, "TypeStateCache")),
+    "CoreTypes",
+    CoreTypes.CoreTypesCalculator
+  );
+
+  const Store = await CoreStore.createGeneralStore(Data, Types, "CoreStore");
 
   const InternalCommands = SystemCommands.createSystemCommands();
 
@@ -108,24 +124,26 @@ export async function startApp() {
   // console.log({ foo });
 
   const rootZot = createZContainer({
+    Types,
+    Store,
     TestLedger,
-    Internal: createZContainer({
+    Admin: createZContainer({
+      Data,
       Fetch: SystemFetch.Fetch,
       RootFiles: InternalRootFiles,
       Commands: InternalCommands,
       SMS,
     }),
-    ...primaryDataZ,
-    Types: createZContainer({
-      Color: createZStatic({
-        type: "object",
-        properties: {
-          r: { type: "number" },
-          g: { type: "number" },
-          b: { type: "number" },
-        },
-      }),
-    }),
+    // Types: createZContainer({
+    //   Color: createZStatic({
+    //     type: "object",
+    //     properties: {
+    //       r: { type: "number" },
+    //       g: { type: "number" },
+    //       b: { type: "number" },
+    //     },
+    //   }),
+    // }),
   });
 
   await startZedServer(portLOL, rootZot);

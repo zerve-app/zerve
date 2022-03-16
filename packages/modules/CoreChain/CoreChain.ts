@@ -40,7 +40,7 @@ export function createZChainStateCalculator<
   stateSchema: StateSchema,
   initialState: State,
   actions: Actions
-): ZChainStateCalculator<State, Actions> {
+): ZChainStateCalculator<State, Actions, StateSchema> {
   const validators = Object.fromEntries(
     Object.entries(actions).map(([actionName, actionDef]) => {
       return [actionName, ajv.compile(actionDef.schema)];
@@ -77,12 +77,13 @@ export type ZActionDefinition<State, PayloadSchema extends JSONSchema> = {
 
 export async function createZChainState<
   State,
-  Actions extends Record<string, ZActionDefinition<State, any>>
+  Actions extends Record<string, ZActionDefinition<State, any>>,
+  StateSchema extends JSONSchema
 >(
   data: CoreDataModule,
   cacheFiles: SystemFilesModule,
   docName: string,
-  calculator: ZChainStateCalculator<State, Actions>
+  calculator: ZChainStateCalculator<State, Actions, StateSchema>
 ) {
   await cacheFiles.z.MakeDir.call({ path: "state" });
   await cacheFiles.z.MakeDir.call({ path: "blocks" });
@@ -94,7 +95,7 @@ export async function createZChainState<
     let walkId: string | null = commitValue.on;
     const rollup: Array<Commit<any>> = [commitValue];
     while (walkId) {
-      const walkBlockValue = await data.Actions.z.GetBlockJSON.call({
+      const walkBlockValue = await data.z.Actions.z.GetBlockJSON.call({
         id: walkId,
       });
       rollup.push(walkBlockValue);
@@ -189,7 +190,7 @@ export async function createZChainState<
   async function _getEval() {
     const evalBlockCache: BlockCache = new Map();
 
-    const doc = await data.Docs.getChild(docName);
+    const doc = await data.z.Docs.getChild(docName);
 
     if (!doc) return calculator.initialState;
 
@@ -215,7 +216,13 @@ export async function createZChainState<
       }
     }
 
-    let evalValue = await doc.get();
+    const docCurrentValue = await doc.get();
+
+    if (docCurrentValue == null) {
+      return calculator.initialState;
+    }
+
+    let evalValue = docCurrentValue;
     let evalBlockId: string | null = null;
 
     while (evalValue.type === "DocLink") {
@@ -224,7 +231,9 @@ export async function createZChainState<
 
     if (evalValue.type === "BlockLink") {
       evalBlockId = evalValue.id;
-      evalValue = await data.Actions.z.GetBlockJSON.call({ id: evalValue.id });
+      evalValue = await data.z.Actions.z.GetBlockJSON.call({
+        id: evalValue.id,
+      });
       // todo try this block json and fall back to BlockLink in case of binary file
     } else if (evalValue.type === "Blockchain") {
       evalBlockId = evalValue.head.id;
@@ -289,10 +298,10 @@ export async function createZChainState<
     }),
   };
 
-  const AppendChain = createZAction(allActionsSchema, async (action) => {
+  const Dispatch = createZAction(allActionsSchema, async (action) => {
     let on: string | null = null;
     const time = Date.now();
-    const prevDoc = await data.Docs.getChild(docName);
+    const prevDoc = await data.z.Docs.getChild(docName);
     calculator.validateAction(action);
     const prevDocValue = await prevDoc?.get();
     if (prevDocValue !== undefined) {
@@ -300,7 +309,7 @@ export async function createZChainState<
         on = (prevDocValue as BlockLink).id;
       } else
         throw new Error(
-          `AppendChain only works when the doc is BlockLink type (to a Commit type block). Instead the "${docName}" doc is of type "${prevDocValue?.type}"`
+          `Dispatch only works when the doc is BlockLink type (to a Commit type block). Instead the "${docName}" doc is of type "${prevDocValue?.type}"`
         );
     }
     const commitValue: Commit<any> = {
@@ -310,10 +319,10 @@ export async function createZChainState<
       message: "...",
       time,
     };
-    const commitBlock = await data.Actions.z.CreateBlock.call({
+    const commitBlock = await data.z.Actions.z.CreateBlock.call({
       value: commitValue,
     });
-    await data.Actions.z.SetDoc.call({
+    await data.z.Actions.z.SetDoc.call({
       name: docName,
       value: {
         type: "BlockLink",
@@ -329,9 +338,27 @@ export async function createZChainState<
   });
 
   function createZEval(path: string[]): ZGroup<any, void, any> {
+    let schema: JSONSchema = calculator.stateSchema;
+    path.forEach((pathTerm) => {
+      if (typeof schema === "object" && schema.type === "object") {
+        if (schema.properties) {
+          if (schema.properties[pathTerm]) {
+            schema = schema.properties[pathTerm];
+          } else {
+            throw new Error("failed to find schema property");
+          }
+        } else if (schema.additionalProperties) {
+          schema = [{ type: "null" }, schema.additionalProperties];
+        } else {
+          throw new Error("failed to find schema property");
+        }
+      } else {
+        throw new Error("Cannot Eval path within non-object schema");
+      }
+    });
     return createZGettableGroup(
+      schema,
       async (childKey: string) => {
-        console.log({ childKey });
         return createZEval([...path, childKey]);
       },
       async () => {
@@ -339,12 +366,12 @@ export async function createZChainState<
         for (let pathIndex in path) {
           const pathTerm = path[pathIndex];
           if (Array.isArray(evalResult)) {
-            evalResult = evalResult[Number(pathTerm)];
+            evalResult = evalResult[Number(pathTerm)] || null;
           } else if (evalResult === null) {
             // deliberately check for null before typeof === 'object', because typeof null is object. ffs, js
             throw new NotFoundError("NotFound", "Not Found.", { path });
           } else if (typeof evalResult === "object") {
-            evalResult = evalResult[pathTerm];
+            evalResult = evalResult[pathTerm] || null;
           } else {
             throw new NotFoundError("NotFound", "Not Found.", { path });
           }
@@ -357,7 +384,7 @@ export async function createZChainState<
   const State = createZEval([]);
 
   return createZContainer({
-    AppendChain,
+    Dispatch,
     State,
   });
 }

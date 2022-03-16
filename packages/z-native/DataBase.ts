@@ -107,7 +107,7 @@ export async function deleteBlock(id: string) {
   blockNode.destroy();
 }
 
-export async function appendChain<AppendValue>(
+export async function dispatch<AppendValue>(
   name: string,
   value: AppendValue,
   message?: string
@@ -124,7 +124,7 @@ export async function appendChain<AppendValue>(
   //     on = (prevDoc.value as BlockLink).id;
   //   } else
   //     throw new Error(
-  //       `AppendChain only works when the doc is BlockLink type (to a Commit type block). Instead the "${name}" doc is of type "${prevDoc.value?.type}"`
+  //       `dispatch only works when the doc is BlockLink type (to a Commit type block). Instead the "${name}" doc is of type "${prevDoc.value?.type}"`
   //     );
   // }
   const commitValue: Commit<typeof value> = {

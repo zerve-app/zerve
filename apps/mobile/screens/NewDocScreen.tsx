@@ -3,7 +3,7 @@ import React from "react";
 import { Input, PageTitle, VStack } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { HomeStackScreenProps } from "../app/Links";
-import { appendChain } from "@zerve/native";
+import { dispatch } from "@zerve/native";
 import { AsyncButton } from "../components/Button";
 
 export default function NewDocScreen({
@@ -25,7 +25,7 @@ export default function NewDocScreen({
           title="Create"
           primary
           onPress={async () => {
-            await appendChain(name, {
+            await dispatch(name, {
               type: "WriteFile",
               name: "ReadMe.md",
               value: "Welcome to your new project",

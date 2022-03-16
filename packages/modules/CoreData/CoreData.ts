@@ -20,9 +20,14 @@ import {
 } from "fs-extra";
 import { join } from "path";
 
-export type ChildrenList = {
-  children: string[];
-};
+export const ChildrenListSchema = {
+  type: "object",
+  required: ["children"],
+  properties: {
+    children: { type: "array", items: { type: "string" } },
+  },
+  additionalProperties: false,
+} as const;
 
 export async function ensureDir(dir: string) {
   await mkdirp(dir);
@@ -40,6 +45,8 @@ const DocValueSchema: JSONSchema = {
 
 export type CoreDataModule = Awaited<ReturnType<typeof createCoreData>>;
 
+export const AnySchema = {} as const;
+
 async function createCoreData(dataDir: string) {
   const _blocksDir = `${dataDir}/blocks`;
   const _docsDir = `${dataDir}/docs`;
@@ -49,10 +56,11 @@ async function createCoreData(dataDir: string) {
   await ensureDir(_trashDir);
 
   const Docs = createZGettableGroup<
+    typeof ChildrenListSchema,
     ZGettable<typeof DocValueSchema, void>,
-    void,
-    ChildrenList
+    void
   >(
+    ChildrenListSchema,
     async (name: string) => {
       return createZGettable(DocValueSchema, async () => {
         const doc = await _getDocValue(name);
@@ -65,10 +73,11 @@ async function createCoreData(dataDir: string) {
   );
 
   const Blocks = createZGettableGroup<
+    typeof ChildrenListSchema,
     ZGettable<typeof DocValueSchema, void>,
-    void,
-    ChildrenList
+    void
   >(
+    ChildrenListSchema,
     async (id: string) => {
       return createZGettable({}, async () => {
         const blockValue = await GetBlockJSON.call({ id });
@@ -190,7 +199,7 @@ async function createCoreData(dataDir: string) {
     return { children: blockList };
   }
 
-  async function _listDocs(): Promise<ChildrenList> {
+  async function _listDocs(): Promise<FromSchema<typeof ChildrenList>> {
     const docList = await readdir(_docsDir);
     return { children: docList };
   }
@@ -209,7 +218,7 @@ async function createCoreData(dataDir: string) {
     }
   }
 
-  return {
+  return createZContainer({
     Docs,
     Blocks,
     Actions: createZContainer({
@@ -218,8 +227,8 @@ async function createCoreData(dataDir: string) {
       DeleteBlock,
       SetDoc,
       GetBlockJSON,
-    }),
-  } as const;
+    } as const),
+  } as const);
 }
 
 const CoreData = {

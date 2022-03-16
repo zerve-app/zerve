@@ -1,5 +1,10 @@
 import { FromSchema, GenericError } from "@zerve/core";
-import { createZChainStateCalculator } from "../CoreChain/CoreChain";
+import {
+  createZChainState,
+  createZChainStateCalculator,
+} from "../CoreChain/CoreChain";
+import { CoreDataModule } from "../CoreData/CoreData";
+import { SystemFilesModule } from "../SystemFiles/SystemFiles";
 
 const CoreTypesStateSchema = {
   type: "object",
@@ -51,8 +56,25 @@ const CoreTypesCalculator = createZChainStateCalculator(
   }
 );
 
+async function createZTypesStore(
+  dataZ: CoreDataModule,
+  cacheFiles: SystemFilesModule,
+  name = "CoreTypes"
+) {
+  const Types = await createZChainState(
+    dataZ,
+    cacheFiles,
+    name,
+    CoreTypesCalculator
+  );
+  return Types;
+}
+
+export type CoreTypesModule = Awaited<ReturnType<typeof createZTypesStore>>;
+
 const CoreTypes = {
   CoreTypesCalculator,
+  createZTypesStore,
 };
 
 export default CoreTypes;
