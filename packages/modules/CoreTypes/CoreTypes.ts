@@ -8,24 +8,17 @@ import { SystemFilesModule } from "../SystemFiles/SystemFiles";
 
 const CoreTypesStateSchema = {
   type: "object",
-  additionalProperties: false,
-  required: ["types"],
-  properties: {
-    types: {
-      type: "object",
-      additionalProperties: {
-        /* JSON SCHEMA */
-      },
-    },
+  additionalProperties: {
+    /* JSON SCHEMA */
   },
 } as const;
 
 export type CoreTypesState = FromSchema<typeof CoreTypesStateSchema>;
 
-const defaultTypesState: CoreTypesState = { types: {} };
+const defaultTypesState: CoreTypesState = {};
 
 const SetTypeActionSchema = {
-  title: "Inject Value",
+  title: "Set or reset a type with a given JSON schema",
   type: "object",
   properties: {
     schema: {},
@@ -46,10 +39,8 @@ const CoreTypesCalculator = createZChainStateCalculator(
         action: FromSchema<typeof SetTypeActionSchema>
       ) => {
         return {
-          types: {
-            ...state.types,
-            [action.name]: action.schema,
-          },
+          ...state,
+          [action.name]: action.schema,
         };
       },
     },

@@ -36,6 +36,23 @@ const dataDir =
 const secretsFile =
   process.env.ZERVE_SECRETS_JSON || join(process.cwd(), "../../secrets.json");
 
+function zTypeRef(typeName: string) {
+  return { $ref: `https://zerve.app/.z/Types/State/${typeName}` };
+}
+
+const CoreStoreSchema = {
+  type: "object",
+  properties: {
+    protocols: {
+      type: "array",
+      // todo, introduce new synthetic type here which allows the protocols to be a list of blocks, not inline data
+      items: zTypeRef("Protocol"),
+    },
+  },
+  required: ["protocols"],
+  additionalProperties: false,
+} as const;
+
 export async function startApp() {
   const InternalRootFiles = SystemFiles.createSystemFiles("/");
 
@@ -69,19 +86,18 @@ export async function startApp() {
     Ledger.ChainLedgerCalculator
   );
 
-  // const Types = await CoreTypes.createZTypesStore(
-  //   Data,
-  //   SystemFiles.createSystemFiles(join(dataDir, "TypeStateCache"))
-  // );
-
-  const Types = await CoreChain.createZChainState(
+  const Types = await CoreTypes.createZTypesStore(
     Data,
-    SystemFiles.createSystemFiles(join(dataDir, "TypeStateCache")),
-    "CoreTypes",
-    CoreTypes.CoreTypesCalculator
+    SystemFiles.createSystemFiles(join(dataDir, "TypeStateCache"))
   );
 
-  const Store = await CoreStore.createGeneralStore(Data, Types, "CoreStore");
+  const Store = await CoreStore.createGeneralStore(
+    Data,
+    Types,
+    SystemFiles.createSystemFiles(join(dataDir, "GenStoreCache")),
+    "GenStore",
+    CoreStoreSchema
+  );
 
   const InternalCommands = SystemCommands.createSystemCommands();
 

@@ -1,4 +1,4 @@
-import { ReactNode, Children } from "react";
+import React, { ReactNode, Children } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 
 export function HStack({ children }: { children: ReactNode }) {

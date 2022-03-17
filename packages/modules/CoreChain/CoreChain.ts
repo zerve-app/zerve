@@ -340,6 +340,7 @@ export async function createZChainState<
   function createZEval(path: string[]): ZGroup<any, void, any> {
     let schema: JSONSchema = calculator.stateSchema;
     path.forEach((pathTerm) => {
+      console.log("1", pathTerm, schema);
       if (typeof schema === "object" && schema.type === "object") {
         if (schema.properties) {
           if (schema.properties[pathTerm]) {
@@ -353,6 +354,7 @@ export async function createZChainState<
           throw new Error("failed to find schema property");
         }
       } else {
+        console.log("hah", pathTerm, schema);
         throw new Error("Cannot Eval path within non-object schema");
       }
     });
