@@ -43,7 +43,7 @@ function useConnectionStatus(connection: Connection) {
     doUpdateStatus(connection.url);
     const updateStatusInterval = setInterval(() => {
       doUpdateStatus(connection.url);
-    }, 5_000);
+    }, 5000);
     return () => {
       clearInterval(updateStatusInterval);
     };
@@ -54,10 +54,7 @@ function useConnectionStatus(connection: Connection) {
 function ConnectionStatusRow({ connection }: { connection: Connection }) {
   const { isConnected, isLoading } = useConnectionStatus(connection);
   return (
-    <InfoRow
-      label="Status"
-      value={isConnected ? "🟢 Connected" : "🔴 Not Connected"}
-    >
+    <InfoRow label="Status" value={isConnected ? "Connected" : "Not Connected"}>
       {isLoading && <Spinner />}
     </InfoRow>
   );
