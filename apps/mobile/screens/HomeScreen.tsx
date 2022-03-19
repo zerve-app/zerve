@@ -99,7 +99,7 @@ function ConnectionDocListSection({ connection }: { connection: Connection }) {
   return (
     <DisclosureSection
       isLoading={isLoading}
-      header={<Label secondary>Oyyy</Label>}
+      header={<Label secondary> </Label>}
       right={
         <IconButton
           altTitle="Options"

@@ -295,7 +295,6 @@ function ZNode({ path, connection }: { path: string[]; connection: string }) {
       />
     );
   }
-  console.log("node type", type);
   return (
     <>
       <PageTitle title={isLoading ? "... " : path.join("/")} />

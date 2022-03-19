@@ -24,7 +24,6 @@ export async function postZAction(
   path: string[],
   body: any
 ) {
-  console.log("aayo", { context, body, path });
   return await serverPost(context, `.z/${path.join("/")}`, body);
 }
 
