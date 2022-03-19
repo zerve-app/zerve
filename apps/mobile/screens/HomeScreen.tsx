@@ -22,11 +22,7 @@ import { Connection, useConnections } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
-import {
-  QueryConnectionProvider,
-  useDocList,
-  useModuleList,
-} from "@zerve/query";
+import { QueryConnectionProvider, useDocList } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
 import { useBottomSheet } from "../app/BottomSheet";
 
@@ -85,8 +81,9 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "Home">
 >;
 
-function ConnectionDocListSection() {
+function ConnectionDocListSection({ connection }: { connection: Connection }) {
   const { data, refetch, isLoading } = useDocList();
+  const { navigate } = useNavigation<NavigationProp>();
   const list = data?.docs?.children;
   const onOptions = useBottomSheet(({ onClose }) => (
     <VStack>
@@ -102,7 +99,7 @@ function ConnectionDocListSection() {
   return (
     <DisclosureSection
       isLoading={isLoading}
-      header={<Label secondary>Docs</Label>}
+      header={<Label secondary>Oyyy</Label>}
       right={
         <IconButton
           altTitle="Options"
@@ -112,8 +109,17 @@ function ConnectionDocListSection() {
       }
     >
       <VStack>
-        {data?.docs?.children?.map((m) => (
-          <Button key={m} title={m} onPress={() => {}} />
+        {data?.docs?.children?.map((childKey: string) => (
+          <Button
+            key={childKey}
+            title={childKey}
+            onPress={() => {
+              navigate("ZNode", {
+                connection: connection.key,
+                path: [childKey],
+              });
+            }}
+          />
         ))}
         {!list?.length && <Paragraph>No Docs loaded..</Paragraph>}
       </VStack>
@@ -121,20 +127,20 @@ function ConnectionDocListSection() {
   );
 }
 
-function ConnectionModulesListSection() {
-  const { data } = useModuleList();
-  const list = data?.modules;
-  return (
-    <DisclosureSection header={<Label secondary>Modules</Label>}>
-      <VStack>
-        {list?.map((m) => (
-          <Button key={m} title={m} onPress={() => {}} />
-        ))}
-        {!list?.length && <Paragraph>No Modules loaded..</Paragraph>}
-      </VStack>
-    </DisclosureSection>
-  );
-}
+// function ConnectionModulesListSection() {
+//   const { data } = useModuleList();
+//   const list = data?.modules;
+//   return (
+//     <DisclosureSection header={<Label secondary>Modules</Label>}>
+//       <VStack>
+//         {list?.map((m) => (
+//           <Button key={m} title={m} onPress={() => {}} />
+//         ))}
+//         {!list?.length && <Paragraph>No Modules loaded..</Paragraph>}
+//       </VStack>
+//     </DisclosureSection>
+//   );
+// }
 
 function ConnectionSection({
   connection,
@@ -163,8 +169,7 @@ function ConnectionSection({
       }
     >
       <VStack>
-        <ConnectionDocListSection />
-        <ConnectionModulesListSection />
+        <ConnectionDocListSection connection={connection} />
       </VStack>
     </PageSection>
   );

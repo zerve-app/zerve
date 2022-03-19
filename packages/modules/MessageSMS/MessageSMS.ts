@@ -24,6 +24,7 @@ function createZMessageSMS(config: {
       required: ["message", "toNumber"],
       additionalProperties: false,
     } as const,
+    { type: "object", additionalProperties: false } as const,
     async ({ message, toNumber }) => {
       const data = new URLSearchParams({
         Body: message,
@@ -47,6 +48,7 @@ function createZMessageSMS(config: {
         console.error("Failed SMS send:", resp.data);
         throw new Error("SMS Send Failure");
       }
+      return {};
     }
   );
 }

@@ -22,6 +22,12 @@ function createSystemCommands() {
         required: ["args"],
         additionalProperties: false,
       } as const,
+      {
+        type: "object",
+        properties: { out: {}, err: {} },
+        required: ["out"],
+        additionalProperties: false,
+      } as const,
       async ({ args }) => {
         return await new Promise((resolve, reject) => {
           execFile(commandName, args, {}, (error, out, err) => {

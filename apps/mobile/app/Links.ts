@@ -25,6 +25,7 @@ export type HomeStackParamList = {
   Home: undefined;
   NewDoc: undefined;
   Doc: { connection: null | string; name: string };
+  ZNode: { connection: null | string; path: string[] };
 };
 
 export type RootStackParamList = {

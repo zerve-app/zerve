@@ -5,7 +5,12 @@ import { Button, PageSection, PageTitle, VStack } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { dangerouslyClearAllStorage } from "@zerve/native";
 import { FontAwesome } from "@expo/vector-icons";
-import { reloadAsync } from "expo-updates";
+import { manifest, releaseChannel, reloadAsync, updateId } from "expo-updates";
+import { InfoRow } from "@zerve/ui/Row";
+
+function NeedUpdateRow() {
+  return <InfoRow label="Update" value={JSON.stringify(manifest)} />;
+}
 
 export default function SettingsScreen({
   navigation,
@@ -60,6 +65,22 @@ export default function SettingsScreen({
               reloadAsync().then(() => {
                 alert("App has been reset.");
               });
+            }}
+          />
+        </VStack>
+      </PageSection>
+      <PageSection title="App Info / Version">
+        <VStack>
+          <NeedUpdateRow />
+          <InfoRow label="Mainifest" value={JSON.stringify(manifest)} />
+          <InfoRow label="Release Channel" value={releaseChannel} />
+          <InfoRow label="Update ID" value={updateId || "?"} />
+          <Button
+            title="Restart"
+            onPress={() => {
+              reloadAsync()
+                .then(() => {})
+                .catch((e) => {});
             }}
           />
         </VStack>

@@ -98,6 +98,15 @@ async function createCoreData(dataDir: string) {
       required: ["value"],
       additionalProperties: false,
     } as const,
+    {
+      type: "object",
+      properties: {
+        type: { const: "BlockLink" },
+        id: { type: "string" },
+      },
+      required: ["type", "id"],
+      additionalProperties: false,
+    } as const,
     async (payload) => {
       const block = await createJSONBlock(payload.value);
       const blockFile = join(_blocksDir, block.id);
@@ -115,7 +124,7 @@ async function createCoreData(dataDir: string) {
       return {
         type: "BlockLink",
         id: block.id,
-      };
+      } as const;
     }
   );
 
@@ -128,6 +137,7 @@ async function createCoreData(dataDir: string) {
       required: ["id"],
       additionalProperties: false,
     } as const,
+    {} as const,
     async ({ id }) => {
       const blockFile = join(_blocksDir, id);
       try {
@@ -152,6 +162,7 @@ async function createCoreData(dataDir: string) {
       required: ["name", "value"],
       additionalProperties: false,
     } as const,
+    { type: "object", additionalProperties: false } as const,
     async ({ name, value }) => {
       const docFile = join(_docsDir, name);
       await writeFile(docFile, JSON.stringify(value));
@@ -168,10 +179,12 @@ async function createCoreData(dataDir: string) {
       required: ["name"],
       additionalProperties: false,
     } as const,
+    { type: "object", additionalProperties: false } as const,
     async ({ name }) => {
       const docFile = join(_docsDir, name);
       const trashedFile = join(_trashDir, `doc-${name}`);
       await rename(docFile, trashedFile);
+      return {};
     }
   );
 
@@ -184,10 +197,12 @@ async function createCoreData(dataDir: string) {
       required: ["id"],
       additionalProperties: false,
     } as const,
+    { type: "object", additionalProperties: false } as const,
     async ({ id }) => {
       const blockFile = join(_blocksDir, id);
       const trashedFile = join(_trashDir, `block-${id}`);
       await rename(blockFile, trashedFile);
+      return {};
     }
   );
 

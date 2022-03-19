@@ -30,9 +30,12 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
         value: { type: "string" },
       },
     } as const,
+    { type: "null" } as const,
+
     async ({ path, value }) => {
       ensureNoPathEscape(path);
       await writeFile(join(filesRoot, path), value);
+      return null;
     }
   );
 
@@ -46,10 +49,12 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
         value: {},
       },
     } as const,
+    { type: "null" } as const,
     async ({ path, value }) => {
       ensureNoPathEscape(path);
       const fullPath = join(filesRoot, path);
       await writeFile(fullPath, JSON.stringify(value));
+      return null;
     }
   );
 
@@ -62,10 +67,11 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
         path: { type: "string" },
       },
     } as const,
+    { type: "string" } as const,
     async ({ path }) => {
       ensureNoPathEscape(path);
       const fullPath = join(filesRoot, path);
-      await readFile(fullPath, { encoding: "utf8" });
+      return await readFile(fullPath, { encoding: "utf8" });
     }
   );
 
@@ -78,6 +84,7 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
         path: { type: "string" },
       },
     } as const,
+    {} as const,
     async ({ path }) => {
       ensureNoPathEscape(path);
       const fullPath = join(filesRoot, path);
@@ -101,6 +108,7 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
         path: { type: "string" },
       },
     } as const,
+    { type: "array", items: { type: "string" } } as const,
     async ({ path }) => {
       ensureNoPathEscape(path);
       const fullPath = join(filesRoot, path);
@@ -118,10 +126,12 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
         path: { type: "string" },
       },
     } as const,
+    { type: "null" } as const,
     async ({ path }) => {
       ensureNoPathEscape(path);
       const fullPath = join(filesRoot, path);
       await mkdirp(fullPath);
+      return null;
     }
   );
 
@@ -135,12 +145,14 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
         to: { type: "string" },
       },
     } as const,
+    { type: "null" } as const,
     async ({ from, to }) => {
       ensureNoPathEscape(from);
       ensureNoPathEscape(to);
       const fullFrom = join(filesRoot, from);
       const fullTo = join(filesRoot, to);
       await move(fullFrom, fullTo);
+      return null;
     }
   );
 
@@ -152,6 +164,15 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
       properties: {
         path: { type: "string" },
       },
+    } as const,
+    {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        path: { type: "string" },
+        isDirectory: { type: "boolean" },
+      },
+      required: ["path", "isDirectory"],
     } as const,
     async ({ path }) => {
       ensureNoPathEscape(path);

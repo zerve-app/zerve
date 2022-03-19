@@ -17,6 +17,7 @@ import {
   Ledger,
   CoreChain,
   MessageSMS,
+  MessageEmail,
   SystemFetch,
 } from "@zerve/modules";
 import SystemCommands from "@zerve/modules/SystemCommands/SystemCommands";
@@ -79,6 +80,11 @@ export async function startApp() {
     fromNumber: requireSecret("TwilioFromNumber"),
   });
 
+  const Email = MessageEmail.createZMessageEmail({
+    sendgridKey: requireSecret("SendgridKey"),
+    fromEmail: `Zerve Admin <admin@zerve.app>`,
+  });
+
   const TestLedger = await CoreChain.createZChainState(
     Data,
     ledgerCacheFiles,
@@ -116,6 +122,7 @@ export async function startApp() {
   //     },
   //     required: ["url"],
   //   } as const,
+  //   {} as const,
   //   async ({ url }) => {
   //     console.log({ url });
   //   }
@@ -149,6 +156,7 @@ export async function startApp() {
       RootFiles: InternalRootFiles,
       Commands: InternalCommands,
       SMS,
+      Email,
     }),
     // Types: createZContainer({
     //   Color: createZStatic({

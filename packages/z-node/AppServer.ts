@@ -53,7 +53,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
     body: any
   ) {
     if (method === "GET") {
-      return { zType: "Action", payload: zed.payloadSchema };
+      return {
+        requestSchema: zed.payloadSchema,
+        responseSchema: zed.responseSchema,
+      };
     } else if (method === "POST") {
       const result = await zed.call(body);
       return result;
@@ -67,7 +70,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     method: Request["method"]
   ) {
     if (method === "GET") {
-      return { zType: "Container", children: Object.keys(zed.z) };
+      return { children: Object.keys(zed.z) };
     }
     throw new WrongMethodError(
       "WrongMethod",
@@ -150,21 +153,22 @@ export async function startZedServer(port: number, zed: AnyZed) {
       return {
         ...serviceInfo,
         ".t": "Gettable",
-        schema: zed.valueSchema,
+        value: zed.valueSchema,
       };
     }
     if (zed.zType === "Action") {
       return {
         ...serviceInfo,
         ".t": "Action",
-        schema: zed.payloadSchema,
+        payload: zed.payloadSchema,
+        response: zed.responseSchema,
       };
     }
     if (zed.zType === "Group") {
       return {
         ...serviceInfo,
         ".t": "Group",
-        schema: zed.valueSchema,
+        value: zed.valueSchema,
       };
     }
     if (zed.zType === "Container") {
@@ -248,7 +252,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
     const pathSegments = req.path
       .split("/")
       .filter((segment) => segment !== "");
-
     if (
       (req.method === "POST" ||
         req.method === "PATCH" ||

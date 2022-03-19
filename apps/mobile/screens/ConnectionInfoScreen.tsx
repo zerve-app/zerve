@@ -54,7 +54,10 @@ function useConnectionStatus(connection: Connection) {
 function ConnectionStatusRow({ connection }: { connection: Connection }) {
   const { isConnected, isLoading } = useConnectionStatus(connection);
   return (
-    <InfoRow label="Status" value={isConnected ? "Connected" : "Not Connected"}>
+    <InfoRow
+      label="Status"
+      value={isConnected ? "🟢 Connected" : "🔴 Not Connected"}
+    >
       {isLoading && <Spinner />}
     </InfoRow>
   );

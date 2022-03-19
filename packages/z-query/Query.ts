@@ -1,6 +1,8 @@
 import { Query, useQuery } from "react-query";
+import { getZ } from "./ServerCalls";
 import { useConnectionContext } from "./Connection";
 import { getDoc, listDocs, getActions, getModuleList } from "./ServerCalls";
+import { getTypedZ } from ".";
 
 export type QueryOptions = {
   skipLoading?: boolean;
@@ -26,18 +28,20 @@ export function useDoc(name: string, options?: QueryOptions) {
   );
 }
 
-export function useActions(category?: string, options?: QueryOptions) {
+export function useZNode(path: string[], options?: QueryOptions) {
   const context = useConnectionContext();
-  return useQuery([context.key, "actions", category], async () => {
+  return useQuery([context.key, "z", ...path, ".node"], async () => {
     if (options?.skipLoading) return undefined;
-    return await getActions(context, category);
+    const results = await getTypedZ(context, path);
+    return results;
   });
 }
 
-export function useModuleList(options?: QueryOptions) {
+export function useZChildren(path: string[], options?: QueryOptions) {
   const context = useConnectionContext();
-  return useQuery([context.key, "modules"], async () => {
+  return useQuery([context.key, "z", ...path, "children"], async () => {
     if (options?.skipLoading) return undefined;
-    return await getModuleList(context);
+    const results = await getZ(context, path);
+    return results;
   });
 }

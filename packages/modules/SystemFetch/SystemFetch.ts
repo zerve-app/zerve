@@ -13,6 +13,7 @@ const Fetch = createZAction(
       jsonBody: {},
     },
   } as const,
+  {} as const,
   async ({ httpsHost, path, query, jsonBody }) => {
     console.log("Fetch", { httpsHost, path });
     // await

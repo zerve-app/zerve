@@ -298,44 +298,58 @@ export async function createZChainState<
     }),
   };
 
-  const Dispatch = createZAction(allActionsSchema, async (action) => {
-    let on: string | null = null;
-    const time = Date.now();
-    const prevDoc = await data.z.Docs.getChild(docName);
-    calculator.validateAction(action);
-    const prevDocValue = await prevDoc?.get();
-    if (prevDocValue !== undefined) {
-      if (prevDocValue.type === "BlockLink" && prevDocValue.id) {
-        on = (prevDocValue as BlockLink).id;
-      } else
-        throw new Error(
-          `Dispatch only works when the doc is BlockLink type (to a Commit type block). Instead the "${docName}" doc is of type "${prevDocValue?.type}"`
-        );
-    }
-    const commitValue: Commit<any> = {
-      type: "Commit",
-      value: action,
-      on,
-      message: "...",
-      time,
-    };
-    const commitBlock = await data.z.Actions.z.CreateBlock.call({
-      value: commitValue,
-    });
-    await data.z.Actions.z.SetDoc.call({
-      name: docName,
-      value: {
-        type: "BlockLink",
-        id: commitBlock.id,
+  const Dispatch = createZAction(
+    allActionsSchema,
+    {
+      type: "object",
+      properties: {
+        on: { type: ["null", "string"] },
+        time: { type: "number" },
+        commitId: { type: "string" },
+        name: { type: "string" },
       },
-    });
-    return {
-      on,
-      time,
-      commitId: commitBlock.id,
-      name: docName,
-    };
-  });
+      required: ["on", "time", "commitId", "name"],
+      additionalProperties: false,
+    } as const,
+    async (action) => {
+      let on: string | null = null;
+      const time = Date.now();
+      const prevDoc = await data.z.Docs.getChild(docName);
+      calculator.validateAction(action);
+      const prevDocValue = await prevDoc?.get();
+      if (prevDocValue !== undefined) {
+        if (prevDocValue.type === "BlockLink" && prevDocValue.id) {
+          on = (prevDocValue as BlockLink).id;
+        } else
+          throw new Error(
+            `Dispatch only works when the doc is BlockLink type (to a Commit type block). Instead the "${docName}" doc is of type "${prevDocValue?.type}"`
+          );
+      }
+      const commitValue: Commit<any> = {
+        type: "Commit",
+        value: action,
+        on,
+        message: "...",
+        time,
+      };
+      const commitBlock = await data.z.Actions.z.CreateBlock.call({
+        value: commitValue,
+      });
+      await data.z.Actions.z.SetDoc.call({
+        name: docName,
+        value: {
+          type: "BlockLink",
+          id: commitBlock.id,
+        },
+      });
+      return {
+        on,
+        time,
+        commitId: commitBlock.id,
+        name: docName,
+      };
+    }
+  );
 
   function createZEval(path: string[]): ZGroup<any, void, any> {
     let schema: JSONSchema = calculator.stateSchema;

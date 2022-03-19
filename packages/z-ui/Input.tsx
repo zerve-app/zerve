@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, View } from "react-native";
+import { Switch, TextInput, View } from "react-native";
 import { useColors } from "./useColors";
 import { Label } from "./Text";
 import { marginHInset, marginVInset, RowStyles } from "./Row";
@@ -41,6 +41,25 @@ export function Input({
         placeholder={placeholder}
         onChangeText={onValue}
       />
+    </View>
+  );
+}
+
+export function SwitchInput({
+  value,
+  onValue,
+  label,
+  disabled,
+}: {
+  value: boolean;
+  onValue?: (value: boolean) => void;
+  label: string;
+  disabled?: boolean;
+}) {
+  return (
+    <View style={{}}>
+      <Label style={[marginHInset, marginVInset]}>{label}</Label>
+      <Switch onValueChange={onValue} value={value} disabled={disabled} />
     </View>
   );
 }

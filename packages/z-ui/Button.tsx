@@ -5,9 +5,10 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import Layout from "./Layout";
-import React, { ReactNode, useRef } from "react";
+import React, { ComponentProps, ReactNode, useRef, useState } from "react";
 import { useColors } from "./useColors";
 import { smallShadow } from "./Style";
+import { Spinner, ThemedText } from ".";
 
 export function IconButton({
   icon,
@@ -129,5 +130,31 @@ export function Button({
         {typeof right === "function" ? right(appendageProps) : right}
       </Animated.View>
     </Pressable>
+  );
+}
+
+type AsyncButtonProps = Omit<ComponentProps<typeof Button>, "onPress"> & {
+  onPress: () => Promise<void>;
+};
+export function AsyncButton({ onPress, ...props }: AsyncButtonProps) {
+  const [error, setError] = useState(null);
+  const [promise, setPromise] = useState<Promise<void> | null>(null);
+  return (
+    <Button
+      {...props}
+      right={error ? <ThemedText>!!</ThemedText> : promise && <Spinner />}
+      onPress={() => {
+        const promise = onPress()
+          .then(() => {})
+          .catch((e) => {
+            setError(e);
+          });
+        setPromise(promise);
+        promise.finally(() => {
+          setPromise(null);
+        });
+      }}
+      {...props}
+    />
   );
 }

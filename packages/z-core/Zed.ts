@@ -5,10 +5,16 @@ export type ModuleSpec = {
   npmDependencies?: Record<string, string>;
 };
 
-export type ZAction<ActionSchema extends JSONSchema, ActionResponse> = {
+export type ZAction<
+  ActionSchema extends JSONSchema,
+  ResponseSchema extends JSONSchema
+> = {
   zType: "Action";
   payloadSchema: ActionSchema;
-  call: (payload: FromSchema<ActionSchema>) => Promise<ActionResponse>;
+  responseSchema: ResponseSchema;
+  call: (
+    payload: FromSchema<ActionSchema>
+  ) => Promise<FromSchema<ResponseSchema>>;
 };
 
 export type ZContainer<Zeds extends Record<string, AnyZed>> = {
@@ -39,6 +45,8 @@ export type ZStatic<Value> = {
   value: Value;
 };
 
+export const AnySchema = {} as const;
+
 export type AnyZed =
   | ZAction<any, any>
   | ZContainer<any>
@@ -46,11 +54,17 @@ export type AnyZed =
   | ZGettable<any, any>
   | ZStatic<any>;
 
-export function createZAction<ActionSchema extends JSONSchema, ActionResponse>(
+export function createZAction<
+  ActionSchema extends JSONSchema,
+  ResponseSchema extends JSONSchema
+>(
   payloadSchema: ActionSchema,
-  call: (payload: FromSchema<ActionSchema>) => Promise<ActionResponse>
-): ZAction<ActionSchema, ActionResponse> {
-  return { zType: "Action", payloadSchema, call };
+  responseSchema: ResponseSchema,
+  call: (
+    payload: FromSchema<ActionSchema>
+  ) => Promise<FromSchema<ResponseSchema>>
+): ZAction<ActionSchema, ResponseSchema> {
+  return { zType: "Action", payloadSchema, responseSchema, call };
 }
 
 export function createZGettable<StateSchema, GetOptions>(

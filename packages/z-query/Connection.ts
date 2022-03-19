@@ -44,6 +44,7 @@ export async function serverPost<Request, Response>(
   const res = await fetch(`${context.url}/${path}`, {
     headers: {
       Accept: "application/json",
+      "Content-Type": "application/json",
     },
     method: "post",
     body: JSON.stringify(body),

@@ -14,6 +14,7 @@ import KitchenSinkScreen from "../screens/KitchenSinkScreen";
 import NewConnectionScreen from "../screens/NewConnectionScreen";
 import ConnectionInfoScreen from "../screens/ConnectionInfoScreen";
 import NewDocScreen from "../screens/NewDocScreen";
+import ZNodeScreen from "../screens/ZNodeScreen";
 import ConnectionsScreen from "../screens/ConnectionsScreen";
 import ErrorScreen from "../screens/ErrorScreen";
 
@@ -35,6 +36,11 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="Doc"
         component={DocScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="ZNode"
+        component={ZNodeScreen}
         options={DefaultScreenOptions}
       />
     </HomeStack.Navigator>

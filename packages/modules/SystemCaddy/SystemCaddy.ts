@@ -23,9 +23,15 @@ const CaddySpecSchema = {
 
 export type CaddyConfig = FromSchema<typeof CaddySpecSchema>;
 
-const ApplySystemConfig = createZAction(CaddySpecSchema, async (spec) => {
-  console.log("LOL", spec);
-});
+const ApplySystemConfig = createZAction(
+  CaddySpecSchema,
+  { type: "object", additionalProperties: false } as const,
+
+  async (spec) => {
+    console.log("LOL", spec);
+    return {};
+  }
+);
 
 const SystemCaddy = createZContainer({
   ApplySystemConfig,
