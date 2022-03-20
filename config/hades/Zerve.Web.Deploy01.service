@@ -1,0 +1,16 @@
+[Unit]
+Description=Zerve Server
+Documentation=https://zerve.app
+After=network.target
+
+[Service]
+WorkingDirectory=/home/zerve/deploy-01/apps/web
+Type=simple
+User=zerve
+ExecStart=/home/zerve/deploy-01/node_modules/.bin/next start
+Restart=on-failure
+Environment=PORT=9921
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
