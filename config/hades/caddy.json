@@ -2,40 +2,46 @@
   "apps": {
     "http": {
       "servers": {
-        "main": {
-          "listen": [":80", ":443"],
+        "srv0": {
+          "listen": [":443"],
           "routes": [
             {
               "match": [{ "host": ["hades.main.zerve.dev"] }],
               "handle": [
                 {
-                  "handler": "reverse_proxy",
-                  "upstreams": [{ "dial": "localhost:9988" }]
-                }
-              ]
-            },
-            {
-              "match": [
-                {
-                  "host": ["dev.zerve.app"],
-                  "path": ["/.z/*"]
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [{ "dial": "localhost:9988" }]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ],
-              "handle": [
-                {
-                  "handler": "reverse_proxy",
-                  "upstreams": [{ "dial": "localhost:9920" }]
-                }
-              ]
+              "terminal": true
             },
             {
-              "match": [{ "host": ["dev.zerve.app"] }],
+              "match": [{ "host": ["dev.zerve.dev"] }],
               "handle": [
                 {
-                  "handler": "reverse_proxy",
-                  "upstreams": [{ "dial": "localhost:9921" }]
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [{ "dial": "localhost:9988" }]
+                        }
+                      ]
+                    }
+                  ]
                 }
-              ]
+              ],
+              "terminal": true
             }
           ]
         }

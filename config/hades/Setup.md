@@ -70,8 +70,10 @@ curl -fOL https://github.com/coder/code-server/releases/download/v4.1.0/code-ser
 sudo dpkg -i code-server_4.1.0_amd64.deb
 sudo systemctl enable --now code-server@$USER
 
+sudo apt install -y caddy
 curl -o /usr/bin/caddy -L "https://caddyserver.com/api/download?os=linux&arch=amd64&p=github.com%2Fcaddy-dns%2Fcloudflare&idempotency=81071685807062"
 chmod ugo+x /usr/bin/caddy
+sudo vi /etc/systemd/system/caddy.service
 
 # Now visit http://127.0.0.1:8080. Your password is in ~/.config/code-server/config.yaml
 
