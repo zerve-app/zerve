@@ -29,7 +29,6 @@ apt install -y debian-keyring debian-archive-keyring apt-transport-https
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | tee /etc/apt/trusted.gpg.d/caddy-stable.asc
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
 apt update
-apt install -y caddy
 
 # add a system user, "zerve" for our server to run under.
 
@@ -71,6 +70,9 @@ curl -fOL https://github.com/coder/code-server/releases/download/v4.1.0/code-ser
 sudo dpkg -i code-server_4.1.0_amd64.deb
 sudo systemctl enable --now code-server@$USER
 
+curl -o /usr/bin/caddy -L "https://caddyserver.com/api/download?os=linux&arch=amd64&p=github.com%2Fcaddy-dns%2Fcloudflare&idempotency=81071685807062"
+chmod ugo+x /usr/bin/caddy
+
 # Now visit http://127.0.0.1:8080. Your password is in ~/.config/code-server/config.yaml
 
 vi ~/.config/code-server/config.yaml
@@ -87,7 +89,7 @@ hades.main.zerve.dev {
 reverse_proxy 127.0.0.1:9988
 }
 
-caddy reload -config /etc/caddy/Caddyfile
+caddy reload -config /etc/caddy/caddy.json
 
 yarn global add eas-cli expo-cli
 
@@ -96,3 +98,73 @@ as root: apt install -y zsh pu
 as eric:
 
 chsh -s $(which zsh)
+
+write secrets file to /home/eric/secrets.json
+
+sudo hostname hades.main.zerve.dev
+
+cd ~
+
+git clone --bare git@github.com:zerve-app/zerve.git
+
+# BUILD PROCESS START
+
+# first fetch from our servers main headless repo
+
+cd /home/eric/zerve.git
+git fetch
+cd /home/eric
+
+# in theory you can build a different thing from the default clone, which is the latest main branch
+
+git clone zerve.git z-build-01
+
+cd z-build-01
+
+yarn --offline
+
+rm -rf yarn-package-cache ./.git
+
+yarn build
+
+cd ..
+
+# trailing slash is important here, I think:
+
+tar -zcvf z-build-0.tar.gz z-build-01/
+
+# now the build weighs about 1GB and is oversized because of the mobile stuff. but a mobile build can still run
+
+rm -rf z-build-01
+
+# now build is z-build-0.tar.gz at ~320MB
+
+# BUILD PROCESS END
+
+# DEPLOY PROCESS START
+
+sudo tar -zvxf ./z-build-01.tar.gz -C /home/zerve/
+
+sudo mv /home/zerve/z-build-01 /home/zerve/deploy-01
+
+sudo cp ./z-secrets.json /home/zerve/deploy-01/secrets.json
+
+sudo chown -R zerve:zerve /home/zerve/deploy-01
+
+# DEPLOY PROCESS END
+
+sudo vi Zerve.Server.Deploy01.service
+sudo vi Zerve.Web.Deploy01.service
+
+sudo systemctl daemon-reload
+
+sudo systemctl start Zerve.Server.Deploy01.service
+sudo systemctl start Zerve.Web.Deploy01.service
+sudo systemctl enable Zerve.Server.Deploy01.service
+sudo systemctl enable Zerve.Web.Deploy01.service
+
+sudo journalctl -u Zerve.Server.Deploy01.service
+sudo journalctl -u Zerve.Web.Deploy01.service
+
+sudo systemctl status Zerve.Server.Deploy01.service
+sudo systemctl status Zerve.Web.Deploy01.service
