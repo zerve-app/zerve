@@ -3,6 +3,8 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXApplication (4.0.2):
     - ExpoModulesCore
+  - EXClipboard (2.1.1):
+    - ExpoModulesCore
   - EXConstants (13.0.2):
     - ExpoModulesCore
   - EXCrypto (10.1.2):
@@ -348,6 +350,7 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../../../node_modules/expo-application/ios`)
+  - EXClipboard (from `../../../node_modules/expo-clipboard/ios`)
   - EXConstants (from `../../../node_modules/expo-constants/ios`)
   - EXCrypto (from `../../../node_modules/expo-crypto/ios`)
   - EXFileSystem (from `../../../node_modules/expo-file-system/ios`)
@@ -409,6 +412,8 @@ EXTERNAL SOURCES:
     :podspec: "../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXApplication:
     :path: "../../../node_modules/expo-application/ios"
+  EXClipboard:
+    :path: "../../../node_modules/expo-clipboard/ios"
   EXConstants:
     :path: "../../../node_modules/expo-constants/ios"
   EXCrypto:
@@ -508,6 +513,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXApplication: 54fe5bd6268d697771645e8f1aef8b806a65247a
+  EXClipboard: 8123fcda680538bb0e1f4e6511106553e52d3760
   EXConstants: 88bf79622fbd9b476c96d8ec57fe97ca44fe8e3c
   EXCrypto: ab2ba0df3136a5f2407b8c7e70eb498ac20d704f
   EXFileSystem: 08a3033ac372b6346becf07839e1ccef26fb1058
@@ -558,6 +564,6 @@ SPEC CHECKSUMS:
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
 
-PODFILE CHECKSUM: 45e9aecaa53228491f760bd856f68d980ed74457
+PODFILE CHECKSUM: 606aa8f234cec5692cb58ad58ba5a4a35defefb3
 
 COCOAPODS: 1.11.2

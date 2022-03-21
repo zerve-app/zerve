@@ -9,6 +9,7 @@ import {
   Paragraph,
   useColors,
   VStack,
+  LinkRow,
 } from "@zerve/ui";
 
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
@@ -23,18 +24,12 @@ import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
 import { QueryConnectionProvider, useDocList } from "@zerve/query";
-import { Icon } from "@zerve/ui/Icon";
 import { useBottomSheet } from "../app/BottomSheet";
+import { Icon } from "@zerve/ui/Icon";
 
 function SettingsButton({ onPress }: { onPress: () => void }) {
   const colors = useColors();
-  return (
-    <Button
-      left={<FontAwesome name="gear" size={24} color={colors.text} />}
-      title="Settings"
-      onPress={onPress}
-    />
-  );
+  return <LinkRow icon="gear" title="Settings" onPress={onPress} />;
 }
 
 function LocalDocsSection({}: {}) {
@@ -45,7 +40,7 @@ function LocalDocsSection({}: {}) {
     <PageSection title="Local Projects">
       <VStack>
         {docs?.map((name) => (
-          <Button
+          <LinkRow
             key={name}
             title={name}
             onPress={() => {
@@ -110,7 +105,7 @@ function ConnectionDocListSection({ connection }: { connection: Connection }) {
     >
       <VStack>
         {data?.docs?.children?.map((childKey: string) => (
-          <Button
+          <LinkRow
             key={childKey}
             title={childKey}
             onPress={() => {

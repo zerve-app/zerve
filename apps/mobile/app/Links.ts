@@ -24,6 +24,7 @@ export type SettingsStackParamList = {
 export type HomeStackParamList = {
   Home: undefined;
   NewDoc: undefined;
+  RawValue: { value: any; title: string };
   Doc: { connection: null | string; name: string };
   ZNode: { connection: null | string; path: string[] };
 };

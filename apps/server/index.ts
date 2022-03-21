@@ -19,6 +19,7 @@ import {
   MessageSMS,
   MessageEmail,
   SystemFetch,
+  SystemSSH,
 } from "@zerve/modules";
 import SystemCommands from "@zerve/modules/SystemCommands/SystemCommands";
 import { createZChainState } from "@zerve/modules/CoreChain/CoreChain";
@@ -155,6 +156,7 @@ export async function startApp() {
       Fetch: SystemFetch.Fetch,
       RootFiles: InternalRootFiles,
       Commands: InternalCommands,
+      SSH: SystemSSH.createSystemSSH(InternalCommands),
       SMS,
       Email,
     }),

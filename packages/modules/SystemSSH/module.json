@@ -1,0 +1,6 @@
+{
+  "module": "./SystemSSH",
+  "npmDependencies": {
+    "ssh-config": "4.x.x"
+  }
+}

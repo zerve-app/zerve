@@ -1,12 +1,13 @@
 import React from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
-import { Button, PageSection, PageTitle, VStack } from "@zerve/ui";
+import { Button, PageSection, PageTitle, VStack, LinkRow } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { dangerouslyClearAllStorage } from "@zerve/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { manifest, releaseChannel, reloadAsync, updateId } from "expo-updates";
 import { InfoRow } from "@zerve/ui/Row";
+import { Icon } from "@zerve/ui/Icon";
 
 function NeedUpdateRow() {
   return <InfoRow label="Update" value={JSON.stringify(manifest)} />;
@@ -20,11 +21,9 @@ export default function SettingsScreen({
     <AppPage>
       <PageTitle title="App Settings" />
       <VStack>
-        <Button
+        <LinkRow
           title="Server Connections"
-          left={({ color }) => (
-            <FontAwesome name="link" color={color} size={24} />
-          )}
+          icon="link"
           onPress={() => {
             navigation.navigate("Connections");
           }}
@@ -32,31 +31,41 @@ export default function SettingsScreen({
       </VStack>
       <PageSection title="Internal Features">
         <VStack>
-          <Button
+          <LinkRow
             title="Kitchen Sink"
+            icon="shower"
             onPress={() => {
               navigation.navigate("KitchenSink");
             }}
-            left={({ color }) => (
-              <FontAwesome name="shower" color={color} size={24} />
-            )}
           />
         </VStack>
       </PageSection>
       <PageSection title="Local Data">
         <VStack>
-          <Button title="Export Local Database" onPress={() => {}} />
-          <Button title="Import Local Database" onPress={() => {}} />
           <Button
-            left={({ color }) => (
-              <FontAwesome name="trash" color={color} size={24} />
+            title="Export Local Database"
+            right={({ color }) => (
+              <FontAwesome name="upload" color={color} size={24} />
+            )}
+            onPress={() => {}}
+          />
+          <Button
+            right={({ color }) => (
+              <FontAwesome name="download" color={color} size={24} />
+            )}
+            title="Import Local Database"
+            onPress={() => {}}
+          />
+          <Button
+            right={({ color }) => (
+              <FontAwesome name="refresh" color={color} size={24} />
             )}
             title="Run Garbage Collection"
             onPress={() => {}}
           />
           <Button
             title="Reset All Local Data"
-            left={({ color }) => (
+            right={({ color }) => (
               <FontAwesome name="trash" color={color} size={24} />
             )}
             danger
@@ -76,7 +85,8 @@ export default function SettingsScreen({
           <InfoRow label="Release Channel" value={releaseChannel} />
           <InfoRow label="Update ID" value={updateId || "?"} />
           <Button
-            title="Restart"
+            title="Restart App"
+            right={(p) => <Icon {...p} name="refresh" />}
             onPress={() => {
               reloadAsync()
                 .then(() => {})

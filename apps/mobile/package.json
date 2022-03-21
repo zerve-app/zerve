@@ -27,6 +27,7 @@
     "@zerve/query": "*",
     "expo": ">=44.0.0-0 <45.0.0",
     "expo-asset": "~8.4.6",
+    "expo-clipboard": "^2.1.1",
     "expo-constants": "~13.0.2",
     "expo-crypto": "~10.1.1",
     "expo-font": "~10.0.5",

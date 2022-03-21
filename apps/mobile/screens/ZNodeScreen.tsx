@@ -1,12 +1,14 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 
-import { HomeStackScreenProps } from "../app/Links";
+import { HomeStackParamList, HomeStackScreenProps } from "../app/Links";
 import AppPage from "../components/AppPage";
 import {
   AsyncButton,
   Button,
   HStack,
+  IconButton,
   Input,
+  LinkRow,
   PageTitle,
   Paragraph,
   SwitchInput,
@@ -19,8 +21,16 @@ import { useBottomSheet } from "../app/BottomSheet";
 import { useBottomSheetDynamicSnapPoints } from "@gorhom/bottom-sheet";
 import { postZAction, QueryConnectionProvider, useZNode } from "@zerve/query";
 import { useConnection, useConnections } from "../app/Connection";
-import { StackActions, useNavigation } from "@react-navigation/native";
+import {
+  NavigationProp,
+  StackActions,
+  useNavigation,
+} from "@react-navigation/native";
 import { JSONSchema } from "@zerve/core";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { JSONSchemaForm } from "../components/JSONSchemaForm";
+import { Icon } from "@zerve/ui/Icon";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 function ZContainerNode({
   type,
@@ -38,7 +48,7 @@ function ZContainerNode({
   return (
     <VStack>
       {childNames.map((childName) => (
-        <Button
+        <LinkRow
           title={childName}
           key={childName}
           onPress={() => {
@@ -71,7 +81,7 @@ function ZGroupNode({
 
   return (
     <VStack>
-      <Paragraph>{JSON.stringify(value)}</Paragraph>
+      <JSONSchemaForm value={value} schema={type.value} />
       {childNames.map((childName: string) => (
         <Button
           title={childName}
@@ -88,116 +98,6 @@ function ZGroupNode({
       ))}
     </VStack>
   );
-}
-
-// function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
-
-//   return null;
-// }
-
-function JSONSchemaObjectForm({
-  value,
-  onValue,
-  schema,
-}: {
-  value: any;
-  onValue: (v: any) => void;
-  schema: JSONSchema;
-}) {
-  const { properties, additionalProperties } = schema;
-  return (
-    <>
-      {Object.entries(properties).map(([propertyName, propertySchema]) => (
-        <JSONSchemaFieldForm
-          value={value?.[propertyName]}
-          schema={propertySchema}
-          label={propertyName}
-          onValue={(propertyValue) =>
-            onValue({ ...value, [propertyName]: propertyValue })
-          }
-        />
-      ))}
-      {additionalProperties !== false && !!onValue && (
-        <Button onPress={() => {}} title="Add" />
-      )}
-    </>
-  );
-}
-
-function JSONSchemaFieldForm({
-  label,
-  value,
-  onValue,
-  schema,
-}: {
-  label: string;
-  value: any;
-  onValue: (v: any) => void;
-  schema: JSONSchema;
-}) {
-  if (schema.type === "string") {
-    return (
-      <Input value={value} onValue={onValue} label={schema.title || label} />
-    );
-  }
-  if (schema.type === "number") {
-    return (
-      <Input value={value} onValue={onValue} label={schema.title || label} />
-    );
-  }
-  if (schema.type === "boolean") {
-    return (
-      <SwitchInput
-        value={value}
-        onValue={onValue}
-        label={schema.title || label}
-      />
-    );
-  }
-  return null;
-}
-
-const allTypesList = [
-  "boolean",
-  "string",
-  "number",
-  "null",
-  "array",
-  "object",
-] as const;
-function JSONSchemaForm({
-  value,
-  onValue,
-  schema,
-}: {
-  value: any;
-  onValue: (v: any) => void;
-  schema: JSONSchema;
-}) {
-  if (schema === false) return null;
-  let objSchema = schema;
-  if (schema === true) objSchema = {};
-  const type = schema?.type || allTypesList;
-  let onlyType = Array.isArray(type) ? null : type;
-  if (!onlyType && type.length === 1) {
-    onlyType = type[0];
-  }
-  if (onlyType === "object") {
-    return (
-      <JSONSchemaObjectForm value={value} onValue={onValue} schema={schema} />
-    );
-  }
-  if (onlyType === "string") {
-    return (
-      <JSONSchemaFieldForm
-        label={objSchema?.title || "string"}
-        value={value}
-        onValue={onValue}
-        schema={schema}
-      />
-    );
-  }
-  return null;
 }
 
 function ZActionNode({
@@ -223,7 +123,7 @@ function ZActionNode({
         schema={type.payload}
       />
       <AsyncButton
-        title="Submit"
+        title={type.payload?.submitLabel || "Submit"}
         primary
         onPress={async () => {
           const resp = await postZAction(conn, path, actionValue);
@@ -247,12 +147,25 @@ function ZGettableNode({
 }) {
   const { dispatch } = useNavigation();
   const childNames = value?.children || [];
-
-  return <Paragraph>{JSON.stringify(value)}</Paragraph>;
+  if (type[".t"] !== "Gettable")
+    throw new Error("Unexpected z type for ZGettableNode");
+  return (
+    <Paragraph>
+      <JSONSchemaForm value={value} schema={type.value} />
+    </Paragraph>
+  );
 }
 
-function ZNode({ path, connection }: { path: string[]; connection: string }) {
-  const { isLoading, data } = useZNode(path);
+function ZNodePage({
+  path,
+  connection,
+}: {
+  path: string[];
+  connection: string;
+}) {
+  const { isLoading, data, refetch, isRefetching } = useZNode(path);
+  const { navigate } =
+    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const type = data?.type[".t"];
   let body = null;
   if (type === "Container") {
@@ -295,12 +208,54 @@ function ZNode({ path, connection }: { path: string[]; connection: string }) {
       />
     );
   }
+  const onOptions = useBottomSheet(({ onClose }) => (
+    <VStack>
+      <Button
+        title="Reload"
+        left={(p) => <Icon {...p} name="refresh" />}
+        onPress={() => {
+          refetch();
+          onClose();
+        }}
+      />
+      <Button
+        title="Raw Type"
+        left={(p) => <MaterialCommunityIcons {...p} name="code-json" />}
+        onPress={() => {
+          onClose();
+          navigate("RawValue", {
+            title: `${path.join("/")} Type`,
+            value: data?.type,
+          });
+        }}
+      />
+      <Button
+        title="Raw Value"
+        left={(p) => <MaterialCommunityIcons {...p} name="code-json" />}
+        onPress={() => {
+          onClose();
+          navigate("RawValue", {
+            title: `${path.join("/")} Value`,
+            value: data?.node,
+          });
+        }}
+      />
+    </VStack>
+  ));
   return (
-    <>
-      <PageTitle title={isLoading ? "... " : path.join("/")} />
+    <AppPage
+      isLoading={isLoading || isRefetching}
+      right={
+        <IconButton
+          altTitle="Options"
+          onPress={onOptions}
+          icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
+        />
+      }
+    >
+      <PageTitle title={path.join("/")} />
       {body}
-      {/* <Paragraph>{JSON.stringify({ data })}</Paragraph> */}
-    </>
+    </AppPage>
   );
 }
 
@@ -314,10 +269,8 @@ export default function ZNodeScreen({
   const conn = connections.find((conn) => conn.key === connection);
   if (!conn) throw new Error("Connection not found");
   return (
-    <AppPage>
-      <QueryConnectionProvider value={conn}>
-        <ZNode path={path} connection={connection} />
-      </QueryConnectionProvider>
-    </AppPage>
+    <QueryConnectionProvider value={conn}>
+      <ZNodePage path={path} connection={connection} />
+    </QueryConnectionProvider>
   );
 }

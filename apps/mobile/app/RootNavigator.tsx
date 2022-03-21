@@ -17,6 +17,7 @@ import NewDocScreen from "../screens/NewDocScreen";
 import ZNodeScreen from "../screens/ZNodeScreen";
 import ConnectionsScreen from "../screens/ConnectionsScreen";
 import ErrorScreen from "../screens/ErrorScreen";
+import RawValueScreen from "../screens/RawValueScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -41,6 +42,11 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="ZNode"
         component={ZNodeScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="RawValue"
+        component={RawValueScreen}
         options={DefaultScreenOptions}
       />
     </HomeStack.Navigator>

@@ -57,6 +57,7 @@ export type ButtonProps = {
   danger?: boolean;
   onPress: () => void;
   border?: number;
+  textAlign?: "right" | "left" | "center";
 };
 export function Button({
   title,
@@ -66,6 +67,7 @@ export function Button({
   danger,
   onPress,
   border,
+  textAlign = "center",
 }: ButtonProps) {
   const colors = useColors();
   const pressHeight = useSharedValue(0.5); // 0.5 = inactive, 1 = hover/active, 0 = pressed
@@ -122,7 +124,7 @@ export function Button({
             fontSize: 16,
             fontWeight: primary ? "bold" : "normal",
             flex: 1,
-            textAlign: "center",
+            textAlign,
           }}
         >
           {title}

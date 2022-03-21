@@ -1,5 +1,7 @@
-import React, { ReactNode } from "react";
+import React, { ComponentProps, ReactNode, ReactPropTypes } from "react";
 import { View } from "react-native";
+import { Button } from "./Button";
+import { Icon } from "./Icon";
 import Layout from "./Layout";
 import { smallShadow } from "./Style";
 import { Label } from "./Text";
@@ -34,15 +36,36 @@ export function InfoRow({
   return (
     <View
       style={{
-        ...RowStyles,
-        backgroundColor: colors.background,
+        // ...RowStyles,
+        // backgroundColor: colors.background,
         flexDirection: "row",
         justifyContent: "space-between",
       }}
     >
-      <Label style={{}}>{label}</Label>
+      <Label style={{}} secondary minor>
+        {label}
+      </Label>
       {children}
       {value != undefined && <ThemedText style={{}}>{value}</ThemedText>}
     </View>
+  );
+}
+
+export function LinkRow({
+  onPress,
+  title,
+  icon,
+}: {
+  onPress: () => void;
+  title: string;
+  icon?: ComponentProps<typeof Icon>["name"];
+}) {
+  return (
+    <Button
+      textAlign="left"
+      onPress={onPress}
+      title={title}
+      left={icon ? (p) => <Icon {...p} name={icon} /> : null}
+    />
   );
 }

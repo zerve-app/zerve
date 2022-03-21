@@ -15,15 +15,28 @@ function createZMessageEmail(config: {
   return createZAction(
     {
       type: "object",
+      title: "SendEmailActionRequest",
+      description: "Use SendGrid to send an email.",
+      submitLabel: "Send",
       properties: {
-        message: { type: "string" },
-        subject: { type: "string" },
-        toEmail: { type: "string", format: "email" },
+        message: { title: "Message Text", type: "string" },
+        subject: { title: "Subject", type: "string" },
+        toEmail: {
+          title: "To Email",
+          type: "string",
+          placeholder: "my@email.example",
+          format: "email",
+          tags: ["email"],
+        },
       },
       required: ["message", "subject", "toEmail"],
       additionalProperties: false,
     } as const,
-    { type: "object", additionalProperties: false } as const,
+    {
+      type: "object",
+      title: "SendEmailActionResponse",
+      additionalProperties: false,
+    } as const,
     async ({ message, subject, toEmail }) => {
       try {
         await sgMail.send({

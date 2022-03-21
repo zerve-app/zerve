@@ -9,7 +9,8 @@
     "@sendgrid/mail": "*",
     "axios": "*",
     "obs-websocket-js": "^4.0.3",
-    "fs-extra": "*"
+    "fs-extra": "*",
+    "ssh-config": "4.x.x"
   },
   "main": "./index.ts",
   "types": "./index.ts",

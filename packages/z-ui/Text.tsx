@@ -45,25 +45,43 @@ export function SmallSectionTitle({ children }: { children: ReactNode }) {
 export function Label({
   children,
   style,
+  minor,
   secondary,
 }: {
   children: ReactNode;
   secondary?: boolean;
+  minor?: boolean;
   style?: StyleProp<TextStyle>;
 }) {
   return (
     <ThemedText
       secondary={secondary}
-      style={[{ fontWeight: "bold", fontSize: 16 }, style]}
+      style={[{ fontWeight: "bold", fontSize: minor ? 14 : 16 }, style]}
     >
       {children}
     </ThemedText>
   );
 }
 
-export function Paragraph({ children }: { children: ReactNode }) {
+export function Paragraph({
+  children,
+  style,
+}: {
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+}) {
   return (
-    <ThemedText style={{ fontSize: 14, margin: 12 }}>{children}</ThemedText>
+    <ThemedText
+      style={[
+        {
+          fontSize: 14,
+          margin: 12,
+        },
+        style,
+      ]}
+    >
+      {children}
+    </ThemedText>
   );
 }
 

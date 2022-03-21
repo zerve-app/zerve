@@ -6527,6 +6527,11 @@ expo-asset@~8.4.6:
     path-browserify "^1.0.0"
     url-parse "^1.4.4"
 
+expo-clipboard@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-2.1.1.tgz#77a506eb70918e6a4708760e6cfb0fafdc18192d"
+  integrity sha512-ay4zv7JGIWT/lqFsonWK8BQ4FuMLaSNFg5gaYJQcIZgZoCyF9f7GRh1HrV3tA0rCPA3i9T6Kt8/8vMMrraH9RQ==
+
 expo-constants@~13.0.0, expo-constants@~13.0.2:
   version "13.0.2"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-13.0.2.tgz#b489ecd575cc82a9a0b3dfbf2385d45a44300eb1"
@@ -13131,6 +13136,11 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
+
+ssh-config@4.x.x:
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/ssh-config/-/ssh-config-4.1.3.tgz#a9a4703f852d52eefb2fc20d9cecc7f459adf149"
+  integrity sha512-7oAUJ1wSImvOCujmtKNrW0eKvB1UwrTE5hoYsCONY4WRJwKe7XbC4ETOgLeTwdtv6lE8ao4TtaQAHDS/BBRRvQ==
 
 ssri@^6.0.1:
   version "6.0.2"
