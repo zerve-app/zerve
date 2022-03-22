@@ -84,7 +84,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
   }, [sheetConfig]);
   return (
     <BottomSheetCtx.Provider value={context}>
-      <View style={{ flex: 1, backgroundColor: "blue" }}>
+      <View style={{ flex: 1 }}>
         {children}
         {sheetConfig && (
           <Pressable style={AbsoluteFill} onPress={context.close}></Pressable>
