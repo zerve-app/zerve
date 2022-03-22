@@ -13,3 +13,5 @@ export * from "./useColors";
 export * from "./useColorScheme";
 export * from "./Row";
 export * from "./BottomSheet";
+export * from "./Icon";
+export * from "./Dropdown";

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { JSONSchema } from "@zerve/core";
 import {
   Button,
@@ -8,14 +8,71 @@ import {
   Paragraph,
   SwitchInput,
   ThemedText,
+  Dropdown,
 } from "@zerve/ui";
-import { Dropdown } from "./Dropdown";
+
 import { NavigationContext, useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView } from "react-native";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
 //   return null;
 // }
+
+function extractTypeSchema(type, schemaObj) {
+  const subType = { type };
+  if (type === "string") {
+    subType.minLength = schemaObj.minLength;
+    subType.maxLength = schemaObj.maxLength;
+    subType.pattern = schemaObj.pattern;
+    subType.format = schemaObj.format;
+  } else if (type === "object") {
+    subType.required = schemaObj.required;
+    subType.properties = schemaObj.properties;
+    subType.patternProperties = schemaObj.properties;
+    subType.additionalProperties = schemaObj.additionalProperties;
+    subType.unevaluatedProperties = schemaObj.unevaluatedProperties;
+    subType.propertyNames = schemaObj.propertyNames;
+    subType.minProperties = schemaObj.minProperties;
+    subType.maxProperties = schemaObj.maxProperties;
+  } else if (type === "array") {
+  } else if (type === "integer" || type === "number") {
+    subType.minimum = schemaObj.minimum;
+    subType.exclusiveMinimum = schemaObj.exclusiveMinimum;
+    subType.maximum = schemaObj.maximum;
+    subType.exclusiveMaximum = schemaObj.exclusiveMaximum;
+    subType.multipleOf = schemaObj.multipleOf;
+  }
+
+  return subType;
+}
+
+function expandSchema(schema: JSONSchema): JSONSchema | undefined {
+  if (schema === false) return undefined;
+  let schemaObj = schema;
+  if (schemaObj === true) schemaObj = {};
+  const { type } = schemaObj;
+  if (schemaObj.oneOf || schemaObj.anyOf || schemaObj.allOf || schemaObj.not) {
+    // composed schemas cannot really be expanded, they kind of already are. theoretically we should do some "factoring" here. eg: if we have a union of two strings we can factor out type: string to the top level.
+    // also, "allOf" can be collapsed, and "not" can be pre-evaluated
+    return schemaObj;
+  }
+  if (type == null) {
+    // any!
+    return {
+      oneOf: [allTypesList.map((subType) => ({ type: subType }))],
+    };
+  }
+  if (Array.isArray(type)) {
+    if (schema.oneOf) {
+      throw new Error("Cannot expand a schema that has types array and oneOf.");
+    }
+    return {
+      oneOf: [type.map((subType) => extractTypeSchema(subType, schemaObj))],
+    };
+  }
+
+  return schema;
+}
 
 export function JSONSchemaObjectForm({
   value,
@@ -159,7 +216,35 @@ function ArrayFormField({
 }) {
   return <ThemedText>Array support coming soon</ThemedText>;
 }
-
+function EnumFormField({
+  label,
+  value,
+  onValue,
+  schema,
+}: {
+  label: string;
+  value: any;
+  onValue?: (v: any) => void;
+  schema: JSONSchema;
+}) {
+  if (!onValue) {
+    return <InfoRow label={label} value={value} />;
+  }
+  return (
+    <>
+      <Label>{label}</Label>
+      <Dropdown
+        value={value}
+        onOptionSelect={onValue}
+        options={schema.enum.map((optionValue) => ({
+          title: String(optionValue),
+          value: optionValue,
+        }))}
+      />
+      {schema.description && <Paragraph>{schema.description}</Paragraph>}
+    </>
+  );
+}
 export function FormField({
   label,
   value,
@@ -171,6 +256,7 @@ export function FormField({
   onValue?: (v: any) => void;
   schema: JSONSchema;
 }) {
+  const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
   if (isLeafType(schema.type)) {
     return (
       <LeafFormField
@@ -183,6 +269,43 @@ export function FormField({
   }
   if (schema.const) {
     return <InfoRow label={label} value={JSON.stringify(value)} />;
+  }
+  if (expandedSchema.oneOf) {
+    const unionOptions = inspectUnionSchema(schema);
+    const matched = unionOptions.match(value);
+    const matchedSchema = expandedSchema.oneOf[matched];
+    return (
+      <>
+        <Label>{label}</Label>
+        <Dropdown
+          options={unionOptions.options}
+          value={matched}
+          onOptionSelect={(optionValue) => {
+            const converter = unionOptions.converters[optionValue];
+            const convertedValue = converter(value);
+            onValue(convertedValue);
+          }}
+        />
+        {matchedSchema != null && (
+          <FormField
+            label={"uh"}
+            value={value}
+            onValue={onValue}
+            schema={matchedSchema}
+          />
+        )}
+      </>
+    );
+  }
+  if (schema.enum) {
+    return (
+      <EnumFormField
+        value={value}
+        schema={schema}
+        label={label}
+        onValue={onValue}
+      />
+    );
   }
   if (schema.type === "object") {
     return (
@@ -228,16 +351,14 @@ export function LeafFormField({
   if (schema.type === "string") {
     return (
       <>
-        <KeyboardAvoidingView behavior="padding">
-          <Input
-            disabled={!onValue}
-            value={value}
-            onValue={onValue}
-            label={schema.title || label}
-            placeholder={schema.placeholder}
-          />
-          {description}
-        </KeyboardAvoidingView>
+        <Input
+          disabled={!onValue}
+          value={value}
+          onValue={onValue}
+          label={schema.title || label}
+          placeholder={schema.placeholder}
+        />
+        {description}
       </>
     );
   }
@@ -287,6 +408,7 @@ function getTypeOf(v) {
 function inspectUnionSchema(schema) {
   // schema has oneOf and we need to understand how children are differentiated
   const optionSchemas = schema.oneOf;
+  console.log(schema);
   const aggregateTypeOptions = new Set([]);
   const distinctTypeOptions = new Set([]);
 
@@ -418,18 +540,15 @@ export function JSONSchemaForm({
   onValue?: (v: any) => void;
   schema: JSONSchema;
 }) {
-  if (schema === false) return null;
-  let objSchema = schema;
-  if (schema === true) objSchema = {};
-  const type = schema?.type || allTypesList;
-  let onlyType = Array.isArray(type) ? null : type;
-  if (!onlyType && type.length === 1) {
-    onlyType = type[0];
+  const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
+  if (!expandedSchema) {
+    return <ThemedText>Value not allowed.</ThemedText>;
   }
-  if (schema.oneOf) {
-    const unionOptions = inspectUnionSchema(schema);
+
+  if (expandedSchema.oneOf) {
+    const unionOptions = inspectUnionSchema(expandedSchema);
     const matched = unionOptions.match(value);
-    const matchedSchema = schema.oneOf[matched];
+    const matchedSchema = expandedSchema.oneOf[matched];
     return (
       <>
         <Dropdown
@@ -451,28 +570,39 @@ export function JSONSchemaForm({
       </>
     );
   }
-  if (schema.anyOf) {
+  if (expandedSchema.anyOf) {
     return <ThemedText>anyOf schema unsupported</ThemedText>;
   }
-  if (onlyType === "array") {
+  if (expandedSchema.type === "array") {
     return (
       <JSONSchemaArrayForm value={value} onValue={onValue} schema={schema} />
     );
   }
-  if (onlyType === "object") {
+  if (expandedSchema.type === "object") {
     return (
       <JSONSchemaObjectForm value={value} onValue={onValue} schema={schema} />
     );
   }
-  if (isLeafType(onlyType)) {
+  if (isLeafType(expandedSchema.type)) {
     return (
       <LeafFormField
-        label={objSchema?.title || onlyType}
+        label={objSchema?.title || expandedSchema.type}
         value={value}
         onValue={onValue}
         schema={schema}
       />
     );
   }
-  return null;
+  if (expandedSchema.enum) {
+    return (
+      <EnumFormField
+        label={objSchema?.title || expandedSchema.type || "enum"}
+        value={value}
+        onValue={onValue}
+        schema={schema}
+      />
+    );
+  }
+
+  return <ThemedText>Failed to create form for this schema</ThemedText>;
 }

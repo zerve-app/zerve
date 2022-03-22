@@ -32,8 +32,13 @@ export async function serverGet<Response>(
       Accept: "application/json",
     },
   });
-  const value = await res.json();
-  return value;
+  try {
+    const value = await res.json();
+    return value;
+  } catch (e) {
+    console.error("Failed to GET " + path);
+    throw e;
+  }
 }
 
 export async function serverPost<Request, Response>(

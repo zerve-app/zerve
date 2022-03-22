@@ -5,12 +5,13 @@ import { useColors } from "./useColors";
 import { ThemedText } from "./Themed";
 import { bigShadow } from "./Style";
 import { BottomSheetProvider } from "./BottomSheet";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export function Page({ children }: { children: ReactNode }) {
   const colors = useColors();
   return (
     <BottomSheetProvider>
-      <ScrollView
+      <KeyboardAwareScrollView
         style={{
           backgroundColor: colors.backgroundDim,
           ...bigShadow,
@@ -18,7 +19,7 @@ export function Page({ children }: { children: ReactNode }) {
         }}
       >
         <SafeAreaView>{children}</SafeAreaView>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </BottomSheetProvider>
   );
 }

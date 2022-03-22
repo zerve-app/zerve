@@ -111,7 +111,6 @@ export default function KitchenSinkScreen({
             type: "array",
             items: {
               type: "string",
-              description: "important details",
             },
           }}
         />
