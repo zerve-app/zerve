@@ -12,6 +12,7 @@ export function Input({
   autoCapitalize,
   autoFocus,
   disabled,
+  keyboardType,
 }: {
   value: string;
   onValue?: (value: string) => void;
@@ -20,6 +21,20 @@ export function Input({
   autoCapitalize?: "characters" | "words" | "none" | "sentences";
   autoFocus?: boolean;
   disabled?: boolean;
+  keyboardType?:
+    | "default"
+    | "numeric"
+    | "email-address"
+    | "ascii-capable"
+    | "numbers-and-punctuation"
+    | "url"
+    | "number-pad"
+    | "phone-pad"
+    | "name-phone-pad"
+    | "decimal-pad"
+    | "twitter"
+    | "web-search"
+    | "visible-password";
 }) {
   const colors = useColors();
   return (
@@ -35,6 +50,7 @@ export function Input({
           backgroundColor: colors.background,
         }}
         focusable={!disabled}
+        keyboardType={keyboardType}
         editable={!disabled}
         autoCapitalize={autoCapitalize}
         value={value}

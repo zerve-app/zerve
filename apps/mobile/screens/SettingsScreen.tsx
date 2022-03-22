@@ -4,19 +4,16 @@ import { SettingsStackScreenProps } from "../app/Links";
 import { Button, PageSection, PageTitle, VStack, LinkRow } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { dangerouslyClearAllStorage } from "@zerve/native";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { manifest, releaseChannel, reloadAsync, updateId } from "expo-updates";
 import { InfoRow } from "@zerve/ui/Row";
 import { Icon } from "@zerve/ui/Icon";
-
-function NeedUpdateRow() {
-  return <InfoRow label="Update" value={JSON.stringify(manifest)} />;
-}
+import { useNavigation } from "@react-navigation/native";
 
 export default function SettingsScreen({
   navigation,
 }: SettingsStackScreenProps<"Settings">) {
-  // const { goBack } = useNavigation();
+  const { navigate } = useNavigation();
   return (
     <AppPage>
       <PageTitle title="App Settings" />
@@ -80,8 +77,16 @@ export default function SettingsScreen({
       </PageSection>
       <PageSection title="App Info / Version">
         <VStack>
-          <NeedUpdateRow />
-          <InfoRow label="Mainifest" value={JSON.stringify(manifest)} />
+          <Button
+            title="Raw Manifest"
+            left={(p) => <MaterialCommunityIcons {...p} name="code-json" />}
+            onPress={() => {
+              navigate("RawValue", {
+                title: `App Manifest`,
+                value: manifest,
+              });
+            }}
+          />
           <InfoRow label="Release Channel" value={releaseChannel} />
           <InfoRow label="Update ID" value={updateId || "?"} />
           <Button

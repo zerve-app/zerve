@@ -24,7 +24,6 @@ export type SettingsStackParamList = {
 export type HomeStackParamList = {
   Home: undefined;
   NewDoc: undefined;
-  RawValue: { value: any; title: string };
   Doc: { connection: null | string; name: string };
   ZNode: { connection: null | string; path: string[] };
 };
@@ -34,6 +33,7 @@ export type RootStackParamList = {
   SettingsStack: NavigatorScreenParams<SettingsStackParamList>;
   Error: { error: GenericError<any, any> };
   JSONInput: { value: any; schema: any; onValue: (v: any) => void };
+  RawValue: { value: any; title: string };
   NotFound: undefined;
 };
 

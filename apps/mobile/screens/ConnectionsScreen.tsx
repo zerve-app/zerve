@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, PageTitle, VStack } from "@zerve/ui";
+import { Button, LinkRow, PageTitle, VStack } from "@zerve/ui";
 
 import { RootStackParamList } from "../app/Links";
 import { useNavigation } from "@react-navigation/native";
@@ -20,12 +20,10 @@ export default function ConnectionsScreen() {
       <PageTitle title="Server Connections" />
       <VStack>
         {connections.map((connection) => (
-          <Button
+          <LinkRow
             key={connection.key}
             title={connection.name}
-            left={({ color }) => (
-              <FontAwesome name="link" color={color} size={24} />
-            )}
+            icon="link"
             onPress={() => {
               navigation.navigate("ConnectionInfo", {
                 connection: connection.key,

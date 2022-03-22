@@ -45,11 +45,6 @@ function HomeNavigator() {
         component={ZNodeScreen}
         options={DefaultScreenOptions}
       />
-      <HomeStack.Screen
-        name="RawValue"
-        component={RawValueScreen}
-        options={DefaultScreenOptions}
-      />
     </HomeStack.Navigator>
   );
 }
@@ -121,6 +116,16 @@ export default function RootNavigator() {
       <RootStack.Screen
         name="SettingsStack"
         component={SettingsNavigator}
+        options={{
+          ...DefaultScreenOptions,
+          presentation: "modal",
+          statusBarStyle: "light",
+          statusBarAnimation: "fade",
+        }}
+      />
+      <RootStack.Screen
+        name="RawValue"
+        component={RawValueScreen}
         options={{
           ...DefaultScreenOptions,
           presentation: "modal",

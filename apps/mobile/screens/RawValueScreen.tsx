@@ -14,10 +14,7 @@ import { setString } from "expo-clipboard";
 import { Icon } from "@zerve/ui/Icon";
 import { Pressable } from "react-native";
 
-export default function RawValueScreen({
-  navigation,
-  route,
-}: HomeStackScreenProps<"RawValue">) {
+function RawValuePage({ navigation, route }: HomeStackScreenProps<"RawValue">) {
   const { value, title } = route.params;
   const onOptions = useBottomSheet(({ onClose }) => (
     <VStack>
@@ -32,15 +29,12 @@ export default function RawValueScreen({
     </VStack>
   ));
   return (
-    <AppPage
-      right={
-        <IconButton
-          altTitle="Options"
-          onPress={onOptions}
-          icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
-        />
-      }
-    >
+    <>
+      <IconButton
+        altTitle="Options"
+        onPress={onOptions}
+        icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
+      />
       <PageTitle title={title} />
       <Pressable onPress={onOptions}>
         <Paragraph
@@ -51,6 +45,17 @@ export default function RawValueScreen({
           {JSON.stringify(value, null, 2)}
         </Paragraph>
       </Pressable>
+    </>
+  );
+}
+
+export default function RawValueScreen({
+  navigation,
+  route,
+}: HomeStackScreenProps<"RawValue">) {
+  return (
+    <AppPage>
+      <RawValuePage route={route} navigation={navigation} />
     </AppPage>
   );
 }

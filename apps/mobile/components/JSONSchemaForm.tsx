@@ -11,6 +11,7 @@ import {
 } from "@zerve/ui";
 import { Dropdown } from "./Dropdown";
 import { NavigationContext, useNavigation } from "@react-navigation/native";
+import { KeyboardAvoidingView } from "react-native";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
 //   return null;
@@ -75,6 +76,52 @@ export function JSONSchemaObjectForm({
     </>
   );
 }
+
+export function JSONSchemaArrayForm({
+  value,
+  onValue,
+  schema,
+}: {
+  value: any;
+  onValue?: (v: any) => void;
+  schema: JSONSchema;
+}) {
+  if (!Array.isArray(value))
+    return <ThemedText>Value is not an array</ThemedText>;
+  return (
+    <>
+      {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
+      {value.map((childValue, childValueIndex) => {
+        return (
+          <FormField
+            label={`#${childValueIndex}`}
+            key={childValueIndex}
+            value={childValue}
+            schema={schema.items || {}}
+            onValue={
+              onValue
+                ? (childV) => {
+                    const newValue = [...value];
+                    newValue[childValueIndex] = childV;
+                    onValue(newValue);
+                  }
+                : undefined
+            }
+          />
+        );
+      })}
+      {!!onValue && (
+        <Button
+          onPress={() => {
+            onValue([...value, null]);
+          }}
+          title="Add"
+        />
+      )}
+    </>
+  );
+}
+
 function ObjectFormField({
   label,
   value,
@@ -181,21 +228,26 @@ export function LeafFormField({
   if (schema.type === "string") {
     return (
       <>
-        <Input
-          value={value}
-          onValue={onValue}
-          label={schema.title || label}
-          placeholder={schema.placeholder}
-        />
-        {description}
+        <KeyboardAvoidingView behavior="padding">
+          <Input
+            disabled={!onValue}
+            value={value}
+            onValue={onValue}
+            label={schema.title || label}
+            placeholder={schema.placeholder}
+          />
+          {description}
+        </KeyboardAvoidingView>
       </>
     );
   }
-  if (schema.type === "number") {
+  if (schema.type === "number" || schema.type === "integer") {
+    const defaultNumber = schema.default || 0;
     return (
       <Input
         disabled={!onValue}
-        value={String(value)}
+        keyboardType={schema.type === "integer" ? "number-pad" : "numeric"}
+        value={value == null ? String(defaultNumber) : String(value)}
         onValue={
           onValue ? (valueString) => onValue(Number(valueString)) : undefined
         }
@@ -206,6 +258,7 @@ export function LeafFormField({
   if (schema.type === "boolean") {
     return (
       <SwitchInput
+        disabled={!onValue}
         value={value}
         onValue={onValue}
         label={schema.title || label}
@@ -402,7 +455,9 @@ export function JSONSchemaForm({
     return <ThemedText>anyOf schema unsupported</ThemedText>;
   }
   if (onlyType === "array") {
-    return <ThemedText>array schema unsupported lol</ThemedText>;
+    return (
+      <JSONSchemaArrayForm value={value} onValue={onValue} schema={schema} />
+    );
   }
   if (onlyType === "object") {
     return (

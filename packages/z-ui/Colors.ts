@@ -12,7 +12,7 @@ type ColorTheme = {
 export default {
   light: {
     text: "#000",
-    secondaryText: "#404040",
+    secondaryText: "#505050",
     dangerText: "#812313",
     background: "#fff",
     backgroundDim: "#fdfafd",

@@ -27,6 +27,7 @@ import { useDocs } from "@zerve/native";
 import { QueryConnectionProvider, useDocList } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
 import { getZIcon } from "../app/ZIcon";
+import { getDocumentAsync } from "expo-document-picker";
 
 function SettingsButton({ onPress }: { onPress: () => void }) {
   const colors = useColors();
@@ -64,7 +65,9 @@ function LocalDocsSection({}: {}) {
           left={({ color }) => (
             <FontAwesome name="download" color={color} size={24} />
           )}
-          onPress={() => {}}
+          onPress={() => {
+            getDocumentAsync({}).then();
+          }}
           title="Add Files"
         />
       </HStack>
@@ -145,7 +148,7 @@ export default function HomeScreen({
   return (
     <BareAppPage>
       <ZerveLogo />
-      <LocalDocsSection />
+      {/* <LocalDocsSection /> */}
 
       {connections.map((connection) => (
         <QueryConnectionProvider key={connection.key} value={connection}>

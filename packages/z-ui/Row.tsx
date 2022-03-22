@@ -36,6 +36,7 @@ export function InfoRow({
   return (
     <View
       style={{
+        overflow: "hidden",
         // ...RowStyles,
         // backgroundColor: colors.background,
         flexDirection: "row",
