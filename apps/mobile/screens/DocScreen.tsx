@@ -1,13 +1,17 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React from "react";
 
 import { HomeStackScreenProps } from "../app/Links";
 import AppPage from "../components/AppPage";
-import { Button, HStack, PageTitle, Paragraph, VStack } from "@zerve/ui";
+import {
+  Button,
+  HStack,
+  PageTitle,
+  Paragraph,
+  useBottomSheet,
+  VStack,
+} from "@zerve/ui";
 import { useDocEval } from "../app/Doc";
 import { deleteDoc } from "@zerve/native";
-import { View, Text, StyleSheet } from "react-native";
-import { useBottomSheet } from "../app/BottomSheet";
-import { useBottomSheetDynamicSnapPoints } from "@gorhom/bottom-sheet";
 
 function DocOptionsMenu({
   name,

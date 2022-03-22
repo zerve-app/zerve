@@ -1,36 +1,32 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  ComponentProps,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { HomeStackParamList, HomeStackScreenProps } from "../app/Links";
 import AppPage from "../components/AppPage";
 import {
   AsyncButton,
   Button,
-  HStack,
   IconButton,
-  Input,
   LinkRow,
   PageTitle,
   Paragraph,
-  SwitchInput,
+  Spinner,
+  useBottomSheet,
   VStack,
 } from "@zerve/ui";
-import { useDocEval } from "../app/Doc";
-import { deleteDoc } from "@zerve/native";
-import { View, Text, StyleSheet } from "react-native";
-import { useBottomSheet } from "../app/BottomSheet";
-import { useBottomSheetDynamicSnapPoints } from "@gorhom/bottom-sheet";
 import { postZAction, QueryConnectionProvider, useZNode } from "@zerve/query";
 import { useConnection, useConnections } from "../app/Connection";
-import {
-  NavigationProp,
-  StackActions,
-  useNavigation,
-} from "@react-navigation/native";
-import { JSONSchema } from "@zerve/core";
+import { StackActions, useNavigation } from "@react-navigation/native";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { Icon } from "@zerve/ui/Icon";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { getZIcon } from "../app/ZIcon";
 
 function ZContainerNode({
   type,
@@ -51,6 +47,7 @@ function ZContainerNode({
         <LinkRow
           title={childName}
           key={childName}
+          icon={getZIcon(type.children[childName][".t"])}
           onPress={() => {
             dispatch(
               StackActions.push("ZNode", {
@@ -125,6 +122,7 @@ function ZActionNode({
       <AsyncButton
         title={type.payload?.submitLabel || "Submit"}
         primary
+        right={(p) => <Icon name="play" {...p} />}
         onPress={async () => {
           const resp = await postZAction(conn, path, actionValue);
           console.log(resp);
@@ -243,19 +241,16 @@ function ZNodePage({
     </VStack>
   ));
   return (
-    <AppPage
-      isLoading={isLoading || isRefetching}
-      right={
-        <IconButton
-          altTitle="Options"
-          onPress={onOptions}
-          icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
-        />
-      }
-    >
+    <>
+      {(isLoading || isRefetching) && <Spinner />}
+      <IconButton
+        altTitle="Options"
+        onPress={onOptions}
+        icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
+      />
       <PageTitle title={path.join("/")} />
       {body}
-    </AppPage>
+    </>
   );
 }
 
@@ -270,7 +265,9 @@ export default function ZNodeScreen({
   if (!conn) throw new Error("Connection not found");
   return (
     <QueryConnectionProvider value={conn}>
-      <ZNodePage path={path} connection={connection} />
+      <AppPage>
+        <ZNodePage path={path} connection={connection} />
+      </AppPage>
     </QueryConnectionProvider>
   );
 }

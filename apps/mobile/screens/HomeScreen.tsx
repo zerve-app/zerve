@@ -10,6 +10,7 @@ import {
   useColors,
   VStack,
   LinkRow,
+  useBottomSheet,
 } from "@zerve/ui";
 
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
@@ -24,8 +25,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
 import { QueryConnectionProvider, useDocList } from "@zerve/query";
-import { useBottomSheet } from "../app/BottomSheet";
 import { Icon } from "@zerve/ui/Icon";
+import { getZIcon } from "../app/ZIcon";
 
 function SettingsButton({ onPress }: { onPress: () => void }) {
   const colors = useColors();
@@ -76,8 +77,9 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "Home">
 >;
 
-function ConnectionDocListSection({ connection }: { connection: Connection }) {
+function ConnectionSection({ connection }: { connection: Connection }) {
   const { data, refetch, isLoading } = useDocList();
+  const navigation = useNavigation();
   const { navigate } = useNavigation<NavigationProp>();
   const list = data?.docs?.children;
   const onOptions = useBottomSheet(({ onClose }) => (
@@ -89,12 +91,23 @@ function ConnectionDocListSection({ connection }: { connection: Connection }) {
           onClose();
         }}
       />
+      <LinkRow
+        title="Connection Info"
+        icon="link"
+        onPress={() => {
+          navigation.navigate("SettingsStack", {
+            screen: "ConnectionInfo",
+            params: { connection: connection.key },
+          });
+          onClose();
+        }}
+      />
     </VStack>
   ));
   return (
     <DisclosureSection
       isLoading={isLoading}
-      header={<Label secondary> </Label>}
+      header={<Label secondary>{connection.name}</Label>}
       right={
         <IconButton
           altTitle="Options"
@@ -108,6 +121,7 @@ function ConnectionDocListSection({ connection }: { connection: Connection }) {
           <LinkRow
             key={childKey}
             title={childKey}
+            icon={getZIcon("Container")}
             onPress={() => {
               navigate("ZNode", {
                 connection: connection.key,
@@ -119,54 +133,6 @@ function ConnectionDocListSection({ connection }: { connection: Connection }) {
         {!list?.length && <Paragraph>No Docs loaded..</Paragraph>}
       </VStack>
     </DisclosureSection>
-  );
-}
-
-// function ConnectionModulesListSection() {
-//   const { data } = useModuleList();
-//   const list = data?.modules;
-//   return (
-//     <DisclosureSection header={<Label secondary>Modules</Label>}>
-//       <VStack>
-//         {list?.map((m) => (
-//           <Button key={m} title={m} onPress={() => {}} />
-//         ))}
-//         {!list?.length && <Paragraph>No Modules loaded..</Paragraph>}
-//       </VStack>
-//     </DisclosureSection>
-//   );
-// }
-
-function ConnectionSection({
-  connection,
-  navigation,
-}: {
-  connection: Connection;
-  navigation: NavigationProp;
-}) {
-  const colors = useColors();
-  return (
-    <PageSection
-      title={connection.name}
-      right={
-        <IconButton
-          altTitle="Connection Info"
-          icon={(props) => (
-            <Icon name="info-circle" {...props} color={colors.tint} />
-          )}
-          onPress={() =>
-            navigation.navigate("SettingsStack", {
-              screen: "ConnectionInfo",
-              params: { connection: connection.key },
-            })
-          }
-        />
-      }
-    >
-      <VStack>
-        <ConnectionDocListSection connection={connection} />
-      </VStack>
-    </PageSection>
   );
 }
 
@@ -183,7 +149,7 @@ export default function HomeScreen({
 
       {connections.map((connection) => (
         <QueryConnectionProvider key={connection.key} value={connection}>
-          <ConnectionSection navigation={navigation} connection={connection} />
+          <ConnectionSection connection={connection} />
         </QueryConnectionProvider>
       ))}
 

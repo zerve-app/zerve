@@ -18,6 +18,7 @@ import ZNodeScreen from "../screens/ZNodeScreen";
 import ConnectionsScreen from "../screens/ConnectionsScreen";
 import ErrorScreen from "../screens/ErrorScreen";
 import RawValueScreen from "../screens/RawValueScreen";
+import JSONInputScreen from "../screens/JSONInputScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -110,6 +111,11 @@ export default function RootNavigator() {
       <RootStack.Screen
         name="Error"
         component={ErrorScreen}
+        options={DefaultScreenOptions}
+      />
+      <RootStack.Screen
+        name="JSONInput"
+        component={JSONInputScreen}
         options={DefaultScreenOptions}
       />
       <RootStack.Screen

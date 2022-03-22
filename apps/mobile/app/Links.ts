@@ -33,6 +33,7 @@ export type RootStackParamList = {
   HomeStack: NavigatorScreenParams<HomeStackParamList>;
   SettingsStack: NavigatorScreenParams<SettingsStackParamList>;
   Error: { error: GenericError<any, any> };
+  JSONInput: { value: any; schema: any; onValue: (v: any) => void };
   NotFound: undefined;
 };
 

@@ -23,7 +23,7 @@ import { useColors } from "@zerve/ui";
 import { AbsoluteFill, bigShadow, smallShadow } from "@zerve/ui/Style";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type BottomSheetContext = {
+export type BottomSheetContext = {
   open: (node: (opts: { onClose: () => void }) => ReactNode) => void;
   close: () => void;
 };
@@ -84,7 +84,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
   }, [sheetConfig]);
   return (
     <BottomSheetCtx.Provider value={context}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: "blue" }}>
         {children}
         {sheetConfig && (
           <Pressable style={AbsoluteFill} onPress={context.close}></Pressable>
@@ -92,17 +92,23 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
         <Animated.View style={layerStyles} pointerEvents="none" />
         {sheetConfig && (
           <BottomSheet
-            style={bigShadow}
+            style={[bigShadow, {}]}
             key={sheetConfig.key}
             enablePanDownToClose
             ref={bottomSheetRef}
+            handleStyle={{
+              backgroundColor: colors.backgroundDim,
+            }}
             snapPoints={animatedSnapPoints}
             handleHeight={animatedHandleHeight}
             contentHeight={animatedContentHeight}
             index={0}
             onChange={handleSheetChanges}
           >
-            <View onLayout={handleContentLayout}>
+            <View
+              onLayout={handleContentLayout}
+              style={{ backgroundColor: colors.backgroundDim }}
+            >
               <SafeAreaView edges={["right", "bottom", "left"]}>
                 {sheetConfig.children}
               </SafeAreaView>

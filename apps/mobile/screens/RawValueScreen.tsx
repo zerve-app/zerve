@@ -1,8 +1,14 @@
 import React from "react";
 import { HomeStackScreenProps } from "../app/Links";
 import AppPage from "../components/AppPage";
-import { Button, IconButton, PageTitle, Paragraph, VStack } from "@zerve/ui";
-import { useBottomSheet } from "../app/BottomSheet";
+import {
+  Button,
+  IconButton,
+  PageTitle,
+  Paragraph,
+  useBottomSheet,
+  VStack,
+} from "@zerve/ui";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { setString } from "expo-clipboard";
 import { Icon } from "@zerve/ui/Icon";

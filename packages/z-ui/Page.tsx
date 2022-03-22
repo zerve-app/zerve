@@ -4,19 +4,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useColors } from "./useColors";
 import { ThemedText } from "./Themed";
 import { bigShadow } from "./Style";
+import { BottomSheetProvider } from "./BottomSheet";
 
 export function Page({ children }: { children: ReactNode }) {
   const colors = useColors();
   return (
-    <ScrollView
-      style={{
-        backgroundColor: colors.backgroundDim,
-        ...bigShadow,
-        shadowColor: colors.text,
-      }}
-    >
-      <SafeAreaView>{children}</SafeAreaView>
-    </ScrollView>
+    <BottomSheetProvider>
+      <ScrollView
+        style={{
+          backgroundColor: colors.backgroundDim,
+          ...bigShadow,
+          shadowColor: colors.text,
+        }}
+      >
+        <SafeAreaView>{children}</SafeAreaView>
+      </ScrollView>
+    </BottomSheetProvider>
   );
 }
 

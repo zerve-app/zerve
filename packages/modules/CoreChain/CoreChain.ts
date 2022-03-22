@@ -292,8 +292,14 @@ export async function createZChainState<
   const allActionsSchema = {
     oneOf: Object.entries(calculator.actions).map(([actionKey, actionDef]) => {
       return {
-        type: { const: actionKey },
-        value: actionDef.schema,
+        type: "object",
+        title: `${actionKey} Action`,
+        additionalProperties: false,
+        properties: {
+          type: { const: actionKey },
+          value: actionDef.schema,
+        },
+        required: ["type", "value"],
       };
     }),
   };

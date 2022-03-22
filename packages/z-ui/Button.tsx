@@ -55,7 +55,7 @@ export type ButtonProps = {
   title: string;
   primary?: boolean;
   danger?: boolean;
-  onPress: () => void;
+  onPress: null | (() => void);
   border?: number;
   textAlign?: "right" | "left" | "center";
 };
@@ -98,6 +98,7 @@ export function Button({
   return (
     <Pressable
       onPress={() => {
+        if (!onPress) return;
         onPress();
         pressHeight.value = withSpring(0, { mass: 0.5 });
         pressBounceTimeout.current = setTimeout(() => {
