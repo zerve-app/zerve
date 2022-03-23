@@ -9,10 +9,10 @@ import App from "./app/App";
 // the environment is set up appropriately
 registerRootComponent(App);
 
-SystemUI.setBackgroundColorAsync("#ff0000")
-  .then(() => {
-    console.error("Done with setBackgroundColorAsync");
-  })
-  .catch((e) => {
-    console.error("Failed to setBackgroundColorAsync", e);
-  });
+// SystemUI.setBackgroundColorAsync("#ff0000")
+//   .then(() => {
+//     console.error("Done with setBackgroundColorAsync");
+//   })
+//   .catch((e) => {
+//     console.error("Failed to setBackgroundColorAsync", e);
+//   });

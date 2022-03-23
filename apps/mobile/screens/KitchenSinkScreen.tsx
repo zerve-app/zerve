@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { RootStackScreenProps } from "../app/Links";
-import { DisclosureSection, Label, PageTitle } from "@zerve/ui";
+import { DisclosureSection, Label, PageTitle, Paragraph } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { JSONSchema } from "@zerve/core";
@@ -69,7 +69,12 @@ function JSONSchemaFormExample({
   initState?: any;
 }) {
   const [state, setState] = useState(initState);
-  return <JSONSchemaForm value={state} onValue={setState} schema={schema} />;
+  return (
+    <>
+      <JSONSchemaForm value={state} onValue={setState} schema={schema} />
+      <Paragraph>{JSON.stringify(state)}</Paragraph>
+    </>
+  );
 }
 
 export default function KitchenSinkScreen({
@@ -115,6 +120,14 @@ export default function KitchenSinkScreen({
           }}
         />
       </DisclosureSection>
+      <DisclosureSection header={<Label>Deep Read-Only JSON</Label>}>
+        <JSONSchemaForm
+          value={{
+            this: { isA: { deep: "value" } },
+          }}
+          schema={{}}
+        />
+      </DisclosureSection>
       <DisclosureSection header={<Label>Writable JSON Schema</Label>}>
         <JSONSchemaFormExample
           initState={12.1}
@@ -155,6 +168,9 @@ export default function KitchenSinkScreen({
             },
           }}
         />
+      </DisclosureSection>
+      <DisclosureSection header={<Label>Any JSON Schema</Label>}>
+        <JSONSchemaFormExample initState={null} schema={true} />
       </DisclosureSection>
       <DisclosureSection header={<Label>Advanced Union Schema</Label>}>
         <JSONSchemaFormExample schema={testSchema2} />

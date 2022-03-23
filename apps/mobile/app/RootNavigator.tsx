@@ -111,7 +111,12 @@ export default function RootNavigator() {
       <RootStack.Screen
         name="JSONInput"
         component={JSONInputScreen}
-        options={DefaultScreenOptions}
+        options={{
+          ...DefaultScreenOptions,
+          presentation: "modal",
+          statusBarStyle: "light",
+          statusBarAnimation: "fade",
+        }}
       />
       <RootStack.Screen
         name="SettingsStack"

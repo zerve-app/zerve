@@ -19,8 +19,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { useColors } from "@zerve/ui";
-import { AbsoluteFill, bigShadow, smallShadow } from "@zerve/ui/Style";
+import { useColors } from "./useColors";
+import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export type BottomSheetContext = {
