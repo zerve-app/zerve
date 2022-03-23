@@ -19,6 +19,7 @@ export type SettingsStackParamList = {
   NewConnection: undefined;
   ConnectionInfo: { connection: string };
   KitchenSink: undefined;
+  TestSort: undefined;
 };
 
 export type HomeStackParamList = {

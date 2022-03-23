@@ -19,6 +19,7 @@ import ConnectionsScreen from "../screens/ConnectionsScreen";
 import ErrorScreen from "../screens/ErrorScreen";
 import RawValueScreen from "../screens/RawValueScreen";
 import JSONInputScreen from "../screens/JSONInputScreen";
+import TestSortScreen from "../screens/TestSortScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -67,6 +68,11 @@ function SettingsNavigator() {
       <SettingsStack.Screen
         name="KitchenSink"
         component={KitchenSinkScreen}
+        options={DefaultScreenOptions}
+      />
+      <SettingsStack.Screen
+        name="TestSort"
+        component={TestSortScreen}
         options={DefaultScreenOptions}
       />
       <SettingsStack.Screen

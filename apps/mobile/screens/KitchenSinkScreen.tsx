@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 
-import { RootStackScreenProps } from "../app/Links";
-import { DisclosureSection, Label, PageTitle, Paragraph } from "@zerve/ui";
+import { SettingsStackScreenProps } from "../app/Links";
+import {
+  DisclosureSection,
+  Label,
+  LinkRow,
+  PageTitle,
+  Paragraph,
+} from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { JSONSchema } from "@zerve/core";
@@ -79,12 +85,18 @@ function JSONSchemaFormExample({
 
 export default function KitchenSinkScreen({
   navigation,
-}: RootStackScreenProps<"Settings">) {
-  // const { goBack } = useNavigation();
+}: SettingsStackScreenProps<"KitchenSink">) {
   const [state, setState] = useState(null);
   return (
     <AppPage>
       <PageTitle title="Kitchen Sink" />
+      <LinkRow
+        title="Test Sort"
+        icon="list-ul"
+        onPress={() => {
+          navigation.navigate("TestSort");
+        }}
+      />
       <DisclosureSection header={<Label>Read-Only JSON Schema</Label>}>
         <JSONSchemaForm
           value={12.1}
@@ -120,14 +132,14 @@ export default function KitchenSinkScreen({
           }}
         />
       </DisclosureSection>
-      <DisclosureSection header={<Label>Deep Read-Only JSON</Label>}>
+      {/* <DisclosureSection header={<Label>Deep Read-Only JSON</Label>}>
         <JSONSchemaForm
           value={{
             this: { isA: { deep: "value" } },
           }}
           schema={{}}
         />
-      </DisclosureSection>
+      </DisclosureSection> */}
       <DisclosureSection header={<Label>Writable JSON Schema</Label>}>
         <JSONSchemaFormExample
           initState={12.1}
