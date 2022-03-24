@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "turborepo-basic-shared",
+    "slug": "turborepo-basic-shared",
+    "version": "0.0.0",
+    "sdkVersion": "44.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ]
+  }
+}

@@ -11,6 +11,7 @@ import { navigationLinking } from "./Links";
 import RootNavigator from "./RootNavigator";
 import { BottomSheetProvider, useColorScheme } from "@zerve/ui";
 import { QueryProvider } from "@zerve/query";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -20,17 +21,19 @@ export default function App() {
     return null;
   }
   return (
-    <QueryProvider>
-      <BottomSheetProvider>
-        <SafeAreaProvider>
-          <NavigationContainer
-            linking={navigationLinking}
-            theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <RootNavigator />
-          </NavigationContainer>
-        </SafeAreaProvider>
-      </BottomSheetProvider>
-    </QueryProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryProvider>
+        <BottomSheetProvider>
+          <SafeAreaProvider>
+            <NavigationContainer
+              linking={navigationLinking}
+              theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <RootNavigator />
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </BottomSheetProvider>
+      </QueryProvider>
+    </GestureHandlerRootView>
   );
 }

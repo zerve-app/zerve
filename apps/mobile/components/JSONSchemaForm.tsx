@@ -23,6 +23,15 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../app/Links";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { setString } from "expo-clipboard";
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+  FadeOut,
+  FadeOutDown,
+  FadeOutUp,
+  Layout,
+} from "react-native-reanimated";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
 //   return null;
@@ -274,31 +283,36 @@ export function JSONSchemaArrayForm({
       {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
       {value.map((childValue, childValueIndex) => {
         return (
-          <FormField
-            label={`#${childValueIndex}`}
+          <Animated.View
+            entering={FadeInUp}
+            exiting={FadeOutDown}
             key={childValueIndex}
-            value={childValue}
-            schema={expandedItemsSchema}
-            actions={[
-              {
-                title: "Delete",
-                onAction: () => {
-                  const newValue = [...value];
-                  newValue.splice(childValueIndex, 1);
-                  onValue(newValue);
-                },
-              },
-            ]}
-            onValue={
-              onValue
-                ? (childV) => {
+          >
+            <FormField
+              label={`#${childValueIndex}`}
+              value={childValue}
+              schema={expandedItemsSchema}
+              actions={[
+                {
+                  title: "Delete",
+                  onAction: () => {
                     const newValue = [...value];
-                    newValue[childValueIndex] = childV;
+                    newValue.splice(childValueIndex, 1);
                     onValue(newValue);
-                  }
-                : undefined
-            }
-          />
+                  },
+                },
+              ]}
+              onValue={
+                onValue
+                  ? (childV) => {
+                      const newValue = [...value];
+                      newValue[childValueIndex] = childV;
+                      onValue(newValue);
+                    }
+                  : undefined
+              }
+            />
+          </Animated.View>
         );
       })}
       {!!onValue && (
