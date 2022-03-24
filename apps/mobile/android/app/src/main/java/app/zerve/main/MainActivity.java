@@ -1,4 +1,4 @@
-package app.zerve.mobile;
+package app.zerve.main;
 
 import android.os.Build;
 import android.os.Bundle;

@@ -67,6 +67,47 @@ const testSchema2 = {
   ],
 } as const;
 
+const testSchema3 = {
+  type: "object",
+  properties: {
+    color: {
+      oneOf: [
+        {
+          // title: "yes this is a type",
+          type: "object",
+          properties: {
+            c: { const: "foo" },
+            age: { type: "number" },
+            isCool: { type: "boolean" },
+          },
+          additionalProperties: false,
+        },
+        {
+          type: "object",
+          properties: {
+            c: { const: "bar" },
+            c1: { const: "a" },
+            name: { type: "string" },
+          },
+          additionalProperties: false,
+        },
+        {
+          type: "object",
+          properties: {
+            c: { const: "bar" },
+            c1: { const: "b" },
+            name: { type: "string" },
+            name2: { type: "string" },
+          },
+          additionalProperties: false,
+        },
+      ],
+    },
+  },
+  required: ["color"],
+  additionalProperties: false,
+} as const;
+
 function JSONSchemaFormExample({
   schema,
   initState = null,
@@ -78,7 +119,7 @@ function JSONSchemaFormExample({
   return (
     <>
       <JSONSchemaForm value={state} onValue={setState} schema={schema} />
-      {/* <Paragraph>{JSON.stringify(state)}</Paragraph> */}
+      <Paragraph>{JSON.stringify(state)}</Paragraph>
     </>
   );
 }
@@ -90,7 +131,10 @@ export default function TestJSONInputScreen({
   return (
     <AppPage>
       <PageTitle title="JSON Inputs" />
-      <DisclosureSection header={<Label>Read-Only JSON Schema</Label>}>
+      <DisclosureSection
+        defaultIsOpen={false}
+        header={<Label>Read-Only JSON Schema</Label>}
+      >
         <JSONSchemaForm
           value={12.1}
           schema={{
@@ -133,7 +177,10 @@ export default function TestJSONInputScreen({
           schema={{}}
         />
       </DisclosureSection> */}
-      <DisclosureSection header={<Label>Writable JSON Schema</Label>}>
+      <DisclosureSection
+        defaultIsOpen={false}
+        header={<Label>Writable JSON Schema</Label>}
+      >
         <JSONSchemaFormExample
           initState={12.1}
           schema={{
@@ -155,6 +202,7 @@ export default function TestJSONInputScreen({
         <JSONSchemaFormExample
           initState={"post"}
           schema={{
+            title: "HTTP Method",
             enum: ["post", "get", "put", "delete", "options"],
           }}
         />
@@ -174,11 +222,17 @@ export default function TestJSONInputScreen({
           }}
         />
       </DisclosureSection>
-      <DisclosureSection header={<Label>Any JSON Schema</Label>}>
+      <DisclosureSection
+        defaultIsOpen={false}
+        header={<Label>Any JSON Schema</Label>}
+      >
         <JSONSchemaFormExample initState={null} schema={true} />
       </DisclosureSection>
-      <DisclosureSection header={<Label>Advanced Union Schema</Label>}>
-        <JSONSchemaFormExample schema={testSchema2} />
+      <DisclosureSection
+        defaultIsOpen={false}
+        header={<Label>Advanced Union Schema</Label>}
+      >
+        <JSONSchemaFormExample schema={testSchema3} />
       </DisclosureSection>
     </AppPage>
   );

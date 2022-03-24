@@ -7,20 +7,26 @@ import { marginHInset, marginVInset, RowStyles } from "./Row";
 export function Input({
   value,
   onValue,
+  onSubmitEditing,
   label,
   placeholder,
   autoCapitalize,
   autoFocus,
   disabled,
   keyboardType,
+  InputComponent,
+  onBlur,
 }: {
   value: string;
   onValue?: (value: string) => void;
-  label: string;
+  onSubmitEditing?: () => void;
+  label?: string;
   placeholder?: string;
   autoCapitalize?: "characters" | "words" | "none" | "sentences";
   autoFocus?: boolean;
   disabled?: boolean;
+  InputComponent?: any;
+  onBlur?: () => void;
   keyboardType?:
     | "default"
     | "numeric"
@@ -37,10 +43,13 @@ export function Input({
     | "visible-password";
 }) {
   const colors = useColors();
+  const TextInputComponent = InputComponent || TextInput;
   return (
     <View style={{}}>
-      <Label style={[marginHInset, marginVInset]}>{label}</Label>
-      <TextInput
+      {label != null && (
+        <Label style={[marginHInset, marginVInset]}>{label}</Label>
+      )}
+      <TextInputComponent
         placeholderTextColor={colors.secondaryText}
         autoFocus={autoFocus}
         style={{
@@ -53,9 +62,11 @@ export function Input({
         keyboardType={keyboardType}
         editable={!disabled}
         autoCapitalize={autoCapitalize}
+        onSubmitEditing={onSubmitEditing}
         value={value}
         placeholder={placeholder}
         onChangeText={onValue}
+        onBlur={onBlur}
       />
     </View>
   );
@@ -69,12 +80,14 @@ export function SwitchInput({
 }: {
   value: boolean;
   onValue?: (value: boolean) => void;
-  label: string;
+  label?: string;
   disabled?: boolean;
 }) {
   return (
     <View style={{}}>
-      <Label style={[marginHInset, marginVInset]}>{label}</Label>
+      {label != null && (
+        <Label style={[marginHInset, marginVInset]}>{label}</Label>
+      )}
       <Switch onValueChange={onValue} value={value} disabled={disabled} />
     </View>
   );

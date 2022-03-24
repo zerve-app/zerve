@@ -129,7 +129,7 @@ export function Button({
             paddingHorizontal: 12,
             fontSize: 16,
             fontWeight: primary ? "bold" : "normal",
-            flex: 1,
+            flex: small ? undefined : 1,
             textAlign,
           }}
         >

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { ComponentProps, ReactNode, useMemo, useState } from "react";
 import { JSONSchema } from "@zerve/core";
 import {
   Button,
@@ -11,11 +11,18 @@ import {
   Dropdown,
   Icon,
   VStack,
+  useBottomSheet,
+  HStack,
 } from "@zerve/ui";
 
 import { NavigationContext, useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView } from "react-native";
 import { View } from "react-native";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../app/Links";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { setString } from "expo-clipboard";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
 //   return null;
@@ -57,10 +64,16 @@ function extractTypeSchema(type, schemaObj) {
   return subType;
 }
 
-function AddButton({ onPress }: { onPress: () => void }) {
+function AddButton({
+  onPress,
+  label = "Add",
+}: {
+  onPress: () => void;
+  label?: string;
+}) {
   return (
     <Button
-      title="Add"
+      title={label}
       style={{ alignSelf: "flex-start" }}
       left={(p) => <Icon {...p} name="plus" />}
       onPress={onPress}
@@ -105,6 +118,30 @@ function expandSchema(schema: JSONSchema): JSONSchema | undefined {
   return schema;
 }
 
+function StatefulInput({
+  onSubmit,
+  defaultValue = "",
+  inputLabel = "name",
+}: {
+  onSubmit: (v: string) => void;
+  defaultValue?: string;
+  inputLabel?: string;
+}) {
+  const [s, setS] = useState(defaultValue);
+  return (
+    <Input
+      label={inputLabel}
+      autoFocus
+      value={s}
+      onValue={setS}
+      onSubmitEditing={() => {
+        onSubmit(s);
+      }}
+      InputComponent={BottomSheetTextInput}
+    />
+  );
+}
+
 export function JSONSchemaObjectForm({
   value,
   onValue,
@@ -117,13 +154,54 @@ export function JSONSchemaObjectForm({
   const { properties, additionalProperties } = schema;
   const errors: { message: string }[] = [];
   if (typeof value !== "object")
-    errors.push({ message: "Value is not an object" });
+    errors.push({ message: "Value is not an object " + JSON.stringify(value) });
   const propertyKeys = new Set(
     properties == null ? [] : Object.keys(properties)
   );
   const otherKeys = value
     ? Object.keys(value).filter((p) => !propertyKeys.has(p))
     : [];
+  const expandedPropertiesSchema = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(schema.properties || {}).map(
+          ([propName, propSchema]) => [
+            propName,
+            expandSchema(propSchema || defaultObjectItemsSchema),
+          ]
+        )
+      ),
+    [schema.properteis]
+  );
+  const expandedAdditionalPropertiesSchema = useMemo(
+    () => expandSchema(schema.additionalProperties || defaultObjectItemsSchema),
+    [schema.additionalProperties]
+  );
+
+  const propertyNameInput = useBottomSheet<null | string>(
+    ({ onClose, options }) => (
+      <VStack>
+        <StatefulInput
+          inputLabel="New Property Name"
+          onSubmit={(propertyName) => {
+            onClose();
+            if (!onValue) return;
+            if (options === null) {
+              onValue({ ...value, [propertyName]: "" });
+            }
+          }}
+        />
+      </VStack>
+    )
+  );
+  const getDeleteAction = (propertyName: string) => ({
+    title: "Delete",
+    onAction: () => {
+      const newValue = { ...value };
+      delete newValue[propertyName];
+      onValue(newValue);
+    },
+  });
   return (
     <VStack>
       {schema.description ? <Paragraph>{schema.description}</Paragraph> : null}
@@ -134,8 +212,9 @@ export function JSONSchemaObjectForm({
         <FormField
           key={propertyName}
           value={value?.[propertyName]}
-          schema={properties[propertyName]}
+          schema={expandedPropertiesSchema[propertyName]}
           label={propertyName}
+          actions={[getDeleteAction(propertyName)]}
           onValue={
             onValue
               ? (propertyValue) =>
@@ -148,8 +227,9 @@ export function JSONSchemaObjectForm({
         <FormField
           key={itemName}
           value={value?.[itemName]}
-          schema={additionalProperties}
+          schema={expandedAdditionalPropertiesSchema}
           label={itemName}
+          actions={[getDeleteAction(itemName)]}
           onValue={
             onValue
               ? (propertyValue) =>
@@ -159,13 +239,19 @@ export function JSONSchemaObjectForm({
         />
       ))}
       {additionalProperties !== false && !!onValue && (
-        <AddButton onPress={() => {}} />
+        <AddButton
+          label="Add Property"
+          onPress={() => {
+            propertyNameInput(null);
+          }}
+        />
       )}
     </VStack>
   );
 }
 
 const defaultArrayItemsSchema = {} as const;
+const defaultObjectItemsSchema = {} as const;
 
 export function JSONSchemaArrayForm({
   value,
@@ -192,6 +278,16 @@ export function JSONSchemaArrayForm({
             key={childValueIndex}
             value={childValue}
             schema={expandedItemsSchema}
+            actions={[
+              {
+                title: "Delete",
+                onAction: () => {
+                  const newValue = [...value];
+                  newValue.splice(childValueIndex, 1);
+                  onValue(newValue);
+                },
+              },
+            ]}
             onValue={
               onValue
                 ? (childV) => {
@@ -206,6 +302,7 @@ export function JSONSchemaArrayForm({
       })}
       {!!onValue && (
         <AddButton
+          label="Add Item"
           onPress={() => {
             onValue([...value, null]);
           }}
@@ -220,20 +317,29 @@ function ObjectFormField({
   value,
   onValue,
   schema,
+  actions,
 }: {
   label: string;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  actions?: FormFieldAction[];
 }) {
-  const { navigate } = useNavigation();
+  const { push } =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
     <>
-      <Label>{label}</Label>
+      <FormFieldHeader
+        label={label || "?"}
+        typeLabel={schema.title || schema.type || "object"}
+        value={value}
+        actions={actions}
+      />
       <Button
         title={(JSON.stringify(value) || "").slice(0, 60)}
         onPress={() => {
-          navigate("JSONInput", { schema, value, onValue });
+          push("JSONInput", { schema, value, onValue });
         }}
       />
     </>
@@ -244,20 +350,28 @@ function ArrayFormField({
   value,
   onValue,
   schema,
+  actions,
 }: {
   label: string;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  actions?: FormFieldAction[];
 }) {
-  const { navigate } = useNavigation();
+  const { push } =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <>
-      <Label>{label}</Label>
+      <FormFieldHeader
+        label={label || "?"}
+        typeLabel={schema.title || schema.type || "array"}
+        value={value}
+        actions={actions}
+      />
       <Button
         title={(JSON.stringify(value) || "").slice(0, 60)}
         onPress={() => {
-          navigate("JSONInput", { schema, value, onValue });
+          push("JSONInput", { schema, value, onValue });
         }}
       />
     </>
@@ -269,18 +383,25 @@ function EnumFormField({
   value,
   onValue,
   schema,
+  actions,
 }: {
   label: string;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  actions?: FormFieldAction[];
 }) {
   if (!onValue) {
     return <InfoRow label={label} value={value} />;
   }
   return (
     <>
-      <Label>{label}</Label>
+      <FormFieldHeader
+        label={label || "?"}
+        typeLabel={schema.title || "option"}
+        value={value}
+        actions={actions}
+      />
       <Dropdown
         value={value}
         onOptionSelect={onValue}
@@ -293,18 +414,95 @@ function EnumFormField({
     </>
   );
 }
+
+function FormFieldHeader({
+  label,
+  typeLabel,
+  value,
+  schema,
+  actions,
+}: {
+  label: string;
+  typeLabel?: string;
+  value?: any;
+  schema?: any;
+  actions?: FormFieldAction[];
+}) {
+  const openFormSheet = useBottomSheet<void>(({ onClose }) => (
+    <VStack>
+      <CopyValueButton value={value} label={label} onDone={onClose} />
+      {actions?.map((action, actionKey) => (
+        <Button
+          key={actionKey}
+          title={action.title}
+          left={(p) =>
+            action.icon ? <Icon {...p} name={action.icon} /> : null
+          }
+          onPress={() => {
+            action.onAction();
+            onClose();
+          }}
+        />
+      ))}
+    </VStack>
+  ));
+  return (
+    <TouchableOpacity onPress={() => openFormSheet()}>
+      <HStack>
+        <Label>{label}</Label>
+        <Label style={{ textAlign: "right" }}>{typeLabel}</Label>
+      </HStack>
+    </TouchableOpacity>
+  );
+}
+
+function CopyValueButton({
+  value,
+  label,
+  onDone,
+}: {
+  value: any;
+  label?: string;
+  onDone?: () => void;
+}) {
+  return (
+    <Button
+      title={`Copy ${label}`}
+      left={(p) => <Icon {...p} name="clipboard" />}
+      onPress={() => {
+        setString(JSON.stringify(value));
+        onDone?.();
+      }}
+    />
+  );
+}
+
+type FormFieldAction = {
+  title: string;
+  icon?: ComponentProps<typeof Icon>["name"];
+  onAction: () => void;
+};
+
 export function FormField({
   label,
   value,
   onValue,
   schema,
+  typeLabel,
+  actions,
 }: {
-  label: string;
+  label?: string;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  typeLabel?: string;
+  actions?: FormFieldAction[];
 }) {
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
+  if (!expandedSchema)
+    return (
+      <ThemedText>Failed to expand schema: {JSON.stringify(schema)}</ThemedText>
+    );
 
   if (isLeafType(expandedSchema.type)) {
     return (
@@ -313,6 +511,8 @@ export function FormField({
         schema={schema}
         label={label}
         onValue={onValue}
+        typeLabel={typeLabel}
+        actions={actions}
       />
     );
   }
@@ -326,22 +526,32 @@ export function FormField({
 
     return (
       <>
-        <Label>{label}</Label>
-        <Dropdown
-          options={unionOptions.options}
-          value={matched}
-          onOptionSelect={(optionValue) => {
-            const converter = unionOptions.converters[optionValue];
-            const convertedValue = converter(value);
-            onValue(convertedValue);
-          }}
-        />
-        {matchedSchema != null && (
+        {matchedSchema == null ? (
+          <Dropdown
+            options={unionOptions.options}
+            value={matched}
+            onOptionSelect={(optionValue) => {
+              const converter = unionOptions.converters[optionValue];
+              const convertedValue = converter(value);
+              onValue(convertedValue);
+            }}
+          />
+        ) : (
           <FormField
-            label={matched == null ? "?" : unionOptions.options[matched].title}
             value={value}
             onValue={onValue}
             schema={matchedSchema}
+            label={label}
+            actions={[
+              ...(actions || []),
+              {
+                title: "Change Type",
+                onAction: () => {},
+              },
+            ]}
+            typeLabel={
+              matched == null ? "?" : unionOptions.options[matched].title
+            }
           />
         )}
       </>
@@ -354,6 +564,7 @@ export function FormField({
         schema={schema}
         label={label}
         onValue={onValue}
+        actions={actions}
       />
     );
   }
@@ -364,6 +575,7 @@ export function FormField({
         schema={schema}
         label={label}
         onValue={onValue}
+        actions={actions}
       />
     );
   }
@@ -375,6 +587,7 @@ export function FormField({
         schema={schema}
         label={label}
         onValue={onValue}
+        actions={actions}
       />
     );
   }
@@ -389,11 +602,13 @@ export function LeafFormField({
   value,
   onValue,
   schema,
+  actions,
 }: {
   label: string;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  actions: FormFieldAction[];
 }) {
   const description = schema.description ? (
     <Paragraph>{schema.description}</Paragraph>
@@ -401,11 +616,16 @@ export function LeafFormField({
   if (schema.type === "string") {
     return (
       <>
+        <FormFieldHeader
+          label={label}
+          typeLabel={schema.title || schema.type}
+          value={value}
+          actions={actions}
+        />
         <Input
           disabled={!onValue}
           value={value}
           onValue={onValue}
-          label={schema.title || label}
           placeholder={schema.placeholder}
         />
         {description}
@@ -415,25 +635,35 @@ export function LeafFormField({
   if (schema.type === "number" || schema.type === "integer") {
     const defaultNumber = schema.default || 0;
     return (
-      <Input
-        disabled={!onValue}
-        keyboardType={schema.type === "integer" ? "number-pad" : "numeric"}
-        value={value == null ? String(defaultNumber) : String(value)}
-        onValue={
-          onValue ? (valueString) => onValue(Number(valueString)) : undefined
-        }
-        label={schema.title || label}
-      />
+      <>
+        <FormFieldHeader
+          label={label}
+          typeLabel={schema.title || schema.type}
+          value={value}
+          actions={actions}
+        />
+        <Input
+          disabled={!onValue}
+          keyboardType={schema.type === "integer" ? "number-pad" : "numeric"}
+          value={value == null ? String(defaultNumber) : String(value)}
+          onValue={
+            onValue ? (valueString) => onValue(Number(valueString)) : undefined
+          }
+        />
+      </>
     );
   }
   if (schema.type === "boolean") {
     return (
-      <SwitchInput
-        disabled={!onValue}
-        value={value}
-        onValue={onValue}
-        label={schema.title || label}
-      />
+      <>
+        <FormFieldHeader
+          label={label}
+          typeLabel={schema.title || schema.type}
+          value={value}
+          actions={actions}
+        />
+        <SwitchInput disabled={!onValue} value={value} onValue={onValue} />
+      </>
     );
   }
   return null;

@@ -11,6 +11,7 @@ import {
   useSafeAreaFrame,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { BackButton } from "../components/AppPage";
 
 const NUM_ITEMS = 10;
 function getColor(i: number) {
@@ -35,6 +36,14 @@ const initialData: Item[] = [...Array(NUM_ITEMS)].map((d, index) => {
     backgroundColor,
   };
 });
+
+function TestSortHeader() {
+  return (
+    <>
+      <BackButton />
+    </>
+  );
+}
 
 function TestSortPage() {
   const [data, setData] = useState(initialData);
@@ -66,6 +75,7 @@ function TestSortPage() {
   return (
     <View style={{ flex: 1 }}>
       <DraggableFlatList
+        ListHeaderComponent={TestSortHeader}
         contentInset={safeAreaInsets}
         data={data}
         activationDistance={10}

@@ -24,7 +24,10 @@ import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export type BottomSheetContext = {
-  open: (node: (opts: { onClose: () => void }) => ReactNode) => void;
+  open: <O>(
+    options: O,
+    node: (opts: { onClose: () => void; options: O }) => ReactNode
+  ) => void;
   close: () => void;
 };
 
@@ -58,9 +61,12 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
   }, []);
   const context = useMemo(
     () => ({
-      open: (renderNode: (opts: { onClose: () => void }) => ReactNode) => {
+      open: (
+        options: any,
+        renderNode: (opts: { onClose: () => void; options: any }) => ReactNode
+      ) => {
         setSheetConfig({
-          children: renderNode({ onClose: close }),
+          children: renderNode({ onClose: close, options }),
           key: getBottomSheetKey(),
         });
       },
@@ -96,7 +102,11 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
             key={sheetConfig.key}
             enablePanDownToClose
             ref={bottomSheetRef}
+            handleComponent={null}
             handleStyle={{
+              backgroundColor: colors.backgroundDim,
+            }}
+            backgroundStyle={{
               backgroundColor: colors.backgroundDim,
             }}
             snapPoints={animatedSnapPoints}
@@ -120,8 +130,8 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useBottomSheet(
-  renderNode: (opts: { onClose: () => void }) => ReactNode
+export function useBottomSheet<Options>(
+  renderNode: (opts: { onClose: () => void; options: Options }) => ReactNode
 ) {
   const context = useContext(BottomSheetCtx);
   if (!context)
@@ -129,7 +139,7 @@ export function useBottomSheet(
       "Cannot useBottomSheet outside of BottomSheetProvider (context)."
     );
 
-  return () => {
-    context.open(renderNode);
+  return (options: Options) => {
+    context.open(options, renderNode);
   };
 }
