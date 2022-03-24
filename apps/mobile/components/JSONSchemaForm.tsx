@@ -194,14 +194,6 @@ export function JSONSchemaObjectForm({
       </VStack>
     )
   );
-  const getDeleteAction = (propertyName: string) => ({
-    title: "Delete",
-    onAction: () => {
-      const newValue = { ...value };
-      delete newValue[propertyName];
-      onValue(newValue);
-    },
-  });
   return (
     <VStack>
       {schema.description ? <Paragraph>{schema.description}</Paragraph> : null}
@@ -214,7 +206,7 @@ export function JSONSchemaObjectForm({
           value={value?.[propertyName]}
           schema={expandedPropertiesSchema[propertyName]}
           label={propertyName}
-          actions={[getDeleteAction(propertyName)]}
+          actions={[]}
           onValue={
             onValue
               ? (propertyValue) =>
@@ -229,7 +221,16 @@ export function JSONSchemaObjectForm({
           value={value?.[itemName]}
           schema={expandedAdditionalPropertiesSchema}
           label={itemName}
-          actions={[getDeleteAction(itemName)]}
+          actions={[
+            {
+              title: "Delete",
+              onAction: () => {
+                const newValue = { ...value };
+                delete newValue[propertyName];
+                onValue(newValue);
+              },
+            },
+          ]}
           onValue={
             onValue
               ? (propertyValue) =>
@@ -448,10 +449,19 @@ function FormFieldHeader({
   ));
   return (
     <TouchableOpacity onPress={() => openFormSheet()}>
-      <HStack>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          paddingBottom: 6,
+        }}
+      >
         <Label>{label}</Label>
-        <Label style={{ textAlign: "right" }}>{typeLabel}</Label>
-      </HStack>
+        <View style={{ width: 40 }} />
+        <Label style={{ flex: 1, textAlign: "right" }} secondary>
+          {typeLabel}
+        </Label>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -470,7 +480,7 @@ function CopyValueButton({
       title={`Copy ${label}`}
       left={(p) => <Icon {...p} name="clipboard" />}
       onPress={() => {
-        setString(JSON.stringify(value));
+        setString(typeof value === "string" ? value : JSON.stringify(value));
         onDone?.();
       }}
     />
@@ -527,15 +537,18 @@ export function FormField({
     return (
       <>
         {matchedSchema == null ? (
-          <Dropdown
-            options={unionOptions.options}
-            value={matched}
-            onOptionSelect={(optionValue) => {
-              const converter = unionOptions.converters[optionValue];
-              const convertedValue = converter(value);
-              onValue(convertedValue);
-            }}
-          />
+          <>
+            <FormFieldHeader value={value} label={label || "?"} />
+            <Dropdown
+              options={unionOptions.options}
+              value={matched}
+              onOptionSelect={(optionValue) => {
+                const converter = unionOptions.converters[optionValue];
+                const convertedValue = converter(value);
+                onValue(convertedValue);
+              }}
+            />
+          </>
         ) : (
           <FormField
             value={value}

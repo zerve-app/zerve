@@ -1,14 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
-import { Button, PageSection, PageTitle, VStack, LinkRow } from "@zerve/ui";
+import {
+  Button,
+  PageSection,
+  PageTitle,
+  VStack,
+  LinkRow,
+  AsyncButton,
+} from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { dangerouslyClearAllStorage } from "@zerve/native";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
-import { manifest, releaseChannel, reloadAsync, updateId } from "expo-updates";
+import {
+  checkForUpdateAsync,
+  fetchUpdateAsync,
+  manifest,
+  releaseChannel,
+  reloadAsync,
+  UpdateCheckResult,
+  updateId,
+} from "expo-updates";
 import { InfoRow } from "@zerve/ui/Row";
 import { Icon } from "@zerve/ui/Icon";
 import { useNavigation } from "@react-navigation/native";
+
+function AppUpdater() {
+  const [update, setUpdate] = useState<null | UpdateCheckResult>(null);
+  return (
+    <>
+      <AsyncButton
+        title="Check for Updates"
+        onPress={async () => {
+          const update = await checkForUpdateAsync();
+          alert(JSON.stringify(update));
+          setUpdate(update);
+        }}
+      />
+      <AsyncButton
+        title="Update App"
+        onPress={async () => {
+          const updateApp = await fetchUpdateAsync();
+          if (!updateApp.isNew) {
+            alert("Already up to date.");
+            return;
+          }
+          await reloadAsync();
+        }}
+      />
+      {update && (
+        <InfoRow label="Update Available" value={JSON.stringify(update)} />
+      )}
+    </>
+  );
+}
 
 export default function SettingsScreen({
   navigation,
@@ -77,6 +122,8 @@ export default function SettingsScreen({
       </PageSection>
       <PageSection title="App Info / Version">
         <VStack>
+          <AppUpdater />
+
           <Button
             title="Raw Manifest"
             left={(p) => <MaterialCommunityIcons {...p} name="code-json" />}
