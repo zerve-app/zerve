@@ -20,6 +20,7 @@ export type SettingsStackParamList = {
   ConnectionInfo: { connection: string };
   KitchenSink: undefined;
   TestSort: undefined;
+  TestJSONInput: undefined;
 };
 
 export type HomeStackParamList = {

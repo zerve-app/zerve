@@ -1,4 +1,4 @@
-import { Pressable, View, Text } from "react-native";
+import { Pressable, View, Text, StyleProp, ViewStyle } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -56,7 +56,9 @@ export type ButtonProps = {
   primary?: boolean;
   danger?: boolean;
   onPress: null | (() => void);
+  style?: StyleProp<ViewStyle>;
   border?: number;
+  small?: boolean;
   textAlign?: "right" | "left" | "center";
 };
 export function Button({
@@ -65,8 +67,10 @@ export function Button({
   right,
   primary,
   danger,
+  style,
   onPress,
   border,
+  small,
   textAlign = "center",
 }: ButtonProps) {
   const colors = useColors();
@@ -83,9 +87,9 @@ export function Button({
     borderWidth,
     borderColor: `${color}88`,
     borderRadius: Layout.borderRadius,
-    padding: 12,
-    paddingHorizontal: 18,
-    minHeight: 50,
+    padding: small ? 8 : 12,
+    paddingHorizontal: small ? 12 : 18,
+    minHeight: small ? 30 : 50,
     flexDirection: "row",
     alignItems: "center",
     ...smallShadow,
@@ -93,10 +97,11 @@ export function Button({
     transform: [{ translateY: -pressHeight.value * 3 }],
   }));
   const pressBounceTimeout = useRef<null | ReturnType<typeof setTimeout>>(null);
-  const appendageProps = { color, size: 24 };
+  const appendageProps = { color, size: small ? 18 : 24 };
 
   return (
     <Pressable
+      style={style}
       onPress={() => {
         if (!onPress) return;
         onPress();

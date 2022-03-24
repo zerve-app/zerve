@@ -15,13 +15,13 @@
     "internal": {
       "distribution": "internal",
       "android": {
-        "gradleCommand": ":app:assembleDebug"
+        "gradleCommand": ":app:assembleRelease"
       },
       "ios": {
         "buildConfiguration": "Release"
       }
     },
-    "preview": {
+    "simulator": {
       "distribution": "internal",
       "ios": {
         "simulator": true,

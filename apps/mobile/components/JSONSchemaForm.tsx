@@ -9,10 +9,13 @@ import {
   SwitchInput,
   ThemedText,
   Dropdown,
+  Icon,
+  VStack,
 } from "@zerve/ui";
 
 import { NavigationContext, useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView } from "react-native";
+import { View } from "react-native";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
 //   return null;
@@ -52,6 +55,18 @@ function extractTypeSchema(type, schemaObj) {
   }
 
   return subType;
+}
+
+function AddButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Button
+      title="Add"
+      style={{ alignSelf: "flex-start" }}
+      left={(p) => <Icon {...p} name="plus" />}
+      onPress={onPress}
+      small
+    />
+  );
 }
 
 function expandSchema(schema: JSONSchema): JSONSchema | undefined {
@@ -109,9 +124,8 @@ export function JSONSchemaObjectForm({
   const otherKeys = value
     ? Object.keys(value).filter((p) => !propertyKeys.has(p))
     : [];
-  console.log('SHIT', properties, propertyKeys)
   return (
-    <>
+    <VStack>
       {schema.description ? <Paragraph>{schema.description}</Paragraph> : null}
       {!!errors.length && (
         <Paragraph>Errors: {errors.map((e) => e.message).join(". ")}</Paragraph>
@@ -145,9 +159,9 @@ export function JSONSchemaObjectForm({
         />
       ))}
       {additionalProperties !== false && !!onValue && (
-        <Button onPress={() => {}} title="Add" />
+        <AddButton onPress={() => {}} />
       )}
-    </>
+    </VStack>
   );
 }
 
@@ -166,11 +180,10 @@ export function JSONSchemaArrayForm({
     () => expandSchema(schema.items || defaultArrayItemsSchema),
     [schema.items]
   );
-  console.log('BUSTED', {expandedItemsSchema})
   if (!Array.isArray(value))
     return <ThemedText>Value is not an array</ThemedText>;
   return (
-    <>
+    <VStack>
       {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
       {value.map((childValue, childValueIndex) => {
         return (
@@ -192,14 +205,13 @@ export function JSONSchemaArrayForm({
         );
       })}
       {!!onValue && (
-        <Button
+        <AddButton
           onPress={() => {
             onValue([...value, null]);
           }}
-          title="Add"
         />
       )}
-    </>
+    </VStack>
   );
 }
 
@@ -294,9 +306,6 @@ export function FormField({
 }) {
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
 
-  console.log('FAILED', {schema})
-
-
   if (isLeafType(expandedSchema.type)) {
     return (
       <LeafFormField
@@ -314,7 +323,6 @@ export function FormField({
     const unionOptions = inspectUnionSchema(expandedSchema);
     const matched = unionOptions.match(value);
     const matchedSchema = expandedSchema.oneOf[matched];
-  console.log('SHIT matchedSchema', matchedSchema)
 
     return (
       <>
