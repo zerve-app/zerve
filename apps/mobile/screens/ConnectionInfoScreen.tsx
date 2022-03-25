@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import {
-  Button,
-  Input,
-  Page,
-  PageSection,
-  PageTitle,
-  Paragraph,
-  Separator,
-  Spinner,
-  VStack,
-} from "@zerve/ui";
+import { Button, PageSection, Paragraph, Spinner, VStack } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { SettingsStackScreenProps } from "../app/Links";
 import {
@@ -20,6 +10,9 @@ import {
 } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import { InfoRow } from "@zerve/ui/Row";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
+import NotFoundScreen from "./NotFoundScreen";
 
 function useConnectionStatus(connection: Connection) {
   let [isConnected, setIsConnected] = useState(false);
@@ -68,13 +61,14 @@ export default function ConnectionInfoScreen({
   route,
 }: SettingsStackScreenProps<"ConnectionInfo">) {
   const conn = useConnection(route.params.connection);
-  if (!conn) return <AppPage>{null}</AppPage>;
+  if (!conn) {
+    return <NotFoundScreen />;
+  }
   return (
-    <AppPage>
-      <PageTitle title={`Connection: ${conn?.name}`} />
+    <ScreenContainer scroll>
+      <ScreenHeader title={`Connection: ${conn?.name}`} />
       <VStack>
         <ConnectionStatusRow connection={conn} />
-
         <InfoRow label="URL" value={conn?.url} />
       </VStack>
       <PageSection title="Delete Connection">
@@ -97,6 +91,6 @@ export default function ConnectionInfoScreen({
           />
         </VStack>
       </PageSection>
-    </AppPage>
+    </ScreenContainer>
   );
 }

@@ -24,6 +24,8 @@ import {
 import { InfoRow } from "@zerve/ui/Row";
 import { Icon } from "@zerve/ui/Icon";
 import { useNavigation } from "@react-navigation/native";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 function AppUpdater() {
   const [update, setUpdate] = useState<null | UpdateCheckResult>(null);
@@ -60,8 +62,8 @@ export default function SettingsScreen({
 }: SettingsStackScreenProps<"Settings">) {
   const { navigate } = useNavigation();
   return (
-    <AppPage>
-      <PageTitle title="App Settings" />
+    <ScreenContainer scroll>
+      <ScreenHeader title="App Settings" backButtonCancelStyle />
       <VStack>
         <LinkRow
           title="Server Connections"
@@ -147,6 +149,6 @@ export default function SettingsScreen({
           />
         </VStack>
       </PageSection>
-    </AppPage>
+    </ScreenContainer>
   );
 }

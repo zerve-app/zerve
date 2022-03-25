@@ -13,6 +13,7 @@ import {
   Button,
   IconButton,
   LinkRow,
+  LinkRowGroup,
   PageTitle,
   Paragraph,
   Spinner,
@@ -27,6 +28,8 @@ import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { Icon } from "@zerve/ui/Icon";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { getZIcon } from "../app/ZIcon";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 function ZContainerNode({
   type,
@@ -43,21 +46,20 @@ function ZContainerNode({
   const childNames = Object.keys(type.children);
   return (
     <VStack>
-      {childNames.map((childName) => (
-        <LinkRow
-          title={childName}
-          key={childName}
-          icon={getZIcon(type.children[childName][".t"])}
-          onPress={() => {
+      <LinkRowGroup
+        links={childNames.map((childName) => ({
+          title: childName,
+          icon: getZIcon(type.children[childName][".t"]),
+          onPress: () => {
             dispatch(
               StackActions.push("ZNode", {
                 connection,
                 path: [...path, childName],
               })
             );
-          }}
-        />
-      ))}
+          },
+        }))}
+      />
     </VStack>
   );
 }
@@ -242,13 +244,17 @@ function ZNodePage({
   ));
   return (
     <>
-      {(isLoading || isRefetching) && <Spinner />}
-      <IconButton
-        altTitle="Options"
-        onPress={onOptions}
-        icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
-      />
-      <PageTitle title={path.join("/")} />
+      <ScreenHeader
+        isLoading={isLoading || isRefetching}
+        title={path.join("/")}
+        corner={
+          <IconButton
+            altTitle="Options"
+            onPress={onOptions}
+            icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
+          />
+        }
+      ></ScreenHeader>
       {body}
     </>
   );
@@ -265,9 +271,9 @@ export default function ZNodeScreen({
   if (!conn) throw new Error("Connection not found");
   return (
     <QueryConnectionProvider value={conn}>
-      <AppPage>
+      <ScreenContainer scroll>
         <ZNodePage path={path} connection={connection} />
-      </AppPage>
+      </ScreenContainer>
     </QueryConnectionProvider>
   );
 }

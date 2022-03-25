@@ -6,6 +6,8 @@ PODS:
   - EXAV (10.2.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
+  - EXBlur (11.0.0):
+    - ExpoModulesCore
   - EXClipboard (2.1.1):
     - ExpoModulesCore
   - EXConstants (13.0.2):
@@ -363,6 +365,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../../../node_modules/expo-application/ios`)
   - EXAV (from `../../../node_modules/expo-av/ios`)
+  - EXBlur (from `../../../node_modules/expo-blur/ios`)
   - EXClipboard (from `../../../node_modules/expo-clipboard/ios`)
   - EXConstants (from `../../../node_modules/expo-constants/ios`)
   - EXCrypto (from `../../../node_modules/expo-crypto/ios`)
@@ -431,6 +434,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/expo-application/ios"
   EXAV:
     :path: "../../../node_modules/expo-av/ios"
+  EXBlur:
+    :path: "../../../node_modules/expo-blur/ios"
   EXClipboard:
     :path: "../../../node_modules/expo-clipboard/ios"
   EXConstants:
@@ -541,6 +546,7 @@ SPEC CHECKSUMS:
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXApplication: 54fe5bd6268d697771645e8f1aef8b806a65247a
   EXAV: b9ed0c201092244c46aa78f907f5c66176bed236
+  EXBlur: 82055865de17cf2cf797ff064c50fb59fcbe703f
   EXClipboard: 8123fcda680538bb0e1f4e6511106553e52d3760
   EXConstants: 88bf79622fbd9b476c96d8ec57fe97ca44fe8e3c
   EXCrypto: ab2ba0df3136a5f2407b8c7e70eb498ac20d704f
@@ -596,6 +602,6 @@ SPEC CHECKSUMS:
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
 
-PODFILE CHECKSUM: c3d17f6cbcb8c570757c6285d47c24234909eff8
+PODFILE CHECKSUM: e0fe56f68b6ac9a1466aa8deea16db8f0c6b9634
 
 COCOAPODS: 1.11.2

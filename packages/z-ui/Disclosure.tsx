@@ -66,7 +66,7 @@ export function DisclosureSection({
       style={{
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderTopWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.secondaryText,
+        borderColor: `${colors.secondaryText}33`,
       }}
     >
       <View

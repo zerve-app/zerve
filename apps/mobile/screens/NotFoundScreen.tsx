@@ -1,19 +1,15 @@
-import { TouchableOpacity } from "react-native";
 import React from "react";
 
 import { RootStackScreenProps } from "../app/Links";
-import { Button, Page, Paragraph } from "@zerve/ui";
+import { Paragraph } from "@zerve/ui";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
-export default function NotFoundScreen({
-  navigation,
-}: RootStackScreenProps<"NotFound">) {
+export default function NotFoundScreen() {
   return (
-    <Page>
+    <ScreenContainer>
+      <ScreenHeader title="Not Found." />
       <Paragraph>This screen doesn't exist.</Paragraph>
-      <Button
-        onPress={() => navigation.replace("HomeStack")}
-        title="Go to home screen!"
-      />
-    </Page>
+    </ScreenContainer>
   );
 }

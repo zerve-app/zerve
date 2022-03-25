@@ -12,6 +12,8 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { BackButton } from "../components/AppPage";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 const NUM_ITEMS = 10;
 function getColor(i: number) {
@@ -38,11 +40,7 @@ const initialData: Item[] = [...Array(NUM_ITEMS)].map((d, index) => {
 });
 
 function TestSortHeader() {
-  return (
-    <>
-      <BackButton />
-    </>
-  );
+  return <ScreenHeader title="Sorting Test" />;
 }
 
 function TestSortPage() {
@@ -89,9 +87,9 @@ function TestSortPage() {
 
 export default function TestSortScreen() {
   return (
-    <SafeAreaProvider>
+    <ScreenContainer>
       <TestSortPage />
-    </SafeAreaProvider>
+    </ScreenContainer>
   );
 }
 

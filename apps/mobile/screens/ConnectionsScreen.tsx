@@ -6,7 +6,8 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useConnections } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
-import AppPage from "../components/AppPage";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 export default function ConnectionsScreen() {
   const navigation =
@@ -16,8 +17,8 @@ export default function ConnectionsScreen() {
 
   const connections = useConnections();
   return (
-    <AppPage>
-      <PageTitle title="Server Connections" />
+    <ScreenContainer scroll>
+      <ScreenHeader title="Server Connections" />
       <VStack>
         {connections.map((connection) => (
           <LinkRow
@@ -42,6 +43,6 @@ export default function ConnectionsScreen() {
           title="New Connection"
         />
       </VStack>
-    </AppPage>
+    </ScreenContainer>
   );
 }

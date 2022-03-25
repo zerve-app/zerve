@@ -11,10 +11,11 @@ import {
   VStack,
   LinkRow,
   useBottomSheet,
+  Page,
+  LinkRowGroup,
 } from "@zerve/ui";
 
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
-import AppPage, { BareAppPage } from "../components/AppPage";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -28,28 +29,25 @@ import { QueryConnectionProvider, useDocList } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
 import { getZIcon } from "../app/ZIcon";
 import { getDocumentAsync } from "expo-document-picker";
-
-function SettingsButton({ onPress }: { onPress: () => void }) {
-  const colors = useColors();
-  return <LinkRow icon="gear" title="Settings" onPress={onPress} />;
-}
+import ScreenContainer from "../components/ScreenContainer";
 
 function LocalDocsSection({}: {}) {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList, "Home">>();
   const docs = useDocs();
   return (
-    <PageSection title="Local Projects">
+    <DisclosureSection header={<Label>Local Projects</Label>}>
       <VStack>
-        {docs?.map((name) => (
-          <LinkRow
-            key={name}
-            title={name}
-            onPress={() => {
+        <LinkRowGroup
+          links={docs?.map((name) => ({
+            key: name,
+            title: name,
+            icon: "briefcase",
+            onPress: () => {
               navigation.navigate("Doc", { connection: null, name });
-            }}
-          />
-        ))}
+            },
+          }))}
+        />
       </VStack>
       <HStack>
         <Button
@@ -71,7 +69,7 @@ function LocalDocsSection({}: {}) {
           title="Add Files"
         />
       </HStack>
-    </PageSection>
+    </DisclosureSection>
   );
 }
 
@@ -85,7 +83,7 @@ function ConnectionSection({ connection }: { connection: Connection }) {
   const navigation = useNavigation();
   const { navigate } = useNavigation<NavigationProp>();
   const list = data?.docs?.children;
-  const onOptions = useBottomSheet(({ onClose }) => (
+  const onOptions = useBottomSheet<void>(({ onClose }) => (
     <VStack>
       <Button
         title="Reload"
@@ -110,7 +108,7 @@ function ConnectionSection({ connection }: { connection: Connection }) {
   return (
     <DisclosureSection
       isLoading={isLoading}
-      header={<Label secondary>{connection.name}</Label>}
+      header={<Label>{connection.name}</Label>}
       right={
         <IconButton
           altTitle="Options"
@@ -133,7 +131,44 @@ function ConnectionSection({ connection }: { connection: Connection }) {
             }}
           />
         ))}
-        {!list?.length && <Paragraph>No Docs loaded..</Paragraph>}
+        {!list?.length ? <Paragraph>No Docs loaded..</Paragraph> : null}
+        <LinkRowGroup
+          links={[
+            {
+              key: "Events",
+              title: "Event History",
+              icon: "history",
+              onPress: () => {
+                navigate("ZNode", {
+                  connection: connection.key,
+                  path: [],
+                });
+              },
+            },
+            {
+              key: "ServerAPI",
+              title: "Types",
+              icon: "crosshairs",
+              onPress: () => {
+                navigate("ZNode", {
+                  connection: connection.key,
+                  path: [],
+                });
+              },
+            },
+            {
+              key: "ServerAPI",
+              title: "Server Setup",
+              icon: "database",
+              onPress: () => {
+                navigate("ZNode", {
+                  connection: connection.key,
+                  path: [],
+                });
+              },
+            },
+          ]}
+        />
       </VStack>
     </DisclosureSection>
   );
@@ -146,25 +181,38 @@ export default function HomeScreen({
 }) {
   const connections = useConnections();
   return (
-    <BareAppPage>
+    <ScreenContainer scroll safe>
       <ZerveLogo />
-      {/* <LocalDocsSection /> */}
-
       {connections.map((connection) => (
         <QueryConnectionProvider key={connection.key} value={connection}>
           <ConnectionSection connection={connection} />
         </QueryConnectionProvider>
       ))}
-
-      <HStack>
-        <SettingsButton
-          onPress={() => {
-            navigation.navigate("SettingsStack", {
-              screen: "Settings",
-            });
-          }}
+      <LocalDocsSection />
+      <VStack>
+        <LinkRowGroup
+          links={[
+            {
+              key: "History",
+              title: "Local History",
+              icon: "history",
+              onPress: () => {
+                navigation.navigate("History");
+              },
+            },
+            {
+              key: "AppSettings",
+              title: "App Settings",
+              icon: "gear",
+              onPress: () => {
+                navigation.navigate("SettingsStack", {
+                  screen: "Settings",
+                });
+              },
+            },
+          ]}
         />
-      </HStack>
-    </BareAppPage>
+      </VStack>
+    </ScreenContainer>
   );
 }

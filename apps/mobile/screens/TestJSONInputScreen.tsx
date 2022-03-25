@@ -11,6 +11,9 @@ import {
 import AppPage from "../components/AppPage";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { JSONSchema } from "@zerve/core";
+import { useNavigation } from "@react-navigation/native";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 const testSchema0 = {
   oneOf: [{ type: "number" }, { type: "string" }],
@@ -110,15 +113,28 @@ const testSchema3 = {
 
 function JSONSchemaFormExample({
   schema,
+  readOnly,
   initState = null,
 }: {
   schema: JSONSchema;
+  readOnly?: boolean;
   initState?: any;
 }) {
   const [state, setState] = useState(initState);
+  const { navigate } = useNavigation();
   return (
     <>
-      <JSONSchemaForm value={state} onValue={setState} schema={schema} />
+      {/* <JSONSchemaForm value={state} onValue={setState} schema={schema} /> */}
+      <LinkRow
+        title={`schema: ${JSON.stringify(schema)}, state: ${initState}`}
+        onPress={() => {
+          navigate("JSONInput", {
+            schema,
+            value: state,
+            onValue: readOnly ? undefined : setState,
+          });
+        }}
+      />
       <Paragraph>{JSON.stringify(state)}</Paragraph>
     </>
   );
@@ -129,8 +145,8 @@ export default function TestJSONInputScreen({
 }: SettingsStackScreenProps<"TestJSONInput">) {
   const [state, setState] = useState(null);
   return (
-    <AppPage>
-      <PageTitle title="JSON Inputs" />
+    <ScreenContainer scroll>
+      <ScreenHeader title="JSON Inputs" />
       <DisclosureSection
         defaultIsOpen={false}
         header={<Label>Read-Only JSON Schema</Label>}
@@ -234,6 +250,6 @@ export default function TestJSONInputScreen({
       >
         <JSONSchemaFormExample schema={testSchema3} />
       </DisclosureSection>
-    </AppPage>
+    </ScreenContainer>
   );
 }

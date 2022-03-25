@@ -1,5 +1,6 @@
 import React, { ComponentProps, ReactNode, ReactPropTypes } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
 import Layout from "./Layout";
@@ -68,5 +69,67 @@ export function LinkRow({
       title={title}
       left={icon ? (p) => <Icon {...p} name={icon} /> : null}
     />
+  );
+}
+
+type RowLink = {
+  onPress: () => void;
+  onLongPress?: () => void;
+  title: string;
+  icon?: ComponentProps<typeof Icon>["name"];
+};
+
+export function LinkRowGroup({
+  links,
+}: {
+  links: (RowLink & { key: string })[];
+}) {
+  const colors = useColors();
+  return (
+    <View
+      style={{
+        borderRadius: Layout.borderRadius,
+        backgroundColor: colors.background,
+        ...smallShadow,
+      }}
+    >
+      {links.map((link, linkIndex) => {
+        const { icon } = link;
+        return (
+          <View
+            key={link.key}
+            style={{
+              borderBottomWidth: linkIndex === links.length - 1 ? 0 : 1,
+              borderBottomColor: `${colors.secondaryText}33`,
+            }}
+          >
+            <TouchableOpacity
+              onPress={link.onPress}
+              onLongPress={link.onLongPress}
+              style={{
+                padding: 12,
+                paddingHorizontal: 18,
+                minHeight: 50,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              {icon && <Icon size={24} name={icon} />}
+              <Text
+                style={{
+                  color: colors.text,
+                  paddingHorizontal: 12,
+                  fontSize: 16,
+                  flex: 1,
+                  textAlign: "left",
+                }}
+              >
+                {link.title}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        );
+      })}
+    </View>
   );
 }

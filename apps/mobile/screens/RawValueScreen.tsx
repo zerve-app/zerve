@@ -9,10 +9,12 @@ import {
   useBottomSheet,
   VStack,
 } from "@zerve/ui";
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import { setString } from "expo-clipboard";
 import { Icon } from "@zerve/ui/Icon";
 import { Pressable } from "react-native";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 function RawValuePage({ navigation, route }: HomeStackScreenProps<"RawValue">) {
   const { value, title } = route.params;
@@ -30,12 +32,16 @@ function RawValuePage({ navigation, route }: HomeStackScreenProps<"RawValue">) {
   ));
   return (
     <>
-      <IconButton
-        altTitle="Options"
-        onPress={onOptions}
-        icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
+      <ScreenHeader
+        title={title}
+        corner={
+          <IconButton
+            altTitle="Options"
+            onPress={onOptions}
+            icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
+          />
+        }
       />
-      <PageTitle title={title} />
       <Pressable onPress={onOptions}>
         <Paragraph
           style={{
@@ -54,8 +60,8 @@ export default function RawValueScreen({
   route,
 }: HomeStackScreenProps<"RawValue">) {
   return (
-    <AppPage>
+    <ScreenContainer>
       <RawValuePage route={route} navigation={navigation} />
-    </AppPage>
+    </ScreenContainer>
   );
 }

@@ -1,5 +1,11 @@
-import React, { ComponentProps, ReactNode, useMemo, useState } from "react";
-import { JSONSchema } from "@zerve/core";
+import React, {
+  ComponentProps,
+  ReactNode,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { createZSchema, JSONSchema } from "@zerve/core";
 import {
   Button,
   InfoRow,
@@ -32,6 +38,7 @@ import Animated, {
   FadeOutUp,
   Layout,
 } from "react-native-reanimated";
+import { showErrorToast } from "../app/Toast";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
 //   return null;
@@ -137,17 +144,27 @@ function StatefulInput({
   inputLabel?: string;
 }) {
   const [s, setS] = useState(defaultValue);
+  const input = useRef(null);
+  const [error, setError] = useState(defaultValue);
   return (
-    <Input
-      label={inputLabel}
-      autoFocus
-      value={s}
-      onValue={setS}
-      onSubmitEditing={() => {
-        onSubmit(s);
-      }}
-      InputComponent={BottomSheetTextInput}
-    />
+    <>
+      <Paragraph>{s}</Paragraph>
+      <Input
+        ref={input}
+        label={inputLabel}
+        autoFocus
+        value={s}
+        onValue={setS}
+        onSubmitEditing={() => {
+          try {
+            onSubmit(s);
+          } catch (e) {
+            showErrorToast(e.message);
+          }
+        }}
+        InputComponent={BottomSheetTextInput}
+      />
+    </>
   );
 }
 
@@ -161,9 +178,19 @@ export function JSONSchemaObjectForm({
   schema: JSONSchema;
 }) {
   const { properties, additionalProperties } = schema;
+  if (schema?.type && schema?.type !== "object") {
+    throw new Error(
+      "JSONSchemaObjectForm can not handle type: " + schema?.type
+    );
+  }
   const errors: { message: string }[] = [];
-  if (typeof value !== "object")
+  if (value === undefined) {
+    errors.push({
+      message: "Value is empty but should be an object.",
+    });
+  } else if (typeof value !== "object") {
     errors.push({ message: "Value is not an object " + JSON.stringify(value) });
+  }
   const propertyKeys = new Set(
     properties == null ? [] : Object.keys(properties)
   );
@@ -188,15 +215,30 @@ export function JSONSchemaObjectForm({
   );
 
   const propertyNameInput = useBottomSheet<null | string>(
-    ({ onClose, options }) => (
+    ({ onClose, options: propertyEditKey }) => (
       <VStack>
         <StatefulInput
           inputLabel="New Property Name"
+          defaultValue={propertyEditKey || ""}
           onSubmit={(propertyName) => {
             onClose();
             if (!onValue) return;
-            if (options === null) {
+            if (value[propertyName] !== undefined)
+              throw new Error(`Key ${propertyName} already exists here.`);
+            if (propertyEditKey === null) {
               onValue({ ...value, [propertyName]: "" });
+            } else {
+              onValue(
+                Object.fromEntries(
+                  Object.entries(value).map(
+                    ([propKey, propValue]: [string, any]) => {
+                      if (propKey === propertyEditKey)
+                        return [propertyName, propValue];
+                      return [propKey, propValue];
+                    }
+                  )
+                )
+              );
             }
           }}
         />
@@ -235,8 +277,14 @@ export function JSONSchemaObjectForm({
               title: "Delete",
               onAction: () => {
                 const newValue = { ...value };
-                delete newValue[propertyName];
+                delete newValue[itemName];
                 onValue(newValue);
+              },
+            },
+            {
+              title: "Rename",
+              onAction: () => {
+                propertyNameInput(itemName);
               },
             },
           ]}
@@ -419,6 +467,7 @@ function EnumFormField({
       />
       <Dropdown
         value={value}
+        unselectedLabel={`Choose: ${schema.enum.slice(0, 5).join(",")}`}
         onOptionSelect={onValue}
         options={schema.enum.map((optionValue) => ({
           title: String(optionValue),
@@ -528,6 +577,17 @@ export function FormField({
       <ThemedText>Failed to expand schema: {JSON.stringify(schema)}</ThemedText>
     );
 
+  if (value === null) {
+    return (
+      <FormFieldHeader
+        label={label}
+        value={value}
+        typeLabel="null"
+        actions={actions}
+      />
+    );
+  }
+
   if (isLeafType(expandedSchema.type)) {
     return (
       <LeafFormField
@@ -553,15 +613,19 @@ export function FormField({
         {matchedSchema == null ? (
           <>
             <FormFieldHeader value={value} label={label || "?"} />
-            <Dropdown
-              options={unionOptions.options}
-              value={matched}
-              onOptionSelect={(optionValue) => {
-                const converter = unionOptions.converters[optionValue];
-                const convertedValue = converter(value);
-                onValue(convertedValue);
-              }}
-            />
+
+            {onValue && (
+              <Dropdown
+                options={unionOptions.options}
+                unselectedLabel={`Select Type`}
+                value={matched}
+                onOptionSelect={(optionValue) => {
+                  const converter = unionOptions.converters[optionValue];
+                  const convertedValue = converter(value);
+                  onValue(convertedValue);
+                }}
+              />
+            )}
           </>
         ) : (
           <FormField
@@ -697,11 +761,11 @@ export function LeafFormField({
 }
 
 const allTypesList = [
+  "null",
   "boolean",
+  "number",
   "string",
   // "integer", // LOL because we can't infer the difference between this and a number
-  "number",
-  "null",
   "array",
   "object",
 ] as const;

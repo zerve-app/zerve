@@ -1,17 +1,11 @@
 import React from "react";
 
 import { HomeStackScreenProps } from "../app/Links";
-import AppPage from "../components/AppPage";
-import {
-  Button,
-  HStack,
-  PageTitle,
-  Paragraph,
-  useBottomSheet,
-  VStack,
-} from "@zerve/ui";
+import { Button, HStack, Paragraph, useBottomSheet, VStack } from "@zerve/ui";
 import { useDocEval } from "../app/Doc";
 import { deleteDoc } from "@zerve/native";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 function DocOptionsMenu({
   name,
@@ -45,12 +39,12 @@ export default function DocScreen({
 }: HomeStackScreenProps<"Doc">) {
   const { connection, name } = route.params;
   const doc = useDocEval(connection, name);
-  const onOptions = useBottomSheet(({ onClose }) => (
+  const onOptions = useBottomSheet<void>(({ onClose }) => (
     <DocOptionsMenu name={name} navigation={navigation} onClose={onClose} />
   ));
   return (
-    <AppPage>
-      <PageTitle title={name} />
+    <ScreenContainer scroll>
+      <ScreenHeader title={name} />
       <Paragraph>{JSON.stringify(doc)}</Paragraph>
       <HStack>
         <Button title="New Document" onPress={() => {}} />
@@ -68,6 +62,6 @@ export default function DocScreen({
         />
         <Button title="Options" onPress={onOptions} />
       </HStack>
-    </AppPage>
+    </ScreenContainer>
   );
 }

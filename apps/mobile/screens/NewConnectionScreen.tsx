@@ -1,9 +1,10 @@
 import React from "react";
 
-import { Button, Input, Page, PageTitle, VStack } from "@zerve/ui";
-import AppPage from "../components/AppPage";
+import { Button, Input, VStack } from "@zerve/ui";
 import { SettingsStackScreenProps } from "../app/Links";
 import { createConnection } from "../app/Connection";
+import ScreenHeader from "../components/ScreenHeader";
+import ScreenContainer from "../components/ScreenContainer";
 
 export default function NewConnectionScreen({
   navigation,
@@ -11,8 +12,8 @@ export default function NewConnectionScreen({
   const [name, setName] = React.useState("");
   const [url, setUrl] = React.useState("");
   return (
-    <AppPage>
-      <PageTitle title="New Connection" />
+    <ScreenContainer scroll>
+      <ScreenHeader title="New Connection" />
       <VStack>
         <Input
           value={name}
@@ -37,6 +38,6 @@ export default function NewConnectionScreen({
           }}
         />
       </VStack>
-    </AppPage>
+    </ScreenContainer>
   );
 }

@@ -1,18 +1,19 @@
 import React from "react";
 
 import { Input, PageTitle, VStack } from "@zerve/ui";
-import AppPage from "../components/AppPage";
 import { HomeStackScreenProps } from "../app/Links";
 import { dispatch } from "@zerve/native";
 import { AsyncButton } from "../components/Button";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 export default function NewDocScreen({
   navigation,
 }: HomeStackScreenProps<"NewDoc">) {
   const [name, setName] = React.useState("");
   return (
-    <AppPage>
-      <PageTitle title="New Project" />
+    <ScreenContainer scroll>
+      <ScreenHeader title="New Project" />
       <VStack>
         <Input
           value={name}
@@ -30,10 +31,10 @@ export default function NewDocScreen({
               name: "ReadMe.md",
               value: "Welcome to your new project",
             });
-            navigation.replace("Doc", { name });
+            navigation.replace("Doc", { name, connection: null });
           }}
         />
       </VStack>
-    </AppPage>
+    </ScreenContainer>
   );
 }

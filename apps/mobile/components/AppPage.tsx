@@ -44,7 +44,3 @@ export default function AppPage({
     </Page>
   );
 }
-
-export function BareAppPage({ children }: { children: ReactNode }) {
-  return <Page>{children}</Page>;
-}

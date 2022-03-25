@@ -4,6 +4,7 @@ import { RootStackScreenProps } from "../app/Links";
 import { Page, PageTitle, Paragraph } from "@zerve/ui";
 import AppPage from "../components/AppPage";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
+import ScreenContainer from "../components/ScreenContainer";
 
 export default function JSONInputScreen({
   navigation,
@@ -11,7 +12,7 @@ export default function JSONInputScreen({
 }: RootStackScreenProps<"JSONInput">) {
   const [value, setValue] = useState(route.params.value);
   return (
-    <AppPage>
+    <ScreenContainer scroll>
       <JSONSchemaForm
         value={value}
         schema={route.params.schema}
@@ -24,6 +25,6 @@ export default function JSONInputScreen({
             : undefined
         }
       />
-    </AppPage>
+    </ScreenContainer>
   );
 }

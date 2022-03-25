@@ -26,7 +26,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>zerve</string>
-          <string>app.zerve.mobile</string>
+          <string>app.zerve.main</string>
         </array>
       </dict>
     </array>

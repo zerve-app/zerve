@@ -322,7 +322,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.zerve.mobile;
+				PRODUCT_BUNDLE_IDENTIFIER = app.zerve.main;
 				PRODUCT_NAME = Zerve;
 				SWIFT_OBJC_BRIDGING_HEADER = "Zerve/Zerve-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -348,7 +348,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.zerve.mobile;
+				PRODUCT_BUNDLE_IDENTIFIER = app.zerve.main;
 				PRODUCT_NAME = Zerve;
 				SWIFT_OBJC_BRIDGING_HEADER = "Zerve/Zerve-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

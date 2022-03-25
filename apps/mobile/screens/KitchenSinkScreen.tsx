@@ -2,15 +2,24 @@ import React from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
 import { LinkRow, PageTitle, VStack } from "@zerve/ui";
-import AppPage from "../components/AppPage";
+import ScreenContainer from "../components/ScreenContainer";
+import ScreenHeader from "../components/ScreenHeader";
 
 export default function KitchenSinkScreen({
   navigation,
 }: SettingsStackScreenProps<"KitchenSink">) {
   return (
-    <AppPage>
-      <PageTitle title="Kitchen Sink" />
+    <ScreenContainer scroll>
+      <ScreenHeader title="Kitchen Sink" />
       <VStack>
+        <LinkRow
+          title="UI Examples"
+          icon="list-ul"
+          onPress={() => {
+            navigation.navigate("TestUI");
+          }}
+        />
+
         <LinkRow
           title="JSON Schema"
           icon="list-ul"
@@ -26,6 +35,6 @@ export default function KitchenSinkScreen({
           }}
         />
       </VStack>
-    </AppPage>
+    </ScreenContainer>
   );
 }

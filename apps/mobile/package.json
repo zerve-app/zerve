@@ -30,6 +30,7 @@
     "expo-application": "^4.0.2",
     "expo-asset": "^8.4.6",
     "expo-av": "^10.2.1",
+    "expo-blur": "~11.0.0",
     "expo-cellular": "^4.1.1",
     "expo-clipboard": "^2.1.1",
     "expo-constants": "~13.0.2",

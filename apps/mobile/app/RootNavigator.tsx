@@ -21,6 +21,8 @@ import RawValueScreen from "../screens/RawValueScreen";
 import JSONInputScreen from "../screens/JSONInputScreen";
 import TestSortScreen from "../screens/TestSortScreen";
 import TestJSONInputScreen from "../screens/TestJSONInputScreen";
+import TestUIScreen from "../screens/TestUIScreen";
+import HistoryScreen from "../screens/HistoryScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -45,6 +47,11 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="ZNode"
         component={ZNodeScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="History"
+        component={HistoryScreen}
         options={DefaultScreenOptions}
       />
     </HomeStack.Navigator>
@@ -74,6 +81,11 @@ function SettingsNavigator() {
       <SettingsStack.Screen
         name="TestSort"
         component={TestSortScreen}
+        options={DefaultScreenOptions}
+      />
+      <SettingsStack.Screen
+        name="TestUI"
+        component={TestUIScreen}
         options={DefaultScreenOptions}
       />
       <SettingsStack.Screen

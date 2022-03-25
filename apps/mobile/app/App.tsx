@@ -12,6 +12,7 @@ import RootNavigator from "./RootNavigator";
 import { BottomSheetProvider, useColorScheme } from "@zerve/ui";
 import { QueryProvider } from "@zerve/query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ToastContainer } from "./Toast";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
