@@ -1,10 +1,12 @@
 import React from "react";
-import { HomeStackScreenProps } from "../app/Links";
-import AppPage from "../components/AppPage";
+import {
+  HomeStackScreenProps,
+  RootStackParamList,
+  RootStackScreenProps,
+} from "../app/Links";
 import {
   Button,
   IconButton,
-  PageTitle,
   Paragraph,
   useBottomSheet,
   VStack,
@@ -16,7 +18,7 @@ import { Pressable } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 
-function RawValuePage({ navigation, route }: HomeStackScreenProps<"RawValue">) {
+function RawValuePage({ navigation, route }: RootStackScreenProps<"RawValue">) {
   const { value, title } = route.params;
   const onOptions = useBottomSheet(({ onClose }) => (
     <VStack>

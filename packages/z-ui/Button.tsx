@@ -8,7 +8,8 @@ import Layout from "./Layout";
 import React, { ComponentProps, ReactNode, useRef, useState } from "react";
 import { useColors } from "./useColors";
 import { smallShadow } from "./Style";
-import { Spinner, ThemedText } from ".";
+import { Spinner } from "./Spinner";
+import { ThemedText } from "./Themed";
 
 export function IconButton({
   icon,

@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
-import {
-  Button,
-  PageSection,
-  PageTitle,
-  VStack,
-  LinkRow,
-  AsyncButton,
-} from "@zerve/ui";
-import AppPage from "../components/AppPage";
+import { Button, PageSection, VStack, LinkRow, AsyncButton } from "@zerve/ui";
 import { dangerouslyClearAllStorage } from "@zerve/native";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import {

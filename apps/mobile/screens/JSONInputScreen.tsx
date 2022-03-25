@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 
 import { RootStackScreenProps } from "../app/Links";
-import { Page, PageTitle, Paragraph } from "@zerve/ui";
-import AppPage from "../components/AppPage";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import ScreenContainer from "../components/ScreenContainer";
 
@@ -11,16 +9,17 @@ export default function JSONInputScreen({
   route,
 }: RootStackScreenProps<"JSONInput">) {
   const [value, setValue] = useState(route.params.value);
+  const { onValue } = route.params;
   return (
     <ScreenContainer scroll>
       <JSONSchemaForm
         value={value}
         schema={route.params.schema}
         onValue={
-          route.params.onValue
+          onValue
             ? (v) => {
                 setValue(v);
-                route.params.onValue(v);
+                onValue(v);
               }
             : undefined
         }

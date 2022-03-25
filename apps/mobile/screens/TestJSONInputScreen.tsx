@@ -8,7 +8,6 @@ import {
   PageTitle,
   Paragraph,
 } from "@zerve/ui";
-import AppPage from "../components/AppPage";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { JSONSchema } from "@zerve/core";
 import { useNavigation } from "@react-navigation/native";

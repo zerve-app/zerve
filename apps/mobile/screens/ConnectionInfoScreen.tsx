@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 
 import { Button, PageSection, Paragraph, Spinner, VStack } from "@zerve/ui";
-import AppPage from "../components/AppPage";
 import { SettingsStackScreenProps } from "../app/Links";
 import {
   Connection,

@@ -5,13 +5,7 @@ import DraggableFlatList, {
   ShadowDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import {
-  SafeAreaProvider,
-  SafeAreaView,
-  useSafeAreaFrame,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import { BackButton } from "../components/AppPage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 

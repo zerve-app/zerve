@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 
-import { HStack, IconButton, Page, Spinner } from "@zerve/ui";
+import { IconButton } from "@zerve/ui";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -21,26 +21,5 @@ export function BackButton() {
         onPress={goBack}
       />
     )
-  );
-}
-
-export default function AppPage({
-  children,
-  right,
-  isLoading,
-}: {
-  children: ReactNode;
-  right?: ReactNode;
-  isLoading?: boolean;
-}) {
-  return (
-    <Page>
-      <HStack>
-        <BackButton />
-        {right}
-        {isLoading && <Spinner />}
-      </HStack>
-      {children}
-    </Page>
   );
 }

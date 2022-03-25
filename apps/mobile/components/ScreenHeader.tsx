@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Spinner, Title } from "@zerve/ui";
 import { View } from "react-native";
-import { BackButton } from "./AppPage";
+import { BackButton } from "./BackButton";
 
 export default function ScreenHeader({
   title,
