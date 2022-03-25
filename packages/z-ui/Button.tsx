@@ -93,7 +93,9 @@ export function Button({
     minHeight: small ? 30 : 50,
     flexDirection: "row",
     alignItems: "center",
-    ...smallShadow,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowColor: "#111",
     shadowOpacity: pressHeight.value * 0.25,
     transform: [{ translateY: -pressHeight.value * 3 }],
   }));
