@@ -43,7 +43,11 @@ function useConnectionStatus(connection: Connection) {
   return { isConnected, isLoading };
 }
 
-function ConnectionStatusRow({ connection }: { connection: Connection }) {
+export function ConnectionStatusRow({
+  connection,
+}: {
+  connection: Connection;
+}) {
   const { isConnected, isLoading } = useConnectionStatus(connection);
   return (
     <InfoRow

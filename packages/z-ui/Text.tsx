@@ -66,9 +66,13 @@ export function Label({
 export function Paragraph({
   children,
   style,
+  danger,
+  secondary,
 }: {
   children: ReactNode;
   style?: StyleProp<TextStyle>;
+  danger?: boolean;
+  secondary?: boolean;
 }) {
   return (
     <ThemedText
@@ -79,6 +83,8 @@ export function Paragraph({
         },
         style,
       ]}
+      danger={danger}
+      secondary={secondary}
     >
       {children}
     </ThemedText>

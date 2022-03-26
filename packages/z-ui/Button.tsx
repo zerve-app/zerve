@@ -57,6 +57,7 @@ export type ButtonProps = {
   primary?: boolean;
   danger?: boolean;
   onPress: null | (() => void);
+  onLongPress?: () => void;
   style?: StyleProp<ViewStyle>;
   border?: number;
   small?: boolean;
@@ -70,6 +71,7 @@ export function Button({
   danger,
   style,
   onPress,
+  onLongPress,
   border,
   small,
   textAlign = "center",
@@ -114,6 +116,7 @@ export function Button({
           pressBounceTimeout.current = null;
         }, 250);
       }}
+      onLongPress={onLongPress}
       onResponderEnd={() => {}}
       onPressIn={() => {
         pressHeight.value = withSpring(1, { mass: 0.5 });

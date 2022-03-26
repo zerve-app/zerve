@@ -23,6 +23,8 @@ import TestSortScreen from "../screens/TestSortScreen";
 import TestJSONInputScreen from "../screens/TestJSONInputScreen";
 import TestUIScreen from "../screens/TestUIScreen";
 import HistoryScreen from "../screens/HistoryScreen";
+import ConnectionScreen from "../screens/ConnectionScreen";
+import { TestHistoryScreen } from "../screens/TestHistoryScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -32,6 +34,11 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="Home"
         component={HomeScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="Connection"
+        component={ConnectionScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
@@ -86,6 +93,11 @@ function SettingsNavigator() {
       <SettingsStack.Screen
         name="TestUI"
         component={TestUIScreen}
+        options={DefaultScreenOptions}
+      />
+      <SettingsStack.Screen
+        name="TestHistory"
+        component={TestHistoryScreen}
         options={DefaultScreenOptions}
       />
       <SettingsStack.Screen

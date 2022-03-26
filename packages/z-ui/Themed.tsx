@@ -27,11 +27,28 @@ type ThemeProps = {
 export type TextProps = ThemeProps & DefaultText["props"];
 export type ViewProps = ThemeProps & DefaultView["props"];
 
-export function ThemedText(props: { secondary?: boolean } & TextProps) {
+export function ThemedText(
+  props: {
+    secondary?: boolean;
+    danger?: boolean;
+    oneLine?: boolean;
+  } & TextProps
+) {
   const colors = useColors();
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = props.secondary ? colors.secondaryText : colors.text;
-  return <DefaultText style={[{ color }, style]} {...otherProps} />;
+  const color = props.danger
+    ? colors.dangerText
+    : props.secondary
+    ? colors.secondaryText
+    : colors.text;
+  return (
+    <DefaultText
+      numberOfLines={props.oneLine ? 1 : undefined}
+      ellipsizeMode="tail"
+      style={[{ color }, style]}
+      {...otherProps}
+    />
+  );
 }
 
 export function ThemedView(props: ViewProps) {

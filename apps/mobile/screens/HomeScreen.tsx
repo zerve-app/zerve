@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   DisclosureSection,
@@ -13,6 +13,8 @@ import {
   useBottomSheet,
   Page,
   LinkRowGroup,
+  ActionButtonDef,
+  ActionButton,
 } from "@zerve/ui";
 
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
@@ -25,11 +27,12 @@ import { Connection, useConnections } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
-import { QueryConnectionProvider, useDocList } from "@zerve/query";
+import { QueryConnectionProvider, useConnectionProjects } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
 import { getZIcon } from "../app/ZIcon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
+import { ConnectionMetaLinks, ConnectionProjects } from "./ConnectionScreen";
 
 function LocalDocsSection({}: {}) {
   const navigation =
@@ -79,18 +82,22 @@ type NavigationProp = CompositeNavigationProp<
 >;
 
 function ConnectionSection({ connection }: { connection: Connection }) {
-  const { data, refetch, isLoading } = useDocList();
-  const navigation = useNavigation();
-  const { navigate } = useNavigation<NavigationProp>();
-  const list = data?.docs?.children;
+  const [actions, setActions] = useState<ActionButtonDef[]>([]);
+  const navigation = useNavigation<NavigationProp>();
   const onOptions = useBottomSheet<void>(({ onClose }) => (
     <VStack>
-      <Button
-        title="Reload"
+      {actions.map((action) => (
+        <ActionButton key={action.key} action={action} />
+      ))}
+      <LinkRow
+        icon="database"
         onPress={() => {
-          refetch();
+          navigation.navigate("Connection", {
+            connection: connection.key,
+          });
           onClose();
         }}
+        title={`Open ${connection.name}`}
       />
       <LinkRow
         title="Connection Info"
@@ -107,7 +114,6 @@ function ConnectionSection({ connection }: { connection: Connection }) {
   ));
   return (
     <DisclosureSection
-      isLoading={isLoading}
       header={<Label>{connection.name}</Label>}
       right={
         <IconButton
@@ -118,57 +124,8 @@ function ConnectionSection({ connection }: { connection: Connection }) {
       }
     >
       <VStack>
-        {data?.docs?.children?.map((childKey: string) => (
-          <LinkRow
-            key={childKey}
-            title={childKey}
-            icon={getZIcon("Container")}
-            onPress={() => {
-              navigate("ZNode", {
-                connection: connection.key,
-                path: [childKey],
-              });
-            }}
-          />
-        ))}
-        {!list?.length ? <Paragraph>No Docs loaded..</Paragraph> : null}
-        <LinkRowGroup
-          links={[
-            {
-              key: "Events",
-              title: "Event History",
-              icon: "history",
-              onPress: () => {
-                navigate("ZNode", {
-                  connection: connection.key,
-                  path: [],
-                });
-              },
-            },
-            {
-              key: "ServerAPI",
-              title: "Types",
-              icon: "crosshairs",
-              onPress: () => {
-                navigate("ZNode", {
-                  connection: connection.key,
-                  path: [],
-                });
-              },
-            },
-            {
-              key: "ServerAPI",
-              title: "Server Setup",
-              icon: "database",
-              onPress: () => {
-                navigate("ZNode", {
-                  connection: connection.key,
-                  path: [],
-                });
-              },
-            },
-          ]}
-        />
+        <ConnectionProjects connection={connection} onActions={setActions} />
+        <ConnectionMetaLinks connection={connection} />
       </VStack>
     </DisclosureSection>
   );

@@ -18,6 +18,8 @@ import { Icon } from "@zerve/ui/Icon";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
+import { clearLocalHistoryStorage } from "../app/History";
+import { showToast } from "../app/Toast";
 
 function AppUpdater() {
   const [update, setUpdate] = useState<null | UpdateCheckResult>(null);
@@ -98,6 +100,17 @@ export default function SettingsScreen({
             )}
             title="Run Garbage Collection"
             onPress={() => {}}
+          />
+          <AsyncButton
+            title="Clear Local History"
+            right={({ color }) => (
+              <FontAwesome name="trash" color={color} size={24} />
+            )}
+            danger
+            onPress={async () => {
+              await clearLocalHistoryStorage();
+              showToast("Local History Cleared");
+            }}
           />
           <Button
             title="Reset All Local Data"

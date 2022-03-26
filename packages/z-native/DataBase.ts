@@ -3,16 +3,16 @@ import {
   CryptoEncoding,
   digestStringAsync,
 } from "expo-crypto";
-import { useStored, getStorageNode } from "./Storage";
 import {
-  BlockLink,
   BLOCK_ID_FORMATS,
   Commit,
   JSONBlock,
   NotFoundError,
 } from "@zerve/core";
 import stringify from "json-stable-stringify";
-import { useNodeState } from "./Storage";
+import { createNativeStorage } from "./Storage";
+
+const nativeData = createNativeStorage({ id: "MainDB" });
 
 export async function createJSONBlock(
   value: any,
@@ -44,14 +44,14 @@ export async function createJSONBlock(
 type DocValue = undefined | { type: "BlockLink"; id: string };
 
 function getDocNode(docName: string) {
-  return getStorageNode<DocValue>(`Docs/${docName}`, undefined);
+  return nativeData.getStorageNode<DocValue>(`Docs/${docName}`, undefined);
 }
 export type ListedDoc = string;
 
-const docList = getStorageNode<string[]>("Docs:List", []);
+const docList = nativeData.getStorageNode<string[]>("Docs:List", []);
 
 function getBlockNode<BlockValue>(blockId: string, value: BlockValue) {
-  return getStorageNode<BlockValue>(`Docs/${blockId}`, value);
+  return nativeData.getStorageNode<BlockValue>(`Docs/${blockId}`, value);
 }
 
 export function listDocs() {
@@ -149,5 +149,5 @@ export async function dispatch<AppendValue>(
 }
 
 export function useDocs() {
-  return useNodeState(docList);
+  return nativeData.useNodeState(docList);
 }

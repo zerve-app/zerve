@@ -8,7 +8,7 @@ export type QueryOptions = {
   skipLoading?: boolean;
 };
 
-export function useDocList(options?: QueryOptions) {
+export function useConnectionProjects(options?: QueryOptions) {
   const context = useConnectionContext();
   return useQuery<any>([context.key, "docs", "child-list"], async () => {
     if (options?.skipLoading) return undefined;

@@ -21,13 +21,14 @@ export type SettingsStackParamList = {
   KitchenSink: undefined;
   TestSort: undefined;
   TestUI: undefined;
+  TestHistory: undefined;
   TestJSONInput: undefined;
 };
 
 export type HomeStackParamList = {
   Home: undefined;
   NewDoc: undefined;
-  History: undefined;
+  Connection: { connection: string };
   Doc: { connection: null | string; name: string };
   ZNode: { connection: null | string; path: string[] };
 };

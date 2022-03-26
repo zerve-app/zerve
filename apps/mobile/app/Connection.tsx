@@ -1,12 +1,9 @@
 import { defineKeySource } from "@zerve/core";
-import {
-  getStorageNode,
-  mutateStorage,
-  useNodeState,
-  useStorage,
-  useStored,
-} from "@zerve/native";
-import { useCallback } from "react";
+import { createNativeStorage } from "@zerve/native";
+
+const connectionStorage = createNativeStorage({
+  id: "ConnectionStorage",
+});
 
 export type Connection = {
   key: string;
@@ -31,10 +28,13 @@ const DefaultConnections: Connection[] = [
   },
 ];
 
-const connectionsNode = getStorageNode("Connections", DefaultConnections);
+const connectionsNode = connectionStorage.getStorageNode(
+  "Connections",
+  DefaultConnections
+);
 
 export function useConnections() {
-  return useNodeState(connectionsNode);
+  return connectionStorage.useNodeState(connectionsNode);
 }
 
 export function getConnection(connectionKey: string) {
@@ -49,7 +49,7 @@ export function useConnection(connectionKey: string) {
 export function mutateConnections(
   mutator: (connections: Connection[]) => Connection[]
 ) {
-  mutateStorage("Connections", DefaultConnections, mutator);
+  connectionStorage.mutateStorage("Connections", DefaultConnections, mutator);
 }
 
 export function destroyConnection(key: string) {
