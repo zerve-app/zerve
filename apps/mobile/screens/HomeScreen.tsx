@@ -32,7 +32,11 @@ import { Icon } from "@zerve/ui/Icon";
 import { getZIcon } from "../app/ZIcon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
-import { ConnectionMetaLinks, ConnectionProjects } from "./ConnectionScreen";
+import {
+  ConnectionMetaLinks,
+  ConnectionProjects,
+  NewFileButton,
+} from "./ConnectionScreen";
 
 function LocalDocsSection({}: {}) {
   const navigation =
@@ -47,7 +51,7 @@ function LocalDocsSection({}: {}) {
             title: name,
             icon: "briefcase",
             onPress: () => {
-              navigation.navigate("Doc", { connection: null, name });
+              navigation.navigate("File", { connection: null, name });
             },
           }))}
         />
@@ -55,9 +59,9 @@ function LocalDocsSection({}: {}) {
       <HStack>
         <Button
           onPress={() => {
-            navigation.navigate("NewDoc");
+            navigation.navigate("NewFile", { connection: null });
           }}
-          title="New Project"
+          title="New File"
           left={({ color }) => (
             <FontAwesome name="plus-circle" color={color} size={24} />
           )}
@@ -125,6 +129,7 @@ function ConnectionSection({ connection }: { connection: Connection }) {
     >
       <VStack>
         <ConnectionProjects connection={connection} onActions={setActions} />
+        <NewFileButton />
         <ConnectionMetaLinks connection={connection} />
       </VStack>
     </DisclosureSection>

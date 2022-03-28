@@ -57,7 +57,7 @@ const CoreStoreSchema = {
 
 export async function startApp() {
   const InternalRootFiles = SystemFiles.createSystemFiles("/");
-
+  console.log("Starting Data Dir", dataDir);
   const Data = await CoreData.createCoreData(dataDir);
 
   const ledgerCacheFiles = SystemFiles.createSystemFiles(

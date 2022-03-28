@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   ActionButtonDef,
@@ -6,6 +6,7 @@ import {
   Paragraph,
   VStack,
   LinkRow,
+  Button,
 } from "@zerve/ui";
 import {
   HomeStackParamList,
@@ -36,7 +37,12 @@ export function ConnectionProjects({
 }) {
   const { navigate } = useNavigation<NavigationProp<HomeStackParamList>>();
   const { data, refetch, isLoading } = useConnectionProjects();
-  const list = data?.docs?.children;
+  const list = useMemo(() => {
+    return Object.entries(data?.node || {}).map(([name, docValue]) => {
+      return { key: name, name, ...docValue };
+    });
+  }, [data]);
+  console.log(list);
 
   useEffect(() => {
     const actions: ActionButtonDef[] = [];
@@ -55,15 +61,15 @@ export function ConnectionProjects({
 
   return (
     <LinkRowGroup
-      links={data?.docs?.children?.map((childKey: string) => ({
-        key: childKey,
-        title: childKey,
+      links={list.map((child) => ({
+        key: child.key,
+        title: child.name,
         icon: getZIcon("Container"),
         onPress: () => {
-          navigate("ZNode", {
-            connection: connection.key,
-            path: [childKey],
-          });
+          // navigate("ZNode", {
+          //   connection: connection.key,
+          //   path: [child.name],
+          // });
         },
       }))}
     />
@@ -117,6 +123,23 @@ export function ConnectionMetaLinks({
   );
 }
 
+export function NewFileButton() {
+  const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+  const conn = useConnectionContext();
+  return (
+    <Button
+      onPress={() => {
+        navigation.navigate("NewFile", { connection: conn?.key || null });
+      }}
+      small
+      title="New File"
+      left={({ color }) => (
+        <FontAwesome name="plus-circle" color={color} size={24} />
+      )}
+    />
+  );
+}
+
 export default function ConnectionScreen({
   navigation,
   route,
@@ -131,6 +154,7 @@ export default function ConnectionScreen({
       <VStack>
         <ConnectionStatusRow connection={conn} />
         <ConnectionProjects connection={conn} onActions={() => {}} />
+        <NewFileButton />
         <ConnectionMetaLinks connection={conn} />
       </VStack>
     </ScreenContainer>

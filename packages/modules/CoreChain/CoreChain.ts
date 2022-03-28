@@ -63,7 +63,8 @@ export function createZChainStateCalculator<
       const valid = validator(action.value);
       if (!valid) {
         console.log("INVALD", { valid, e: validator.errors });
-        throw new Error("lol");
+
+        throw new RequestError(`ValidationError`, "validation fails", {});
       }
       return action;
     },
@@ -142,9 +143,14 @@ export async function createZChainState<
     const matchedAction =
       calculator.actions[commit.value.name as keyof typeof calculator.actions];
     if (matchedAction) {
-      const nextDeepState = matchedAction.handler(state, commit.value.value);
-      const result = await _extractBlocksToCache(nextDeepState, blockCache);
-      return result;
+      try {
+        const nextDeepState = matchedAction.handler(state, commit.value.value);
+        const result = await _extractBlocksToCache(nextDeepState, blockCache);
+        return result;
+      } catch (e) {
+        console.error("Unhandled State Update Error", e);
+        return state;
+      }
     }
     return calculator.initialState;
   }

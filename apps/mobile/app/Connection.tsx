@@ -41,9 +41,10 @@ export function getConnection(connectionKey: string) {
   return connectionsNode.get().find((conn) => conn.key === connectionKey);
 }
 
-export function useConnection(connectionKey: string) {
+export function useConnection(connectionKey: string | null) {
+  if (connectionKey === null) return null;
   const connections = useConnections();
-  return connections.find((c) => c.key === connectionKey);
+  return connections.find((c) => c.key === connectionKey) || null;
 }
 
 export function mutateConnections(

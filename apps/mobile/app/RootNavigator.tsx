@@ -9,11 +9,11 @@ import {
   SettingsStackParamList,
 } from "./Links";
 import HomeScreen from "../screens/HomeScreen";
-import DocScreen from "../screens/DocScreen";
+import FileScreen from "../screens/FileScreen";
 import KitchenSinkScreen from "../screens/KitchenSinkScreen";
 import NewConnectionScreen from "../screens/NewConnectionScreen";
 import ConnectionInfoScreen from "../screens/ConnectionInfoScreen";
-import NewDocScreen from "../screens/NewDocScreen";
+import NewFileScreen from "../screens/NewFileScreen";
 import ZNodeScreen from "../screens/ZNodeScreen";
 import ConnectionsScreen from "../screens/ConnectionsScreen";
 import ErrorScreen from "../screens/ErrorScreen";
@@ -42,13 +42,13 @@ function HomeNavigator() {
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
-        name="NewDoc"
-        component={NewDocScreen}
+        name="NewFile"
+        component={NewFileScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
-        name="Doc"
-        component={DocScreen}
+        name="File"
+        component={FileScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen

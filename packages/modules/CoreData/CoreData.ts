@@ -47,6 +47,11 @@ export type CoreDataModule = Awaited<ReturnType<typeof createCoreData>>;
 
 export const AnySchema = {} as const;
 
+function prefixedWithDot(fileName: string): boolean {
+  if (fileName[0] === ".") return false;
+  return true;
+}
+
 async function createCoreData(dataDir: string) {
   const _blocksDir = `${dataDir}/blocks`;
   const _docsDir = `${dataDir}/docs`;
@@ -207,15 +212,12 @@ async function createCoreData(dataDir: string) {
   );
 
   async function _listBlocks() {
-    const blockList = (await readdir(_blocksDir)).filter((fileName) => {
-      if (fileName[0] === ".") return false;
-      return true;
-    });
+    const blockList = (await readdir(_blocksDir)).filter(prefixedWithDot);
     return { children: blockList };
   }
 
   async function _listDocs(): Promise<FromSchema<typeof ChildrenList>> {
-    const docList = await readdir(_docsDir);
+    const docList = (await readdir(_docsDir)).filter(prefixedWithDot);
     return { children: docList };
   }
 

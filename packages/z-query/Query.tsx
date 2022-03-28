@@ -9,11 +9,12 @@ export type QueryOptions = {
 };
 
 export function useConnectionProjects(options?: QueryOptions) {
-  const context = useConnectionContext();
-  return useQuery<any>([context.key, "docs", "child-list"], async () => {
-    if (options?.skipLoading) return undefined;
-    return { docs: await listDocs(context) };
-  });
+  // const context = useConnectionContext();
+  // return useQuery<any>([context.key, "docs", "child-list"], async () => {
+  //   if (options?.skipLoading) return undefined;
+  //   return { docs: await listDocs(context) };
+  // });
+  return useZNode(["Store", "State"], options);
 }
 
 export function useDoc(name: string, options?: QueryOptions) {

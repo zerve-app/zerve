@@ -27,9 +27,10 @@ export type SettingsStackParamList = {
 
 export type HomeStackParamList = {
   Home: undefined;
-  NewDoc: undefined;
+  History: undefined;
+  NewFile: { connection: null | string };
   Connection: { connection: string };
-  Doc: { connection: null | string; name: string };
+  File: { connection: null | string; name: string };
   ZNode: { connection: null | string; path: string[] };
 };
 
