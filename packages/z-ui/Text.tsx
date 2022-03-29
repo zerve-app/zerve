@@ -9,7 +9,7 @@ export function Title({ title, style }: { title: string; style?: TextStyle }) {
       style={[
         {
           fontWeight: "bold",
-          fontSize: 36,
+          fontSize: 28,
         },
         style,
       ]}

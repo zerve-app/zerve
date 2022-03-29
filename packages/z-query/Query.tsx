@@ -40,7 +40,6 @@ export function useZNode(path: string[], options?: QueryOptions) {
 
 export function useZNodeValue(path: string[], options?: QueryOptions) {
   const context = useConnectionContext();
-  console.log("CONN in hook", context);
   return useQuery([context?.key, "z", ...path, ".node", "value"], async () => {
     if (!context || options?.skipLoading) return undefined;
     const results = await getZ(context, path);

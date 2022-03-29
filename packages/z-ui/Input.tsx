@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentProps } from "react";
 import { Switch, TextInput, View } from "react-native";
 import { useColors } from "./useColors";
 import { Label } from "./Text";
@@ -14,6 +14,8 @@ export function Input({
   autoFocus,
   disabled,
   keyboardType,
+  returnKeyType,
+  enablesReturnKeyAutomatically,
   InputComponent,
   onBlur,
 }: {
@@ -27,6 +29,8 @@ export function Input({
   disabled?: boolean;
   InputComponent?: any;
   onBlur?: () => void;
+  enablesReturnKeyAutomatically?: boolean;
+  returnKeyType?: ComponentProps<typeof TextInput>["returnKeyType"];
   keyboardType?:
     | "default"
     | "numeric"
@@ -60,7 +64,9 @@ export function Input({
         }}
         focusable={!disabled}
         keyboardType={keyboardType}
+        returnKeyType={returnKeyType}
         editable={!disabled}
+        enablesReturnKeyAutomatically={enablesReturnKeyAutomatically}
         autoCapitalize={autoCapitalize}
         onSubmitEditing={onSubmitEditing}
         value={value}

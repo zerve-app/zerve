@@ -25,6 +25,7 @@ import TestUIScreen from "../screens/TestUIScreen";
 import HistoryScreen from "../screens/HistoryScreen";
 import ConnectionScreen from "../screens/ConnectionScreen";
 import { TestHistoryScreen } from "../screens/TestHistoryScreen";
+import FileSchemaScreen from "../screens/FileSchemaScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -49,6 +50,11 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="File"
         component={FileScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="FileSchema"
+        component={FileSchemaScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen

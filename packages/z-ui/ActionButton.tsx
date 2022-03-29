@@ -33,15 +33,15 @@ export function ActionButton({ action }: { action: ActionButtonDef }) {
             }
           : undefined
       }
-      right={(p) => (icon ? <Icon {...p} name={icon} /> : null)}
+      left={(p) => (icon ? <Icon {...p} name={icon} /> : null)}
     />
   );
 }
 
-export function useActionsSheet(actions: ActionButtonDef[]) {
+export function useActionsSheet(getActions: () => ActionButtonDef[]) {
   return useBottomSheet<void>(({ onClose }) => (
     <VStack>
-      {actions.map((action) => (
+      {getActions().map((action) => (
         <ActionButton
           key={action.key}
           action={{

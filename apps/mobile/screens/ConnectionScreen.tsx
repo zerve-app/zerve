@@ -26,7 +26,12 @@ import NotFoundScreen from "./NotFoundScreen";
 import { ConnectionStatusRow } from "./ConnectionInfoScreen";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { getZIcon } from "../app/ZIcon";
-import { useConnectionContext, useConnectionProjects } from "@zerve/query";
+import {
+  QueryConnectionProvider,
+  useConnectionContext,
+  useConnectionProjects,
+} from "@zerve/query";
+import { View } from "react-native";
 
 export function ConnectionProjects({
   onActions,
@@ -42,13 +47,13 @@ export function ConnectionProjects({
       return { key: name, name, ...docValue };
     });
   }, [data]);
-  console.log(list);
 
   useEffect(() => {
     const actions: ActionButtonDef[] = [];
     if (refetch && !isLoading) {
       actions.push({
         key: "reload",
+        icon: "refresh",
         title: "Reload",
         onPress: refetch,
       });
@@ -127,20 +132,28 @@ export function NewFileButton() {
   const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
   const conn = useConnectionContext();
   return (
-    <Button
-      onPress={() => {
-        navigation.navigate("NewFile", { connection: conn?.key || null });
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        marginBottom: 12,
       }}
-      small
-      title="New File"
-      left={({ color }) => (
-        <FontAwesome name="plus-circle" color={color} size={24} />
-      )}
-    />
+    >
+      <Button
+        onPress={() => {
+          navigation.navigate("NewFile", { connection: conn?.key || null });
+        }}
+        small
+        title="New File"
+        left={({ color }) => (
+          <FontAwesome name="plus-circle" color={color} size={24} />
+        )}
+      />
+    </View>
   );
 }
 
-export default function ConnectionScreen({
+export function ConnectionPage({
   navigation,
   route,
 }: HomeStackScreenProps<"Connection">) {
@@ -157,6 +170,23 @@ export default function ConnectionScreen({
         <NewFileButton />
         <ConnectionMetaLinks connection={conn} />
       </VStack>
+    </ScreenContainer>
+  );
+}
+
+export default function ConnectionScreen({
+  navigation,
+  route,
+}: HomeStackScreenProps<"Connection">) {
+  const conn = useConnection(route.params.connection);
+  if (!conn) {
+    return <NotFoundScreen />;
+  }
+  return (
+    <ScreenContainer scroll>
+      <QueryConnectionProvider value={conn}>
+        <ConnectionPage route={route} navigation={navigation} />
+      </QueryConnectionProvider>
     </ScreenContainer>
   );
 }

@@ -9,6 +9,9 @@ export * from "./Zed";
 export * from "./ZedService";
 export * from "./Schema";
 export * from "./Validate";
+export * from "./JSONSchemaPluck";
+export * from "./JSONSchema";
+export * from "./UnionSchema";
 
 export const Z_PROTOCOL_VERSION = "0.1.0";
 

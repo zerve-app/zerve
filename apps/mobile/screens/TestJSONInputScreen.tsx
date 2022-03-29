@@ -150,6 +150,8 @@ export default function TestJSONInputScreen({
         defaultIsOpen={false}
         header={<Label>Read-Only JSON Schema</Label>}
       >
+        {/* <JSONSchemaForm value={null} schema={{}} /> */}
+        <JSONSchemaForm value={null} schema={{ type: "null" }} />
         <JSONSchemaForm
           value={12.1}
           schema={{

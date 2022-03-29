@@ -12,27 +12,6 @@ import { join } from "path";
 import SSHConfig from "ssh-config";
 import { SystemCommandsModule } from "../SystemCommands/SystemCommands";
 
-// takes an arbitrary value and grabs the subset of schema from it.
-function jsonSchemaPluck<Schema extends JSONSchema>(
-  schema: Schema,
-  value: any
-): FromSchema<Schema> {
-  if (schema === true) return value;
-  if (schema === false)
-    throw new Error("Cannot pluck JSON value for false schema");
-  const type = schema.type as string | undefined;
-  if (!type) return value;
-  if (Array.isArray(type))
-    throw new Error("Pluck can not handle array type schemas yet");
-  if (type === "object") return value; // todo pluck value according to object schema
-  if (type === "array") return value; // todo pluck value according to object schema
-  if (type === "string") return String(value);
-  if (type === "number") return Number(value);
-  if (type === "boolean") return Boolean(value);
-  // fallback behavior does not pluck?? or should throw an error here?
-  return value;
-}
-
 const SSHConfigSchema = {
   type: "object",
   additionalProperties: {

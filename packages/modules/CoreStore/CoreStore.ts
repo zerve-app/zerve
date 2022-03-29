@@ -7,6 +7,7 @@ import {
   RequestError,
   createZAction,
   AnySchema,
+  getValidatorOfSchema,
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "../CoreChain/CoreChain";
 import { CoreDataModule } from "../CoreData/CoreData";
@@ -66,12 +67,16 @@ function validateNode(node: FromSchema<typeof NodeSchema>) {
   if (node.schema === null) {
     return;
   }
-  const validate = ajv.compile(node.schema);
+  const validate = getValidatorOfSchema(node.schema);
   const isValid = validate(node.value);
   if (!isValid) {
-    throw new RequestError("ValidationError", `invalid lol`, {
-      errors: validate.errors,
-    });
+    throw new RequestError(
+      "ValidationError",
+      `Invalid: ${validate.errors[0].message}`,
+      {
+        errors: validate.errors,
+      }
+    );
   }
 }
 
@@ -91,6 +96,7 @@ const GenericCalculator = createZChainStateCalculator(
           ...(prevNode || {}),
           value,
         };
+        console.log("WriteValue validateNode", node);
         validateNode(node);
         return {
           ...state,
@@ -130,24 +136,6 @@ const GenericCalculator = createZChainStateCalculator(
     },
   }
 );
-
-const rareNonObjectSchemaValidatorMap = new Map();
-const schemaValidatorMap = new WeakMap();
-
-function getValidatorOfSchema(schema: any) {
-  if (typeof schema !== "object" || schema === null) {
-    if (rareNonObjectSchemaValidatorMap.has(schema))
-      return rareNonObjectSchemaValidatorMap.get(schema);
-    const validator = ajv.compile(schema);
-    rareNonObjectSchemaValidatorMap.set(schema, validator);
-    return validator;
-  } else {
-    if (schemaValidatorMap.has(schema)) return schemaValidatorMap.get(schema);
-    const validator = ajv.compile(schema);
-    schemaValidatorMap.set(schema, validator);
-    return validator;
-  }
-}
 
 async function createGeneralStore<RootSchema extends JSONSchema>(
   data: CoreDataModule,

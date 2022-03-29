@@ -33,6 +33,7 @@ export function IconButton({
       onPress={onPress}
       onPressIn={() => {}}
       accessibilityLabel={altTitle}
+      hitSlop={{ left: 6, right: 6, top: 6, bottom: 6 }}
     >
       <View
         style={{
@@ -116,6 +117,7 @@ export function Button({
           pressBounceTimeout.current = null;
         }, 250);
       }}
+      hitSlop={{ left: 6, right: 6, top: 6, bottom: 6 }}
       onLongPress={onLongPress}
       onResponderEnd={() => {}}
       onPressIn={() => {
