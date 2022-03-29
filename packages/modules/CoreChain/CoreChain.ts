@@ -89,23 +89,37 @@ export async function createZChainState<
   await cacheFiles.z.MakeDir.call({ path: "state" });
   await cacheFiles.z.MakeDir.call({ path: "blocks" });
 
+  async function _getCachedResult(blockId: string) {
+    return await cacheFiles.z.ReadJSON.call({
+      path: `state/eval-${blockId}`,
+    });
+  }
+
   async function _rollupBlocksInCommitChain<V>(commitValue: Commit<V>) {
     if (commitValue.type !== "Commit") {
       throw new Error("Cannot roll up non-commit block");
     }
     let walkId: string | null = commitValue.on;
-    const rollup: Array<Commit<any>> = [commitValue];
+    const blocksInChain: Array<Commit<any>> = [commitValue];
+    let walkEndCacheResultValue = undefined;
     while (walkId) {
-      const walkBlockValue = await data.z.Actions.z.GetBlockJSON.call({
-        id: walkId,
-      });
-      rollup.push(walkBlockValue);
-      if (walkBlockValue.type !== "Commit") {
+      const cachedResult = await _getCachedResult(walkId);
+      if (cachedResult) {
+        walkEndCacheResultValue = cachedResult;
         walkId = null;
+      } else {
+        const walkBlockValue = await data.z.Actions.z.GetBlockJSON.call({
+          id: walkId,
+        });
+
+        blocksInChain.push(walkBlockValue);
+        if (walkBlockValue.type !== "Commit") {
+          walkId = null;
+        }
+        walkId = walkBlockValue.on;
       }
-      walkId = walkBlockValue.on;
     }
-    return rollup;
+    return { blocksInChain, walkEndCacheResultValue };
   }
 
   async function _extractBlocksToCache(
@@ -159,8 +173,12 @@ export async function createZChainState<
     commitValue: Commit<V>,
     blockCache: BlockCache
   ) {
-    const blocksInChain = await _rollupBlocksInCommitChain(commitValue);
-    let walkReduceValue: any = calculator.initialState;
+    const { blocksInChain, walkEndCacheResultValue } =
+      await _rollupBlocksInCommitChain(commitValue);
+    let walkReduceValue: any =
+      walkEndCacheResultValue === undefined
+        ? calculator.initialState
+        : walkEndCacheResultValue;
     for (
       let blockIndex = blocksInChain.length - 1;
       blockIndex >= 0;
@@ -245,9 +263,7 @@ export async function createZChainState<
       evalBlockId = evalValue.head.id;
     }
     if (evalValue.type === "Commit") {
-      const cachedResult = await cacheFiles.z.ReadJSON.call({
-        path: `state/eval-${evalBlockId}`,
-      });
+      const cachedResult = await _getCachedResult(evalBlockId);
       if (cachedResult) {
         evalValue = cachedResult;
       } else {
@@ -366,7 +382,6 @@ export async function createZChainState<
   function createZEval(path: string[]): ZGroup<any, void, any> {
     let schema: JSONSchema = calculator.stateSchema;
     path.forEach((pathTerm) => {
-      console.log("1", pathTerm, schema);
       if (typeof schema === "object" && schema.type === "object") {
         if (schema.properties) {
           if (schema.properties[pathTerm]) {
@@ -380,7 +395,6 @@ export async function createZChainState<
           throw new Error("failed to find schema property");
         }
       } else {
-        console.log("hah", pathTerm, schema);
         throw new Error("Cannot Eval path within non-object schema");
       }
     });
