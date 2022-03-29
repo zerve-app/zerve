@@ -57,7 +57,7 @@ export function ConnectionProjects({
   }, [isLoading, refetch]);
 
   if (!connection) return <Paragraph danger>Connection unavailable.</Paragraph>;
-  if (!list?.length) return <Paragraph>No Projects here.</Paragraph>;
+  if (!list?.length) return <Paragraph>No files here.</Paragraph>;
 
   return (
     <LinkRowGroup
@@ -66,10 +66,10 @@ export function ConnectionProjects({
         title: child.name,
         icon: getZIcon("Container"),
         onPress: () => {
-          // navigate("ZNode", {
-          //   connection: connection.key,
-          //   path: [child.name],
-          // });
+          navigate("File", {
+            connection: connection?.key || null,
+            name: child.key,
+          });
         },
       }))}
     />
@@ -97,8 +97,8 @@ export function ConnectionMetaLinks({
           },
         },
         {
-          key: "ServerTypes",
-          title: "Types",
+          key: "ServerSchemas",
+          title: "Schemas",
           icon: "crosshairs",
           onPress: () => {
             navigate("ZNode", {

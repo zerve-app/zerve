@@ -20,9 +20,9 @@ export function useConnectionProjects(options?: QueryOptions) {
 export function useDoc(name: string, options?: QueryOptions) {
   const context = useConnectionContext();
   return useQuery(
-    [context.key, "docs", "children", name, "value"],
+    [context?.key, "docs", "children", name, "value"],
     async () => {
-      if (!name) return undefined;
+      if (!context || !name) return undefined;
       if (options?.skipLoading) return undefined;
       return await getDoc(context, name);
     }
@@ -31,17 +31,27 @@ export function useDoc(name: string, options?: QueryOptions) {
 
 export function useZNode(path: string[], options?: QueryOptions) {
   const context = useConnectionContext();
-  return useQuery([context.key, "z", ...path, ".node"], async () => {
-    if (options?.skipLoading) return undefined;
+  return useQuery([context?.key, "z", ...path, ".node"], async () => {
+    if (!context || options?.skipLoading) return undefined;
     const results = await getTypedZ(context, path);
+    return results;
+  });
+}
+
+export function useZNodeValue(path: string[], options?: QueryOptions) {
+  const context = useConnectionContext();
+  console.log("CONN in hook", context);
+  return useQuery([context?.key, "z", ...path, ".node", "value"], async () => {
+    if (!context || options?.skipLoading) return undefined;
+    const results = await getZ(context, path);
     return results;
   });
 }
 
 export function useZChildren(path: string[], options?: QueryOptions) {
   const context = useConnectionContext();
-  return useQuery([context.key, "z", ...path, "children"], async () => {
-    if (options?.skipLoading) return undefined;
+  return useQuery([context?.key, "z", ...path, "children"], async () => {
+    if (!context || options?.skipLoading) return undefined;
     const results = await getZ(context, path);
     return results;
   });

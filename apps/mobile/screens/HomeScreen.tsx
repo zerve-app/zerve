@@ -91,7 +91,10 @@ function ConnectionSection({ connection }: { connection: Connection }) {
   const onOptions = useBottomSheet<void>(({ onClose }) => (
     <VStack>
       {actions.map((action) => (
-        <ActionButton key={action.key} action={action} />
+        <ActionButton
+          key={action.key}
+          action={{ ...action, onHandled: onClose }}
+        />
       ))}
       <LinkRow
         icon="database"

@@ -21,7 +21,7 @@ const NodeSchema = {
     schema: {},
   },
   additionalProperties: false,
-  required: ["state"],
+  required: ["value"],
 } as const;
 
 const StateTreeSchema = {
@@ -38,6 +38,15 @@ const WriteValueActionSchema = {
   },
   additionalProperties: false,
   required: ["name", "value"],
+} as const;
+
+const DeleteActionSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+  },
+  additionalProperties: false,
+  required: ["name"],
 } as const;
 
 const WriteSchemaValueActionSchema = {
@@ -106,6 +115,17 @@ const GenericCalculator = createZChainStateCalculator(
           ...state,
           [name]: node,
         };
+      },
+    },
+    Delete: {
+      schema: DeleteActionSchema,
+      handler: (
+        state: FromSchema<typeof StateTreeSchema>,
+        action: FromSchema<typeof DeleteActionSchema>
+      ) => {
+        const newState = { ...state };
+        delete newState[action.name];
+        return newState;
       },
     },
   }

@@ -15,11 +15,11 @@ const DefaultDevConnection = {
   key: "DefaultDevConnection",
 };
 
-const QueryReactContext = createContext<QueryContext>(DefaultDevConnection);
+const QueryReactContext = createContext<QueryContext | null>(null);
 
 export const QueryConnectionProvider = QueryReactContext.Provider;
 
-export function useConnectionContext(): QueryContext {
+export function useConnectionContext(): QueryContext | null {
   return useContext(QueryReactContext);
 }
 

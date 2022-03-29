@@ -45,7 +45,9 @@ export function DisclosureSection({
     setIsOpen((isOpen) => !isOpen);
   }, []);
   const openValue = useSharedValue(defaultIsOpen ? 1 : 0);
-  const childrenContainerStyle = useAnimatedStyle(() => ({
+  const childrenContainerOuterStyle = useAnimatedStyle(() => ({
+    display: "flex",
+    // display: openValue.value === 0 ? "none" : "flex",
     height:
       openValue.value === 0
         ? 1
@@ -54,6 +56,9 @@ export function DisclosureSection({
         : openValue.value * childrenHeight.value,
     overflow: "hidden",
     justifyContent: "flex-start",
+  }));
+  const childrenContainerInnerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: -(1 - openValue.value) * childrenHeight.value }],
   }));
   useEffect(() => {
     openValue.value = withTiming(isOpen ? 1 : 0, {
@@ -101,8 +106,11 @@ export function DisclosureSection({
         />
       </View>
 
-      <Animated.View style={childrenContainerStyle}>
-        <Animated.View ref={childrenContainer} style={{}}>
+      <Animated.View style={childrenContainerOuterStyle}>
+        <Animated.View
+          ref={childrenContainer}
+          style={childrenContainerInnerStyle}
+        >
           {children}
         </Animated.View>
       </Animated.View>

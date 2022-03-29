@@ -1,23 +1,28 @@
 import React from "react";
 
-import { Input, PageTitle, VStack } from "@zerve/ui";
-import { HomeStackScreenProps } from "../app/Links";
-import { dispatch } from "@zerve/native";
+import { Input, VStack } from "@zerve/ui";
+import { HomeStackParamList, HomeStackScreenProps } from "../app/Links";
 import { AsyncButton } from "../components/Button";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import { postZAction } from "@zerve/query";
+import { QueryConnectionProvider, useCreateFile } from "@zerve/query";
 import { useConnection } from "../app/Connection";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-export default function NewFileScreen({
-  navigation,
+function NewFilePage({
   route,
-}: HomeStackScreenProps<"NewFile">) {
-  const conn = useConnection(route.params.connection);
+}: {
+  route: HomeStackScreenProps<"NewFile">["route"];
+}) {
+  const { replace } =
+    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const createFile = useCreateFile();
 
   const [name, setName] = React.useState("");
+
   return (
-    <ScreenContainer scroll>
+    <>
       <ScreenHeader title="New File" />
       <VStack>
         <Input
@@ -31,26 +36,24 @@ export default function NewFileScreen({
           title="Create"
           primary
           onPress={async () => {
-            if (conn) {
-              await postZAction(conn, ["Store", "Dispatch"], {
-                name: "WriteSchemaValue",
-                value: {
-                  name,
-                  schema: { type: "string" },
-                  value: "boomed",
-                },
-              });
-            } else {
-              await dispatch(name, {
-                type: "WriteFile",
-                name: "ReadMe.md",
-                value: "Welcome to your new File",
-              });
-            }
-            // navigation.replace("Doc", { name, connection: null });
+            await createFile.mutate(name);
+            replace("File", { name, connection: route.params.connection });
           }}
         />
       </VStack>
+    </>
+  );
+}
+
+export default function NewFileScreen({
+  route,
+}: HomeStackScreenProps<"NewFile">) {
+  const conn = useConnection(route.params.connection);
+  return (
+    <ScreenContainer scroll>
+      <QueryConnectionProvider value={conn}>
+        <NewFilePage route={route} />
+      </QueryConnectionProvider>
     </ScreenContainer>
   );
 }

@@ -1,64 +1,90 @@
 import React from "react";
 
-import { HomeStackScreenProps } from "../app/Links";
-import { Button, HStack, Paragraph, useBottomSheet, VStack } from "@zerve/ui";
-import { deleteDoc } from "@zerve/native";
+import {
+  HomeStackParamList,
+  HomeStackScreenProps,
+  RootStackParamList,
+} from "../app/Links";
+import { useActionsSheet } from "@zerve/ui";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
+import {
+  QueryConnectionProvider,
+  useDeleteFile,
+  useZNode,
+  useZNodeValue,
+} from "@zerve/query";
+import { JSONSchemaForm } from "../components/JSONSchemaForm";
+import { useConnection } from "../app/Connection";
+import {
+  CompositeNavigationProp,
+  NavigationProp,
+  useNavigation,
+} from "@react-navigation/native";
+import { OptionsButton } from "../components/OptionsButton";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-function DocOptionsMenu({
-  name,
-  navigation,
-  onClose,
-}: {
-  onClose: () => void;
-  name: string;
-  navigation: HomeStackScreenProps<"File">["navigation"];
-}) {
+type NavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
+  NativeStackNavigationProp<HomeStackParamList, "File">
+>;
+
+function FilePage({ name }: { name: string }) {
+  const { data, isLoading } = useZNodeValue(["Store", "State", name]);
+  const navigation = useNavigation<NavigationProp>();
+  const deleteFile = useDeleteFile();
+
+  const openOptions = useActionsSheet([
+    {
+      key: "EditSchema",
+      title: "Edit Schema",
+      icon: "crosshairs",
+      onPress: () => {},
+    },
+    {
+      key: "RawValue",
+      title: "Raw Value",
+      icon: "code",
+      onPress: () => {
+        navigation.navigate("RawValue", {
+          title: `${name} Value`,
+          value: data?.value,
+        });
+      },
+    },
+    {
+      key: "DeleteFile",
+      title: "Delete File",
+      icon: "trash",
+      danger: true,
+      onPress: () => {
+        deleteFile.mutate(name);
+      },
+      onHandled: navigation.goBack,
+    },
+  ]);
   return (
-    <VStack style={{}}>
-      <Button title="New Folder" onPress={() => {}} />
-      <Button
-        title="Delete Project"
-        danger
-        onPress={() => {
-          onClose();
-          deleteDoc(name);
-          navigation.goBack();
-        }}
+    <>
+      <ScreenHeader
+        title={name}
+        isLoading={isLoading}
+        corner={<OptionsButton onOptions={openOptions} />}
       />
-      <Button title="2 Folder" primary onPress={() => {}} />
-    </VStack>
+      {data && <JSONSchemaForm value={data.value} schema={data.schema} />}
+    </>
   );
 }
-
 export default function FileScreen({
   navigation,
   route,
 }: HomeStackScreenProps<"File">) {
   const { connection, name } = route.params;
-  const onOptions = useBottomSheet<void>(({ onClose }) => (
-    <DocOptionsMenu name={name} navigation={navigation} onClose={onClose} />
-  ));
+
   return (
     <ScreenContainer scroll>
-      <ScreenHeader title={name} />
-      <HStack>
-        <Button title="New Document" onPress={() => {}} />
-        <Button title="New Folder" onPress={() => {}} />
-      </HStack>
-
-      <HStack>
-        <Button
-          title="Delete Project"
-          danger
-          onPress={() => {
-            deleteDoc(name);
-            navigation.goBack();
-          }}
-        />
-        <Button title="Options" onPress={onOptions} />
-      </HStack>
+      <QueryConnectionProvider value={useConnection(connection)}>
+        <FilePage name={name} />
+      </QueryConnectionProvider>
     </ScreenContainer>
   );
 }
