@@ -5,7 +5,14 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { createZSchema, JSONSchema } from "@zerve/core";
+import {
+  CapitalizeSchema,
+  createZSchema,
+  exploreUnionSchema,
+  JSONSchema,
+  JSONSchemaPluck,
+  LeafSchema,
+} from "@zerve/core";
 import {
   Button,
   InfoRow,
@@ -19,6 +26,8 @@ import {
   VStack,
   useBottomSheet,
   HStack,
+  useActionsSheet,
+  ActionButtonDef,
 } from "@zerve/ui";
 
 import { NavigationContext, useNavigation } from "@react-navigation/native";
@@ -148,13 +157,14 @@ function StatefulInput({
   const [error, setError] = useState(defaultValue);
   return (
     <>
-      <Paragraph>{s}</Paragraph>
       <Input
         ref={input}
         label={inputLabel}
         autoFocus
         value={s}
         onValue={setS}
+        returnKeyType="done"
+        enablesReturnKeyAutomatically
         onSubmitEditing={() => {
           try {
             onSubmit(s);
@@ -274,16 +284,20 @@ export function JSONSchemaObjectForm({
           label={itemName}
           actions={[
             {
+              key: "Delete",
               title: "Delete",
-              onAction: () => {
+              icon: "trash",
+              onPress: () => {
                 const newValue = { ...value };
                 delete newValue[itemName];
                 onValue(newValue);
               },
             },
             {
+              key: "Rename",
               title: "Rename",
-              onAction: () => {
+              icon: "edit",
+              onPress: () => {
                 propertyNameInput(itemName);
               },
             },
@@ -342,8 +356,10 @@ export function JSONSchemaArrayForm({
               schema={expandedItemsSchema}
               actions={[
                 {
+                  key: "Delete",
                   title: "Delete",
-                  onAction: () => {
+                  icon: "trash",
+                  onPress: () => {
                     const newValue = [...value];
                     newValue.splice(childValueIndex, 1);
                     onValue(newValue);
@@ -386,7 +402,7 @@ function ObjectFormField({
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
-  actions?: FormFieldAction[];
+  actions?: ActionButtonDef[];
 }) {
   const { push } =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -419,7 +435,7 @@ function ArrayFormField({
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
-  actions?: FormFieldAction[];
+  actions?: ActionButtonDef[];
 }) {
   const { push } =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -452,7 +468,7 @@ function EnumFormField({
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
-  actions?: FormFieldAction[];
+  actions?: ActionButtonDef[];
 }) {
   if (!onValue) {
     return <InfoRow label={label} value={value} />;
@@ -490,28 +506,26 @@ function FormFieldHeader({
   typeLabel?: string;
   value?: any;
   schema?: any;
-  actions?: FormFieldAction[];
+  actions?: ActionButtonDef[];
 }) {
-  const openFormSheet = useBottomSheet<void>(({ onClose }) => (
-    <VStack>
-      <CopyValueButton value={value} label={label} onDone={onClose} />
-      {actions?.map((action, actionKey) => (
-        <Button
-          key={actionKey}
-          title={action.title}
-          left={(p) =>
-            action.icon ? <Icon {...p} name={action.icon} /> : null
-          }
-          onPress={() => {
-            action.onAction();
-            onClose();
-          }}
-        />
-      ))}
-    </VStack>
-  ));
+  const openActions = useActionsSheet(() => {
+    return [
+      ...(actions || []),
+      value !== null &&
+        typeof value !== "boolean" && {
+          title: `Copy "${label}" value`,
+          icon: "clipboard",
+          onPress: () => {
+            setString(
+              typeof value === "string" ? value : JSON.stringify(value)
+            );
+          },
+        },
+    ].filter(Boolean);
+  });
+
   return (
-    <TouchableOpacity onPress={() => openFormSheet()}>
+    <TouchableOpacity onPress={() => openActions()}>
       <View
         style={{
           flexDirection: "row",
@@ -529,32 +543,88 @@ function FormFieldHeader({
   );
 }
 
-function CopyValueButton({
-  value,
+export function OneOfFormField({
   label,
-  onDone,
+  value,
+  onValue,
+  schema,
+  actions,
 }: {
-  value: any;
   label?: string;
-  onDone?: () => void;
+  value: any;
+  onValue?: (v: any) => void;
+  schema: JSONSchema;
+
+  actions?: ActionButtonDef[];
 }) {
+  const unionOptions = exploreUnionSchema(schema);
+  const matched = unionOptions.match(value);
+  const matchedSchema = schema.oneOf[matched];
+
+  const onChooseType = useActionsSheet(() =>
+    unionOptions.options.map((option, optionIndex: number) => {
+      return {
+        title: option.title,
+        onPress: () => {
+          const converter = unionOptions.converters[optionIndex];
+          if (converter && onValue) {
+            onValue(converter(value));
+          }
+        },
+        key: optionIndex,
+      };
+    })
+  );
+  const fieldActions = useMemo(
+    () => [
+      ...(actions || []),
+      {
+        key: "ChangeType",
+        title: "Change Schema Option",
+        icon: "crosshairs",
+        onPress: onChooseType,
+      },
+    ],
+    [actions, onChooseType]
+  );
   return (
-    <Button
-      title={`Copy ${label}`}
-      left={(p) => <Icon {...p} name="clipboard" />}
-      onPress={() => {
-        setString(typeof value === "string" ? value : JSON.stringify(value));
-        onDone?.();
-      }}
-    />
+    <>
+      {matchedSchema == null ? (
+        <>
+          <FormFieldHeader
+            value={value}
+            label={label || "?"}
+            actions={fieldActions}
+          />
+
+          {onValue && (
+            <Dropdown
+              options={unionOptions.options}
+              unselectedLabel={`Select Type`}
+              value={matched}
+              onOptionSelect={(optionValue) => {
+                const converter = unionOptions.converters[optionValue];
+                const convertedValue = converter(value);
+                onValue(convertedValue);
+              }}
+            />
+          )}
+        </>
+      ) : (
+        <FormField
+          value={value}
+          onValue={onValue}
+          schema={matchedSchema}
+          label={label}
+          actions={fieldActions}
+          typeLabel={
+            matched == null ? "?" : unionOptions.options[matched].title
+          }
+        />
+      )}
+    </>
   );
 }
-
-type FormFieldAction = {
-  title: string;
-  icon?: ComponentProps<typeof Icon>["name"];
-  onAction: () => void;
-};
 
 export function FormField({
   label,
@@ -569,24 +639,13 @@ export function FormField({
   onValue?: (v: any) => void;
   schema: JSONSchema;
   typeLabel?: string;
-  actions?: FormFieldAction[];
+  actions?: ActionButtonDef[];
 }) {
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
   if (!expandedSchema)
     return (
       <ThemedText>Failed to expand schema: {JSON.stringify(schema)}</ThemedText>
     );
-
-  if (value === null) {
-    return (
-      <FormFieldHeader
-        label={label}
-        value={value}
-        typeLabel="null"
-        actions={actions}
-      />
-    );
-  }
 
   if (isLeafType(expandedSchema.type)) {
     return (
@@ -604,48 +663,14 @@ export function FormField({
     return <InfoRow label={label} value={JSON.stringify(value)} />;
   }
   if (expandedSchema.oneOf) {
-    const unionOptions = inspectUnionSchema(expandedSchema);
-    const matched = unionOptions.match(value);
-    const matchedSchema = expandedSchema.oneOf[matched];
-
     return (
-      <>
-        {matchedSchema == null ? (
-          <>
-            <FormFieldHeader value={value} label={label || "?"} />
-
-            {onValue && (
-              <Dropdown
-                options={unionOptions.options}
-                unselectedLabel={`Select Type`}
-                value={matched}
-                onOptionSelect={(optionValue) => {
-                  const converter = unionOptions.converters[optionValue];
-                  const convertedValue = converter(value);
-                  onValue(convertedValue);
-                }}
-              />
-            )}
-          </>
-        ) : (
-          <FormField
-            value={value}
-            onValue={onValue}
-            schema={matchedSchema}
-            label={label}
-            actions={[
-              ...(actions || []),
-              {
-                title: "Change Type",
-                onAction: () => {},
-              },
-            ]}
-            typeLabel={
-              matched == null ? "?" : unionOptions.options[matched].title
-            }
-          />
-        )}
-      </>
+      <OneOfFormField
+        value={value}
+        schema={schema}
+        label={label}
+        onValue={onValue}
+        actions={actions}
+      />
     );
   }
   if (schema.enum) {
@@ -698,13 +723,14 @@ export function LeafFormField({
   label: string;
   value: any;
   onValue?: (v: any) => void;
-  schema: JSONSchema;
-  actions: FormFieldAction[];
+  schema: LeafSchema;
+  actions: ActionButtonDef[];
 }) {
   const description = schema.description ? (
     <Paragraph>{schema.description}</Paragraph>
   ) : null;
   if (schema.type === "string") {
+    const autoCapitalize = JSONSchemaPluck(CapitalizeSchema, schema.capitalize);
     return (
       <>
         <FormFieldHeader
@@ -718,6 +744,7 @@ export function LeafFormField({
           value={value}
           onValue={onValue}
           placeholder={schema.placeholder}
+          autoCapitalize={autoCapitalize}
         />
         {description}
       </>
@@ -757,7 +784,20 @@ export function LeafFormField({
       </>
     );
   }
-  return null;
+  if (schema.type === "null") {
+    return (
+      <>
+        <FormFieldHeader
+          label={label}
+          typeLabel={schema.title || "Empty"}
+          value={value}
+          actions={actions}
+        />
+      </>
+    );
+  }
+
+  return <ThemedText>Huh?</ThemedText>;
 }
 
 const allTypesList = [
@@ -769,130 +809,6 @@ const allTypesList = [
   "array",
   "object",
 ] as const;
-
-function getTypeOf(v) {
-  if (v === null) return "null";
-  if (Array.isArray(v)) return "array";
-  return typeof v;
-}
-
-function inspectUnionSchema(schema) {
-  // schema has oneOf and we need to understand how children are differentiated
-  const optionSchemas = schema.oneOf;
-  const aggregateTypeOptions = new Set([]);
-  const distinctTypeOptions = new Set([]);
-
-  optionSchemas.forEach((optionSchema) => {
-    if (typeof optionSchema.type !== "string") {
-      throw new Error(
-        "cannot handle a union/anyOf with complicated children types"
-      );
-    }
-    const { type } = optionSchema;
-    if (distinctTypeOptions.has(type)) {
-      distinctTypeOptions.delete(type);
-      aggregateTypeOptions.add(type);
-    } else if (!aggregateTypeOptions.has(type)) {
-      distinctTypeOptions.add(type);
-    }
-  });
-
-  const unionKeys: string[] = [];
-  const unionKeyMap = {};
-
-  const unionConstProperties = optionSchemas.map(
-    (optionSchema, optionSchemaIndex) => {
-      const constProperties = {};
-      Object.entries(optionSchema.properties || {}).forEach(
-        ([childPropName, childPropSchema]) => {
-          if (childPropSchema.const !== undefined) {
-            constProperties[childPropName] = childPropSchema.const;
-          }
-        }
-      );
-      Object.keys(constProperties).forEach((keyName) => {
-        if (unionKeys.indexOf(keyName) === -1) unionKeys.push(keyName);
-      });
-      return constProperties;
-    }
-  );
-  unionConstProperties.forEach((constProperties, optionSchemaIndex) => {
-    let walkKeyMap = unionKeyMap;
-    unionKeys.forEach((unionKey, unionKeyIndex) => {
-      const isLastUnionKey = unionKeyIndex === unionKeys.length - 1;
-      const constValue = constProperties[unionKey];
-      const isLeaf = isLastUnionKey || constValue === undefined;
-      const newNodeValue = isLeaf ? optionSchemaIndex : {};
-      const thisKeyMap =
-        walkKeyMap[constValue] || (walkKeyMap[constValue] = newNodeValue);
-      walkKeyMap = thisKeyMap;
-    });
-  });
-
-  const isAlwaysObject =
-    aggregateTypeOptions.size === 1 &&
-    distinctTypeOptions.size === 0 &&
-    aggregateTypeOptions.values().next().value === "object";
-
-  function getTitle(optionSchema, optionSchemaIndex) {
-    const constsValue = unionKeys
-      .map((unionKey) => {
-        const value = unionConstProperties[optionSchemaIndex][unionKey];
-        if (value === undefined) return false;
-        return `${unionKey}: ${value}`;
-      })
-      .filter(Boolean)
-      .join(", ");
-    if (isAlwaysObject) return constsValue;
-    return `${optionSchema.type} ${constsValue}`;
-  }
-  return {
-    options: optionSchemas.map((optionSchema, optionSchemaIndex) => {
-      return {
-        title: optionSchema.title || getTitle(optionSchema, optionSchemaIndex),
-        value: optionSchemaIndex,
-      };
-    }),
-    converters: optionSchemas.map((optionSchema, optionSchemaIndex) => {
-      return (v: any) => {
-        if (optionSchema.type === "null") return null;
-        if (optionSchema.type === "string") return optionSchema.default || "";
-        if (optionSchema.type === "number") return optionSchema.default || 0;
-        if (optionSchema.type === "integer") return optionSchema.default || 0;
-        if (optionSchema.type === "boolean")
-          return optionSchema.default || false;
-        if (optionSchema.type === "array") return []; // fix to handle array schemas such as tuples that require default values?
-        if (optionSchema.type === "object") {
-          // todo provide defaults that are specified here in the schema
-          return { ...unionConstProperties[optionSchemaIndex] };
-        }
-      };
-    }),
-    match: (value: any) => {
-      const observedValueType = getTypeOf(value);
-      if (distinctTypeOptions.has(observedValueType)) {
-        // this means that we can use the type to find a specific schema.
-        const matchedIndex = optionSchemas.findIndex(
-          (schema) => schema.type === observedValueType
-        );
-        if (matchedIndex === -1)
-          throw new Error("Failed to match oneOf schema via distinct type");
-        return matchedIndex;
-      }
-      if (value === null) return null;
-      if (typeof value === "object") {
-        let walkingKeyMap = unionKeyMap;
-        unionKeys.forEach((unionKey) => {
-          const theValue = value[unionKey];
-          walkingKeyMap = walkingKeyMap[theValue];
-        });
-        return walkingKeyMap;
-      }
-      return null;
-    },
-  };
-}
-
 function isLeafType(v: string) {
   return (
     v === "null" ||
@@ -918,7 +834,7 @@ export function JSONSchemaForm({
   }
 
   if (expandedSchema.oneOf) {
-    const unionOptions = inspectUnionSchema(expandedSchema);
+    const unionOptions = exploreUnionSchema(expandedSchema);
     const matched = unionOptions.match(value);
     const matchedSchema = expandedSchema.oneOf[matched];
     return (
