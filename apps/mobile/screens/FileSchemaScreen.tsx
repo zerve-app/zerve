@@ -22,7 +22,8 @@ import {
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FileEditor } from "../components/FileEditor";
-import { NumberSchemaSchema, ZSchemaSchema } from "@zerve/core";
+import { ZSchemaSchema } from "@zerve/core";
+import { showToast } from "../app/Toast";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -31,6 +32,7 @@ type NavigationProp = CompositeNavigationProp<
 
 function FileSchemaPage({ name }: { name: string }) {
   const { data, isLoading } = useZNodeValue(["Store", "State", name]);
+  console.log("RENDER fileSchemaPage", data);
   const navigation = useNavigation<NavigationProp>();
   const saveSchema = useSaveFileSchema();
   const openOptions = useActionsSheet(() => [
@@ -53,14 +55,16 @@ function FileSchemaPage({ name }: { name: string }) {
         isLoading={isLoading}
         corner={<OptionsButton onOptions={openOptions} />}
       />
-      {data && (
+      {data && !isLoading && (
         <FileEditor
           saveLabel="Save Schema"
           value={data?.schema}
           onValue={async (schema) => {
             await saveSchema.mutateAsync({ name, schema });
+            showToast("Schema has been updated.");
+            navigation.goBack();
           }}
-          schema={NumberSchemaSchema}
+          schema={ZSchemaSchema}
         />
       )}
     </>

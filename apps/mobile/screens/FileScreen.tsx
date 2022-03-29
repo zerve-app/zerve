@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 
 import {
   HomeStackParamList,
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { AsyncButton, Button, useActionsSheet } from "@zerve/ui";
+import { useActionsSheet } from "@zerve/ui";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
@@ -14,7 +14,6 @@ import {
   useSaveFile,
   useZNodeValue,
 } from "@zerve/query";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { useConnection } from "../app/Connection";
 import {
   CompositeNavigationProp,
@@ -85,7 +84,9 @@ function FilePage({
       {data && (
         <FileEditor
           onValue={async (value) => {
+            console.log("NEW VALUE IS", JSON.stringify(value));
             await saveFile.mutateAsync({ name, value });
+            showToast("File has been updated.");
           }}
           value={data.value}
           schema={data.schema}

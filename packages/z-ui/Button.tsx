@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Pressable, View, Text, StyleProp, ViewStyle } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -5,9 +7,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import Layout from "./Layout";
-import React, { ComponentProps, ReactNode, useRef, useState } from "react";
+import { ComponentProps, ReactNode, useRef, useState } from "react";
 import { useColors } from "./useColors";
-import { smallShadow } from "./Style";
 import { Spinner } from "./Spinner";
 import { ThemedText } from "./Themed";
 
@@ -151,8 +152,9 @@ export function Button({
 
 type AsyncButtonProps = Omit<ComponentProps<typeof Button>, "onPress"> & {
   onPress: () => Promise<void>;
+  onCatch?: (e: any) => void;
 };
-export function AsyncButton({ onPress, ...props }: AsyncButtonProps) {
+export function AsyncButton({ onPress, onCatch, ...props }: AsyncButtonProps) {
   const [error, setError] = useState(null);
   const [promise, setPromise] = useState<Promise<void> | null>(null);
   return (
@@ -164,6 +166,7 @@ export function AsyncButton({ onPress, ...props }: AsyncButtonProps) {
           .then(() => {})
           .catch((e) => {
             setError(e);
+            onCatch?.(e);
           });
         setPromise(promise);
         promise.finally(() => {

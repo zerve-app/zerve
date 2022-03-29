@@ -36,8 +36,12 @@ function NewFilePage({
           title="Create"
           primary
           onPress={async () => {
-            await createFile.mutate(name);
-            replace("File", { name, connection: route.params.connection });
+            const actualName = name.replace(" ", "_");
+            await createFile.mutate(actualName);
+            replace("File", {
+              name: actualName,
+              connection: route.params.connection,
+            });
           }}
         />
       </VStack>

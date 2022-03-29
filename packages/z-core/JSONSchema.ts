@@ -3,17 +3,6 @@
 
 import { FromSchema } from "json-schema-to-ts";
 
-export const NullSchemaSchema = {
-  type: "object",
-  properties: {
-    type: { const: "null" },
-    description: { const: "string" },
-    title: { const: "string" },
-  },
-  additionalProperties: false,
-} as const;
-export type NullSchema = FromSchema<typeof NullSchemaSchema>;
-
 const TitleSchema = {
   type: "string",
 } as const;
@@ -27,12 +16,22 @@ const SchemaMeta = {
   description: DescriptionSchema,
 } as const;
 
+export const NullSchemaSchema = {
+  type: "object",
+  properties: {
+    type: { const: "null" },
+    ...SchemaMeta,
+  },
+  additionalProperties: false,
+} as const;
+export type NullSchema = FromSchema<typeof NullSchemaSchema>;
+
 export const NumberSchemaSchema = {
   type: "object",
   properties: {
     type: { const: "number" },
-    default: { type: "number" }, // uhh this implies the need of a more powerful generic/recursion o_O. Like {$ref:'#'}
     ...SchemaMeta,
+    default: { type: "number" }, // uhh this implies the need of a more powerful generic/recursion o_O. Like {$ref:'#'}
   },
   required: ["type"],
   additionalProperties: false,
@@ -91,8 +90,47 @@ export const LeafSchemaSchema = {
 } as const;
 export type LeafSchema = FromSchema<typeof LeafSchemaSchema>;
 
+export const FalseSchema = { const: false } as const;
+export const TrueSchema = { const: true } as const;
+
+export const ObjectSchemaSchema = {
+  type: "object",
+  properties: {
+    type: { const: "object" },
+    ...SchemaMeta,
+    // properties: {
+    // additionalProperties: LeafSchemaSchema,
+    // },
+    additionalProperties: {
+      oneOf: [
+        FalseSchema,
+        NullSchemaSchema,
+        BooleanSchemaSchema,
+        IntegerSchemaSchema,
+        NumberSchemaSchema,
+        StringSchemaSchema,
+      ],
+    } as const,
+    default: {}, // uhh this implies the need of a more powerful generic/recursion o_O
+  },
+  additionalProperties: false,
+} as const;
+
+export const ArraySchemaSchema = {
+  type: "object",
+  properties: {
+    type: { const: "array" },
+    ...SchemaMeta,
+    items: LeafSchemaSchema,
+    default: [], // uhh this implies the need of a more powerful generic/recursion o_O
+  },
+  additionalProperties: false,
+} as const;
+
 export const ZSchemaSchema = {
   oneOf: [
+    ObjectSchemaSchema,
+    ArraySchemaSchema,
     NullSchemaSchema,
     BooleanSchemaSchema,
     IntegerSchemaSchema,

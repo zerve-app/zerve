@@ -9,6 +9,7 @@ import {
   CapitalizeSchema,
   createZSchema,
   exploreUnionSchema,
+  getDefaultSchemaValue,
   JSONSchema,
   JSONSchemaPluck,
   LeafSchema,
@@ -217,7 +218,7 @@ export function JSONSchemaObjectForm({
           ]
         )
       ),
-    [schema.properteis]
+    [schema.properties]
   );
   const expandedAdditionalPropertiesSchema = useMemo(
     () => expandSchema(schema.additionalProperties || defaultObjectItemsSchema),
@@ -236,7 +237,12 @@ export function JSONSchemaObjectForm({
             if (value[propertyName] !== undefined)
               throw new Error(`Key ${propertyName} already exists here.`);
             if (propertyEditKey === null) {
-              onValue({ ...value, [propertyName]: "" });
+              onValue({
+                ...value,
+                [propertyName]: getDefaultSchemaValue(
+                  expandedAdditionalPropertiesSchema
+                ),
+              });
             } else {
               onValue(
                 Object.fromEntries(
@@ -383,7 +389,7 @@ export function JSONSchemaArrayForm({
         <AddButton
           label="Add Item"
           onPress={() => {
-            onValue([...value, null]);
+            onValue([...value, getDefaultSchemaValue(expandedItemsSchema)]);
           }}
         />
       )}
@@ -644,7 +650,9 @@ export function FormField({
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
   if (!expandedSchema)
     return (
-      <ThemedText>Failed to expand schema: {JSON.stringify(schema)}</ThemedText>
+      <ThemedText>
+        {label} Failed to expand schema: {JSON.stringify({ schema, value })}
+      </ThemedText>
     );
 
   if (isLeafType(expandedSchema.type)) {
@@ -823,10 +831,12 @@ export function JSONSchemaForm({
   value,
   onValue,
   schema,
+  label,
 }: {
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  label?: string;
 }) {
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
   if (!expandedSchema) {
@@ -874,7 +884,7 @@ export function JSONSchemaForm({
   if (isLeafType(expandedSchema.type)) {
     return (
       <LeafFormField
-        label={expandedSchema?.title || expandedSchema.type}
+        label={label || ""}
         value={value}
         onValue={onValue}
         schema={schema}
