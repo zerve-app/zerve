@@ -115,12 +115,12 @@ function expandSchema(schema: JSONSchema): JSONSchema | undefined {
   if (schemaObj === true) schemaObj = {};
   const { type } = schemaObj;
   if (
-    schemaObj.oneOf ||
-    schemaObj.anyOf ||
-    schemaObj.allOf ||
-    schemaObj.not ||
-    schemaObj.const ||
-    schemaObj.enum
+    schemaObj.oneOf !== undefined ||
+    schemaObj.anyOf !== undefined ||
+    schemaObj.allOf !== undefined ||
+    schemaObj.not !== undefined ||
+    schemaObj.const !== undefined ||
+    schemaObj.enum !== undefined
   ) {
     // composed schemas cannot really be expanded, they kind of already are. theoretically we should do some "factoring" here. eg: if we have a union of two strings we can factor out type: string to the top level.
     // also, "allOf" can be collapsed, and "not" can be pre-evaluated
@@ -267,27 +267,42 @@ export function JSONSchemaObjectForm({
       {!!errors.length && (
         <Paragraph>Errors: {errors.map((e) => e.message).join(". ")}</Paragraph>
       )}
-      {[...propertyKeys].map((propertyName) => (
-        <FormField
-          key={propertyName}
-          value={value?.[propertyName]}
-          schema={expandedPropertiesSchema[propertyName]}
-          label={propertyName}
-          actions={[]}
-          onValue={
-            onValue
-              ? (propertyValue) =>
-                  onValue({ ...value, [propertyName]: propertyValue })
-              : undefined
-          }
-        />
-      ))}
+      {[...propertyKeys].map((propertyName) => {
+        const actions = [];
+        if (!schema.required || schema.required.indexOf(propertyName) === -1) {
+          actions.push({
+            key: "Delete",
+            title: "Delete",
+            icon: "trash",
+            onPress: () => {
+              const newValue = { ...value };
+              delete newValue[propertyName];
+              onValue(newValue);
+            },
+          });
+        }
+        return (
+          <FormField
+            key={propertyName}
+            value={value?.[propertyName]}
+            schema={expandedPropertiesSchema[propertyName]}
+            label={propertyName}
+            actions={actions}
+            onValue={
+              onValue
+                ? (propertyValue) =>
+                    onValue({ ...value, [propertyName]: propertyValue })
+                : undefined
+            }
+          />
+        );
+      })}
       {otherKeys.map((itemName) => (
         <FormField
           key={itemName}
           value={value?.[itemName]}
           schema={expandedAdditionalPropertiesSchema}
-          label={itemName}
+          label={<Label secondary>{itemName}</Label>}
           actions={[
             {
               key: "Delete",
@@ -404,7 +419,7 @@ function ObjectFormField({
   schema,
   actions,
 }: {
-  label: string;
+  label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
@@ -437,7 +452,7 @@ function ArrayFormField({
   schema,
   actions,
 }: {
-  label: string;
+  label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
@@ -470,7 +485,7 @@ function EnumFormField({
   schema,
   actions,
 }: {
-  label: string;
+  label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
@@ -508,7 +523,7 @@ function FormFieldHeader({
   schema,
   actions,
 }: {
-  label: string;
+  label: string | ReactNode;
   typeLabel?: string;
   value?: any;
   schema?: any;
@@ -519,7 +534,7 @@ function FormFieldHeader({
       ...(actions || []),
       value !== null &&
         typeof value !== "boolean" && {
-          title: `Copy "${label}" value`,
+          title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
           icon: "clipboard",
           onPress: () => {
             setString(
@@ -539,7 +554,7 @@ function FormFieldHeader({
           paddingBottom: 6,
         }}
       >
-        <Label>{label}</Label>
+        {typeof label === "string" ? <Label>{label}</Label> : label}
         <View style={{ width: 40 }} />
         <Label style={{ flex: 1, textAlign: "right" }} secondary>
           {typeLabel}
@@ -556,7 +571,7 @@ export function OneOfFormField({
   schema,
   actions,
 }: {
-  label?: string;
+  label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
@@ -593,6 +608,7 @@ export function OneOfFormField({
     ],
     [actions, onChooseType]
   );
+
   return (
     <>
       {matchedSchema == null ? (
@@ -640,7 +656,7 @@ export function FormField({
   typeLabel,
   actions,
 }: {
-  label: string;
+  label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
@@ -654,8 +670,7 @@ export function FormField({
         {label} Failed to expand schema: {JSON.stringify({ schema, value })}
       </ThemedText>
     );
-
-  if (isLeafType(expandedSchema.type)) {
+  if (isLeafType(expandedSchema.type) || expandedSchema.const != null) {
     return (
       <LeafFormField
         value={value}
@@ -667,9 +682,7 @@ export function FormField({
       />
     );
   }
-  if (schema.const) {
-    return <InfoRow label={label} value={JSON.stringify(value)} />;
-  }
+
   if (expandedSchema.oneOf) {
     return (
       <OneOfFormField
@@ -728,7 +741,7 @@ export function LeafFormField({
   schema,
   actions,
 }: {
-  label: string;
+  label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
   schema: LeafSchema;
@@ -737,6 +750,33 @@ export function LeafFormField({
   const description = schema.description ? (
     <Paragraph>{schema.description}</Paragraph>
   ) : null;
+
+  if (schema.const != null) {
+    if (value === schema.const) {
+      return (
+        <>
+          <FormFieldHeader
+            label={`${label || ""}: ${schema.title || schema.const}`}
+            typeLabel={``}
+            value={value}
+            actions={actions}
+          />
+          {description}
+        </>
+      );
+    }
+    return (
+      <>
+        <FormFieldHeader
+          label={`${label || ""}: ${JSON.stringify(value)} `}
+          typeLabel={`${schema.title || schema.const}`}
+          value={value}
+          actions={actions}
+        />
+        {description}
+      </>
+    );
+  }
   if (schema.type === "string") {
     const autoCapitalize = JSONSchemaPluck(CapitalizeSchema, schema.capitalize);
     return (
@@ -770,12 +810,14 @@ export function LeafFormField({
         />
         <Input
           disabled={!onValue}
+          placeholder={String(defaultNumber)}
           keyboardType={schema.type === "integer" ? "number-pad" : "numeric"}
-          value={value == null ? String(defaultNumber) : String(value)}
+          value={value == null ? "" : String(value)}
           onValue={
             onValue ? (valueString) => onValue(Number(valueString)) : undefined
           }
         />
+        {description}
       </>
     );
   }
@@ -789,6 +831,7 @@ export function LeafFormField({
           actions={actions}
         />
         <SwitchInput disabled={!onValue} value={value} onValue={onValue} />
+        {description}
       </>
     );
   }
@@ -801,6 +844,7 @@ export function LeafFormField({
           value={value}
           actions={actions}
         />
+        {description}
       </>
     );
   }
@@ -836,7 +880,7 @@ export function JSONSchemaForm({
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
-  label?: string;
+  label: string | ReactNode;
 }) {
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
   if (!expandedSchema) {
@@ -852,6 +896,7 @@ export function JSONSchemaForm({
         <Dropdown
           options={unionOptions.options}
           value={matched}
+          unselectedLabel={`Select Type...`}
           onOptionSelect={(optionValue) => {
             const converter = unionOptions.converters[optionValue];
             const convertedValue = converter(value);
@@ -863,6 +908,7 @@ export function JSONSchemaForm({
             value={value}
             onValue={onValue}
             schema={matchedSchema}
+            label={label}
           />
         )}
       </>
@@ -881,13 +927,13 @@ export function JSONSchemaForm({
       <JSONSchemaObjectForm value={value} onValue={onValue} schema={schema} />
     );
   }
-  if (isLeafType(expandedSchema.type)) {
+  if (isLeafType(expandedSchema.type) || expandedSchema.const !== undefined) {
     return (
       <LeafFormField
         label={label || ""}
         value={value}
         onValue={onValue}
-        schema={schema}
+        schema={expandedSchema}
       />
     );
   }

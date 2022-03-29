@@ -22,7 +22,7 @@ import {
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FileEditor } from "../components/FileEditor";
-import { ZSchemaSchema } from "@zerve/core";
+import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
 import { showToast } from "../app/Toast";
 
 type NavigationProp = CompositeNavigationProp<
@@ -32,7 +32,6 @@ type NavigationProp = CompositeNavigationProp<
 
 function FileSchemaPage({ name }: { name: string }) {
   const { data, isLoading } = useZNodeValue(["Store", "State", name]);
-  console.log("RENDER fileSchemaPage", data);
   const navigation = useNavigation<NavigationProp>();
   const saveSchema = useSaveFileSchema();
   const openOptions = useActionsSheet(() => [
@@ -51,9 +50,10 @@ function FileSchemaPage({ name }: { name: string }) {
   return (
     <>
       <ScreenHeader
-        title={`${name} Schema`}
+        title={`${displayStoreFileName(name)} Schema`}
         isLoading={isLoading}
         corner={<OptionsButton onOptions={openOptions} />}
+        onLongPress={openOptions}
       />
       {data && !isLoading && (
         <FileEditor

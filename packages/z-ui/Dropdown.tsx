@@ -5,7 +5,7 @@ import { Button } from "./Button";
 import { VStack } from "./Stack";
 
 export type DropdownOption = {
-  value: string | number;
+  value: boolean | string | number;
   icon?: any;
   title: string;
 };
@@ -17,7 +17,7 @@ export function Dropdown<OptionValues>({
   unselectedLabel = "Select...",
 }: {
   options: DropdownOption[];
-  value: string;
+  value: boolean | string | number;
   onOptionSelect: (optionValue: string | number) => void;
   unselectedLabel?: string;
 }) {
@@ -43,7 +43,7 @@ export function Dropdown<OptionValues>({
   ));
   return (
     <Button
-      title={selectedOption ? selectedOption.title : unselectedLabel}
+      title={selectedOption?.title || unselectedLabel}
       onPress={onOpen}
       right={(p) => <Icon name="chevron-down" {...p} />}
     />

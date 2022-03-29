@@ -20,8 +20,6 @@ export function JSONSchemaPluck<Schema extends JSONSchema>(
   if (schema1.oneOf) {
     const { options, converters, match } = exploreUnionSchema(schema1);
     const matched = match(value);
-    console.log("OneOF matched: ", matched);
-    console.log("OneOF value: ", value);
     if (!matched) return schema1["default"];
   }
 

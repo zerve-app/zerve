@@ -16,7 +16,7 @@ export function exploreUnionSchema(schema) {
 
   optionSchemas.forEach((optionSchema) => {
     let type = optionSchema.type;
-    if (!type && optionSchema.const) {
+    if (!type && optionSchema.const !== undefined) {
       type = typeof optionSchema.const;
     }
     if (!type) {
@@ -37,9 +37,14 @@ export function exploreUnionSchema(schema) {
 
   const unionKeys: string[] = [];
   const unionKeyMap = {};
+  const unionConstMap = new Map();
 
   const unionConstProperties = optionSchemas.map(
     (optionSchema, optionSchemaIndex) => {
+      if (optionSchema.const != null) {
+        unionConstMap.set(optionSchema.const, optionSchemaIndex);
+        return null;
+      }
       const constProperties = {};
       Object.entries(optionSchema.properties || {}).forEach(
         ([childPropName, childPropSchema]) => {
@@ -58,7 +63,7 @@ export function exploreUnionSchema(schema) {
     let walkKeyMap = unionKeyMap;
     unionKeys.forEach((unionKey, unionKeyIndex) => {
       const isLastUnionKey = unionKeyIndex === unionKeys.length - 1;
-      const constValue = constProperties[unionKey];
+      const constValue = constProperties?.[unionKey];
       const isLeaf = isLastUnionKey || constValue === undefined;
       const newNodeValue = isLeaf ? optionSchemaIndex : {};
       const thisKeyMap =
@@ -73,6 +78,9 @@ export function exploreUnionSchema(schema) {
     aggregateTypeOptions.values().next().value === "object";
 
   function getTitle(optionSchema, optionSchemaIndex) {
+    if (optionSchema.const !== undefined) {
+      return `${optionSchema.const}`;
+    }
     const constsValue = unionKeys
       .map((unionKey) => {
         const value = unionConstProperties[optionSchemaIndex][unionKey];
@@ -84,15 +92,24 @@ export function exploreUnionSchema(schema) {
     if (isAlwaysObject) return constsValue;
     return `${optionSchema.type} ${constsValue}`;
   }
+  const options = optionSchemas.map((optionSchema, optionSchemaIndex) => {
+    return {
+      title: optionSchema.title || getTitle(optionSchema, optionSchemaIndex),
+      value: optionSchemaIndex,
+    };
+  });
+  console.log("Union Schema: ", {
+    options,
+    unionConstMap,
+    unionKeyMap,
+    distinctTypeOptions,
+    aggregateTypeOptions,
+  });
   return {
-    options: optionSchemas.map((optionSchema, optionSchemaIndex) => {
-      return {
-        title: optionSchema.title || getTitle(optionSchema, optionSchemaIndex),
-        value: optionSchemaIndex,
-      };
-    }),
+    options,
     converters: optionSchemas.map((optionSchema, optionSchemaIndex) => {
       return (v: any) => {
+        if (optionSchema.const !== undefined) return optionSchema.const;
         if (optionSchema.type === "null") return null;
         if (optionSchema.type === "string") return optionSchema.default || "";
         if (optionSchema.type === "number") return optionSchema.default || 0;
@@ -107,6 +124,8 @@ export function exploreUnionSchema(schema) {
       };
     }),
     match: (value: any) => {
+      // console.log("MATCHING ok", value, unionConstMap);
+      if (unionConstMap.has(value)) return unionConstMap.get(value);
       const observedValueType = getTypeOf(value);
       if (distinctTypeOptions.has(observedValueType)) {
         // this means that we can use the type to find a specific schema.

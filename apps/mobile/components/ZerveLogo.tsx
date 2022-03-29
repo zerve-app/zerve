@@ -4,7 +4,19 @@ import Svg, { Defs, LinearGradient, Stop, G, Path } from "react-native-svg";
 
 export function ZerveLogo() {
   return (
-    <View style={{ padding: 24 }}>
+    <View
+      style={{
+        padding: 24,
+        transform: [
+          {
+            scale: 0.6,
+          },
+          {
+            translateX: -115,
+          },
+        ],
+      }}
+    >
       <Svg width={346} height={92} xmlns="http://www.w3.org/2000/svg">
         <Defs>
           <LinearGradient

@@ -69,6 +69,34 @@ const testSchema2 = {
   ],
 } as const;
 
+const testSchema4 = {
+  oneOf: [
+    {
+      const: false,
+    },
+    {
+      const: "LOL",
+    },
+    {
+      type: "object",
+      properties: {
+        c: { const: "bar" },
+        name: { type: "string" },
+      },
+      additionalProperties: false,
+    },
+    {
+      type: "object",
+      properties: {
+        c: { const: "bar" },
+        name: { type: "string" },
+        name2: { type: "string" },
+      },
+      additionalProperties: false,
+    },
+  ],
+} as const;
+
 const testSchema3 = {
   type: "object",
   properties: {
@@ -249,7 +277,7 @@ export default function TestJSONInputScreen({
         defaultIsOpen={false}
         header={<Label>Advanced Union Schema</Label>}
       >
-        <JSONSchemaFormExample schema={testSchema3} />
+        <JSONSchemaFormExample schema={testSchema4} />
       </DisclosureSection>
     </ScreenContainer>
   );

@@ -32,6 +32,7 @@ import {
   useConnectionProjects,
 } from "@zerve/query";
 import { View } from "react-native";
+import { displayStoreFileName } from "@zerve/core";
 
 export function ConnectionProjects({
   onActions,
@@ -68,7 +69,7 @@ export function ConnectionProjects({
     <LinkRowGroup
       links={list.map((child) => ({
         key: child.key,
-        title: child.name,
+        title: displayStoreFileName(child.name),
         icon: getZIcon("Container"),
         onPress: () => {
           navigate("File", {

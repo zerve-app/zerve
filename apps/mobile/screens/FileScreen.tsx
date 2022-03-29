@@ -23,6 +23,7 @@ import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { showToast } from "../app/Toast";
 import { FileEditor } from "../components/FileEditor";
+import { displayStoreFileName } from "@zerve/core";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -77,14 +78,14 @@ function FilePage({
   return (
     <>
       <ScreenHeader
-        title={name}
+        title={displayStoreFileName(name)}
         isLoading={isLoading}
         corner={<OptionsButton onOptions={openOptions} />}
+        onLongPress={openOptions}
       />
       {data && (
         <FileEditor
           onValue={async (value) => {
-            console.log("NEW VALUE IS", JSON.stringify(value));
             await saveFile.mutateAsync({ name, value });
             showToast("File has been updated.");
           }}

@@ -1,5 +1,5 @@
 import React from "react";
-import { AsyncButton } from "@zerve/ui";
+import { AsyncButton, Button } from "@zerve/ui";
 import { useEffect, useRef, useState } from "react";
 import { JSONSchemaForm } from "./JSONSchemaForm";
 
@@ -30,13 +30,21 @@ export function FileEditor({
         schema={schema}
       />
       {valueState !== value && (
-        <AsyncButton
-          title={saveLabel || "Save"}
-          primary
-          onPress={async () => {
-            await onValue(valueState);
-          }}
-        />
+        <>
+          <AsyncButton
+            title={saveLabel || "Save"}
+            primary
+            onPress={async () => {
+              await onValue(valueState);
+            }}
+          />
+          <Button
+            onPress={() => {
+              setValueState(value);
+            }}
+            title="Cancel"
+          />
+        </>
       )}
     </>
   );
