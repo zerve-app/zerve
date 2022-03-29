@@ -19,7 +19,7 @@ export function exploreUnionSchema(schema) {
     if (!type && optionSchema.const) {
       type = typeof optionSchema.const;
     }
-    if (!isPrimitiveType(type)) {
+    if (!type) {
       console.log("=========", type);
       console.log("BAD SCHEMA IS", schema);
       console.log("optionSchema IS", optionSchema);

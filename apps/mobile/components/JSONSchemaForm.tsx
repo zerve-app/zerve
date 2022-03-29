@@ -109,7 +109,7 @@ function AddButton({
 }
 
 function expandSchema(schema: JSONSchema): JSONSchema | undefined {
-  if (schema === false) return undefined;
+  if (schema === false) return false;
   if (schema === undefined) return undefined;
   let schemaObj = schema;
   if (schemaObj === true) schemaObj = {};
@@ -234,11 +234,11 @@ export function JSONSchemaObjectForm({
           onSubmit={(propertyName) => {
             onClose();
             if (!onValue) return;
-            if (value[propertyName] !== undefined)
+            if (value?.[propertyName] !== undefined)
               throw new Error(`Key ${propertyName} already exists here.`);
             if (propertyEditKey === null) {
               onValue({
-                ...value,
+                ...(value || {}),
                 [propertyName]: getDefaultSchemaValue(
                   expandedAdditionalPropertiesSchema
                 ),
@@ -246,7 +246,7 @@ export function JSONSchemaObjectForm({
             } else {
               onValue(
                 Object.fromEntries(
-                  Object.entries(value).map(
+                  Object.entries(value || {}).map(
                     ([propKey, propValue]: [string, any]) => {
                       if (propKey === propertyEditKey)
                         return [propertyName, propValue];
@@ -640,7 +640,7 @@ export function FormField({
   typeLabel,
   actions,
 }: {
-  label?: string;
+  label: string;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
@@ -659,7 +659,7 @@ export function FormField({
     return (
       <LeafFormField
         value={value}
-        schema={schema}
+        schema={expandedSchema}
         label={label}
         onValue={onValue}
         typeLabel={typeLabel}
@@ -674,29 +674,29 @@ export function FormField({
     return (
       <OneOfFormField
         value={value}
-        schema={schema}
+        schema={expandedSchema}
         label={label}
         onValue={onValue}
         actions={actions}
       />
     );
   }
-  if (schema.enum) {
+  if (expandedSchema.enum) {
     return (
       <EnumFormField
         value={value}
-        schema={schema}
+        schema={expandedSchema}
         label={label}
         onValue={onValue}
         actions={actions}
       />
     );
   }
-  if (schema.type === "object") {
+  if (expandedSchema.type === "object") {
     return (
       <ObjectFormField
         value={value}
-        schema={schema}
+        schema={expandedSchema}
         label={label}
         onValue={onValue}
         actions={actions}
@@ -704,11 +704,11 @@ export function FormField({
     );
   }
 
-  if (schema.type === "array") {
+  if (expandedSchema.type === "array") {
     return (
       <ArrayFormField
         value={value}
-        schema={schema}
+        schema={expandedSchema}
         label={label}
         onValue={onValue}
         actions={actions}

@@ -41,7 +41,7 @@ export function getDefaultSchemaValue(schema: any): any {
   if (schema.type === "array") return []; // todo: handle tuples..
   if (schema.type === "object")
     return Object.fromEntries(
-      Object.entries(schema.properties).map(
+      Object.entries(schema.properties || {}).map(
         ([propertyName, propertySchema]) => [
           propertyName,
           getDefaultSchemaValue(propertySchema),

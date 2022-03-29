@@ -22,6 +22,7 @@ export const NullSchemaSchema = {
     type: { const: "null" },
     ...SchemaMeta,
   },
+  required: ["type"],
   additionalProperties: false,
 } as const;
 export type NullSchema = FromSchema<typeof NullSchemaSchema>;
@@ -45,6 +46,7 @@ export const IntegerSchemaSchema = {
     ...SchemaMeta,
     default: { type: "integer" }, // uhh this implies the need of a more powerful generic/recursion o_O
   },
+  required: ["type"],
   additionalProperties: false,
 } as const;
 export type ZIntegerSchema = FromSchema<typeof IntegerSchemaSchema>;
@@ -75,6 +77,7 @@ export const BooleanSchemaSchema = {
     ...SchemaMeta,
     default: { type: "boolean" }, // uhh this implies the need of a more powerful generic/recursion o_O
   },
+  required: ["type"],
   additionalProperties: false,
 } as const;
 export type ZBooleanSchema = FromSchema<typeof BooleanSchemaSchema>;
@@ -98,12 +101,18 @@ export const ObjectSchemaSchema = {
   properties: {
     type: { const: "object" },
     ...SchemaMeta,
-    // properties: {
+    properties: {
+      type: "object",
+      additionalProperties: LeafSchemaSchema,
+      // properties: {
+      //   type: "object",
+      //   additionalProperties: LeafSchemaSchema,
+      // },
+    },
     // additionalProperties: LeafSchemaSchema,
-    // },
     additionalProperties: {
       oneOf: [
-        FalseSchema,
+        // FalseSchema,
         NullSchemaSchema,
         BooleanSchemaSchema,
         IntegerSchemaSchema,
@@ -111,8 +120,11 @@ export const ObjectSchemaSchema = {
         StringSchemaSchema,
       ],
     } as const,
-    default: {}, // uhh this implies the need of a more powerful generic/recursion o_O
+    default: {
+      type: "object",
+    }, // uhh this implies the need of a more powerful generic/recursion o_O
   },
+  required: ["type"],
   additionalProperties: false,
 } as const;
 
@@ -124,6 +136,7 @@ export const ArraySchemaSchema = {
     items: LeafSchemaSchema,
     default: [], // uhh this implies the need of a more powerful generic/recursion o_O
   },
+  required: ["type"],
   additionalProperties: false,
 } as const;
 
