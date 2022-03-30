@@ -30,6 +30,7 @@ function ConnectionSetupPage({ connection }: { connection: string | null }) {
         <LinkRowGroup
           links={[
             {
+              key: "info",
               title: "Connection Info",
               icon: "link",
               onPress: () => {
@@ -40,6 +41,7 @@ function ConnectionSetupPage({ connection }: { connection: string | null }) {
               },
             },
             {
+              key: "api",
               title: "Dynamic API",
               icon: "code",
               onPress: () => {

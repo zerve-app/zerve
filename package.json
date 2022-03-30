@@ -1,5 +1,5 @@
 {
-  "name": "turborepo-basic-shared",
+  "name": "@zerve/monorepo",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -19,7 +19,6 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "restart": "pm2 restart ecosystem.config.js",
-    "borked_turbo_dev": "turbo run dev --parallel",
     "postinstall": "yarn workspace @zerve/modules-tools prepareModules"
   },
   "dependencies": {

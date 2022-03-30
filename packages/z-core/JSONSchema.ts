@@ -160,7 +160,7 @@ export const ArraySchemaSchema = {
 export const ZSchemaSchema = {
   oneOf: [
     ObjectSchemaSchema,
-    // ArraySchemaSchema,
+    ArraySchemaSchema,
     NullSchemaSchema,
     BooleanSchemaSchema,
     // IntegerSchemaSchema,

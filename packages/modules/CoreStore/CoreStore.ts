@@ -12,7 +12,6 @@ import {
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "../CoreChain/CoreChain";
 import { CoreDataModule } from "../CoreData/CoreData";
-import { CoreTypesModule } from "../CoreTypes/CoreTypes";
 import { SystemFilesModule } from "../SystemFiles/SystemFiles";
 
 const NodeSchema = {
@@ -176,7 +175,6 @@ const GenericCalculator = createZChainStateCalculator(
 
 async function createGeneralStore(
   data: CoreDataModule,
-  types: CoreTypesModule,
   cacheFiles: SystemFilesModule,
   docName: string
 ) {

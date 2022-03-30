@@ -18,6 +18,7 @@ import { LogBox } from "react-native";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
+  "check out new Gestures system!",
 ]);
 
 export default function App() {
