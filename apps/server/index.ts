@@ -107,19 +107,21 @@ export async function startApp() {
 
   const InternalCommands = SystemCommands.createSystemCommands();
 
+  const Admin = createZContainer({
+    Data,
+    Fetch: SystemFetch.Fetch,
+    RootFiles: InternalRootFiles,
+    Commands: InternalCommands,
+    SSH: SystemSSH.createSystemSSH(InternalCommands),
+    SMS,
+    Email,
+  });
+
   const zRoot = createZContainer({
     Types,
     Store,
     TestLedger,
-    Admin: createZContainer({
-      Data,
-      Fetch: SystemFetch.Fetch,
-      RootFiles: InternalRootFiles,
-      Commands: InternalCommands,
-      SSH: SystemSSH.createSystemSSH(InternalCommands),
-      SMS,
-      Email,
-    }),
+    Admin,
   });
 
   await startZedServer(port, zRoot);
