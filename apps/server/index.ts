@@ -24,7 +24,7 @@ import {
 import SystemCommands from "@zerve/modules/SystemCommands/SystemCommands";
 import { createZChainState } from "@zerve/modules/CoreChain/CoreChain";
 
-const portLOL = process.env.PORT ? Number(process.env.PORT) : 3888;
+const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 
 const homeDir = process.env.HOME;
 const defaultZDataDir = `${homeDir}/.zerve`;
@@ -102,52 +102,12 @@ export async function startApp() {
     Data,
     Types,
     SystemFiles.createSystemFiles(join(dataDir, "GenStoreCache")),
-    "GenStore",
-    CoreStoreSchema
+    "GenStore"
   );
 
   const InternalCommands = SystemCommands.createSystemCommands();
 
-  // const data = createDataBase(context);
-
-  // const testDataZ = createZGettable(
-  //   { type: "string" } as const,
-  //   async () => "Hello"
-  // );
-
-  // const testActionZ = createZAction(
-  //   {
-  //     type: "object",
-  //     parameters: {
-  //       url: { type: "string" },
-  //     },
-  //     required: ["url"],
-  //   } as const,
-  //   {} as const,
-  //   async ({ url }) => {
-  //     console.log({ url });
-  //   }
-  // );
-  // const GetValueSchema = { type: "string" } as const;
-  // const testGroupZ = createZContainer<
-  //   GetZot<typeof GetValueSchema, void>
-  // >(async (key: string) => {
-  //   return createZGettable(GetValueSchema, async () => {
-  //     return `Wow, ${key}`;
-  //   });
-  // });
-  // const testZContainer = createZContainer({
-  //   action: testActionZ,
-  //   data: testDataZ,
-  //   group: testGroupZ,
-  // });
-
-  // const queryZot0 = await testZContainer.get("container");
-  // const queryZot1 = await queryZot0.get("foobar");
-  // const foo = await queryZot1?.get();
-  // console.log({ foo });
-
-  const rootZot = createZContainer({
+  const zRoot = createZContainer({
     Types,
     Store,
     TestLedger,
@@ -160,19 +120,9 @@ export async function startApp() {
       SMS,
       Email,
     }),
-    // Types: createZContainer({
-    //   Color: createZStatic({
-    //     type: "object",
-    //     properties: {
-    //       r: { type: "number" },
-    //       g: { type: "number" },
-    //       b: { type: "number" },
-    //     },
-    //   }),
-    // }),
   });
 
-  await startZedServer(portLOL, rootZot);
+  await startZedServer(port, zRoot);
 }
 
 startApp().catch((e) => {

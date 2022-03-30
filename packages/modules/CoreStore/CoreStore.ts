@@ -174,12 +174,11 @@ const GenericCalculator = createZChainStateCalculator(
   }
 );
 
-async function createGeneralStore<RootSchema extends JSONSchema>(
+async function createGeneralStore(
   data: CoreDataModule,
   types: CoreTypesModule,
   cacheFiles: SystemFilesModule,
-  docName: string,
-  rootSchema: RootSchema
+  docName: string
 ) {
   const genStore = await CoreChain.createZChainState(
     data,
