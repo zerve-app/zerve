@@ -27,7 +27,7 @@ export function useCreateFile() {
       }
     },
     {
-      onSuccess: () => {
+      onSuccess: (something, name) => {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
@@ -35,6 +35,7 @@ export function useCreateFile() {
           "State",
           ".node",
         ]);
+        queryClient.invalidateQueries([conn?.key, "z", "Store", "State", name]);
       },
     }
   );

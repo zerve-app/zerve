@@ -4,10 +4,6 @@ function getTypeOf(v) {
   return typeof v;
 }
 
-function isPrimitiveType(type: string) {
-  return type === "number" || type === "string" || type === "boolean";
-}
-
 export function exploreUnionSchema(schema) {
   // schema has oneOf and we need to understand how children are differentiated
   const optionSchemas = schema.oneOf;
@@ -20,9 +16,6 @@ export function exploreUnionSchema(schema) {
       type = typeof optionSchema.const;
     }
     if (!type) {
-      console.log("=========", type);
-      console.log("BAD SCHEMA IS", schema);
-      console.log("optionSchema IS", optionSchema);
       throw new Error(
         "cannot handle a union/anyOf with complicated children types"
       );
@@ -97,13 +90,6 @@ export function exploreUnionSchema(schema) {
       title: optionSchema.title || getTitle(optionSchema, optionSchemaIndex),
       value: optionSchemaIndex,
     };
-  });
-  console.log("Union Schema: ", {
-    options,
-    unionConstMap,
-    unionKeyMap,
-    distinctTypeOptions,
-    aggregateTypeOptions,
   });
   return {
     options,

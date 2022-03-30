@@ -34,7 +34,6 @@ import {
 import { NavigationContext, useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView } from "react-native";
 import { View } from "react-native";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../app/Links";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -49,6 +48,7 @@ import Animated, {
   Layout,
 } from "react-native-reanimated";
 import { showErrorToast } from "../app/Toast";
+import { useStringInput } from "./StringInput";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
 //   return null;
@@ -144,41 +144,6 @@ function expandSchema(schema: JSONSchema): JSONSchema | undefined {
   return schema;
 }
 
-function StatefulInput({
-  onSubmit,
-  defaultValue = "",
-  inputLabel = "name",
-}: {
-  onSubmit: (v: string) => void;
-  defaultValue?: string;
-  inputLabel?: string;
-}) {
-  const [s, setS] = useState(defaultValue);
-  const input = useRef(null);
-  const [error, setError] = useState(defaultValue);
-  return (
-    <>
-      <Input
-        ref={input}
-        label={inputLabel}
-        autoFocus
-        value={s}
-        onValue={setS}
-        returnKeyType="done"
-        enablesReturnKeyAutomatically
-        onSubmitEditing={() => {
-          try {
-            onSubmit(s);
-          } catch (e) {
-            showErrorToast(e.message);
-          }
-        }}
-        InputComponent={BottomSheetTextInput}
-      />
-    </>
-  );
-}
-
 export function JSONSchemaObjectForm({
   value,
   onValue,
@@ -225,42 +190,38 @@ export function JSONSchemaObjectForm({
     [schema.additionalProperties]
   );
 
-  const propertyNameInput = useBottomSheet<null | string>(
-    ({ onClose, options: propertyEditKey }) => (
-      <VStack>
-        <StatefulInput
-          inputLabel="New Property Name"
-          defaultValue={propertyEditKey || ""}
-          onSubmit={(propertyName) => {
-            onClose();
-            if (!onValue) return;
-            if (value?.[propertyName] !== undefined)
-              throw new Error(`Key ${propertyName} already exists here.`);
-            if (propertyEditKey === null) {
-              onValue({
-                ...(value || {}),
-                [propertyName]: getDefaultSchemaValue(
-                  expandedAdditionalPropertiesSchema
-                ),
-              });
-            } else {
-              onValue(
-                Object.fromEntries(
-                  Object.entries(value || {}).map(
-                    ([propKey, propValue]: [string, any]) => {
-                      if (propKey === propertyEditKey)
-                        return [propertyName, propValue];
-                      return [propKey, propValue];
-                    }
-                  )
-                )
-              );
-            }
-          }}
-        />
-      </VStack>
-    )
+  const propertyNameInput = useStringInput<null | string>(
+    (propertyEditKey) => ({
+      onValue: (propertyName) => {
+        if (!onValue) return;
+        if (value?.[propertyName] !== undefined)
+          throw new Error(`Key ${propertyName} already exists here.`);
+        if (propertyEditKey === null) {
+          onValue({
+            ...(value || {}),
+            [propertyName]: getDefaultSchemaValue(
+              expandedAdditionalPropertiesSchema
+            ),
+          });
+        } else {
+          onValue(
+            Object.fromEntries(
+              Object.entries(value || {}).map(
+                ([propKey, propValue]: [string, any]) => {
+                  if (propKey === propertyEditKey)
+                    return [propertyName, propValue];
+                  return [propKey, propValue];
+                }
+              )
+            )
+          );
+        }
+      },
+      defaultValue: propertyEditKey || "",
+      inputLabel: "New Property Name",
+    })
   );
+
   return (
     <VStack>
       {schema.description ? <Paragraph>{schema.description}</Paragraph> : null}
@@ -882,7 +843,9 @@ export function JSONSchemaForm({
   schema: JSONSchema;
   label: string | ReactNode;
 }) {
+  console.log({ value, schema });
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
+
   if (!expandedSchema) {
     return <ThemedText>Value not allowed.</ThemedText>;
   }

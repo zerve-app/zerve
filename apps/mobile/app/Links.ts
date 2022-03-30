@@ -29,7 +29,10 @@ export type HomeStackParamList = {
   Home: undefined;
   History: undefined;
   NewFile: { connection: null | string };
+  ChainHistory: { connection: null | string };
+  ChainSchemas: { connection: null | string };
   Connection: { connection: string };
+  ConnectionSetup: { connection: string };
   File: { connection: null | string; name: string };
   FileSchema: { connection: null | string; name: string };
   ZNode: { connection: null | string; path: string[] };

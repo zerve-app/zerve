@@ -236,7 +236,8 @@ function ZNodePage({
     <>
       <ScreenHeader
         isLoading={isLoading || isRefetching}
-        title={path.join("/")}
+        title={path.length ? path.join("/") : "Z Connection API"}
+        onLongPress={onOptions}
         corner={
           <IconButton
             altTitle="Options"

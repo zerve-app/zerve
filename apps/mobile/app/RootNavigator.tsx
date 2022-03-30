@@ -26,6 +26,9 @@ import HistoryScreen from "../screens/HistoryScreen";
 import ConnectionScreen from "../screens/ConnectionScreen";
 import { TestHistoryScreen } from "../screens/TestHistoryScreen";
 import FileSchemaScreen from "../screens/FileSchemaScreen";
+import ChainHistoryScreen from "../screens/ChainHistoryScreen";
+import ChainSchemasScreen from "../screens/ChainSchemasScreen";
+import ConnectionSetupScreen from "../screens/ConnectionSetupScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -50,6 +53,21 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="File"
         component={FileScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="ChainHistory"
+        component={ChainHistoryScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="ChainSchemas"
+        component={ChainSchemasScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="ConnectionSetup"
+        component={ConnectionSetupScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen

@@ -96,9 +96,8 @@ export function ConnectionMetaLinks({
           title: "Event History",
           icon: "history",
           onPress: () => {
-            navigate("ZNode", {
+            navigate("ChainHistory", {
               connection: connection.key,
-              path: [],
             });
           },
         },
@@ -107,9 +106,8 @@ export function ConnectionMetaLinks({
           title: "Schemas",
           icon: "crosshairs",
           onPress: () => {
-            navigate("ZNode", {
+            navigate("ChainSchemas", {
               connection: connection.key,
-              path: [],
             });
           },
         },
@@ -118,9 +116,8 @@ export function ConnectionMetaLinks({
           title: "Server Setup",
           icon: "database",
           onPress: () => {
-            navigate("ZNode", {
+            navigate("ConnectionSetup", {
               connection: connection.key,
-              path: [],
             });
           },
         },

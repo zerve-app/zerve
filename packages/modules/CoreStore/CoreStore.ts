@@ -8,6 +8,7 @@ import {
   createZAction,
   AnySchema,
   getValidatorOfSchema,
+  ZSchemaSchema,
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "../CoreChain/CoreChain";
 import { CoreDataModule } from "../CoreData/CoreData";
@@ -29,6 +30,12 @@ const StateTreeSchema = {
   name: "StoreState",
   type: "object",
   additionalProperties: NodeSchema,
+  properties: {
+    $schemas: {
+      type: "object",
+      additionalProperties: {},
+    },
+  },
 } as const;
 
 const WriteValueActionSchema = {
@@ -61,6 +68,16 @@ const WriteSchemaValueActionSchema = {
   required: ["name", "schema"],
 } as const;
 
+const WriteSchemaActionSchema = {
+  type: "object",
+  properties: {
+    schemaName: { type: "string" },
+    schema: {},
+  },
+  additionalProperties: false,
+  required: ["schemaName", "schema"],
+} as const;
+
 function validateNode(node: FromSchema<typeof NodeSchema>) {
   if (typeof node !== "object") throw new Error("Invalid Store Node");
   if (node.value === undefined) throw new Error("Store Node value missing");
@@ -91,6 +108,8 @@ const GenericCalculator = createZChainStateCalculator(
         action: FromSchema<typeof WriteValueActionSchema>
       ) => {
         const { name, value } = action;
+        if (name[0] === "$")
+          throw new Error("Cannot write to a hidden file that begins with $");
         const prevNode = state[name];
         const node = {
           ...(prevNode || {}),
@@ -111,6 +130,8 @@ const GenericCalculator = createZChainStateCalculator(
         action: FromSchema<typeof WriteSchemaValueActionSchema>
       ) => {
         const { name, schema, value } = action;
+        if (name[0] === "$")
+          throw new Error("Cannot write to a hidden file that begins with $");
         const prevNode = state[name];
         const node = {
           schema: schema,
@@ -129,9 +150,25 @@ const GenericCalculator = createZChainStateCalculator(
         state: FromSchema<typeof StateTreeSchema>,
         action: FromSchema<typeof DeleteActionSchema>
       ) => {
+        if (action.name[0] === "$")
+          throw new Error("Cannot delete a hidden file that begins with $");
         const newState = { ...state };
         delete newState[action.name];
         return newState;
+      },
+    },
+    WriteSchema: {
+      schema: WriteSchemaActionSchema,
+      handler: (
+        state: FromSchema<typeof StateTreeSchema>,
+        action: FromSchema<typeof WriteSchemaActionSchema>
+      ) => {
+        const schemas = state.$schemas || {};
+        schemas[action.schemaName] = action.schema;
+        return {
+          ...state,
+          $schemas: schemas,
+        };
       },
     },
   }

@@ -149,7 +149,9 @@ export const ArraySchemaSchema = {
     type: { const: "array" },
     ...SchemaMeta,
     items: LeafSchemaSchema,
-    default: [], // uhh this implies the need of a more powerful generic/recursion o_O
+    default: {
+      type: "array",
+    }, // uhh this implies the need of a more powerful generic/recursion o_O
   },
   required: ["type"],
   additionalProperties: false,
@@ -158,7 +160,7 @@ export const ArraySchemaSchema = {
 export const ZSchemaSchema = {
   oneOf: [
     ObjectSchemaSchema,
-    ArraySchemaSchema,
+    // ArraySchemaSchema,
     NullSchemaSchema,
     BooleanSchemaSchema,
     // IntegerSchemaSchema,

@@ -383,12 +383,8 @@ export async function createZChainState<
     let schema: JSONSchema = calculator.stateSchema;
     path.forEach((pathTerm) => {
       if (typeof schema === "object" && schema.type === "object") {
-        if (schema.properties) {
-          if (schema.properties[pathTerm]) {
-            schema = schema.properties[pathTerm];
-          } else {
-            throw new Error("failed to find schema property");
-          }
+        if (schema.properties && schema.properties[pathTerm]) {
+          schema = schema.properties[pathTerm];
         } else if (schema.additionalProperties) {
           schema = [{ type: "null" }, schema.additionalProperties];
         } else {
