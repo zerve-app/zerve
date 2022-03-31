@@ -26,6 +26,7 @@ function getAppearanceOfMQMatches(matches: undefined | boolean) {
 }
 
 function getAppearance(): ColorScheme {
+  return "light";
   return getAppearanceOfMQMatches(mediaQuery?.matches);
 }
 
