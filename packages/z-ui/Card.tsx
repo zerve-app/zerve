@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
-import { ThemedText } from ".";
+import { ThemedText } from "./Themed";
 import Layout from "./Layout";
 import { smallShadow } from "./Style";
 import { useColors } from "./useColors";

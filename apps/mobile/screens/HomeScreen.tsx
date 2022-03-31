@@ -5,13 +5,8 @@ import {
   HStack,
   IconButton,
   Label,
-  PageSection,
-  Paragraph,
-  useColors,
   VStack,
   LinkRow,
-  useBottomSheet,
-  Page,
   LinkRowGroup,
   ActionButtonDef,
   ActionButton,
@@ -27,9 +22,8 @@ import { Connection, useConnections } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
-import { QueryConnectionProvider, useConnectionProjects } from "@zerve/query";
+import { QueryConnectionProvider } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
-import { getZIcon } from "../app/ZIcon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
 import {
@@ -37,6 +31,7 @@ import {
   ConnectionProjects,
   NewFileButton,
 } from "./ConnectionScreen";
+import { useBottomSheet } from "@zerve/ui-native";
 
 function LocalDocsSection({}: {}) {
   const navigation =

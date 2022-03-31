@@ -2,7 +2,7 @@ import { Query, useQuery } from "react-query";
 import { getZ } from "./ServerCalls";
 import { useConnectionContext } from "./Connection";
 import { getDoc, listDocs, getActions, getModuleList } from "./ServerCalls";
-import { getTypedZ } from ".";
+import { getTypedZ } from "./ServerCalls";
 
 export type QueryOptions = {
   skipLoading?: boolean;

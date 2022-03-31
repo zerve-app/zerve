@@ -1,7 +1,6 @@
 import React from "react";
 import { Icon } from "./Icon";
 import { Button } from "./Button";
-import { useBottomSheet, VStack } from ".";
 
 export type ActionButtonDef = {
   key: string;
@@ -36,23 +35,4 @@ export function ActionButton({ action }: { action: ActionButtonDef }) {
       left={(p) => (icon ? <Icon {...p} name={icon} /> : null)}
     />
   );
-}
-
-export function useActionsSheet(getActions: () => ActionButtonDef[]) {
-  return useBottomSheet<void>(({ onClose }) => (
-    <VStack>
-      {getActions().map((action) => (
-        <ActionButton
-          key={action.key}
-          action={{
-            ...action,
-            onHandled: () => {
-              onClose();
-              action.onHandled?.();
-            },
-          }}
-        />
-      ))}
-    </VStack>
-  ));
 }

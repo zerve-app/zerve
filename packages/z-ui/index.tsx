@@ -1,7 +1,6 @@
 export * from "./Button";
 export * from "./Link";
 export * from "./Text";
-export * from "./Page";
 export * from "./Colors";
 export * from "./Layout";
 export * from "./Themed";
@@ -13,7 +12,7 @@ export * from "./useColors";
 export * from "./useColorScheme";
 export * from "./ActionButton";
 export * from "./Row";
-export * from "./BottomSheet";
 export * from "./Card";
 export * from "./Icon";
-export * from "./Dropdown";
+export * from "./Style";
+export * from "./Page";

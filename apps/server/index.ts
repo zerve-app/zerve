@@ -12,7 +12,6 @@ import {
 import {
   CoreData,
   CoreStore,
-  CoreTypes,
   SystemFiles,
   Ledger,
   CoreChain,

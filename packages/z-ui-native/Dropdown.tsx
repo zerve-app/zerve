@@ -1,8 +1,6 @@
 import React from "react";
-import { Icon } from "./Icon";
 import { useBottomSheet } from "./BottomSheet";
-import { Button } from "./Button";
-import { VStack } from "./Stack";
+import { Button, VStack, Icon } from "@zerve/ui";
 
 export type DropdownOption = {
   value: boolean | string | number;

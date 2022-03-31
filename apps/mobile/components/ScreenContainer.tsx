@@ -1,4 +1,5 @@
-import { BottomSheetProvider, useColors } from "@zerve/ui";
+import { useColors } from "@zerve/ui";
+import { BottomSheetProvider } from "@zerve/ui-native";
 import { bigShadow } from "@zerve/ui/Style";
 import React, { ReactNode } from "react";
 import { ScrollView } from "react-native-gesture-handler";

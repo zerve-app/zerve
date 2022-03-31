@@ -1,28 +1,6 @@
 import React, { ReactNode } from "react";
-import { Text, View, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useColors } from "./useColors";
+import { View } from "react-native";
 import { ThemedText } from "./Themed";
-import { bigShadow } from "./Style";
-import { BottomSheetProvider } from "./BottomSheet";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
-export function Page({ children }: { children: ReactNode }) {
-  const colors = useColors();
-  return (
-    <BottomSheetProvider>
-      <KeyboardAwareScrollView
-        style={{
-          backgroundColor: colors.backgroundDim,
-          ...bigShadow,
-          shadowColor: colors.text,
-        }}
-      >
-        <SafeAreaView>{children}</SafeAreaView>
-      </KeyboardAwareScrollView>
-    </BottomSheetProvider>
-  );
-}
 
 export function PageSection({
   title,

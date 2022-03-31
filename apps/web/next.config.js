@@ -19,6 +19,7 @@ const transpileThese = [
   ...localPackageNames,
   "react-native", // ufhfhfhfhf this is bad. this fixes stuff on web which should not help because RN should always be aliased to RNW, but whoknows
   "react-native-web",
+  "react-native-keyboard-aware-scroll-view",
   "react-native-reanimated",
   "react-native-gesture-handler",
   "expo-modules-core",

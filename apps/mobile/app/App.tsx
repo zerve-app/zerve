@@ -9,7 +9,8 @@ import {
 import useCachedResources from "./useCachedResources";
 import { navigationLinking } from "./Links";
 import RootNavigator from "./RootNavigator";
-import { BottomSheetProvider, useColorScheme } from "@zerve/ui";
+import { useColorScheme } from "@zerve/ui";
+import { BottomSheetProvider } from "@zerve/ui-native";
 import { QueryProvider } from "@zerve/query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ToastContainer } from "./Toast";

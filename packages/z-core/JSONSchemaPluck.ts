@@ -1,5 +1,5 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
-import { exploreUnionSchema } from ".";
+import { exploreUnionSchema } from "./UnionSchema";
 
 function expandEnumSchema(s) {
   if (!s.enum) return s;
