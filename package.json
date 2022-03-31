@@ -18,8 +18,7 @@
     "build:android": "yarn workspace z-mobile eas build --platform=android --profile=production",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "restart": "pm2 restart ecosystem.config.js",
-    "postinstall": "yarn workspace @zerve/modules-tools prepareModules"
+    "restart": "pm2 restart ecosystem.config.js"
   },
   "dependencies": {
     "react-native": "0.64.3"

@@ -1,6 +1,0 @@
-{
-  "module": "./CoreStore",
-  "npmDependencies": {
-    "@zerve/crypto": "*"
-  }
-}

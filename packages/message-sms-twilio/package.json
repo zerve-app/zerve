@@ -1,0 +1,10 @@
+{
+  "name": "@zerve/message-sms-twilio",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./MessageSMS.ts",
+  "types": "./MessageSMS.ts",
+  "dependencies": {
+    "axios": "*"
+  }
+}

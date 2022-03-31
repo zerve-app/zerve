@@ -1,0 +1,7 @@
+{
+  "name": "@zerve/ledger",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Ledger.ts",
+  "types": "./Ledger.ts"
+}

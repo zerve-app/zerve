@@ -9,19 +9,17 @@ import {
   createZContainer,
   ZGettable,
 } from "@zerve/core";
-import {
-  CoreData,
-  CoreStore,
-  SystemFiles,
-  Ledger,
-  CoreChain,
-  MessageSMS,
-  MessageEmail,
-  SystemFetch,
-  SystemSSH,
-} from "@zerve/modules";
-import SystemCommands from "@zerve/modules/SystemCommands/SystemCommands";
-import { createZChainState } from "@zerve/modules/CoreChain/CoreChain";
+import CoreData from "@zerve/data";
+import CoreStore from "@zerve/store";
+import CoreChain from "@zerve/chain";
+import SystemFiles from "@zerve/system-files";
+import SystemFetch from "@zerve/system-fetch";
+import SystemSSH from "@zerve/system-ssh";
+import Ledger from "@zerve/ledger";
+import MessageSMS from "@zerve/message-sms-twilio";
+import MessageEmail from "@zerve/message-email-sendgrid";
+import SystemCommands from "@zerve/system-commands";
+import { createZChainState } from "@zerve/chain";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 

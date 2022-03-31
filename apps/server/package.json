@@ -15,9 +15,16 @@
     "lint:fix": "yarn lint:fix"
   },
   "dependencies": {
-    "@zerve/modules": "*",
     "@zerve/core": "*",
     "@zerve/node": "*",
+    "@zerve/data": "*",
+    "@zerve/ledger": "*",
+    "@zerve/system-files": "*",
+    "@zerve/system-commands": "*",
+    "@zerve/system-fetch": "*",
+    "@zerve/system-ssh": "*",
+    "@zerve/message-sms-twilio": "*",
+    "@zerve/message-email-sendgrid": "*",
     "ajv": "^8.10.0",
     "body-parser": "^1.19.1",
     "crypto": "*",

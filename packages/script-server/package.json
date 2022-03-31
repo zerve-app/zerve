@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "@zerve/core": "*",
-    "@zerve/modules": "*",
     "@apexearth/egrep": "^1.0.9",
     "axios": "^0.26.0",
     "fs-extra": "^10.0.0"

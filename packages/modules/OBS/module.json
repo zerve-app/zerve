@@ -1,6 +1,0 @@
-{
-  "module": "./OBS",
-  "npmDependencies": {
-    "obs-websocket-js": "^4.0.3"
-  }
-}

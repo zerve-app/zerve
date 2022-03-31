@@ -1,0 +1,8 @@
+{
+  "name": "@zerve/system-fetch",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./SystemFetch.ts",
+  "types": "./SystemFetch.ts",
+  "dependencies": {}
+}

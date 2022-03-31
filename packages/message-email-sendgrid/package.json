@@ -1,0 +1,10 @@
+{
+  "name": "@zerve/message-email-sendgrid",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./MessageEmail.ts",
+  "types": "./MessageEmail.ts",
+  "dependencies": {
+    "@sendgrid/mail": "*"
+  }
+}

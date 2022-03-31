@@ -1,0 +1,13 @@
+{
+  "name": "@zerve/store",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./CoreStore.ts",
+  "types": "./CoreStore.ts",
+  "dependencies": {
+    "@zerve/core": "*",
+    "@zerve/chain": "*",
+    "@zerve/system-files": "*",
+    "@zerve/data": "*"
+  }
+}

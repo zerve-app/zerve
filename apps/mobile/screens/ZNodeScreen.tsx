@@ -7,9 +7,9 @@ import {
   IconButton,
   LinkRowGroup,
   Paragraph,
-  useBottomSheet,
   VStack,
 } from "@zerve/ui";
+import { useBottomSheet } from "@zerve/ui-native";
 import { postZAction, QueryConnectionProvider, useZNode } from "@zerve/query";
 import { useConnection, useConnections } from "../app/Connection";
 import { StackActions, useNavigation } from "@react-navigation/native";

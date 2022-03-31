@@ -1,6 +1,0 @@
-{
-  "module": "./MessageEmail",
-  "npmDependencies": {
-    "@sendgrid/mail": "*"
-  }
-}

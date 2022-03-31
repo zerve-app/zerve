@@ -1,0 +1,13 @@
+{
+  "name": "@zerve/chain",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./CoreChain.ts",
+  "types": "./CoreChain.ts",
+  "dependencies": {
+    "@zerve/core": "*",
+    "@zerve/data": "*",
+    "@zerve/crypto": "*",
+    "@zerve/system-files": "*"
+  }
+}

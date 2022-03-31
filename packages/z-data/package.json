@@ -1,0 +1,14 @@
+{
+  "name": "@zerve/data",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./CoreData.ts",
+  "types": "./CoreData.ts",
+  "dependencies": {
+    "@zerve/core": "*",
+    "@zerve/crypto": "*",
+    "@zerve/system-files": "*",
+    "@zerve/data": "*",
+    "fs-extra": "*"
+  }
+}

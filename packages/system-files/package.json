@@ -1,0 +1,10 @@
+{
+  "name": "@zerve/system-files",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./SystemFiles.ts",
+  "types": "./SystemFiles.ts",
+  "dependencies": {
+    "fs-extra": ""
+  }
+}

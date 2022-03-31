@@ -1,0 +1,10 @@
+{
+  "name": "@zerve/obs",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./OBS.ts",
+  "types": "./OBS.ts",
+  "dependencies": {
+    "obs-websocket-js": "^4.0.3"
+  }
+}

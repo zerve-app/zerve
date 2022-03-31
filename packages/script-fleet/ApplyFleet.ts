@@ -1,5 +1,5 @@
-import { SystemCaddy, SystemShell } from "@zerve/modules";
-import SystemFiles from "@zerve/modules/SystemFiles/SystemFiles";
+import SystemFiles from "@zerve/system-files";
+import SystemCaddy from "@zerve/system-caddy";
 
 const systemFiles = SystemFiles({ rootPath: "/" });
 

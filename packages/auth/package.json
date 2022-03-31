@@ -1,0 +1,7 @@
+{
+  "name": "@zerve/auth",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Auth.ts",
+  "types": "./Auth.ts"
+}
