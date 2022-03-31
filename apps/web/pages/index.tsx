@@ -1,23 +1,20 @@
 import Head from "next/head";
 import { Title } from "@zerve/ui";
-import { getFromStore } from "../stores/getFromStore";
 import { PageLayout } from "../components/PageLayout";
 
-export default function Web({ info }) {
+export default function Web() {
   return (
     <PageLayout>
       <Head>
         <title>Demo</title>
       </Head>
-      <Title title={info.value} />
+      <Title title={"Launching April 2022"} />
     </PageLayout>
   );
 }
 
 export async function getStaticProps() {
   return {
-    props: {
-      info: await getFromStore("Homepage_Banner"),
-    },
+    props: {},
   };
 }
