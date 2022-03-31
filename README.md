@@ -1,6 +1,6 @@
 # Zerve
 
-Eric's hobby project. Please don't ask any "what" or "why" questions. The only goal is to have fun building
+An experimental structured knowledge app for React Native and the web.
 
 ## Web App
 
@@ -13,4 +13,4 @@ Eric's hobby project. Please don't ask any "what" or "why" questions. The only g
 
 Run the native app within `apps/mobile/ios` or `apps/mobile/android`
 
-Then start the server with `yarn mobile` or `yarn workspace z-mobile start`
+Then start the server with `yarn dev:mobile` or `yarn workspace z-mobile start`
