@@ -119,9 +119,9 @@ cd /home/eric
 
 # in theory you can build a different thing from the default clone, which is the latest main branch
 
-git clone zerve.git z-build-01
+git clone zerve.git z-build-02
 
-cd z-build-01
+cd z-build-02
 
 yarn --offline
 
@@ -133,11 +133,11 @@ cd ..
 
 # trailing slash is important here, I think:
 
-tar -zcvf z-build-0.tar.gz z-build-01/
+tar -zcvf z-build-0.tar.gz z-build-02/
 
 # now the build weighs about 1GB and is oversized because of the mobile stuff. but a mobile build can still run
 
-rm -rf z-build-01
+rm -rf z-build-02
 
 # now build is z-build-0.tar.gz at ~320MB
 
@@ -145,9 +145,9 @@ rm -rf z-build-01
 
 # DEPLOY PROCESS START
 
-sudo tar -zvxf ./z-build-01.tar.gz -C /home/zerve/
+sudo tar -zvxf ./z-build-02.tar.gz -C /home/zerve/
 
-sudo mv /home/zerve/z-build-01 /home/zerve/deploy-01
+sudo mv /home/zerve/z-build-02 /home/zerve/deploy-01
 
 sudo cp ./z-secrets.json /home/zerve/deploy-01/secrets.json
 

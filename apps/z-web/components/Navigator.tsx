@@ -3,7 +3,6 @@ import { ScrollView, Text, View } from "react-native";
 import { Button, DisclosureSection, Label, useColors, VStack } from "@zerve/ui";
 
 import { useAppDispatch } from "../stores/Dispatch";
-import { useDocList } from "@zerve/query";
 import { ReactNode } from "react";
 
 function SmallSection({
@@ -21,27 +20,26 @@ function SmallSection({
 }
 
 function DocListSection() {
-  const { data, isLoading } = useDocList();
   const { query } = useRouter();
-
-  return isLoading ? null : (
-    <SmallSection title="Docs">
-      {data.docs.children.map((childDocName) => (
-        <View style={{}} key={childDocName}>
-          <Text
-            accessibilityRole="link"
-            // @ts-ignore
-            href={`/shell/doc/${childDocName}`}
-            style={{
-              color: query.docId === childDocName ? "#000" : "blue",
-            }}
-          >
-            {childDocName}
-          </Text>
-        </View>
-      ))}
-    </SmallSection>
-  );
+  return null;
+  // return isLoading ? null : (
+  //   <SmallSection title="Docs">
+  //     {data.docs.children.map((childDocName) => (
+  //       <View style={{}} key={childDocName}>
+  //         <Text
+  //           accessibilityRole="link"
+  //           // @ts-ignore
+  //           href={`/shell/doc/${childDocName}`}
+  //           style={{
+  //             color: query.docId === childDocName ? "#000" : "blue",
+  //           }}
+  //         >
+  //           {childDocName}
+  //         </Text>
+  //       </View>
+  //     ))}
+  //   </SmallSection>
+  // );
 }
 
 function ActionsSection() {

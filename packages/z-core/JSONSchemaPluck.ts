@@ -37,9 +37,9 @@ export function JSONSchemaPluck<Schema extends JSONSchema>(
     return value; // todo pluck value according to object schema
   }
   if (type === "array") return value; // todo pluck value according to object schema
-  if (type === "string") return String(value);
-  if (type === "number") return Number(value);
-  if (type === "boolean") return Boolean(value);
+  if (type === "string") return String(value) as any;
+  if (type === "number") return Number(value) as any;
+  if (type === "boolean") return Boolean(value) as any;
   // fallback behavior does not pluck?? or should throw an error here?
   return value;
 }
