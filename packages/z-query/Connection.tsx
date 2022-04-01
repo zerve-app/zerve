@@ -34,10 +34,13 @@ export async function serverGet<Response>(
   });
   try {
     const value = await res.json();
+    if (res.status !== 200) {
+      console.error("Request Error", value);
+      throw new Error("Network Error");
+    }
     return value;
   } catch (e) {
-    console.error("Failed to GET " + path);
-    throw e;
+    throw new Error("Network Error");
   }
 }
 
