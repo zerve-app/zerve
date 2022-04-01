@@ -3,6 +3,8 @@ import axios from "axios";
 
 export const PhoneNumberSchema = {
   type: "string",
+  title: "Phone Number",
+  description: "Where to send the text",
   pattern: "^[0-9]{11,15}$",
   minLength: 11,
   maxLength: 15,
