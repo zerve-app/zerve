@@ -16,3 +16,4 @@ export * from "./Card";
 export * from "./Icon";
 export * from "./Style";
 export * from "./Page";
+export * from "./Toast";

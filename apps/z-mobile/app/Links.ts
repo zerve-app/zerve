@@ -28,6 +28,7 @@ export type SettingsStackParamList = {
 export type HomeStackParamList = {
   Home: undefined;
   History: undefined;
+  HistoryEvent: { eventId: string };
   NewFile: { connection: null | string };
   ChainHistory: { connection: null | string };
   ChainSchemas: { connection: null | string };

@@ -7,7 +7,7 @@ import {
 } from "@zerve/ui";
 import React, { useState } from "react";
 import ScreenContainer from "../components/ScreenContainer";
-import { showErrorToast, showToast } from "../app/Toast";
+import { showErrorToast, showToast } from "@zerve/ui/Toast";
 import ScreenHeader from "../components/ScreenHeader";
 
 function BottomSheetSection() {

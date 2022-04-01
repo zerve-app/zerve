@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
 import { Button, PageSection, VStack, LinkRow, AsyncButton } from "@zerve/ui";
-import { dangerouslyClearAllStorage } from "@zerve/native";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   checkForUpdateAsync,
@@ -19,7 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { clearLocalHistoryStorage } from "../app/History";
-import { showToast } from "../app/Toast";
+import { showToast } from "@zerve/ui";
 
 function AppUpdater() {
   const [update, setUpdate] = useState<null | UpdateCheckResult>(null);
@@ -112,10 +111,10 @@ export default function SettingsScreen({
             )}
             danger
             onPress={() => {
-              dangerouslyClearAllStorage();
-              reloadAsync().then(() => {
-                alert("App has been reset.");
-              });
+              // dangerouslyClearAllStorage();
+              // reloadAsync().then(() => {
+              showToast("data reset not working right now.");
+              // });
             }}
           />
         </VStack>

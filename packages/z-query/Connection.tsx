@@ -54,6 +54,14 @@ export async function serverPost<Request, Response>(
     method: "post",
     body: JSON.stringify(body),
   });
-  const value = await res.json();
-  return value;
+  try {
+    const value = await res.json();
+    if (res.status !== 200) {
+      console.log("Huh eh", value);
+      throw new Error("Network Error");
+    }
+    return value;
+  } catch (e) {
+    throw new Error("Network request failed");
+  }
 }

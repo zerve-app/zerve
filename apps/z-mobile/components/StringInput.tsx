@@ -3,7 +3,7 @@ import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { Input, VStack } from "@zerve/ui";
 import { useBottomSheet } from "@zerve/ui-native";
 import { useState } from "react";
-import { showErrorToast } from "../app/Toast";
+import { showErrorToast } from "@zerve/ui/Toast";
 
 export function StatefulInput({
   onSubmit,

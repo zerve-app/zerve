@@ -4,7 +4,7 @@ import { bigShadow } from "@zerve/ui/Style";
 import React, { ReactNode } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ToastContainer } from "../app/Toast";
+import { ToastContainer } from "@zerve/ui/Toast";
 
 export default function ScreenContainer({
   children,

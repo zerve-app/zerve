@@ -11,6 +11,8 @@ import { ComponentProps, ReactNode, useRef, useState } from "react";
 import { useColors } from "./useColors";
 import { Spinner } from "./Spinner";
 import { ThemedText } from "./Themed";
+import { showErrorToast } from "./Toast";
+import { showToast } from ".";
 
 export function IconButton({
   icon,
@@ -165,6 +167,7 @@ export function AsyncButton({ onPress, onCatch, ...props }: AsyncButtonProps) {
         const promise = onPress()
           .then(() => {})
           .catch((e) => {
+            showErrorToast(e?.message || "Uknown Error");
             setError(e);
             onCatch?.(e);
           });

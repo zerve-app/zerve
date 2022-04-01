@@ -23,7 +23,7 @@ import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FileEditor } from "../components/FileEditor";
 import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
-import { showToast } from "../app/Toast";
+import { showToast } from "@zerve/ui/Toast";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,

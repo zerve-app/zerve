@@ -6,14 +6,20 @@ import { SystemCommandsModule } from "@zerve/system-commands";
 
 const SSHConfigSchema = {
   type: "object",
-  additionalProperties: {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-      hostName: { type: "string" },
-      user: { type: "string" },
+  properties: {
+    hosts: {
+      type: "object",
+      additionalProperties: {
+        type: "object",
+        required: ["hostName"],
+        properties: {
+          hostName: { type: "string" },
+          user: { type: "string" },
+        },
+      },
     },
   },
+  required: ["hosts"],
 } as const;
 
 export function createSystemSSH(commands: SystemCommandsModule) {

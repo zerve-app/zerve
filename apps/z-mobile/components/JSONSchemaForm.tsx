@@ -44,7 +44,7 @@ import Animated, {
   FadeOutUp,
   Layout,
 } from "react-native-reanimated";
-import { showErrorToast } from "../app/Toast";
+import { showErrorToast } from "@zerve/ui/Toast";
 import { useStringInput } from "./StringInput";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
@@ -317,8 +317,25 @@ export function JSONSchemaArrayForm({
     () => expandSchema(schema.items || defaultArrayItemsSchema),
     [schema.items]
   );
+  const addButton = (
+    <AddButton
+      label="Add Item"
+      onPress={() => {
+        onValue &&
+          onValue([
+            ...(value || []),
+            getDefaultSchemaValue(expandedItemsSchema),
+          ]);
+      }}
+    />
+  );
   if (!Array.isArray(value))
-    return <ThemedText>Value is not an array</ThemedText>;
+    return (
+      <>
+        <ThemedText>Value is not an array</ThemedText>
+        {addButton}
+      </>
+    );
   return (
     <VStack>
       {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
@@ -358,14 +375,7 @@ export function JSONSchemaArrayForm({
           </Animated.View>
         );
       })}
-      {!!onValue && (
-        <AddButton
-          label="Add Item"
-          onPress={() => {
-            onValue([...value, getDefaultSchemaValue(expandedItemsSchema)]);
-          }}
-        />
-      )}
+      {!!onValue && addButton}
     </VStack>
   );
 }
@@ -838,7 +848,7 @@ export function JSONSchemaForm({
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
-  label: string | ReactNode;
+  label?: string | ReactNode;
 }) {
   console.log({ value, schema });
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
@@ -853,16 +863,18 @@ export function JSONSchemaForm({
     const matchedSchema = expandedSchema.oneOf[matched];
     return (
       <>
-        <Dropdown
-          options={unionOptions.options}
-          value={matched}
-          unselectedLabel={`Select Type...`}
-          onOptionSelect={(optionValue) => {
-            const converter = unionOptions.converters[optionValue];
-            const convertedValue = converter(value);
-            onValue(convertedValue);
-          }}
-        />
+        {onValue && (
+          <Dropdown
+            options={unionOptions.options}
+            value={matched}
+            unselectedLabel={`Select Type...`}
+            onOptionSelect={(optionValue) => {
+              const converter = unionOptions.converters[optionValue];
+              const convertedValue = converter(value);
+              onValue(convertedValue);
+            }}
+          />
+        )}
         {matchedSchema != null && (
           <JSONSchemaForm
             value={value}

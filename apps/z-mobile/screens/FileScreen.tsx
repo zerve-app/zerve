@@ -21,7 +21,7 @@ import {
 } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { showToast } from "../app/Toast";
+import { showToast } from "@zerve/ui/Toast";
 import { FileEditor } from "../components/FileEditor";
 import { displayStoreFileName } from "@zerve/core";
 

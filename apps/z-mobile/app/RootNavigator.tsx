@@ -29,6 +29,7 @@ import FileSchemaScreen from "../screens/FileSchemaScreen";
 import ChainHistoryScreen from "../screens/ChainHistoryScreen";
 import ChainSchemasScreen from "../screens/ChainSchemasScreen";
 import ConnectionSetupScreen from "../screens/ConnectionSetupScreen";
+import HistoryEventScreen from "../screens/HistoryEventScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -83,6 +84,11 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="History"
         component={HistoryScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="HistoryEvent"
+        component={HistoryEventScreen}
         options={DefaultScreenOptions}
       />
     </HomeStack.Navigator>

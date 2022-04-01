@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 
-import { HomeStackParamList, HomeStackScreenProps } from "../app/Links";
+import {
+  HomeStackParamList,
+  HomeStackScreenProps,
+  RootStackParamList,
+} from "../app/Links";
 import {
   AsyncButton,
   Button,
@@ -12,7 +16,11 @@ import {
 import { useBottomSheet } from "@zerve/ui-native";
 import { postZAction, QueryConnectionProvider, useZNode } from "@zerve/query";
 import { useConnection, useConnections } from "../app/Connection";
-import { StackActions, useNavigation } from "@react-navigation/native";
+import {
+  CompositeNavigationProp,
+  StackActions,
+  useNavigation,
+} from "@react-navigation/native";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { Icon } from "@zerve/ui/Icon";
@@ -20,6 +28,12 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { getZIcon } from "../app/ZIcon";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
+import { appendHistoryAsync, storeHistoryEvent } from "../app/History";
+
+type NavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
+  NativeStackNavigationProp<HomeStackParamList, "ZNode">
+>;
 
 function ZContainerNode({
   type,
@@ -32,12 +46,13 @@ function ZContainerNode({
   connection: string;
   path: string[];
 }) {
-  const { dispatch } = useNavigation();
+  const { dispatch } = useNavigation<NavigationProp>();
   const childNames = Object.keys(type.children);
   return (
     <VStack>
       <LinkRowGroup
         links={childNames.map((childName) => ({
+          key: childName,
           title: childName,
           icon: getZIcon(type.children[childName][".t"]),
           onPress: () => {
@@ -65,7 +80,7 @@ function ZGroupNode({
   connection: string;
   path: string[];
 }) {
-  const { dispatch } = useNavigation();
+  const { dispatch } = useNavigation<NavigationProp>();
   const childNames = value?.children || [];
 
   return (
@@ -102,6 +117,7 @@ function ZActionNode({
 }) {
   const [actionValue, setActionValue] = useState(null);
   const conn = useConnection(connection);
+  const { navigate } = useNavigation<NavigationProp>();
   if (!conn) throw new Error("connection");
 
   return (
@@ -117,7 +133,8 @@ function ZActionNode({
         right={(p) => <Icon name="play" {...p} />}
         onPress={async () => {
           const resp = await postZAction(conn, path, actionValue);
-          console.log(resp);
+          const eventId = await storeHistoryEvent("ServerAction", resp);
+          navigate("HistoryEvent", { eventId });
         }}
       />
     </VStack>
@@ -139,11 +156,21 @@ function ZGettableNode({
   const childNames = value?.children || [];
   if (type[".t"] !== "Gettable")
     throw new Error("Unexpected z type for ZGettableNode");
-  return (
-    <Paragraph>
-      <JSONSchemaForm value={value} schema={type.value} />
-    </Paragraph>
-  );
+  return <JSONSchemaForm value={value} schema={type.value} />;
+}
+
+function ZStaticNode({
+  type,
+  value,
+  connection,
+  path,
+}: {
+  type: any;
+  value: any;
+  connection: string;
+  path: string[];
+}) {
+  return <JSONSchemaForm value={value} schema={{}} />;
 }
 
 function ZNodePage({
@@ -154,10 +181,19 @@ function ZNodePage({
   connection: string;
 }) {
   const { isLoading, data, refetch, isRefetching } = useZNode(path);
-  const { navigate } =
-    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const { navigate } = useNavigation<NavigationProp>();
   const type = data?.type[".t"];
   let body = null;
+  if (type === "Static") {
+    body = (
+      <ZStaticNode
+        path={path}
+        type={data?.type}
+        value={data?.node}
+        connection={connection}
+      />
+    );
+  }
   if (type === "Container") {
     body = (
       <ZContainerNode
