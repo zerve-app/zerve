@@ -14,7 +14,7 @@ export default function Web({ banner }) {
   );
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   return {
     props: {
       banner: await getFromStore("Home_Banner"),

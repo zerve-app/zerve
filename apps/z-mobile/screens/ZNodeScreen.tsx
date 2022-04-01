@@ -132,8 +132,13 @@ function ZActionNode({
         primary
         right={(p) => <Icon name="play" {...p} />}
         onPress={async () => {
-          const resp = await postZAction(conn, path, actionValue);
-          const eventId = await storeHistoryEvent("ServerAction", resp);
+          const response = await postZAction(conn, path, actionValue);
+          const eventId = await storeHistoryEvent("ServerAction", {
+            action: actionValue,
+            response,
+            connection,
+            path,
+          });
           navigate("HistoryEvent", { eventId });
         }}
       />
