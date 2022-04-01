@@ -119,25 +119,26 @@ cd /home/eric
 
 # in theory you can build a different thing from the default clone, which is the latest main branch
 
-git clone zerve.git z-build-02
+git clone zerve.git z-build-03
 
-cd z-build-02
+cd z-build-03
 
 yarn --offline
 
 rm -rf yarn-package-cache ./.git
 
-yarn workspace build
+yarn workspace z-web build
+yarn workspace z-server build
 
 cd ..
 
 # trailing slash is important here, I think:
 
-tar -zcvf z-build-0.tar.gz z-build-02/
+tar -zcvf z-build-03.tar.gz z-build-03/
 
 # now the build weighs about 1GB and is oversized because of the mobile stuff. but a mobile build can still run
 
-rm -rf z-build-02
+rm -rf z-build-03
 
 # now build is z-build-0.tar.gz at ~320MB
 
@@ -145,28 +146,28 @@ rm -rf z-build-02
 
 # DEPLOY PROCESS START
 
-sudo tar -zvxf ./z-build-02.tar.gz -C /home/zerve/
+sudo tar -zvxf ./z-build-03.tar.gz -C /home/zerve/
 
-sudo mv /home/zerve/z-build-02 /home/zerve/deploy-01
+sudo mv /home/zerve/z-build-03 /home/zerve/deploy-02
 
-sudo cp ./z-secrets.json /home/zerve/deploy-01/secrets.json
+sudo cp ./z-secrets.json /home/zerve/deploy-02/secrets.json
 
-sudo chown -R zerve:zerve /home/zerve/deploy-01
+sudo chown -R zerve:zerve /home/zerve/deploy-02
 
 # DEPLOY PROCESS END
 
-sudo vi Zerve.Server.Deploy01.service
-sudo vi Zerve.Web.Deploy01.service
+sudo vi /etc/systemd/system/Zerve.Server.Deploy01.service
+sudo vi /etc/systemd/system/Zerve.Web.Deploy01.service
 
 sudo systemctl daemon-reload
 
-sudo systemctl start Zerve.Server.Deploy01.service
-sudo systemctl start Zerve.Web.Deploy01.service
-sudo systemctl enable Zerve.Server.Deploy01.service
-sudo systemctl enable Zerve.Web.Deploy01.service
+sudo systemctl start Zerve.Server.Deploy02.service
+sudo systemctl start Zerve.Web.Deploy02.service
+sudo systemctl enable Zerve.Server.Deploy02.service
+sudo systemctl enable Zerve.Web.Deploy02.service
 
-sudo journalctl -u Zerve.Server.Deploy01.service
-sudo journalctl -u Zerve.Web.Deploy01.service
+sudo journalctl -u Zerve.Server.Deploy02.service
+sudo journalctl -u Zerve.Web.Deploy02.service
 
-sudo systemctl status Zerve.Server.Deploy01.service
-sudo systemctl status Zerve.Web.Deploy01.service
+sudo systemctl status Zerve.Server.Deploy02.service
+sudo systemctl status Zerve.Web.Deploy02.service
