@@ -30,6 +30,13 @@ const withTM = require("next-transpile-modules")(transpileThese);
 
 module.exports = withPlugins([withTM], {
   reactStrictMode: true,
+  typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // !! WARN !!
+    ignoreBuildErrors: true,
+  },
   webpack: (config, options) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),

@@ -127,7 +127,7 @@ yarn --offline
 
 rm -rf yarn-package-cache ./.git
 
-yarn build
+yarn workspace build
 
 cd ..
 
