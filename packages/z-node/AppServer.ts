@@ -259,6 +259,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
       req.headers["content-type"] === "application/json"
     ) {
       jsonHandler(req, res, () => {
+        let body = req.body;
+        if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT) {
+          body = body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT;
+        }
         handleJSONPromise(
           res,
           handleZRequest(
@@ -267,7 +271,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
             req.query,
             req.method,
             req.headers,
-            req.body
+            body
           )
         );
       });
