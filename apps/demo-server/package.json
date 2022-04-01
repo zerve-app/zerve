@@ -1,0 +1,29 @@
+{
+  "name": "demo-server",
+  "private": true,
+  "version": "0.0.0",
+  "types": "DemoServer.ts",
+  "main": "DemoServer.ts",
+  "scripts": {
+    "start": "node ./build/DemoServer.js",
+    "start:watch": "nodemon ./build/DemoServer.js",
+    "build": "esbuild ./DemoServer.ts --bundle --platform=node --outfile=build/DemoServer.js",
+    "build:watch": "yarn build --watch",
+    "dev": "concurrently \"yarn start:watch\" \"yarn build:watch\"",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:fix": "yarn lint:fix"
+  },
+  "dependencies": {
+    "@zerve/core": "*",
+    "@zerve/node": "*",
+    "@zerve/data": "*",
+    "@zerve/ledger": "*"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "esbuild": "^0.14.13",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.5.5"
+  }
+}
