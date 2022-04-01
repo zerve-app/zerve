@@ -1,24 +1,16 @@
 import { join } from "path";
 import { startZedServer } from "@zerve/node";
 
-import {
-  createZAction,
-  createZGroup,
-  createZGettable,
-  createZStatic,
-  createZContainer,
-  ZGettable,
-} from "@zerve/core";
-import CoreData from "@zerve/data";
-import CoreStore from "@zerve/store";
-import CoreChain from "@zerve/chain";
-import SystemFiles from "@zerve/system-files";
+import { createZContainer } from "@zerve/core";
+import { createCoreData } from "@zerve/data";
+import { createGeneralStore } from "@zerve/store";
+import { createSystemFiles } from "@zerve/system-files";
 import SystemFetch from "@zerve/system-fetch";
-import SystemSSH from "@zerve/system-ssh";
-import Ledger from "@zerve/ledger";
-import MessageSMS from "@zerve/message-sms-twilio";
-import MessageEmail from "@zerve/message-email-sendgrid";
-import SystemCommands from "@zerve/system-commands";
+import { createSystemSSH } from "@zerve/system-ssh";
+import { ChainLedgerCalculator } from "@zerve/ledger";
+import { createZMessageSMS } from "@zerve/message-sms-twilio";
+import { createZMessageEmail } from "@zerve/message-email-sendgrid";
+import { createSystemCommands } from "@zerve/system-commands";
 import { createZChainState } from "@zerve/chain";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
@@ -36,13 +28,11 @@ const secretsFile =
   process.env.ZERVE_SECRETS_JSON || join(process.cwd(), "../../secrets.json");
 
 export async function startApp() {
-  const InternalRootFiles = SystemFiles.createSystemFiles("/");
+  const InternalRootFiles = createSystemFiles("/");
   console.log("Starting Data Dir", dataDir);
-  const Data = await CoreData.createCoreData(dataDir);
+  const Data = await createCoreData(dataDir);
 
-  const ledgerCacheFiles = SystemFiles.createSystemFiles(
-    join(dataDir, "LedgerStateCache")
-  );
+  const ledgerCacheFiles = createSystemFiles(join(dataDir, "LedgerStateCache"));
   const secrets = await InternalRootFiles.z.ReadJSON.call({
     path: secretsFile,
   });
@@ -54,39 +44,39 @@ export async function startApp() {
     );
   }
 
-  const SMS = MessageSMS.createZMessageSMS({
+  const SMS = createZMessageSMS({
     twilioAccountSid: requireSecret("TwilioAccountSid"),
     twilioKeySid: requireSecret("TwilioKeySid"),
     twilioKeySecret: requireSecret("TwilioKeySecret"),
     fromNumber: requireSecret("TwilioFromNumber"),
   });
 
-  const Email = MessageEmail.createZMessageEmail({
+  const Email = createZMessageEmail({
     sendgridKey: requireSecret("SendgridKey"),
     fromEmail: `Zerve Admin <admin@zerve.app>`,
   });
 
-  const TestLedger = await CoreChain.createZChainState(
+  const TestLedger = await createZChainState(
     Data,
     ledgerCacheFiles,
     "MyTestLedger",
-    Ledger.ChainLedgerCalculator
+    ChainLedgerCalculator
   );
 
-  const Store = await CoreStore.createGeneralStore(
+  const Store = await createGeneralStore(
     Data,
-    SystemFiles.createSystemFiles(join(dataDir, "GenStoreCache")),
+    createSystemFiles(join(dataDir, "GenStoreCache")),
     "GenStore"
   );
 
-  const InternalCommands = SystemCommands.createSystemCommands();
+  const InternalCommands = createSystemCommands();
 
   const Admin = createZContainer({
     Data,
     Fetch: SystemFetch.Fetch,
     RootFiles: InternalRootFiles,
     Commands: InternalCommands,
-    SSH: SystemSSH.createSystemSSH(InternalCommands),
+    SSH: createSystemSSH(InternalCommands),
     SMS,
     Email,
   });

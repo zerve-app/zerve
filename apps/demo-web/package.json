@@ -1,0 +1,36 @@
+{
+  "name": "demo-web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@expo/next-adapter": "^3.1.20",
+    "@expo/vector-icons": "^12.0.5",
+    "@testing-library/react-native": "^9.0.0",
+    "@zerve/core": "*",
+    "@zerve/node": "*",
+    "@zerve/query": "*",
+    "@zerve/react": "*",
+    "@zerve/ui": "*",
+    "next": "12.0.9",
+    "next-compose-plugins": "^2.2.1",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-native-gesture-handler": "^2.2.0",
+    "react-native-web": "^0.17.6"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.37",
+    "@types/react-native": "^0.66.15",
+    "config": "*",
+    "eslint": "7.32.0",
+    "next-transpile-modules": "9.0.0",
+    "tsconfig": "*",
+    "typescript": "^4.5.5"
+  }
+}

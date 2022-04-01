@@ -23,7 +23,7 @@ export default function HistoryScreen() {
             key={item.item.key}
             title={item.item.title}
             secondary={format(new Date(item.item.time), "MM/dd/yyyy")}
-            // onPress={() => {}}
+            onPress={() => {}}
           >
             <ThemedText oneLine>{JSON.stringify(item.item.body)}</ThemedText>
           </Card>

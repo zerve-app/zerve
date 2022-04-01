@@ -4,7 +4,7 @@ import sgMail from "@sendgrid/mail";
 
 let hasSetupSG = false;
 
-function createZMessageEmail(config: {
+export function createZMessageEmail(config: {
   sendgridKey: string;
   fromEmail: string;
 }) {
@@ -64,9 +64,3 @@ function createZMessageEmail(config: {
     }
   );
 }
-
-const MessageEmail = {
-  createZMessageEmail,
-};
-
-export default MessageEmail;

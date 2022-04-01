@@ -52,7 +52,7 @@ function prefixedWithDot(fileName: string): boolean {
   return true;
 }
 
-async function createCoreData(dataDir: string) {
+export async function createCoreData(dataDir: string) {
   const _blocksDir = `${dataDir}/blocks`;
   const _docsDir = `${dataDir}/docs`;
   const _trashDir = `${dataDir}/trash`;
@@ -247,8 +247,3 @@ async function createCoreData(dataDir: string) {
     } as const),
   } as const);
 }
-
-const CoreData = {
-  createCoreData,
-};
-export default CoreData;

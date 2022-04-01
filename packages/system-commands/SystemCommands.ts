@@ -3,7 +3,7 @@ import { execFile } from "child_process";
 
 export type SystemCommandsModule = ReturnType<typeof createSystemCommands>;
 
-function createSystemCommands() {
+export function createSystemCommands() {
   const commandZMap = new Map();
 
   const commands = createZGroup(async (commandName) => {
@@ -45,9 +45,3 @@ function createSystemCommands() {
     commands,
   });
 }
-
-const SystemCommands = {
-  createSystemCommands,
-} as const;
-
-export default SystemCommands;

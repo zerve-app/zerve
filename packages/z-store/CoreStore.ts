@@ -173,7 +173,7 @@ const GenericCalculator = createZChainStateCalculator(
   }
 );
 
-async function createGeneralStore(
+export async function createGeneralStore(
   data: CoreDataModule,
   cacheFiles: SystemFilesModule,
   docName: string
@@ -241,8 +241,3 @@ async function createGeneralStore(
     Dispatch,
   });
 }
-
-const CoreStore = {
-  createGeneralStore,
-};
-export default CoreStore;

@@ -26,14 +26,6 @@ function AppUpdater() {
   return (
     <>
       <AsyncButton
-        title="Check for Updates"
-        onPress={async () => {
-          const update = await checkForUpdateAsync();
-          alert(JSON.stringify(update));
-          setUpdate(update);
-        }}
-      />
-      <AsyncButton
         title="Update App"
         onPress={async () => {
           const updateApp = await fetchUpdateAsync();
@@ -43,6 +35,7 @@ function AppUpdater() {
           }
           await reloadAsync();
         }}
+        left={(p) => <Icon name="download" {...p} />}
       />
       {update && (
         <InfoRow label="Update Available" value={JSON.stringify(update)} />
@@ -67,7 +60,7 @@ export default function SettingsScreen({
           }}
         />
       </VStack>
-      <PageSection title="Internal Features">
+      <PageSection title="Dev Features">
         <VStack>
           <LinkRow
             title="Kitchen Sink"
@@ -80,30 +73,30 @@ export default function SettingsScreen({
       </PageSection>
       <PageSection title="Local Data">
         <VStack>
-          <Button
+          {/* <Button
             title="Export Local Database"
-            right={({ color }) => (
+            left={({ color }) => (
               <FontAwesome name="upload" color={color} size={24} />
             )}
             onPress={() => {}}
           />
           <Button
-            right={({ color }) => (
+            left={({ color }) => (
               <FontAwesome name="download" color={color} size={24} />
             )}
             title="Import Local Database"
             onPress={() => {}}
           />
           <Button
-            right={({ color }) => (
+            left={({ color }) => (
               <FontAwesome name="refresh" color={color} size={24} />
             )}
             title="Run Garbage Collection"
             onPress={() => {}}
-          />
+          /> */}
           <AsyncButton
             title="Clear Local History"
-            right={({ color }) => (
+            left={({ color }) => (
               <FontAwesome name="trash" color={color} size={24} />
             )}
             danger
@@ -114,7 +107,7 @@ export default function SettingsScreen({
           />
           <Button
             title="Reset All Local Data"
-            right={({ color }) => (
+            left={({ color }) => (
               <FontAwesome name="trash" color={color} size={24} />
             )}
             danger
@@ -145,7 +138,7 @@ export default function SettingsScreen({
           <InfoRow label="Update ID" value={updateId || "?"} />
           <Button
             title="Restart App"
-            right={(p) => <Icon {...p} name="refresh" />}
+            left={(p) => <Icon {...p} name="refresh" />}
             onPress={() => {
               reloadAsync()
                 .then(() => {})

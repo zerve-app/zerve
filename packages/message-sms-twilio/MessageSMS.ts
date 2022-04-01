@@ -8,7 +8,7 @@ export const PhoneNumberSchema = {
   maxLength: 15,
 } as const;
 
-function createZMessageSMS(config: {
+export function createZMessageSMS(config: {
   twilioAccountSid: string;
   twilioKeySid: string;
   twilioKeySecret: string;
@@ -52,9 +52,3 @@ function createZMessageSMS(config: {
     }
   );
 }
-
-const MessageSMS = {
-  createZMessageSMS,
-};
-
-export default MessageSMS;

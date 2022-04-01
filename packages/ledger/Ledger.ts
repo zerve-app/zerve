@@ -51,7 +51,7 @@ const TransferValueActionSchema = {
   additionalProperties: false,
 } as const;
 
-const ChainLedgerCalculator = createZChainStateCalculator(
+export const ChainLedgerCalculator = createZChainStateCalculator(
   LedgerStateSchema,
   defaultLedgerState,
   {
@@ -135,9 +135,3 @@ const ChainLedgerCalculator = createZChainStateCalculator(
     },
   }
 );
-
-const Ledger = {
-  ChainLedgerCalculator,
-};
-
-export default Ledger;

@@ -19,7 +19,9 @@ function ensureNoPathEscape(path: string) {
 
 export type SystemFilesModule = ReturnType<typeof createSystemFiles>;
 
-function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
+export function createSystemFiles<FilesRoot extends string>(
+  filesRoot: FilesRoot
+) {
   const WriteFile = createZAction(
     {
       type: "object",
@@ -194,9 +196,3 @@ function createSystemFiles<FilesRoot extends string>(filesRoot: FilesRoot) {
     Path: createZStatic(filesRoot),
   });
 }
-
-const SystemFiles = {
-  createSystemFiles,
-} as const;
-
-export default SystemFiles;

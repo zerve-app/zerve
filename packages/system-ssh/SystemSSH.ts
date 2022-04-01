@@ -1,13 +1,5 @@
-import {
-  createZAction,
-  createZContainer,
-  createZGettable,
-  createZStatic,
-  FromSchema,
-  JSONSchema,
-  RequestError,
-} from "@zerve/core";
-import { writeFile, stat, readdir, readFile, mkdirp, move } from "fs-extra";
+import { createZAction, createZContainer, createZGettable } from "@zerve/core";
+import { readFile } from "fs-extra";
 import { join } from "path";
 import SSHConfig from "ssh-config";
 import { SystemCommandsModule } from "@zerve/system-commands";
@@ -24,7 +16,7 @@ const SSHConfigSchema = {
   },
 } as const;
 
-function createSystemSSH(commands: SystemCommandsModule) {
+export function createSystemSSH(commands: SystemCommandsModule) {
   const getSSHConfig = createZGettable(SSHConfigSchema, async () => {
     const configPath = join(process.env.HOME || "", ".ssh/config");
     const sshConfigRaw = await readFile(configPath, { encoding: "utf8" });
@@ -60,8 +52,3 @@ function createSystemSSH(commands: SystemCommandsModule) {
   });
   return SystemSSH;
 }
-
-const SystemSSH = {
-  createSystemSSH,
-};
-export default SystemSSH;
