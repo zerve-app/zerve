@@ -15,7 +15,7 @@ import {
 } from "@zerve/ui";
 import { useBottomSheet } from "@zerve/ui-native";
 import { postZAction, QueryConnectionProvider, useZNode } from "@zerve/query";
-import { useConnection, useConnections } from "../app/Connection";
+import { useConnection, useConnectionsMeta } from "../app/Connection";
 import {
   CompositeNavigationProp,
   StackActions,
@@ -164,6 +164,24 @@ function ZGettableNode({
   return <JSONSchemaForm value={value} schema={type.value} />;
 }
 
+function ZObservableNode({
+  type,
+  value,
+  connection,
+  path,
+}: {
+  type: any;
+  value: any;
+  connection: string;
+  path: string[];
+}) {
+  const { dispatch } = useNavigation();
+  const childNames = value?.children || [];
+  if (type[".t"] !== "Observable")
+    throw new Error("Unexpected z type for ZObservableNode");
+  return <JSONSchemaForm value={value} schema={type.value} />;
+}
+
 function ZStaticNode({
   type,
   value,
@@ -222,6 +240,16 @@ function ZNodePage({
   if (type === "Gettable") {
     body = (
       <ZGettableNode
+        path={path}
+        type={data?.type}
+        value={data?.node}
+        connection={connection}
+      />
+    );
+  }
+  if (type === "Observable") {
+    body = (
+      <ZObservableNode
         path={path}
         type={data?.type}
         value={data?.node}
@@ -297,7 +325,7 @@ export default function ZNodeScreen({
   route,
 }: HomeStackScreenProps<"ZNode">) {
   const { connection, path } = route.params;
-  const connections = useConnections();
+  const connections = useConnectionsMeta();
   if (!connection) throw new Error("null connection");
   const conn = connections.find((conn) => conn.key === connection);
   if (!conn) throw new Error("Connection not found");

@@ -12,6 +12,7 @@ export * from "./JSONSchemaPluck";
 export * from "./JSONSchema";
 export * from "./UnionSchema";
 export * from "./StoreFile";
+export * from "./State";
 
 export const Z_PROTOCOL_VERSION = "0.1.0";
 

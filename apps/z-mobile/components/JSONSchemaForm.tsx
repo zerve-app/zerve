@@ -850,7 +850,6 @@ export function JSONSchemaForm({
   schema: JSONSchema;
   label?: string | ReactNode;
 }) {
-  console.log({ value, schema });
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
 
   if (!expandedSchema) {

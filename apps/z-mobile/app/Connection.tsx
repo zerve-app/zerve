@@ -5,13 +5,13 @@ const connectionStorage = createNativeStorage({
   id: "ConnectionStorage",
 });
 
-export type Connection = {
+export type ConnectionDefinition = {
   key: string;
   name: string;
   url: string;
 };
 
-const DefaultConnections: Connection[] = [
+const DefaultConnections: ConnectionDefinition[] = [
   ...(__DEV__
     ? [
         {
@@ -33,7 +33,7 @@ const connectionsNode = connectionStorage.getStorageNode(
   DefaultConnections
 );
 
-export function useConnections() {
+export function useConnectionsMeta() {
   return connectionStorage.useNodeState(connectionsNode);
 }
 
@@ -43,12 +43,13 @@ export function getConnection(connectionKey: string) {
 
 export function useConnection(connectionKey: string | null) {
   if (connectionKey === null) return null;
-  const connections = useConnections();
-  return connections.find((c) => c.key === connectionKey) || null;
+  const connections = useConnectionsMeta();
+  const conn = connections.find((c) => c.key === connectionKey) || null;
+  return conn;
 }
 
 export function mutateConnections(
-  mutator: (connections: Connection[]) => Connection[]
+  mutator: (connections: ConnectionDefinition[]) => ConnectionDefinition[]
 ) {
   connectionStorage.mutateStorage("Connections", DefaultConnections, mutator);
 }

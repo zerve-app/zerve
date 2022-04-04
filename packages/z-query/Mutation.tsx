@@ -1,10 +1,10 @@
 import { getDefaultSchemaValue } from "@zerve/core";
 import { useMutation, useQueryClient } from "react-query";
-import { useConnectionContext } from "./Connection";
+import { useQueryContext } from "./Connection";
 import { postZAction } from "./ServerCalls";
 
 export function useCreateFile() {
-  const conn = useConnectionContext();
+  const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (name: string) => {
@@ -42,7 +42,7 @@ export function useCreateFile() {
 }
 
 export function useDeleteFile() {
-  const conn = useConnectionContext();
+  const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (name: string) => {
@@ -72,7 +72,7 @@ export function useDeleteFile() {
 }
 
 export function useSaveFile() {
-  const conn = useConnectionContext();
+  const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { name: string; value: any }) => {
@@ -102,7 +102,7 @@ export function useSaveFile() {
 }
 
 export function useSaveFileSchema() {
-  const conn = useConnectionContext();
+  const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { name: string; schema: any }) => {

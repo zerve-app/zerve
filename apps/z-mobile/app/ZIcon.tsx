@@ -7,5 +7,6 @@ export function getZIcon(type: string): ComponentProps<typeof Icon>["name"] {
   if (type === "Group") return "folder";
   if (type === "Action") return "play";
   if (type === "Static") return "file";
+  if (type === "Observable") return "binoculars";
   return "folder";
 }

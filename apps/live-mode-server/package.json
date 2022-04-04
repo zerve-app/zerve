@@ -1,0 +1,29 @@
+{
+  "name": "livemode-server",
+  "private": true,
+  "version": "0.0.0",
+  "types": "LiveModeServer.ts",
+  "main": "LiveModeServer.ts",
+  "scripts": {
+    "start": "node ./build/LiveModeServer.js",
+    "start:watch": "nodemon ./build/LiveModeServer.js",
+    "build": "esbuild ./LiveModeServer.ts --bundle --platform=node --outfile=build/LiveModeServer.js",
+    "build:watch": "yarn build --watch",
+    "dev": "yarn build && concurrently \"yarn build:watch\" \"yarn start:watch\"",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:fix": "yarn lint:fix"
+  },
+  "dependencies": {
+    "@zerve/core": "*",
+    "@zerve/node": "*",
+    "@zerve/data": "*",
+    "@zerve/obs": "*"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "esbuild": "^0.14.13",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.5.5"
+  }
+}

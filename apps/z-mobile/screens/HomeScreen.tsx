@@ -10,6 +10,7 @@ import {
   LinkRowGroup,
   ActionButtonDef,
   ActionButton,
+  ThemedText,
 } from "@zerve/ui";
 
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
@@ -18,15 +19,16 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Connection, useConnections } from "../app/Connection";
+import { ConnectionDefinition, useConnectionsMeta } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
-import { QueryConnectionProvider } from "@zerve/query";
+import { QueryConnectionProvider, useConnectionStatus } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
 import {
+  ConnectionHome,
   ConnectionMetaLinks,
   ConnectionProjects,
   NewFileButton,
@@ -80,9 +82,14 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "Home">
 >;
 
-function ConnectionSection({ connection }: { connection: Connection }) {
+function ConnectionSection({
+  connection,
+}: {
+  connection: ConnectionDefinition;
+}) {
   const [actions, setActions] = useState<ActionButtonDef[]>([]);
   const navigation = useNavigation<NavigationProp>();
+  const { isConnected } = useConnectionStatus();
   const onOptions = useBottomSheet<void>(({ onClose }) => (
     <VStack>
       {actions.map((action) => (
@@ -118,16 +125,18 @@ function ConnectionSection({ connection }: { connection: Connection }) {
     <DisclosureSection
       header={<Label>{connection.name}</Label>}
       right={
-        <IconButton
-          altTitle="Options"
-          onPress={onOptions}
-          icon={(p) => <Icon name="ellipsis-h" {...p} />}
-        />
+        <>
+          <IconButton
+            altTitle="Options"
+            onPress={onOptions}
+            icon={(p) => <Icon name="ellipsis-h" {...p} />}
+          />
+          <ThemedText>{isConnected ? "🟢" : "🔴"}</ThemedText>
+        </>
       }
     >
       <VStack>
-        <ConnectionProjects connection={connection} onActions={setActions} />
-        <NewFileButton />
+        <ConnectionHome onActions={setActions} />
         <ConnectionMetaLinks connection={connection} />
       </VStack>
     </DisclosureSection>
@@ -139,7 +148,7 @@ export default function HomeScreen({
 }: {
   navigation: NavigationProp;
 }) {
-  const connections = useConnections();
+  const connections = useConnectionsMeta();
   return (
     <ScreenContainer scroll safe>
       <ZerveLogo />

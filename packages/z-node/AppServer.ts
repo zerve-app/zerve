@@ -9,14 +9,47 @@ import {
   ZGroup,
   ZStatic,
   Z_PROTOCOL_VERSION,
+  ZObservable,
+  defineKeySource,
 } from "@zerve/core";
 import express, { Request, Response } from "express";
 import { createJSONHandler } from "./Server";
 import { json } from "body-parser";
 import { ParsedQs } from "qs";
+import { WebSocketServer } from "ws";
+import { createHash } from "crypto";
+import { createServer } from "http";
+
+type ZConnectionHelloMessage = {
+  t: "Hello";
+  id: string;
+};
+
+type ZConnectionUpdateMessage = {
+  t: "Update";
+  path: string[];
+  value: any;
+};
+
+type ZConnectionMessage = ZConnectionHelloMessage | ZConnectionUpdateMessage;
+
+type Client = {
+  send: (message: ZConnectionMessage) => void;
+};
 
 export async function startZedServer(port: number, zed: AnyZed) {
   const app = express();
+
+  const connectedClients: Map<string, Client> = new Map();
+
+  const getInternalClientId = defineKeySource("Client");
+  function getClientId() {
+    const hash = createHash("md5")
+      .update(getInternalClientId(), "utf8")
+      .digest()
+      .toString("hex");
+    return hash;
+  }
 
   app.use((req, res, next) => {
     // todo proper cors policy
@@ -42,6 +75,40 @@ export async function startZedServer(port: number, zed: AnyZed) {
   ) {
     if (method === "GET") {
       const value = await zed.get(query);
+      return value;
+    }
+    throw new WrongMethodError("WrongMethod", "Method not available", {});
+  }
+
+  async function handleObserveZedRequest<
+    StateSchema extends JSONSchema,
+    GetOptions
+  >(
+    zed: ZObservable<StateSchema>,
+    method: Request["method"],
+    contextPath: string[],
+    query?: {
+      zClientSubscribe?: string;
+    }
+  ) {
+    if (method === "GET") {
+      if (query?.zClientSubscribe) {
+        const client = connectedClients.get(query.zClientSubscribe);
+        if (client) {
+          console.log("SUbscribing to client");
+          zed.subscribe((v) => {
+            console.log("update to client", v, contextPath);
+
+            client.send({
+              t: "Update",
+              value: v,
+              path: contextPath,
+            });
+          });
+        }
+      }
+      console.log("observable get query", query);
+      const value = await zed.get();
       return value;
     }
     throw new WrongMethodError("WrongMethod", "Method not available", {});
@@ -121,11 +188,15 @@ export async function startZedServer(port: number, zed: AnyZed) {
     zed: AnyZed,
     query: ParsedQs,
     method: Request["method"],
+    contextPath: string[],
     headers: Request["headers"],
     body: any
   ) {
     if (zed.zType === "Gettable") {
       return await handleGetZedRequest(zed, method, query);
+    }
+    if (zed.zType === "Observable") {
+      return await handleObserveZedRequest(zed, method, contextPath, query);
     }
     if (zed.zType === "Action") {
       return await handleActionZedRequest(zed, method, body);
@@ -153,6 +224,13 @@ export async function startZedServer(port: number, zed: AnyZed) {
       return {
         ...serviceInfo,
         ".t": "Gettable",
+        value: zed.valueSchema,
+      };
+    }
+    if (zed.zType === "Observable") {
+      return {
+        ...serviceInfo,
+        ".t": "Observable",
         value: zed.valueSchema,
       };
     }
@@ -196,11 +274,19 @@ export async function startZedServer(port: number, zed: AnyZed) {
     path: string[],
     query: ParsedQs,
     method: Request["method"],
+    contextPath: string[],
     headers: Request["headers"],
     body: any
   ): Promise<any> {
     if (path.length === 0)
-      return await handleZNodeRequest(zed, query, method, headers, body);
+      return await handleZNodeRequest(
+        zed,
+        query,
+        method,
+        contextPath,
+        headers,
+        body
+      );
 
     if (path.length === 1 && path[0] === ".type") {
       return await handleZNodeTypeRequest(zed);
@@ -220,6 +306,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         restPathTerms,
         query,
         method,
+        [...contextPath, pathTerm],
         headers,
         body
       );
@@ -238,6 +325,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         restPathTerms,
         query,
         method,
+        [...contextPath, pathTerm],
         headers,
         body
       );
@@ -246,7 +334,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new NotFoundError("NotFound", "Not found", { path });
   }
 
-  const jsonHandler = json();
+  const jsonHandler = json({ strict: false });
 
   function zHandler(req: Request, res: Response) {
     const pathSegments = req.path
@@ -260,9 +348,9 @@ export async function startZedServer(port: number, zed: AnyZed) {
     ) {
       jsonHandler(req, res, () => {
         let body = req.body;
-        if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT) {
-          body = body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT;
-        }
+        // if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT) {
+        //   body = body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT;
+        // }
         handleJSONPromise(
           res,
           handleZRequest(
@@ -270,6 +358,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
             pathSegments,
             req.query,
             req.method,
+            [],
             req.headers,
             body
           )
@@ -283,6 +372,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
           pathSegments,
           req.query,
           req.method,
+          [],
           req.headers,
           undefined
         )
@@ -294,7 +384,30 @@ export async function startZedServer(port: number, zed: AnyZed) {
   app.use("/.z/*", zHandler);
 
   await new Promise<void>((resolve, reject) => {
-    app.listen(port, () => {
+    const httpServer = createServer();
+    const wsServer = new WebSocketServer({ server: httpServer });
+    wsServer.on("connection", (socket) => {
+      function send(message: ZConnectionMessage) {
+        socket.send(JSON.stringify(message));
+      }
+      const client: Client = { send };
+      const clientId = getClientId();
+      connectedClients.set(clientId, client);
+      client.send({
+        t: "Hello",
+        id: clientId,
+      });
+      socket.on("close", (s) => {
+        console.log("socket closed", clientId, s);
+        connectedClients.delete(clientId);
+      });
+      socket.on("message", (message) => {
+        // uhhh
+        // console.log(message);
+      });
+    });
+    httpServer.on("request", app);
+    httpServer.listen(port, () => {
       console.log(`Server listening at http://localhost:${port}`);
       resolve();
     });

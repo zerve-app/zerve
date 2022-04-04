@@ -1,4 +1,5 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
+import { ZObservable } from "./Observable";
 
 export type ModuleSpec = {
   module?: string;
@@ -52,6 +53,7 @@ export type AnyZed =
   | ZContainer<any>
   | ZGroup<any, any, any>
   | ZGettable<any, any>
+  | ZObservable<any>
   | ZStatic<any>;
 
 export function createZAction<

@@ -5,21 +5,12 @@ import {
   LinkRowGroup,
   Paragraph,
   VStack,
-  LinkRow,
   Button,
+  HStack,
 } from "@zerve/ui";
-import {
-  HomeStackParamList,
-  HomeStackScreenProps,
-  SettingsStackScreenProps,
-} from "../app/Links";
-import {
-  Connection,
-  destroyConnection,
-  useConnection,
-} from "../app/Connection";
+import { HomeStackParamList, HomeStackScreenProps } from "../app/Links";
+import { ConnectionDefinition, useConnection } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
-import { InfoRow } from "@zerve/ui/Row";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";
@@ -28,19 +19,42 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { getZIcon } from "../app/ZIcon";
 import {
   QueryConnectionProvider,
-  useConnectionContext,
+  useQueryContext,
   useConnectionProjects,
+  useConnectionRootType,
+  useConnectionStatus,
 } from "@zerve/query";
 import { View } from "react-native";
 import { displayStoreFileName } from "@zerve/core";
 
-export function ConnectionProjects({
+export function ConnectionHome({
   onActions,
-  connection,
 }: {
   onActions: (actions: ActionButtonDef[]) => void;
-  connection: Connection;
 }) {
+  const { isConnected } = useConnectionStatus();
+  const connectionRootType = useConnectionRootType();
+  if (isConnected && connectionRootType?.data?.children?.Store) {
+    return (
+      <>
+        <ConnectionProjects onActions={onActions} />
+        <HStack>
+          <NewFileButton />
+        </HStack>
+      </>
+    );
+  }
+  return null;
+}
+
+export function ConnectionProjects({
+  onActions,
+}: {
+  onActions: (actions: ActionButtonDef[]) => void;
+}) {
+  const connection = useQueryContext();
+
+  // useLiveConnection()
   const { navigate } = useNavigation<NavigationProp<HomeStackParamList>>();
   const { data, refetch, isLoading } = useConnectionProjects();
   const list = useMemo(() => {
@@ -85,7 +99,7 @@ export function ConnectionProjects({
 export function ConnectionMetaLinks({
   connection,
 }: {
-  connection: Connection;
+  connection: ConnectionDefinition;
 }) {
   const { navigate } = useNavigation<NavigationProp<HomeStackParamList>>();
   return (
@@ -128,7 +142,7 @@ export function ConnectionMetaLinks({
 
 export function NewFileButton() {
   const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
-  const conn = useConnectionContext();
+  const conn = useQueryContext();
   return (
     <View
       style={{
@@ -164,7 +178,7 @@ export function ConnectionPage({
       <ScreenHeader title={`Connection: ${conn?.name}`} />
       <VStack>
         <ConnectionStatusRow connection={conn} />
-        <ConnectionProjects connection={conn} onActions={() => {}} />
+        <ConnectionHome onActions={() => {}} />
         <NewFileButton />
         <ConnectionMetaLinks connection={conn} />
       </VStack>

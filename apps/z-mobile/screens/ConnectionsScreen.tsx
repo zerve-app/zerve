@@ -1,10 +1,13 @@
 import React from "react";
-import { Button, LinkRow, PageTitle, VStack } from "@zerve/ui";
+import { Button, LinkRow, VStack } from "@zerve/ui";
 
-import { RootStackParamList } from "../app/Links";
-import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList, SettingsStackParamList } from "../app/Links";
+import {
+  CompositeNavigationProp,
+  useNavigation,
+} from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useConnections } from "../app/Connection";
+import { useConnectionsMeta } from "../app/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
@@ -12,10 +15,13 @@ import ScreenHeader from "../components/ScreenHeader";
 export default function ConnectionsScreen() {
   const navigation =
     useNavigation<
-      NativeStackNavigationProp<RootStackParamList, "SettingsStack">
+      CompositeNavigationProp<
+        NativeStackNavigationProp<RootStackParamList, "HomeStack">,
+        NativeStackNavigationProp<SettingsStackParamList, "Connections">
+      >
     >();
 
-  const connections = useConnections();
+  const connections = useConnectionsMeta();
   return (
     <ScreenContainer scroll>
       <ScreenHeader title="Server Connections" />

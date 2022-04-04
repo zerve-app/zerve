@@ -4,6 +4,8 @@
   "main": "./index.tsx",
   "types": "./index.tsx",
   "devDependencies": {
+    "@zerve/core": "*",
+    "@zerve/react": "*",
     "@types/react": "^17.0.37",
     "config": "*",
     "tsconfig": "*",

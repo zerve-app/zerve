@@ -1,19 +1,18 @@
 import { startZedServer } from "@zerve/node";
-import { createZAction, createZContainer, createZGettable } from "@zerve/core";
+import { createZAction, createZContainer, createZState } from "@zerve/core";
 
 export async function startApp() {
-  let internalValue = 0;
+  const calculatorValue = createZState({ type: "number" } as const, 0);
 
   const calculator = createZContainer({
-    value: createZGettable({ type: "number" } as const, async () => {
-      return internalValue;
-    }),
+    value: calculatorValue.z.state,
     add: createZAction(
       { type: "number", title: "Number to Add" } as const,
       { type: "number" } as const,
       async (value: number) => {
-        internalValue += value;
-        return internalValue;
+        const sum = value + calculatorValue.z.state.get();
+        calculatorValue.z.set.call(sum);
+        return sum;
       }
     ),
   });
