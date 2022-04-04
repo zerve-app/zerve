@@ -75,7 +75,6 @@ function FilePage({
       onHandled: navigation.goBack,
     },
   ]);
-  console.log("filescreen", data);
   return (
     <>
       <ScreenHeader

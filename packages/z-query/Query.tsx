@@ -67,10 +67,19 @@ export function useZConnectionSchemas(options?: QueryOptions) {
   return useQuery([context?.key, "z", ".schemas-computed"], async () => {
     if (!context || options?.skipLoading) return undefined;
     const results = await getZ(context, ["Store", "State", "$schemas"]);
-    console.log("LOL", results);
-    return ZSchemaSchema;
-    // return results;
+
+    const finalSchema = {
+      oneOf: [
+        ...ZSchemaSchema.oneOf,
+        ...Object.entries(results || {}).map(([schemaName, schema]) => {
+          return {
+            $ref: schemaName,
+            title: schemaName || schema.title,
+            description: schema.description,
+          };
+        }),
+      ],
+    };
+    return finalSchema;
   });
 }
-
-useZNodeValue([]);
