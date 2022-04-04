@@ -34,16 +34,16 @@ export async function postZAction(
   body: any
 ) {
   let finalBody = body;
-  // const bodyType = typeof body;
-  // if (
-  //   body === null ||
-  //   bodyType === "number" ||
-  //   bodyType === "string" ||
-  //   bodyType === "boolean"
-  // ) {
-  //   // express body-parser is dumber than a sack of bricks, if the value is not an object or an array
-  //   finalBody = { __Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT: body };
-  // }
+  const bodyType = typeof body;
+  if (
+    body === null ||
+    bodyType === "number" ||
+    bodyType === "string" ||
+    bodyType === "boolean"
+  ) {
+    // express body-parser is dumber than a sack of bricks, if the value is not an object or an array
+    finalBody = { __Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT: body };
+  }
 
   return await serverPost(context, `.z/${path.join("/")}`, finalBody);
 }

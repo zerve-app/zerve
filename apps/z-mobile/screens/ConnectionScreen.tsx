@@ -54,13 +54,16 @@ export function ConnectionProjects({
 }) {
   const connection = useQueryContext();
 
-  // useLiveConnection()
   const { navigate } = useNavigation<NavigationProp<HomeStackParamList>>();
   const { data, refetch, isLoading } = useConnectionProjects();
   const list = useMemo(() => {
-    return Object.entries(data?.node || {}).map(([name, docValue]) => {
-      return { key: name, name, ...docValue };
-    });
+    return Object.entries(data?.node || {})
+      .filter(([childName]) => {
+        return childName !== "$schemas";
+      })
+      .map(([name, docValue]) => {
+        return { key: name, name, ...docValue };
+      });
   }, [data]);
 
   useEffect(() => {

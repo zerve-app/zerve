@@ -5,13 +5,20 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { Button } from "@zerve/ui";
+import { Button, Icon, LinkRowGroup, VStack } from "@zerve/ui";
 import { useActionsSheet } from "@zerve/ui-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import { QueryConnectionProvider, useZNodeValue } from "@zerve/query";
+import {
+  QueryConnectionProvider,
+  useCreateSchema,
+  useZNodeValue,
+} from "@zerve/query";
 import { useConnection } from "../app/Connection";
-import { CompositeNavigationProp } from "@react-navigation/native";
+import {
+  CompositeNavigationProp,
+  useNavigation,
+} from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useStringInput } from "../components/StringInput";
@@ -21,24 +28,52 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "ChainSchemas">
 >;
 
-function ChainSchemasPage({ connection }: { connection: string | null }) {
-  const { data, isLoading } = useZNodeValue(["Store", "State"]);
-  const openOptions = useActionsSheet(() => []);
+function CreateSchemaButton({}: {}) {
+  const createSchema = useCreateSchema();
   const onOpenNewSchema = useStringInput<void>(() => ({
-    onValue: (propertyName) => {},
+    onValue: (propertyName) => {
+      createSchema.mutate(propertyName);
+    },
     defaultValue: "",
     inputLabel: "New Schema",
   }));
   return (
-    <>
+    <Button
+      small
+      left={(p) => <Icon name="plus-circle" {...p} />}
+      title="Create Schema"
+      onPress={() => onOpenNewSchema()}
+    />
+  );
+}
+
+function ChainSchemasPage({ connection }: { connection: string | null }) {
+  const { data, isLoading } = useZNodeValue(["Store", "State", "$schemas"]);
+  const { navigate } = useNavigation<NavigationProp>();
+  const openOptions = useActionsSheet(() => []);
+  console.log("ChainSchemasPage", data);
+  return (
+    <VStack>
       <ScreenHeader
         title={"Schemas"}
         isLoading={isLoading}
         corner={<OptionsButton onOptions={openOptions} />}
         onLongPress={openOptions}
       />
-      <Button title="Create Schema" onPress={() => onOpenNewSchema()} />
-    </>
+      <LinkRowGroup
+        links={Object.entries(data || {}).map(([schemaKey, schema]) => {
+          return {
+            key: schemaKey,
+            icon: "crosshairs",
+            title: schemaKey,
+            onPress: () => {
+              navigate("ChainSchema", { connection, schema: schemaKey });
+            },
+          };
+        })}
+      />
+      <CreateSchemaButton />
+    </VStack>
   );
 }
 

@@ -332,7 +332,11 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new NotFoundError("NotFound", "Not found", { path });
   }
 
-  const jsonHandler = json({ strict: false });
+  const jsonHandler = json();
+  // const jsonHandler = json({
+  //   strict: true, // considered false here (thanks to __Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT for edge case and https://github.com/expressjs/body-parser/issues/461)
+  //   // but strict:false causes other problems - we should throw an error on invalid JSON bodies
+  // });
 
   function zHandler(req: Request, res: Response) {
     const pathSegments = req.path
@@ -344,11 +348,15 @@ export async function startZedServer(port: number, zed: AnyZed) {
         req.method === "PUT") &&
       req.headers["content-type"] === "application/json"
     ) {
-      jsonHandler(req, res, () => {
+      jsonHandler(req, res, (err) => {
+        if (err) {
+          // todo, probably wrap with RequestError so more metadata will flow
+          handleJSONPromise(res, Promise.reject(err));
+        }
         let body = req.body;
-        // if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT) {
-        //   body = body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT;
-        // }
+        if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT) {
+          body = body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT;
+        }
         handleJSONPromise(
           res,
           handleZRequest(
@@ -396,7 +404,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
         id: clientId,
       });
       socket.on("close", (s) => {
-        console.log("socket closed", clientId, s);
         connectedClients.delete(clientId);
       });
       socket.on("message", (message) => {

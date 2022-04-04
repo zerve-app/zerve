@@ -32,6 +32,7 @@ export type HomeStackParamList = {
   NewFile: { connection: null | string };
   ChainHistory: { connection: null | string };
   ChainSchemas: { connection: null | string };
+  ChainSchema: { connection: null | string; schema: string };
   Connection: { connection: string };
   ConnectionSetup: { connection: string };
   File: { connection: null | string; name: string };

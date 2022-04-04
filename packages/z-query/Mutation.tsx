@@ -41,6 +41,34 @@ export function useCreateFile() {
   );
 }
 
+export function useCreateSchema() {
+  const conn = useQueryContext();
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (schemaName: string) => {
+      if (!conn) return;
+      await postZAction(conn, ["Store", "Dispatch"], {
+        name: "WriteSchema",
+        value: {
+          schemaName,
+          schema: { type: "null" },
+        },
+      });
+    },
+    {
+      onSuccess: (something, name) => {
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          "Store",
+          "State",
+          "$schemas",
+        ]);
+      },
+    }
+  );
+}
+
 export function useDeleteFile() {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
@@ -122,6 +150,34 @@ export function useSaveFileSchema() {
     {
       onSuccess: (something, { name }) => {
         queryClient.invalidateQueries([conn?.key, "z", "Store", "State", name]);
+      },
+    }
+  );
+}
+
+export function useSaveSchema() {
+  const conn = useQueryContext();
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (payload: { schemaName: string; schema: any }) => {
+      if (conn) {
+        await postZAction(conn, ["Store", "Dispatch"], {
+          name: "WriteSchema",
+          value: payload,
+        });
+      } else {
+        // "local" behavior.. should be consolidated into logic above
+      }
+    },
+    {
+      onSuccess: (something, { schemaName }) => {
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          "Store",
+          "State",
+          "$schemas",
+        ]);
       },
     }
   );

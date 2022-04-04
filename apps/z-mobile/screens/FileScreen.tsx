@@ -22,7 +22,7 @@ import {
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { showToast } from "@zerve/ui/Toast";
-import { FileEditor } from "../components/FileEditor";
+import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import { displayStoreFileName } from "@zerve/core";
 
 type NavigationProp = CompositeNavigationProp<
@@ -85,7 +85,7 @@ function FilePage({
         onLongPress={openOptions}
       />
       {data && (
-        <FileEditor
+        <JSONSchemaEditor
           onValue={async (value) => {
             await saveFile.mutateAsync({ name, value });
             showToast("File has been updated.");

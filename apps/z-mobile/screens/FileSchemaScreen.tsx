@@ -11,6 +11,7 @@ import ScreenHeader from "../components/ScreenHeader";
 import {
   QueryConnectionProvider,
   useSaveFileSchema,
+  useZConnectionSchemas,
   useZNodeValue,
 } from "@zerve/query";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
@@ -21,7 +22,7 @@ import {
 } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { FileEditor } from "../components/FileEditor";
+import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
 import { showToast } from "@zerve/ui/Toast";
 
@@ -32,6 +33,7 @@ type NavigationProp = CompositeNavigationProp<
 
 function FileSchemaPage({ name }: { name: string }) {
   const { data, isLoading } = useZNodeValue(["Store", "State", name]);
+  const fullSchema = useZConnectionSchemas();
   const navigation = useNavigation<NavigationProp>();
   const saveSchema = useSaveFileSchema();
   const openOptions = useActionsSheet(() => [
@@ -56,7 +58,7 @@ function FileSchemaPage({ name }: { name: string }) {
         onLongPress={openOptions}
       />
       {data && !isLoading && (
-        <FileEditor
+        <JSONSchemaEditor
           saveLabel="Save Schema"
           value={data?.schema}
           onValue={async (schema) => {
@@ -64,7 +66,7 @@ function FileSchemaPage({ name }: { name: string }) {
             showToast("Schema has been updated.");
             navigation.goBack();
           }}
-          schema={ZSchemaSchema}
+          schema={fullSchema}
         />
       )}
     </>

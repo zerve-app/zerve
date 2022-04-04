@@ -4,6 +4,7 @@ import { useLiveConnection, useQueryContext } from "./Connection";
 import { getDoc, listDocs, getActions, getModuleList } from "./ServerCalls";
 import { getTypedZ } from "./ServerCalls";
 import { useEffect } from "react";
+import { ZSchemaSchema } from "@zerve/core";
 
 export type QueryOptions = {
   skipLoading?: boolean;
@@ -60,3 +61,16 @@ export function useZChildren(path: string[], options?: QueryOptions) {
     return results;
   });
 }
+
+export function useZConnectionSchemas(options?: QueryOptions) {
+  const context = useQueryContext();
+  return useQuery([context?.key, "z", ".schemas-computed"], async () => {
+    if (!context || options?.skipLoading) return undefined;
+    const results = await getZ(context, ["Store", "State", "$schemas"]);
+    console.log("LOL", results);
+    return ZSchemaSchema;
+    // return results;
+  });
+}
+
+useZNodeValue([]);
