@@ -97,8 +97,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
         if (client) {
           console.log("SUbscribing to client");
           zed.subscribe((v) => {
-            console.log("update to client", v, contextPath);
-
             client.send({
               t: "Update",
               value: v,

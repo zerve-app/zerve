@@ -5,7 +5,8 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { Button, useActionsSheet } from "@zerve/ui";
+import { Button } from "@zerve/ui";
+import { useActionsSheet } from "@zerve/ui-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { QueryConnectionProvider, useZNodeValue } from "@zerve/query";
