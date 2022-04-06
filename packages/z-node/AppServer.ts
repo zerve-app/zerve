@@ -11,6 +11,8 @@ import {
   Z_PROTOCOL_VERSION,
   ZObservable,
   defineKeySource,
+  getValidatorOfSchema,
+  validateWithSchema,
 } from "@zerve/core";
 import express, { Request, Response } from "express";
 import { createJSONHandler } from "./Server";
@@ -123,7 +125,8 @@ export async function startZedServer(port: number, zed: AnyZed) {
         responseSchema: zed.responseSchema,
       };
     } else if (method === "POST") {
-      const result = await zed.call(body);
+      const validBody = validateWithSchema(zed.payloadSchema, body);
+      const result = await zed.call(validBody);
       return result;
     } else {
       throw new WrongMethodError("WrongMethod", "Method not available", {});
@@ -332,11 +335,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new NotFoundError("NotFound", "Not found", { path });
   }
 
-  const jsonHandler = json();
-  // const jsonHandler = json({
-  //   strict: true, // considered false here (thanks to __Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT for edge case and https://github.com/expressjs/body-parser/issues/461)
-  //   // but strict:false causes other problems - we should throw an error on invalid JSON bodies
-  // });
+  const jsonHandler = json({
+    //   strict: true, // considered false here (thanks to __Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT for edge case and https://github.com/expressjs/body-parser/issues/461)
+    strict: true,
+  });
 
   function zHandler(req: Request, res: Response) {
     const pathSegments = req.path
@@ -355,7 +357,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
           return;
         }
         let body = req.body;
-        if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT) {
+        if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT != undefined) {
           body = body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT;
         }
         handleJSONPromise(

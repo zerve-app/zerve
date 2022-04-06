@@ -1,14 +1,10 @@
 import {
   createZContainer,
-  ajv,
-  createZGettableGroup,
   FromSchema,
-  JSONSchema,
   RequestError,
   createZAction,
-  AnySchema,
   getValidatorOfSchema,
-  ZSchemaSchema,
+  validateWithSchema,
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
@@ -83,17 +79,7 @@ function validateNode(node: FromSchema<typeof NodeSchema>) {
   if (node.schema === null) {
     return;
   }
-  const validate = getValidatorOfSchema(node.schema);
-  const isValid = validate(node.value);
-  if (!isValid) {
-    throw new RequestError(
-      "ValidationError",
-      `Invalid: ${validate.errors[0].message}`,
-      {
-        errors: validate.errors,
-      }
-    );
-  }
+  validateWithSchema(node.schema, node.value);
 }
 
 const GenericCalculator = createZChainStateCalculator(
