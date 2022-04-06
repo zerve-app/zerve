@@ -352,6 +352,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         if (err) {
           // todo, probably wrap with RequestError so more metadata will flow
           handleJSONPromise(res, Promise.reject(err));
+          return;
         }
         let body = req.body;
         if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT) {
