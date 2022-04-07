@@ -11,6 +11,7 @@ import ScreenHeader from "../components/ScreenHeader";
 import {
   QueryConnectionProvider,
   useSaveFileSchema,
+  useZConnectionJSONSchema,
   useZConnectionSchemas,
   useZNodeValue,
 } from "@zerve/query";
@@ -33,9 +34,19 @@ type NavigationProp = CompositeNavigationProp<
 
 function FileSchemaPage({ name }: { name: string }) {
   const { data, isLoading } = useZNodeValue(["Store", "State", name]);
-  const fullSchema = useZConnectionSchemas();
+  const {
+    data: fullSchema,
+    isError,
+    isLoading: isSLoading,
+  } = useZConnectionJSONSchema();
   const navigation = useNavigation<NavigationProp>();
   const saveSchema = useSaveFileSchema();
+  console.log(
+    "JSO N schema screen, fullSchema",
+    fullSchema,
+    isError,
+    isSLoading
+  );
   const openOptions = useActionsSheet(() => [
     {
       key: "RawValue",

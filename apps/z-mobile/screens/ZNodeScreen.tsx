@@ -270,7 +270,7 @@ function ZNodePage({
   const onOptions = useBottomSheet(({ onClose }) => (
     <VStack>
       <Button
-        title="Reload"
+        title="Refresh"
         left={(p) => <Icon {...p} name="refresh" />}
         onPress={() => {
           refetch();

@@ -62,8 +62,6 @@ export function createZChainStateCalculator<
         );
       const valid = validator(action.value);
       if (!valid) {
-        console.log("INVALD", { valid, e: validator.errors });
-
         throw new RequestError(`ValidationError`, "validation fails", {});
       }
       return action;
@@ -318,10 +316,10 @@ export async function createZChainState<
         title: `${actionKey} Action`,
         additionalProperties: false,
         properties: {
-          type: { const: actionKey },
+          name: { const: actionKey },
           value: actionDef.schema,
         },
-        required: ["type", "value"],
+        required: ["name", "value"],
       };
     }),
   };

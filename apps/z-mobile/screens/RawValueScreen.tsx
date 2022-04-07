@@ -4,13 +4,8 @@ import {
   RootStackParamList,
   RootStackScreenProps,
 } from "../app/Links";
-import {
-  Button,
-  IconButton,
-  Paragraph,
-  useBottomSheet,
-  VStack,
-} from "@zerve/ui";
+import { Button, IconButton, Paragraph, VStack } from "@zerve/ui";
+import { useBottomSheet } from "@zerve/ui-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { setString } from "expo-clipboard";
 import { Icon } from "@zerve/ui/Icon";

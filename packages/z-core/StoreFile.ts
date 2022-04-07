@@ -1,3 +1,7 @@
 export function displayStoreFileName(name: string) {
-  return name.replace("_", " ");
+  return name.replaceAll("_", " ");
+}
+
+export function prepareStoreFileName(name: string) {
+  return name.replaceAll(" ", "_");
 }

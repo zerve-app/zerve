@@ -11,7 +11,9 @@ import ScreenHeader from "../components/ScreenHeader";
 import {
   QueryConnectionProvider,
   useDeleteFile,
+  useRenameFile,
   useSaveFile,
+  useZConnectionSchemas,
   useZNodeValue,
 } from "@zerve/query";
 import { useConnection } from "../app/Connection";
@@ -23,7 +25,8 @@ import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { showToast } from "@zerve/ui/Toast";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
-import { displayStoreFileName } from "@zerve/core";
+import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
+import { useStringInput } from "../components/StringInput";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -37,11 +40,39 @@ function FilePage({
   name: string;
   connection: string | null;
 }) {
-  const { data, isLoading } = useZNodeValue(["Store", "State", name]);
+  const { data: schemaStoreData, isLoading: isSchemasLoading } =
+    useZConnectionSchemas();
+  const {
+    data,
+    isLoading: isNodeLoading,
+    refetch,
+  } = useZNodeValue(["Store", "State", name]);
+  const isLoading = isSchemasLoading || isNodeLoading;
   const navigation = useNavigation<NavigationProp>();
   const deleteFile = useDeleteFile();
   const saveFile = useSaveFile();
+  const renameFile = useRenameFile();
+  // console.log("HELLO OK ", data, schemaStoreData);
+  const renameFilePrompt = useStringInput<string>((prevName: string) => {
+    return {
+      inputLabel: "New File Name",
+      defaultValue: prevName,
+      onValue: (inputName: string) => {
+        const formattedName = prepareStoreFileName(inputName);
+        navigation.setParams({ name: formattedName });
+        renameFile.mutate({ prevName: name, newName: formattedName });
+      },
+    };
+  });
   const openOptions = useActionsSheet(() => [
+    {
+      key: "Refresh",
+      title: "Refresh",
+      icon: "refresh",
+      onPress: () => {
+        refetch();
+      },
+    },
     {
       key: "EditSchema",
       title: "Edit Schema",
@@ -59,9 +90,17 @@ function FilePage({
       icon: "code",
       onPress: () => {
         navigation.navigate("RawValue", {
-          title: `${name} Value`,
+          title: `${displayStoreFileName(name)} Value`,
           value: data?.value,
         });
+      },
+    },
+    {
+      key: "Rename",
+      title: "Rename File",
+      icon: "edit",
+      onPress: () => {
+        renameFilePrompt(displayStoreFileName(name));
       },
     },
     {
@@ -91,6 +130,7 @@ function FilePage({
           }}
           value={data.value}
           schema={data.schema}
+          schemaStore={schemaStoreData}
         />
       )}
     </>

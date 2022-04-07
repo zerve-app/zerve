@@ -70,9 +70,9 @@ export function ConnectionProjects({
     const actions: ActionButtonDef[] = [];
     if (refetch && !isLoading) {
       actions.push({
-        key: "reload",
+        key: "refresh",
         icon: "refresh",
-        title: "Reload",
+        title: "Refresh",
         onPress: refetch,
       });
     }

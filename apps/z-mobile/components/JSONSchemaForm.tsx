@@ -13,6 +13,7 @@ import {
   JSONSchema,
   JSONSchemaPluck,
   LeafSchema,
+  SchemaStore,
 } from "@zerve/core";
 import {
   Button,
@@ -105,11 +106,24 @@ function AddButton({
   );
 }
 
-function expandSchema(schema: JSONSchema): JSONSchema | undefined {
+function expandSchema(
+  schema: JSONSchema,
+  schemaStore: SchemaStore
+): JSONSchema | undefined {
   if (schema === false) return false;
   if (schema === undefined) return undefined;
   let schemaObj = schema;
   if (schemaObj === true) schemaObj = {};
+  if (schemaObj.$ref) {
+    const refSchema = Object.values(schemaStore || {}).find(
+      (s) => s.$id === schemaObj.$ref
+    );
+    if (refSchema) {
+      schemaObj = refSchema;
+    } else {
+      console.log("Warning: Schema Ref not found! ", schema.$ref);
+    }
+  }
   const { type } = schemaObj;
   if (
     schemaObj.oneOf !== undefined ||
@@ -138,7 +152,7 @@ function expandSchema(schema: JSONSchema): JSONSchema | undefined {
     };
   }
 
-  return schema;
+  return schemaObj;
 }
 
 export function JSONSchemaObjectForm({
@@ -844,13 +858,18 @@ export function JSONSchemaForm({
   onValue,
   schema,
   label,
+  schemaStore,
 }: {
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   label?: string | ReactNode;
+  schemaStore: SchemaStore;
 }) {
-  const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
+  const expandedSchema = useMemo(
+    () => expandSchema(schema, schemaStore),
+    [schema, schemaStore]
+  );
 
   if (!expandedSchema) {
     return <ThemedText>Value not allowed.</ThemedText>;
@@ -879,6 +898,7 @@ export function JSONSchemaForm({
             value={value}
             onValue={onValue}
             schema={matchedSchema}
+            schemaStore={schemaStore}
             label={label}
           />
         )}

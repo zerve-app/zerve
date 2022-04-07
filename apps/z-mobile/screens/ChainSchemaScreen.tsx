@@ -5,21 +5,25 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { Button, Icon, LinkRowGroup, VStack } from "@zerve/ui";
+import { Button, Icon, LinkRowGroup, showToast, VStack } from "@zerve/ui";
 import { useActionsSheet } from "@zerve/ui-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
   QueryConnectionProvider,
+  useDeleteSchema,
   useSaveSchema,
   useZNodeValue,
 } from "@zerve/query";
 import { useConnection } from "../app/Connection";
-import { CompositeNavigationProp } from "@react-navigation/native";
+import {
+  CompositeNavigationProp,
+  useNavigation,
+} from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
-import { ZSchemaSchema } from "@zerve/core";
+import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 
 type NavigationProp = CompositeNavigationProp<
@@ -41,18 +45,44 @@ function ChainSchemasPage({
     schema,
   ]);
   const saveSchema = useSaveSchema();
-  const openOptions = useActionsSheet(() => []);
+  const deleteSchema = useDeleteSchema();
+  const { goBack, navigate } = useNavigation();
+  const openOptions = useActionsSheet(() => [
+    {
+      key: "RawValue",
+      title: "Raw Schema Value",
+      icon: "code",
+      onPress: () => {
+        navigate("RawValue", {
+          title: `${schema} Value`,
+          value: data,
+        });
+      },
+    },
+    {
+      key: "Delete",
+      title: "Delete Schema",
+      icon: "trash",
+      danger: true,
+      onPress: () => {
+        deleteSchema.mutate({ schemaName: schema });
+        goBack();
+      },
+    },
+  ]);
   return (
     <VStack>
       <ScreenHeader
-        title={`${schema} Schema`}
+        title={`${displayStoreFileName(schema)} Schema`}
         isLoading={isLoading}
         corner={<OptionsButton onOptions={openOptions} />}
         onLongPress={openOptions}
       />
       <JSONSchemaEditor
         onValue={async (v) => {
-          saveSchema.mutate({ schemaName: schema, schema: v });
+          await saveSchema.mutateAsync({ schemaName: schema, schema: v });
+          showToast("Schema has been updated.");
+          goBack();
         }}
         saveLabel="Save Schema"
         value={data}

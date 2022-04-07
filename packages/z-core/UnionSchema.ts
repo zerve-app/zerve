@@ -9,7 +9,6 @@ export function exploreUnionSchema(schema) {
   const optionSchemas = schema.oneOf;
   const aggregateTypeOptions = new Set([]);
   const distinctTypeOptions = new Set([]);
-
   optionSchemas.forEach((optionSchema) => {
     let type = optionSchema.type;
     if (!type && optionSchema.const !== undefined) {
@@ -57,8 +56,7 @@ export function exploreUnionSchema(schema) {
     unionKeys.forEach((unionKey, unionKeyIndex) => {
       const isLastUnionKey = unionKeyIndex === unionKeys.length - 1;
       const constValue = constProperties?.[unionKey];
-      const isLeaf = isLastUnionKey || constValue === undefined;
-      const newNodeValue = isLeaf ? optionSchemaIndex : {};
+      const newNodeValue = isLastUnionKey ? optionSchemaIndex : {};
       const thisKeyMap =
         walkKeyMap[constValue] || (walkKeyMap[constValue] = newNodeValue);
       walkKeyMap = thisKeyMap;
@@ -73,6 +71,12 @@ export function exploreUnionSchema(schema) {
   function getTitle(optionSchema, optionSchemaIndex) {
     if (optionSchema.const !== undefined) {
       return `${optionSchema.const}`;
+    }
+    if (
+      optionSchema.type === "object" &&
+      optionSchema?.properties?.title?.const
+    ) {
+      return optionSchema?.properties?.title?.const;
     }
     const constsValue = unionKeys
       .map((unionKey) => {
@@ -110,7 +114,6 @@ export function exploreUnionSchema(schema) {
       };
     }),
     match: (value: any) => {
-      // console.log("MATCHING ok", value, unionConstMap);
       if (unionConstMap.has(value)) return unionConstMap.get(value);
       const observedValueType = getTypeOf(value);
       if (distinctTypeOptions.has(observedValueType)) {
@@ -124,8 +127,9 @@ export function exploreUnionSchema(schema) {
       }
       if (value === null) return null;
       if (typeof value === "object") {
-        let walkingKeyMap = unionKeyMap;
+        let walkingKeyMap = unionKeyMap || {};
         unionKeys.forEach((unionKey) => {
+          if (typeof walkingKeyMap === "number") return;
           const theValue = value[unionKey];
           walkingKeyMap = walkingKeyMap[theValue];
         });

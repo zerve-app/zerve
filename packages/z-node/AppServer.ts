@@ -97,7 +97,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
       if (query?.zClientSubscribe) {
         const client = connectedClients.get(query.zClientSubscribe);
         if (client) {
-          console.log("SUbscribing to client");
           zed.subscribe((v) => {
             client.send({
               t: "Update",
@@ -107,7 +106,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
           });
         }
       }
-      console.log("observable get query", query);
       const value = await zed.get();
       return value;
     }
@@ -211,7 +209,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
     if (zed.zType === "Static") {
       return await handleZStaticRequest(zed);
     }
-    console.log("fail!!", zed);
     throw new Error("unknown zed");
   }
 

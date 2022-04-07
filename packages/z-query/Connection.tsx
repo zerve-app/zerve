@@ -42,6 +42,14 @@ function startConnection(
   const ws = new ReconnectingWebsocket(wsUrl);
   const clientId = createZState({ type: ["null", "string"] } as const, null);
   const isConnected = createZState({ type: "boolean" } as const, false);
+
+  // const cache = queryClient.getQueryCache();
+  // const closeCacheSubscription = cache.subscribe((event) => {
+  //   if (event?.type === "queryRemoved") {
+  //     // console.log("QUERY REMOVING: ", event.query.queryHash
+  //   }
+  // });
+
   ws.onopen = (conn) => {
     // really we wait to receive our clientId with the hello message before we consider ourselves connected
   };
@@ -59,6 +67,7 @@ function startConnection(
         [queryContext?.key, "z", ...message.path, ".node", "value"],
         message.value
       );
+
       queryClient.setQueryData(
         [queryContext?.key, "z", ...message.path, ".node"],
         (node) => {
@@ -78,6 +87,7 @@ function startConnection(
   };
   function close() {
     ws.close();
+    closeCacheSubscription();
   }
   const connection = {
     ...queryContext,
@@ -173,6 +183,7 @@ export async function serverPost<Request, Response>(
     const value = await res.json();
     if (res.status !== 200) {
       console.log("Huh eh", value);
+      console.log(body);
       throw new Error("Network Error");
     }
     return value;

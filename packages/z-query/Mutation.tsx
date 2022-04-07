@@ -1,4 +1,5 @@
-import { getDefaultSchemaValue } from "@zerve/core";
+import { ConstSchemaSchema, getDefaultSchemaValue } from "@zerve/core";
+import { showToast } from "@zerve/ui";
 import { useMutation, useQueryClient } from "react-query";
 import { useQueryContext } from "./Connection";
 import { postZAction } from "./ServerCalls";
@@ -86,7 +87,7 @@ export function useDeleteFile() {
       }
     },
     {
-      onSuccess: () => {
+      onSuccess: (_, name) => {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
@@ -94,6 +95,7 @@ export function useDeleteFile() {
           "State",
           ".node",
         ]);
+        showToast(`${name} Deleted`);
       },
     }
   );
@@ -123,6 +125,33 @@ export function useSaveFile() {
           name,
           ".node",
           "value",
+        ]);
+      },
+    }
+  );
+}
+
+export function useRenameFile() {
+  const conn = useQueryContext();
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (payload: { prevName: string; newName: string }) => {
+      if (conn) {
+        await postZAction(conn, ["Store", "Dispatch"], {
+          name: "RenameValue",
+          value: payload,
+        });
+      } else {
+        // "local" behavior.. should be consolidated into logic above
+      }
+    },
+    {
+      onSuccess: (something, { name }) => {
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          "Store",
+          "State", // well this is aggressive..
         ]);
       },
     }
@@ -178,6 +207,34 @@ export function useSaveSchema() {
           "State",
           "$schemas",
         ]);
+      },
+    }
+  );
+}
+
+export function useDeleteSchema() {
+  const conn = useQueryContext();
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (payload: { schemaName: string }) => {
+      if (!conn) {
+        return;
+      }
+      await postZAction(conn, ["Store", "Dispatch"], {
+        name: "DeleteSchema",
+        value: payload,
+      });
+    },
+    {
+      onSuccess: (something, { schemaName }) => {
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          "Store",
+          "State",
+          "$schemas",
+        ]);
+        showToast(`${schemaName} Schema Deleted`);
       },
     }
   );

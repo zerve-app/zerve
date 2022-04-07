@@ -9,6 +9,7 @@ import { QueryConnectionProvider, useCreateFile } from "@zerve/query";
 import { useConnection } from "../app/Connection";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { prepareStoreFileName } from "@zerve/core";
 
 function NewFilePage({
   route,
@@ -36,7 +37,7 @@ function NewFilePage({
           title="Create"
           primary
           onPress={async () => {
-            const actualName = name.replace(" ", "_");
+            const actualName = prepareStoreFileName(name);
             await createFile.mutate(actualName);
             replace("File", {
               name: actualName,

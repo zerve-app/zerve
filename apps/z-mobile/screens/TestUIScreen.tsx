@@ -1,10 +1,5 @@
-import {
-  Button,
-  DisclosureSection,
-  Label,
-  useBottomSheet,
-  VStack,
-} from "@zerve/ui";
+import { Button, DisclosureSection, Label, VStack } from "@zerve/ui";
+import { useBottomSheet } from "@zerve/ui-native";
 import React, { useState } from "react";
 import ScreenContainer from "../components/ScreenContainer";
 import { showErrorToast, showToast } from "@zerve/ui/Toast";

@@ -99,15 +99,31 @@ export const ConstSchemaSchema = {
   required: ["const"],
 } as const;
 
-export const LeafSchemaSchema = {
+export const RefSchemaSchema = {
+  title: "Ref",
+  type: "object",
+  properties: {
+    ...SchemaMeta,
+    $ref: { type: "string" },
+  },
+  required: ["$ref"],
+  additionalProperties: false,
+} as const;
+export type ZRefSchema = FromSchema<typeof RefSchemaSchema>;
+
+export const PrimitiveSchemaSchema = {
   oneOf: [
     NullSchemaSchema,
     BooleanSchemaSchema,
     // IntegerSchemaSchema,
     NumberSchemaSchema,
     StringSchemaSchema,
-    ConstSchemaSchema,
   ],
+} as const;
+export type PrimitiveSchema = FromSchema<typeof PrimitiveSchemaSchema>;
+
+export const LeafSchemaSchema = {
+  oneOf: [...PrimitiveSchemaSchema.oneOf, ConstSchemaSchema],
 } as const;
 export type LeafSchema = FromSchema<typeof LeafSchemaSchema>;
 
@@ -126,7 +142,7 @@ export const ObjectSchemaSchema = {
     },
     additionalProperties: {
       title: "Additional Properties",
-      oneOf: [FalseSchema, StringSchemaSchema],
+      oneOf: [FalseSchema, ...LeafSchemaSchema.oneOf],
     } as const,
     required: { type: "array", items: { type: "string" } },
   },
@@ -166,6 +182,7 @@ export const ZSchemaSchema = {
     // IntegerSchemaSchema,
     NumberSchemaSchema,
     StringSchemaSchema,
+    ConstSchemaSchema,
   ],
 } as const;
 

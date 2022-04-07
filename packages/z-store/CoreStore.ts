@@ -1,10 +1,9 @@
 import {
   createZContainer,
   FromSchema,
-  RequestError,
   createZAction,
-  getValidatorOfSchema,
-  validateWithSchema,
+  SchemaStore,
+  validateWithSchemaStore,
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
@@ -43,6 +42,16 @@ const WriteValueActionSchema = {
   required: ["name", "value"],
 } as const;
 
+const RenameValueActionSchema = {
+  type: "object",
+  properties: {
+    prevName: { type: "string" },
+    newName: { type: "string" },
+  },
+  additionalProperties: false,
+  required: ["prevName", "newName"],
+} as const;
+
 const DeleteActionSchema = {
   type: "object",
   properties: {
@@ -73,14 +82,28 @@ const WriteSchemaActionSchema = {
   required: ["schemaName", "schema"],
 } as const;
 
-function validateNode(node: FromSchema<typeof NodeSchema>) {
+const DeleteSchemaActionSchema = {
+  type: "object",
+  properties: {
+    schemaName: { type: "string" },
+  },
+  additionalProperties: false,
+  required: ["schemaName"],
+} as const;
+
+function validateNode(
+  node: FromSchema<typeof NodeSchema>,
+  schemas: SchemaStore
+) {
   if (typeof node !== "object") throw new Error("Invalid Store Node");
   if (node.value === undefined) throw new Error("Store Node value missing");
   if (node.schema === null) {
     return;
   }
-  validateWithSchema(node.schema, node.value);
+  validateWithSchemaStore(node.schema, node.value, schemas);
 }
+
+const EmptySchemaStore: SchemaStore = {} as const;
 
 const GenericCalculator = createZChainStateCalculator(
   StateTreeSchema,
@@ -95,13 +118,12 @@ const GenericCalculator = createZChainStateCalculator(
         const { name, value } = action;
         if (name[0] === "$")
           throw new Error("Cannot write to a hidden file that begins with $");
-        const prevNode = state[name];
+        const prevNode: NodeSchema | undefined = state[name];
         const node = {
           ...(prevNode || {}),
           value,
         };
-        console.log("WriteValue validateNode", node);
-        validateNode(node);
+        validateNode(node, state.$schemas || EmptySchemaStore);
         return {
           ...state,
           [name]: node,
@@ -122,11 +144,26 @@ const GenericCalculator = createZChainStateCalculator(
           schema: schema,
           value: value === undefined ? prevNode?.value || null : action.value,
         };
-        validateNode(node);
+        validateNode(node, state.$schemas || EmptySchemaStore);
         return {
           ...state,
           [name]: node,
         };
+      },
+    },
+
+    RenameValue: {
+      schema: RenameValueActionSchema,
+      handler: (
+        state: FromSchema<typeof StateTreeSchema>,
+        action: FromSchema<typeof RenameValueActionSchema>
+      ) => {
+        const { prevName, newName } = action;
+        const newState: typeof state = { ...state };
+        const value = newState[prevName];
+        delete newState[prevName];
+        newState[newName] = value;
+        return newState;
       },
     },
     Delete: {
@@ -149,7 +186,24 @@ const GenericCalculator = createZChainStateCalculator(
         action: FromSchema<typeof WriteSchemaActionSchema>
       ) => {
         const schemas = state.$schemas || {};
-        schemas[action.schemaName] = action.schema;
+        schemas[action.schemaName] = {
+          ...action.schema,
+          $id: `https://type.zerve.link/${action.schemaName}`,
+        };
+        return {
+          ...state,
+          $schemas: schemas,
+        };
+      },
+    },
+    DeleteSchema: {
+      schema: DeleteSchemaActionSchema,
+      handler: (
+        state: FromSchema<typeof StateTreeSchema>,
+        action: FromSchema<typeof DeleteSchemaActionSchema>
+      ) => {
+        const schemas = state.$schemas ? { ...state.$schemas } : {};
+        delete schemas[action.schemaName];
         return {
           ...state,
           $schemas: schemas,
@@ -174,39 +228,36 @@ export async function createGeneralStore(
   async function validateWriteValue(
     input: FromSchema<typeof WriteValueActionSchema>
   ): Promise<void> {
+    const schemasNode = await genStore.z.State.getChild("$schemas");
     const storeNode = await genStore.z.State.getChild(input.name);
     const storeNodeValue = await storeNode.get();
+    const schemaStore = await schemasNode.get();
     if (storeNodeValue.schema != null) {
-      const validator = getValidatorOfSchema(storeNodeValue.schema);
-      const isValid = validator(input.value);
-      if (!isValid)
-        throw new RequestError("ValidationError", `Invalid`, {
-          errors: validator.errors,
-        });
+      const valid = validateWithSchemaStore(
+        storeNodeValue.schema,
+        input.value,
+        schemaStore
+      );
     }
   }
 
   async function validateWriteSchemaValue(
     input: FromSchema<typeof WriteValueActionSchema>
   ): Promise<void> {
+    const schemasNode = await genStore.z.State.getChild("$schemas");
+    const schemaStore = await schemasNode.get();
     if (input.value === undefined) {
       const storeNode = await genStore.z.State.getChild(input.name);
       const storeNodeValue = await storeNode.get();
       if (input.schema != null) {
-        const validator = getValidatorOfSchema(input.schema);
-        const isValid = validator(storeNodeValue.value);
-        if (!isValid)
-          throw new RequestError("ValidationError", `Invalid`, {
-            errors: validator.errors,
-          });
+        validateWithSchemaStore(
+          input.schema,
+          storeNodeValue.value,
+          schemaStore
+        );
       }
     } else {
-      const validator = getValidatorOfSchema(input.schema);
-      const isValid = validator(input.value);
-      if (!isValid)
-        throw new RequestError("ValidationError", `Invalid`, {
-          errors: validator.errors,
-        });
+      validateWithSchemaStore(input.schema, input.value, schemaStore);
     }
   }
 
