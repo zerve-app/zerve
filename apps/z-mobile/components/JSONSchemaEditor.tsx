@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { JSONSchemaForm } from "./JSONSchemaForm";
 import { SchemaStore } from "@zerve/core";
 
+const EmptySchemaStore: SchemaStore = {} as const;
+
 export function JSONSchemaEditor({
   value,
   schema,
@@ -31,7 +33,7 @@ export function JSONSchemaEditor({
         value={valueState}
         onValue={setValueState}
         schema={schema}
-        schemaStore={schemaStore}
+        schemaStore={schemaStore || EmptySchemaStore}
       />
       {valueState !== value && (
         <>

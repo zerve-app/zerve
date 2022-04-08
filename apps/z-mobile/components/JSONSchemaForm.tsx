@@ -159,10 +159,12 @@ export function JSONSchemaObjectForm({
   value,
   onValue,
   schema,
+  schemaStore,
 }: {
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  schemaStore: SchemaStore;
 }) {
   const { properties, additionalProperties } = schema;
   if (schema?.type && schema?.type !== "object") {
@@ -190,14 +192,18 @@ export function JSONSchemaObjectForm({
         Object.entries(schema.properties || {}).map(
           ([propName, propSchema]) => [
             propName,
-            expandSchema(propSchema || defaultObjectItemsSchema),
+            expandSchema(propSchema || defaultObjectItemsSchema, schemaStore),
           ]
         )
       ),
     [schema.properties]
   );
   const expandedAdditionalPropertiesSchema = useMemo(
-    () => expandSchema(schema.additionalProperties || defaultObjectItemsSchema),
+    () =>
+      expandSchema(
+        schema.additionalProperties || defaultObjectItemsSchema,
+        schemaStore
+      ),
     [schema.additionalProperties]
   );
 
@@ -322,13 +328,15 @@ export function JSONSchemaArrayForm({
   value,
   onValue,
   schema,
+  schemaStore,
 }: {
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  schemaStore: SchemaStore;
 }) {
   const expandedItemsSchema = useMemo(
-    () => expandSchema(schema.items || defaultArrayItemsSchema),
+    () => expandSchema(schema.items || defaultArrayItemsSchema, schemaStore),
     [schema.items]
   );
   const addButton = (
@@ -870,7 +878,6 @@ export function JSONSchemaForm({
     () => expandSchema(schema, schemaStore),
     [schema, schemaStore]
   );
-
   if (!expandedSchema) {
     return <ThemedText>Value not allowed.</ThemedText>;
   }
@@ -910,12 +917,22 @@ export function JSONSchemaForm({
   }
   if (expandedSchema.type === "array") {
     return (
-      <JSONSchemaArrayForm value={value} onValue={onValue} schema={schema} />
+      <JSONSchemaArrayForm
+        value={value}
+        onValue={onValue}
+        schema={expandedSchema}
+        schemaStore={schemaStore}
+      />
     );
   }
   if (expandedSchema.type === "object") {
     return (
-      <JSONSchemaObjectForm value={value} onValue={onValue} schema={schema} />
+      <JSONSchemaObjectForm
+        value={value}
+        onValue={onValue}
+        schema={expandedSchema}
+        schemaStore={schemaStore}
+      />
     );
   }
   if (isLeafType(expandedSchema.type) || expandedSchema.const !== undefined) {

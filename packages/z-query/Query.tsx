@@ -3,8 +3,8 @@ import { getZ } from "./ServerCalls";
 import { useLiveConnection, useQueryContext } from "./Connection";
 import { getDoc, listDocs, getActions, getModuleList } from "./ServerCalls";
 import { getTypedZ } from "./ServerCalls";
-import { useEffect } from "react";
-import { ZSchemaSchema } from "@zerve/core";
+import { useEffect, useMemo } from "react";
+import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
 
 export type QueryOptions = {
   skipLoading?: boolean;
@@ -82,59 +82,65 @@ export function useZConnectionSchemas(options?: QueryOptions) {
   );
 }
 
-export function useZConnectionJSONSchema(options?: QueryOptions) {
-  const context = useQueryContext();
-  return useQuery(
-    [context?.key, "z", "Store", "State", "$schemas", ".json-schema"],
-    async () => {
-      console.log("Q START");
-      if (!context || options?.skipLoading) return undefined;
-      const schemas = await getZ(context, ["Store", "State", "$schemas"]);
-      const refSchemas = Object.entries(schemas || {}).map(
-        ([schemaName, schema]) => {
-          return {
-            type: "object",
-            properties: {
-              title: { const: schemaName },
-              $ref: { const: `https://type.zerve.link/${schemaName}` },
-            },
-            additionalProperties: false,
-            required: ["type", "$ref"],
-          };
-        }
-      );
-      console.log("Q HERE");
-      const finalSchema = {
-        oneOf: [
-          ...ZSchemaSchema.oneOf,
-          // .map((subSchema) => {
-          //   if (subSchema?.type === "Object") {
-          //     return {
-          //       ...subSchema,
-          //       additionalProperties: {
-          //         oneOf: [
-          //           ...subSchema.additionalProperties.oneOf,
-          //           ...refSchemas,
-          //         ],
-          //       },
-          //       properties: Object.fromEntries(
-          //         Object.entries(subSchema.properties || {}).map(
-          //           ([schemaId, schema]) => {
-          //             return [
-          //               schemaId,
-          //               { oneOf: [...schema.oneOf, ...refSchemas] },
-          //             ];
-          //           }
-          //         )
-          //       ),
-          //     };
-          //   }
-          //   return subSchema;
-          // }),
-          ...refSchemas,
-        ],
+export function connectionSchemasToZSchema(schemas) {
+  const refSchemas = Object.entries(schemas || {}).map(
+    ([schemaName, schema]) => {
+      return {
+        type: "object",
+        properties: {
+          title: { const: displayStoreFileName(schemaName) },
+          $ref: { const: `https://type.zerve.link/${schemaName}` },
+        },
+        additionalProperties: false,
+        required: ["type", "$ref"],
       };
-      return finalSchema;
     }
   );
+  const finalSchema = {
+    oneOf: [
+      ...ZSchemaSchema.oneOf.map((zSubSchema) => {
+        console.log(zSubSchema);
+        if (zSubSchema.title === "List") {
+          const listSchema = {
+            ...zSubSchema,
+            properties: {
+              ...zSubSchema.properties,
+              items: {
+                oneOf: [...zSubSchema.properties.items.oneOf, ...refSchemas],
+              },
+            },
+          };
+          console.log({ listSchema });
+          return listSchema;
+        } else if (zSubSchema.title === "Object") {
+          return {
+            ...zSubSchema,
+            properties: {
+              ...zSubSchema.properties,
+              additionalProperties: {
+                oneOf: [
+                  ...zSubSchema.properties.additionalProperties.oneOf,
+                  ...refSchemas,
+                ],
+              },
+            },
+          };
+        } else {
+          return zSubSchema;
+        }
+      }),
+      ...refSchemas,
+    ],
+  };
+  return finalSchema;
+}
+
+export function useZConnectionJSONSchema(options?: QueryOptions) {
+  const schemas = useZConnectionSchemas(options);
+  return useMemo(() => {
+    return {
+      ...schemas,
+      data: connectionSchemasToZSchema(schemas.data),
+    };
+  }, [schemas, schemas.data]);
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
   HomeStackParamList,
@@ -9,6 +9,7 @@ import { useActionsSheet } from "@zerve/ui-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
+  connectionSchemasToZSchema,
   QueryConnectionProvider,
   useSaveFileSchema,
   useZConnectionJSONSchema,
@@ -34,19 +35,16 @@ type NavigationProp = CompositeNavigationProp<
 
 function FileSchemaPage({ name }: { name: string }) {
   const { data, isLoading } = useZNodeValue(["Store", "State", name]);
-  const {
-    data: fullSchema,
-    isError,
-    isLoading: isSLoading,
-  } = useZConnectionJSONSchema();
+
+  const { data: schemaStore } = useZConnectionSchemas();
+
+  const fullSchema = useMemo(() => {
+    return connectionSchemasToZSchema(schemaStore);
+  }, [schemaStore]);
+
   const navigation = useNavigation<NavigationProp>();
-  const saveSchema = useSaveFileSchema();
-  console.log(
-    "JSO N schema screen, fullSchema",
-    fullSchema,
-    isError,
-    isSLoading
-  );
+  const saveSchema = useSaveFileSchema(schemaStore);
+
   const openOptions = useActionsSheet(() => [
     {
       key: "RawValue",

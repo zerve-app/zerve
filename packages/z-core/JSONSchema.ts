@@ -123,7 +123,10 @@ export const PrimitiveSchemaSchema = {
 export type PrimitiveSchema = FromSchema<typeof PrimitiveSchemaSchema>;
 
 export const LeafSchemaSchema = {
-  oneOf: [...PrimitiveSchemaSchema.oneOf, ConstSchemaSchema],
+  oneOf: [
+    ...PrimitiveSchemaSchema.oneOf,
+    // ConstSchemaSchema // disabled for now because the union dropdown broken when selecting object type
+  ],
 } as const;
 export type LeafSchema = FromSchema<typeof LeafSchemaSchema>;
 
@@ -182,7 +185,7 @@ export const ZSchemaSchema = {
     // IntegerSchemaSchema,
     NumberSchemaSchema,
     StringSchemaSchema,
-    ConstSchemaSchema,
+    ConstSchemaSchema, // disabled for now because the union dropdown broken when selecting object type
   ],
 } as const;
 

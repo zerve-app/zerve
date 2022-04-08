@@ -40,7 +40,7 @@ function FilePage({
   name: string;
   connection: string | null;
 }) {
-  const { data: schemaStoreData, isLoading: isSchemasLoading } =
+  const { data: schemaStore, isLoading: isSchemasLoading } =
     useZConnectionSchemas();
   const {
     data,
@@ -52,7 +52,6 @@ function FilePage({
   const deleteFile = useDeleteFile();
   const saveFile = useSaveFile();
   const renameFile = useRenameFile();
-  // console.log("HELLO OK ", data, schemaStoreData);
   const renameFilePrompt = useStringInput<string>((prevName: string) => {
     return {
       inputLabel: "New File Name",
@@ -130,7 +129,7 @@ function FilePage({
           }}
           value={data.value}
           schema={data.schema}
-          schemaStore={schemaStoreData}
+          schemaStore={schemaStore}
         />
       )}
     </>

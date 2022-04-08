@@ -13,6 +13,7 @@ import {
   QueryConnectionProvider,
   useDeleteSchema,
   useSaveSchema,
+  useZConnectionJSONSchema,
   useZNodeValue,
 } from "@zerve/query";
 import { useConnection } from "../app/Connection";
@@ -44,6 +45,11 @@ function ChainSchemasPage({
     "$schemas",
     schema,
   ]);
+  const {
+    data: fullSchema,
+    isError,
+    isLoading: isSLoading,
+  } = useZConnectionJSONSchema();
   const saveSchema = useSaveSchema();
   const deleteSchema = useDeleteSchema();
   const { goBack, navigate } = useNavigation();
@@ -86,7 +92,7 @@ function ChainSchemasPage({
         }}
         saveLabel="Save Schema"
         value={data}
-        schema={ZSchemaSchema}
+        schema={fullSchema}
       />
     </VStack>
   );

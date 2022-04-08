@@ -9,10 +9,15 @@ export function exploreUnionSchema(schema) {
   const optionSchemas = schema.oneOf;
   const aggregateTypeOptions = new Set([]);
   const distinctTypeOptions = new Set([]);
-  optionSchemas.forEach((optionSchema) => {
-    let type = optionSchema.type;
-    if (!type && optionSchema.const !== undefined) {
-      type = typeof optionSchema.const;
+  optionSchemas.forEach((optionSchema, index) => {
+    if (!optionSchema) {
+      // console.error("Woah, optionSchema missing!", index, optionSchema);
+      // usually this means there is at least {oneOf: [undefined]}, but theoreticaly that situation would be ignored
+      return;
+    }
+    let type = optionSchema?.type;
+    if (!type && optionSchema?.const !== undefined) {
+      type = typeof optionSchema?.const;
     }
     if (!type) {
       throw new Error(
@@ -33,6 +38,7 @@ export function exploreUnionSchema(schema) {
 
   const unionConstProperties = optionSchemas.map(
     (optionSchema, optionSchemaIndex) => {
+      if (!optionSchema) return {};
       if (optionSchema.const != null) {
         unionConstMap.set(optionSchema.const, optionSchemaIndex);
         return null;
@@ -91,7 +97,9 @@ export function exploreUnionSchema(schema) {
   }
   const options = optionSchemas.map((optionSchema, optionSchemaIndex) => {
     return {
-      title: optionSchema.title || getTitle(optionSchema, optionSchemaIndex),
+      title: optionSchema
+        ? optionSchema.title || getTitle(optionSchema, optionSchemaIndex)
+        : "?",
       value: optionSchemaIndex,
     };
   });
@@ -99,6 +107,7 @@ export function exploreUnionSchema(schema) {
     options,
     converters: optionSchemas.map((optionSchema, optionSchemaIndex) => {
       return (v: any) => {
+        if (!optionSchema) return null;
         if (optionSchema.const !== undefined) return optionSchema.const;
         if (optionSchema.type === "null") return null;
         if (optionSchema.type === "string") return optionSchema.default || "";

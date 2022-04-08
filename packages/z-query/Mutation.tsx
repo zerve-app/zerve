@@ -1,4 +1,8 @@
-import { ConstSchemaSchema, getDefaultSchemaValue } from "@zerve/core";
+import {
+  ConstSchemaSchema,
+  getDefaultSchemaValue,
+  SchemaStore,
+} from "@zerve/core";
 import { showToast } from "@zerve/ui";
 import { useMutation, useQueryClient } from "react-query";
 import { useQueryContext } from "./Connection";
@@ -158,17 +162,21 @@ export function useRenameFile() {
   );
 }
 
-export function useSaveFileSchema() {
+export function useSaveFileSchema(schemaStore: SchemaStore) {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { name: string; schema: any }) => {
       if (conn) {
+        console.log(
+          "ok OK ",
+          getDefaultSchemaValue(payload.schema, schemaStore)
+        );
         await postZAction(conn, ["Store", "Dispatch"], {
           name: "WriteSchemaValue",
           value: {
             name: payload.name,
-            value: getDefaultSchemaValue(payload.schema),
+            value: getDefaultSchemaValue(payload.schema, schemaStore),
             schema: payload.schema,
           },
         });
