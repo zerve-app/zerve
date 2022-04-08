@@ -720,7 +720,9 @@ export function FormField({
   }
 
   return (
-    <ThemedText>Unhandled Child Schema: {JSON.stringify(schema)}</ThemedText>
+    <ThemedText>
+      {label}:: Unhandled Child Schema: {JSON.stringify(schema)}
+    </ThemedText>
   );
 }
 

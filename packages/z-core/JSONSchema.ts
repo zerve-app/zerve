@@ -185,7 +185,7 @@ export const ZSchemaSchema = {
     // IntegerSchemaSchema,
     NumberSchemaSchema,
     StringSchemaSchema,
-    ConstSchemaSchema, // disabled for now because the union dropdown broken when selecting object type
+    // ConstSchemaSchema, // disabled for now because the union dropdown broken when selecting object type
   ],
 } as const;
 

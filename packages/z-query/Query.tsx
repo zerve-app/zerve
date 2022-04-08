@@ -99,7 +99,6 @@ export function connectionSchemasToZSchema(schemas) {
   const finalSchema = {
     oneOf: [
       ...ZSchemaSchema.oneOf.map((zSubSchema) => {
-        console.log(zSubSchema);
         if (zSubSchema.title === "List") {
           const listSchema = {
             ...zSubSchema,
@@ -110,13 +109,22 @@ export function connectionSchemasToZSchema(schemas) {
               },
             },
           };
-          console.log({ listSchema });
           return listSchema;
         } else if (zSubSchema.title === "Object") {
           return {
             ...zSubSchema,
             properties: {
               ...zSubSchema.properties,
+              properties: {
+                ...zSubSchema.properties.properties,
+                additionalProperties: {
+                  oneOf: [
+                    ...zSubSchema.properties.properties.additionalProperties
+                      .oneOf,
+                    ...refSchemas,
+                  ],
+                },
+              },
               additionalProperties: {
                 oneOf: [
                   ...zSubSchema.properties.additionalProperties.oneOf,

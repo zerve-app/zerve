@@ -140,7 +140,10 @@ export function exploreUnionSchema(schema) {
         unionKeys.forEach((unionKey) => {
           if (typeof walkingKeyMap === "number") return;
           const theValue = value[unionKey];
-          walkingKeyMap = walkingKeyMap[theValue];
+          const nextWalk =
+            walkingKeyMap[theValue] || walkingKeyMap["undefined"];
+
+          walkingKeyMap = nextWalk;
         });
         return walkingKeyMap;
       }
