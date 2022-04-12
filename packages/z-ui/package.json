@@ -9,7 +9,7 @@
     "@types/react-native": "*",
     "config": "*",
     "tsconfig": "*",
-    "typescript": "^4.5.5"
+    "typescript": "^4.6.3"
   },
   "peerDependencies": {
     "react": "*",

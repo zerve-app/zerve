@@ -9,7 +9,7 @@
     "@types/ws": "^8.5.3",
     "config": "*",
     "tsconfig": "*",
-    "typescript": "^4.5.5"
+    "typescript": "^4.6.3"
   },
   "dependencies": {
     "body-parser": "^1.19.2",
