@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "immer": "^9.0.12",
-    "json-schema-to-ts": "^1.6.4"
+    "json-schema-to-ts": "^2.1.1"
   }
 }

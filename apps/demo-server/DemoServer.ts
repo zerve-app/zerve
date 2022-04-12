@@ -14,7 +14,7 @@ export async function startApp() {
     add: createZAction(
       { type: "number", title: "Number to Add" } as const,
       { type: "number" } as const,
-      async (value: number) => {
+      async (value) => {
         const sum = value + calculatorValue.z.state.get();
         calculatorValue.z.set.call(sum);
         return sum;

@@ -1,13 +1,18 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
-import { createZObservable } from "./Observable";
-import { createZAction, createZContainer } from "./Zed";
+import { createZObservable, ZObservable } from "./Observable";
+import { createZAction, createZContainer, ZAction, ZContainer } from "./Zed";
 
 export function createZState<Schema extends JSONSchema>(
   schema: Schema,
   initialState: FromSchema<Schema>
-) {
+): ZContainer<{
+  state: ZObservable<Schema>;
+  set: ZAction<Schema, { type: "null" }>;
+}> {
   let internalState = initialState;
+
   const handlers = new Set<(s: FromSchema<Schema>) => void>();
+
   const state = createZObservable<Schema>(
     schema,
     () => internalState,
@@ -18,16 +23,17 @@ export function createZState<Schema extends JSONSchema>(
       };
     }
   );
-  const set = createZAction(
+
+  const set = createZAction<Schema, { type: "null" }>(
     schema,
-    { type: "null" } as const,
-    (v: FromSchema<Schema>) => {
+    { type: "null" },
+    async (v) => {
       internalState = v;
       handlers.forEach((handler) => handler(v));
+      return null;
     }
   );
-  return createZContainer({
-    state,
-    set,
-  });
+
+  // This seems to be a bug from TS
+  return createZContainer({ state, set }) as any;
 }

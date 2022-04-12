@@ -2743,10 +2743,15 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/json-schema@^7.0.5", "@types/json-schema@^7.0.6", "@types/json-schema@^7.0.8":
+"@types/json-schema@^7.0.5", "@types/json-schema@^7.0.8":
   version "7.0.9"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.9.tgz#97edc9037ea0c38585320b28964dde3b39e4660d"
   integrity sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ==
+
+"@types/json-schema@^7.0.9":
+  version "7.0.11"
+  resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.11.tgz#d421b6c527a3037f7c84433fd2c4229e016863d3"
+  integrity sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==
 
 "@types/json-stable-stringify@^1.0.33":
   version "1.0.34"
@@ -9141,13 +9146,14 @@ json-parse-even-better-errors@^2.3.0:
   resolved "https://registry.yarnpkg.com/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz#7c47805a94319928e05777405dc12e1f7a4ee02d"
   integrity sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==
 
-json-schema-to-ts@^1.6.4:
-  version "1.6.5"
-  resolved "https://registry.yarnpkg.com/json-schema-to-ts/-/json-schema-to-ts-1.6.5.tgz#9cc1d3806d33bc7b4700354b8d449b6ad79c3473"
-  integrity sha512-BLUdzgz50XV+NMrSg8+KrUvV7Oh1eb/kLsyPbkWXFTXTloWkAsq7MbAppibE+DyMy4PasS/7bFQPwTIHx35r+A==
+json-schema-to-ts@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/json-schema-to-ts/-/json-schema-to-ts-2.1.1.tgz#238e2a53ee938f1b22cd8f587fcb3f2f61e65d28"
+  integrity sha512-2YqyPFiVN4TL7UCAHvUd3Me42J5Ff5tKEF3G7Mmniyl1b0AWhl/YuPrcChR6mcjmny05UL9gsV4dOeIHGjGBEA==
   dependencies:
-    "@types/json-schema" "^7.0.6"
-    ts-toolbelt "^6.15.5"
+    "@types/json-schema" "^7.0.9"
+    ts-algebra "^1.0.1"
+    ts-toolbelt "^9.6.0"
 
 json-schema-traverse@^0.4.1:
   version "0.4.1"
@@ -13810,6 +13816,13 @@ tree-kill@^1.2.2:
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"
   integrity sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==
 
+ts-algebra@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/ts-algebra/-/ts-algebra-1.0.1.tgz#fb86115d26b039c761431d7abee83040410fa59b"
+  integrity sha512-4AxsR+UtXCM808JQ+x9OoHfq7xajXbh+ODpDVjahFdkXjKY4237e6aQbQK9KXr3X97M8E7mXNYf9VkUYJ0RLpw==
+  dependencies:
+    ts-toolbelt "^9.6.0"
+
 ts-interface-checker@^0.1.9:
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/ts-interface-checker/-/ts-interface-checker-0.1.13.tgz#784fd3d679722bc103b1b4b8030bcddb5db2a699"
@@ -13820,10 +13833,10 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-ts-toolbelt@^6.15.5:
-  version "6.15.5"
-  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.5.tgz#cb3b43ed725cb63644782c64fbcad7d8f28c0a83"
-  integrity sha512-FZIXf1ksVyLcfr7M317jbB67XFJhOO1YqdTcuGaq9q5jLUoTikukZ+98TPjKiP2jC5CgmYdWWYs0s2nLSU0/1A==
+ts-toolbelt@^9.6.0:
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-9.6.0.tgz#50a25426cfed500d4a09bd1b3afb6f28879edfd5"
+  integrity sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==
 
 tsconfig-paths@^3.12.0, tsconfig-paths@^3.9.0:
   version "3.13.0"

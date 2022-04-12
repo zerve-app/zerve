@@ -18,15 +18,26 @@ export type ZAction<
   ) => Promise<FromSchema<ResponseSchema>>;
 };
 
-export type ZContainer<Zeds extends Record<string, AnyZed>> = {
+export type ZContainer<Zeds extends Record<string, any>> = {
   zType: "Container";
   z: Zeds;
   get: <S extends keyof Zeds>(zedKey: S) => Promise<Zeds[S]>;
 };
 
+export type AnyZContainer = {
+  zType: "Container";
+  z: Record<string, any>;
+  get: (zedKey: any) => Promise<any>;
+};
+
 export type ZAuthContainer<Zeds extends Record<string, AnyZed>> = {
   zType: "AuthContainer";
   getAuthZed: (authId: string, authKey: string) => Promise<Zeds>;
+};
+
+export type AnyZAuthContainer = {
+  zType: "AuthContainer";
+  getAuthZed: (authId: string, authKey: string) => Promise<Record<string, any>>;
 };
 
 export type ZGroup<
@@ -38,6 +49,13 @@ export type ZGroup<
   getChild: (zedKey: string) => Promise<ChildZed | undefined>;
   get: (options: GetOptions) => Promise<FromSchema<GetSchema>>;
   valueSchema: GetSchema;
+};
+
+export type AnyZGroup = {
+  zType: "Group";
+  getChild: (zedKey: string) => Promise<any | undefined>;
+  get: (options: any) => Promise<any>;
+  valueSchema: JSONSchema;
 };
 
 export type ZGettable<GetSchema extends JSONSchema, GetOptions> = {
@@ -54,12 +72,12 @@ export type ZStatic<Value> = {
 export const AnySchema = {} as const;
 
 export type AnyZed =
-  | ZAction<any, any>
-  | ZContainer<any>
-  | ZAuthContainer<any>
-  | ZGroup<any, any, any>
-  | ZGettable<any, any>
-  | ZObservable<any>
+  | ZAction<JSONSchema, JSONSchema>
+  | AnyZContainer
+  | AnyZAuthContainer
+  | AnyZGroup
+  | ZGettable<JSONSchema, any>
+  | ZObservable<JSONSchema>
   | ZStatic<any>;
 
 export function createZAction<
@@ -75,14 +93,14 @@ export function createZAction<
   return { zType: "Action", payloadSchema, responseSchema, call };
 }
 
-export function createZGettable<StateSchema, GetOptions>(
+export function createZGettable<StateSchema extends JSONSchema, GetOptions>(
   valueSchema: StateSchema,
   get: (o: GetOptions) => Promise<FromSchema<StateSchema>>
 ): ZGettable<StateSchema, GetOptions> {
   return { zType: "Gettable", get, valueSchema };
 }
 
-export function createZContainer<Zeds extends Record<string, AnyZed>>(
+export function createZContainer<Zeds extends Record<string, any>>(
   z: Zeds
 ): ZContainer<Zeds> {
   return {
@@ -90,7 +108,7 @@ export function createZContainer<Zeds extends Record<string, AnyZed>>(
     z,
     get: async (zedKey) => {
       if (z[zedKey] === undefined)
-        throw new Error(`Cannot find ${zedKey} in Zeds`);
+        throw new Error(`Cannot find ${String(zedKey)} in Zeds`);
       return z[zedKey];
     },
   };
@@ -98,6 +116,7 @@ export function createZContainer<Zeds extends Record<string, AnyZed>>(
 
 export function createZAuthContainer<AuthZed extends AnyZed>(
   getAuthZed: (authId: string, authKey: string) => Promise<AuthZed>
+  // There is a legit error below, ZAuthContainer expects Record<string, AnyZed>
 ): ZAuthContainer<AuthZed> {
   return {
     zType: "AuthContainer",
@@ -106,6 +125,7 @@ export function createZAuthContainer<AuthZed extends AnyZed>(
 }
 
 const NullSchema = { type: "null" } as const;
+
 export function createZGroup<ChildZType extends AnyZed>(
   getChild: (key: string) => Promise<ChildZType | undefined>
 ): ZGroup<ChildZType, undefined, typeof NullSchema> {
