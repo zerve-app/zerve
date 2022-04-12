@@ -24,6 +24,11 @@ export type ZContainer<Zeds extends Record<string, AnyZed>> = {
   get: <S extends keyof Zeds>(zedKey: S) => Promise<Zeds[S]>;
 };
 
+export type ZAuthContainer<Zeds extends Record<string, AnyZed>> = {
+  zType: "AuthContainer";
+  getAuthZed: (authId: string, authKey: string) => Promise<Zeds>;
+};
+
 export type ZGroup<
   ChildZed extends AnyZed,
   GetOptions,
@@ -51,6 +56,7 @@ export const AnySchema = {} as const;
 export type AnyZed =
   | ZAction<any, any>
   | ZContainer<any>
+  | ZAuthContainer<any>
   | ZGroup<any, any, any>
   | ZGettable<any, any>
   | ZObservable<any>
@@ -87,6 +93,15 @@ export function createZContainer<Zeds extends Record<string, AnyZed>>(
         throw new Error(`Cannot find ${zedKey} in Zeds`);
       return z[zedKey];
     },
+  };
+}
+
+export function createZAuthContainer<AuthZed extends AnyZed>(
+  getAuthZed: (authId: string, authKey: string) => Promise<AuthZed>
+): ZAuthContainer<AuthZed> {
+  return {
+    zType: "AuthContainer",
+    getAuthZed,
   };
 }
 

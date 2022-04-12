@@ -141,7 +141,9 @@ export function exploreUnionSchema(schema) {
           if (typeof walkingKeyMap === "number") return;
           const theValue = value[unionKey];
           const nextWalk =
-            walkingKeyMap[theValue] || walkingKeyMap["undefined"];
+            walkingKeyMap[theValue] == null
+              ? walkingKeyMap["undefined"]
+              : walkingKeyMap[theValue];
 
           walkingKeyMap = nextWalk;
         });

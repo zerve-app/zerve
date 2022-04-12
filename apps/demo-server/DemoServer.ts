@@ -1,10 +1,15 @@
 import { startZedServer } from "@zerve/node";
-import { createZAction, createZContainer, createZState } from "@zerve/core";
+import {
+  createZAction,
+  createZContainer,
+  createZGettable,
+  createZState,
+} from "@zerve/core";
 
 export async function startApp() {
   const calculatorValue = createZState({ type: "number" } as const, 0);
 
-  const calculator = createZContainer({
+  const realTimeCalculator = createZContainer({
     value: calculatorValue.z.state,
     add: createZAction(
       { type: "number", title: "Number to Add" } as const,
@@ -17,8 +22,25 @@ export async function startApp() {
     ),
   });
 
+  let internalValue = 0;
+
+  const calculator = createZContainer({
+    value: createZGettable({ type: "number" } as const, async () => {
+      return internalValue;
+    }),
+    add: createZAction(
+      { type: "number", title: "Number to Add" } as const,
+      { type: "number" } as const,
+      async (value: number) => {
+        internalValue += value;
+        return internalValue;
+      }
+    ),
+  });
+
   const zRoot = createZContainer({
     calculator,
+    realTimeCalculator,
   });
 
   await startZedServer(3999, zRoot);

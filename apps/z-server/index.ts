@@ -2,6 +2,11 @@ import { join } from "path";
 import { startZedServer } from "@zerve/node";
 
 import { createZContainer } from "@zerve/core";
+import {
+  createAuth,
+  createEmailAuthStrategy,
+  createSMSAuthStrategy,
+} from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore } from "@zerve/store";
 import { createSystemFiles } from "@zerve/system-files";
@@ -82,10 +87,19 @@ export async function startApp() {
   });
 
   const zRoot = createZContainer({
+    Auth: await createAuth(
+      {
+        Email: await createEmailAuthStrategy(Email),
+        Phone: await createSMSAuthStrategy(SMS),
+      },
+      createSystemFiles(join(dataDir, "Auth"))
+    ),
     Store,
     TestLedger,
     Admin,
   });
+
+  // const c = zRoot.z.Admin.z.Commands.z.command
 
   await startZedServer(port, zRoot);
 }

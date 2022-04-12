@@ -27,6 +27,9 @@ export const NullSchemaSchema = {
   additionalProperties: false,
 } as const;
 export type NullSchema = FromSchema<typeof NullSchemaSchema>;
+export const NullSchema = {
+  type: "null",
+} as const;
 
 export const NumberSchemaSchema = {
   type: "object",

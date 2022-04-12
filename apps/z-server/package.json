@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@zerve/core": "*",
+    "@zerve/auth": "*",
     "@zerve/node": "*",
     "@zerve/data": "*",
     "@zerve/ledger": "*",

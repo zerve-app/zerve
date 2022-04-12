@@ -4,6 +4,8 @@ import sgMail from "@sendgrid/mail";
 
 let hasSetupSG = false;
 
+export type ZMessageEmail = ReturnType<typeof createZMessageEmail>;
+
 export function createZMessageEmail(config: {
   sendgridKey: string;
   fromEmail: string;

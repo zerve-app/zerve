@@ -10,6 +10,8 @@ export const PhoneNumberSchema = {
   maxLength: 15,
 } as const;
 
+export type ZMessageSMS = ReturnType<typeof createZMessageSMS>;
+
 export function createZMessageSMS(config: {
   twilioAccountSid: string;
   twilioKeySid: string;

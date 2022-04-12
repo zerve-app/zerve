@@ -13,6 +13,8 @@ import {
   defineKeySource,
   getValidatorOfSchema,
   validateWithSchema,
+  ZAuthContainer,
+  GenericError,
 } from "@zerve/core";
 import express, { Request, Response } from "express";
 import { createJSONHandler } from "./Server";
@@ -37,6 +39,10 @@ type ZConnectionMessage = ZConnectionHelloMessage | ZConnectionUpdateMessage;
 
 type Client = {
   send: (message: ZConnectionMessage) => void;
+};
+
+export type HeaderStuffs = {
+  auth?: Readonly<[string, string]>;
 };
 
 export async function startZedServer(port: number, zed: AnyZed) {
@@ -73,6 +79,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
   >(
     zed: ZGettable<StateSchema, GetOptions>,
     method: Request["method"],
+    headers: HeaderStuffs,
     query: GetOptions
   ) {
     if (method === "GET") {
@@ -88,6 +95,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
   >(
     zed: ZObservable<StateSchema>,
     method: Request["method"],
+    headers: HeaderStuffs,
     contextPath: string[],
     query?: {
       zClientSubscribe?: string;
@@ -115,6 +123,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
   async function handleActionZedRequest<Schema, Response>(
     zed: ZAction<Schema, Response>,
     method: Request["method"],
+    headers: HeaderStuffs,
     body: any
   ) {
     if (method === "GET") {
@@ -133,7 +142,8 @@ export async function startZedServer(port: number, zed: AnyZed) {
 
   async function handleZContainerRequest<Z extends Record<string, AnyZed>>(
     zed: ZContainer<Z>,
-    method: Request["method"]
+    method: Request["method"],
+    headers: HeaderStuffs
   ) {
     if (method === "GET") {
       return { children: Object.keys(zed.z) };
@@ -145,9 +155,33 @@ export async function startZedServer(port: number, zed: AnyZed) {
     );
   }
 
+  async function handleZAuthContainerRequest<
+    AuthZ extends Record<string, AnyZed>
+  >(
+    zed: ZAuthContainer<AuthZ>,
+    query: ParsedQs,
+    method: Request["method"],
+    contextPath: string[],
+    headers: HeaderStuffs,
+    body: any
+  ) {
+    if (!headers.auth) throw new Error("Auth header not provided!");
+    const authZed = await zed.getAuthZed(headers.auth[0], headers.auth[1]);
+
+    return await handleZNodeRequest(
+      authZed,
+      query,
+      method,
+      contextPath,
+      headers,
+      body
+    );
+  }
+
   async function handleZGroupRequest<Z extends AnyZed, O extends ParsedQs, R>(
     zed: ZGroup<Z, O, R>,
     method: Request["method"],
+    headers: HeaderStuffs,
     query: O
   ) {
     if (method === "GET") {
@@ -188,28 +222,44 @@ export async function startZedServer(port: number, zed: AnyZed) {
     query: ParsedQs,
     method: Request["method"],
     contextPath: string[],
-    headers: Request["headers"],
+    headers: HeaderStuffs,
     body: any
   ) {
     if (zed.zType === "Gettable") {
-      return await handleGetZedRequest(zed, method, query);
+      return await handleGetZedRequest(zed, method, headers, query);
     }
     if (zed.zType === "Observable") {
-      return await handleObserveZedRequest(zed, method, contextPath, query);
+      return await handleObserveZedRequest(
+        zed,
+        method,
+        headers,
+        contextPath,
+        query
+      );
     }
     if (zed.zType === "Action") {
-      return await handleActionZedRequest(zed, method, body);
+      return await handleActionZedRequest(zed, method, headers, body);
     }
     if (zed.zType === "Group") {
-      return await handleZGroupRequest(zed, method, query);
+      return await handleZGroupRequest(zed, method, headers, query);
     }
     if (zed.zType === "Container") {
-      return await handleZContainerRequest(zed, method);
+      return await handleZContainerRequest(zed, method, headers);
+    }
+    if (zed.zType === "AuthContainer") {
+      return await handleZAuthContainerRequest(
+        zed,
+        query,
+        method,
+        contextPath,
+        headers,
+        body
+      );
     }
     if (zed.zType === "Static") {
       return await handleZStaticRequest(zed);
     }
-    throw new Error("unknown zed");
+    throw new Error("unknown zed: " + zed.zType);
   }
 
   const serviceInfo = {
@@ -258,13 +308,19 @@ export async function startZedServer(port: number, zed: AnyZed) {
         ),
       };
     }
+    if (zed.zType === "AuthContainer") {
+      return {
+        ...serviceInfo,
+        ".t": "AuthContainer",
+      };
+    }
     if (zed.zType === "Static") {
       return {
         ...serviceInfo,
         ".t": "Static",
       };
     }
-    throw new Error("unknown zed");
+    throw new Error("unknown zed.t: " + zed.zType);
   }
 
   async function handleZRequest<Z extends AnyZed>(
@@ -273,7 +329,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     query: ParsedQs,
     method: Request["method"],
     contextPath: string[],
-    headers: Request["headers"],
+    headers: HeaderStuffs,
     body: any
   ): Promise<any> {
     if (path.length === 0)
@@ -341,6 +397,13 @@ export async function startZedServer(port: number, zed: AnyZed) {
     const pathSegments = req.path
       .split("/")
       .filter((segment) => segment !== "");
+    const headers: HeaderStuffs = {};
+    if (req.headers.authorization) {
+      const encoded = req.headers.authorization.slice(6);
+      const decoded = atob(encoded);
+      const pair = decoded.split(":");
+      headers.auth = [pair[0], pair[1]] as const;
+    }
     if (
       (req.method === "POST" ||
         req.method === "PATCH" ||
@@ -365,7 +428,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
             req.query,
             req.method,
             [],
-            req.headers,
+            headers,
             body
           )
         );
@@ -379,7 +442,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
           req.query,
           req.method,
           [],
-          req.headers,
+          headers,
           undefined
         )
       );
