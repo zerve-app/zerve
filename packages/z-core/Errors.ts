@@ -46,3 +46,21 @@ export class WrongMethodError<
     super({ code, message, params, httpStatus: 405 });
   }
 }
+
+export class UnauthorizedError<
+  ErrorCode = "Unauthorized",
+  Params = undefined
+> extends GenericError<ErrorCode, Params> {
+  constructor(code: ErrorCode, message = "Unauthorized", params: Params) {
+    super({ code, message, params, httpStatus: 401 });
+  }
+}
+
+export class ForbiddenError<
+  ErrorCode = "Forbidden",
+  Params = undefined
+> extends GenericError<ErrorCode, Params> {
+  constructor(code: ErrorCode, message = "Forbidden", params: Params) {
+    super({ code, message, params, httpStatus: 403 });
+  }
+}

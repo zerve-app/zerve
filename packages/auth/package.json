@@ -6,8 +6,9 @@
   "types": "./index.ts",
   "dependencies": {
     "@zerve/core": "*",
-    "@zerve/system-files": "*",
+    "@zerve/message-email-sendgrid": "*",
     "@zerve/message-sms-twilio": "*",
-    "@zerve/message-email-sendgrid": "*"
+    "@zerve/system-files": "*",
+    "json-stable-stringify": "^1.0.1"
   }
 }

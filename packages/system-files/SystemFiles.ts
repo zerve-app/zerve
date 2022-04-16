@@ -4,7 +4,15 @@ import {
   createZStatic,
   RequestError,
 } from "@zerve/core";
-import { writeFile, stat, readdir, readFile, mkdirp, move } from "fs-extra";
+import {
+  writeFile,
+  stat,
+  readdir,
+  readFile,
+  mkdirp,
+  move,
+  unlink,
+} from "fs-extra";
 import { join } from "path";
 
 function ensureNoPathEscape(path: string) {
@@ -184,9 +192,30 @@ export function createSystemFiles<FilesRoot extends string>(
     }
   );
 
+  const DeleteFile = createZAction(
+    {
+      type: "object",
+      required: ["path"],
+      additionalProperties: false,
+      properties: {
+        path: { type: "string" },
+      },
+    } as const,
+    {
+      type: "null",
+    } as const,
+    async ({ path }) => {
+      ensureNoPathEscape(path);
+      const fullPath = join(filesRoot, path);
+      await unlink(fullPath);
+      return null;
+    }
+  );
+
   return createZContainer({
     WriteFile,
     ReadFile,
+    DeleteFile,
     Stat,
     ReadDir,
     MakeDir,

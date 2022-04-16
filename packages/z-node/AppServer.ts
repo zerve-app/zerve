@@ -15,6 +15,7 @@ import {
   validateWithSchema,
   ZAuthContainer,
   GenericError,
+  UnauthorizedError,
 } from "@zerve/core";
 import express, { Request, Response } from "express";
 import { createJSONHandler } from "./Server";
@@ -126,6 +127,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     headers: HeaderStuffs,
     body: any
   ) {
+    console.log("HANDLE ACTIPM REQUEST", { method, body, zt: zed.call });
     if (method === "GET") {
       return {
         requestSchema: zed.payloadSchema,
@@ -165,7 +167,8 @@ export async function startZedServer(port: number, zed: AnyZed) {
     headers: HeaderStuffs,
     body: any
   ) {
-    if (!headers.auth) throw new Error("Auth header not provided!");
+    if (!headers.auth)
+      throw new UnauthorizedError("Unauthorized", "Unauthorized", {});
     const authZed = await zed.getAuthZed(headers.auth[0], headers.auth[1]);
 
     return await handleZNodeRequest(
@@ -366,6 +369,22 @@ export async function startZedServer(port: number, zed: AnyZed) {
       );
     }
 
+    if (zed.zType === "AuthContainer") {
+      const { auth } = headers;
+      const authZed = auth && (await zed.getAuthZed(auth[0], auth[1]));
+      if (!authZed)
+        throw new UnauthorizedError("Unauthorized", "Unauthorized", {});
+      return await handleZRequest(
+        authZed,
+        path,
+        query,
+        method,
+        contextPath,
+        headers,
+        body
+      );
+    }
+
     if (zed.zType === "Group") {
       const [pathTerm, ...restPathTerms] = path;
 
@@ -417,7 +436,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
           return;
         }
         let body = req.body;
-        if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT != undefined) {
+        if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT !== undefined) {
           body = body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT;
         }
         handleJSONPromise(
