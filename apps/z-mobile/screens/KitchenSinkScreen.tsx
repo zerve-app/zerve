@@ -39,6 +39,14 @@ export default function KitchenSinkScreen({
               },
             },
             {
+              key: "richText",
+              title: "Rich Text Editor",
+              icon: "file",
+              onPress: () => {
+                navigation.navigate("TestRichText");
+              },
+            },
+            {
               key: "sort",
               title: "Sort Example",
               icon: "list-ul",

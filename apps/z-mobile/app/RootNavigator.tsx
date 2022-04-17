@@ -31,6 +31,7 @@ import ChainSchemasScreen from "../screens/ChainSchemasScreen";
 import ConnectionSetupScreen from "../screens/ConnectionSetupScreen";
 import HistoryEventScreen from "../screens/HistoryEventScreen";
 import ChainSchemaScreen from "../screens/ChainSchemaScreen";
+import TestRichTextScreen from "../screens/TestRichTextScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -139,6 +140,11 @@ function SettingsNavigator() {
       <SettingsStack.Screen
         name="TestJSONInput"
         component={TestJSONInputScreen}
+        options={DefaultScreenOptions}
+      />
+      <SettingsStack.Screen
+        name="TestRichText"
+        component={TestRichTextScreen}
         options={DefaultScreenOptions}
       />
       <SettingsStack.Screen
