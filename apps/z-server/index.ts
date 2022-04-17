@@ -92,11 +92,13 @@ export async function startApp() {
         Email: await createEmailAuthStrategy(Email),
         Phone: await createSMSAuthStrategy(SMS),
       },
-      createSystemFiles(join(dataDir, "Auth"))
+      createSystemFiles(join(dataDir, "Auth")),
+      (z) => {
+        return { ...z, Admin };
+      }
     ),
     Store,
     TestLedger,
-    Admin,
   });
 
   // const c = zRoot.z.Admin.z.Commands.z.command

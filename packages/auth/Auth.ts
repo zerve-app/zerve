@@ -1,4 +1,5 @@
 import {
+  AnyZed,
   AnySchema,
   createZAction,
   createZAuthContainer,
@@ -37,8 +38,13 @@ export const UserInfoSchema = {
 export type AuthenticatorFileData = FromSchema<typeof UserInfoSchema>;
 
 export async function createAuth<
-  Strategies extends Record<string, AuthStrategy<any, any>>
->(strategies: Strategies, files: SystemFilesModule) {
+  Strategies extends Record<string, AuthStrategy<any, any>>,
+  UserZeds extends Record<string, AnyZed>
+>(
+  strategies: Strategies,
+  files: SystemFilesModule,
+  getUserZeds: (userZeds: Record<string, AnyZed>) => UserZeds = (u) => u
+) {
   await files.z.MakeDir.call({ path: "" });
 
   const createSessionPayloadSchema = {
@@ -152,7 +158,7 @@ export async function createAuth<
             {}
           );
         }
-        return createZContainer({
+        const defaultUserZeds = {
           authenticatorId: createZStatic(authenticatorId),
           info: createZGettable(UserInfoSchema, async () => {
             const authenticator: AuthenticatorFileData =
@@ -193,7 +199,8 @@ export async function createAuth<
             );
             return null;
           }),
-        });
+        };
+        return createZContainer(getUserZeds(defaultUserZeds));
       }
     ),
   });
