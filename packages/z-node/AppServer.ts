@@ -127,7 +127,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
     headers: HeaderStuffs,
     body: any
   ) {
-    console.log("HANDLE ACTIPM REQUEST", { method, body, zt: zed.call });
     if (method === "GET") {
       return {
         requestSchema: zed.payloadSchema,
@@ -136,7 +135,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     } else if (method === "POST") {
       const validBody = validateWithSchema(zed.payloadSchema, body);
       const result = await zed.call(validBody);
-      return result;
+      return result || null;
     } else {
       throw new WrongMethodError("WrongMethod", "Method not available", {});
     }
@@ -270,7 +269,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     ".v": "0.1.0",
   };
 
-  function handleZNodeTypeRequest(zed: AnyZed) {
+  function handleZNodeTypeSummaryRequest(zed: AnyZed) {
     if (zed.zType === "Gettable") {
       return {
         ...serviceInfo,
@@ -304,11 +303,8 @@ export async function startZedServer(port: number, zed: AnyZed) {
       return {
         ...serviceInfo,
         ".t": "Container",
-        children: Object.fromEntries(
-          Object.entries(zed.z).map(([childKey, childZed]) => {
-            return [childKey, handleZNodeTypeRequest(childZed)];
-          })
-        ),
+        meta: zed.meta,
+        childrenKeys: Object.keys(zed.z),
       };
     }
     if (zed.zType === "AuthContainer") {
@@ -324,6 +320,34 @@ export async function startZedServer(port: number, zed: AnyZed) {
       };
     }
     throw new Error("unknown zed.t: " + zed.zType);
+  }
+
+  async function handleZNodeTypeRequest(zed: AnyZed, headers: HeaderStuffs) {
+    if (zed.zType === "Container") {
+      return {
+        ...serviceInfo,
+        ".t": "Container",
+        meta: zed.meta,
+        children: Object.fromEntries(
+          Object.entries(zed.z).map(([childKey, childZed]) => {
+            return [childKey, handleZNodeTypeSummaryRequest(childZed)];
+          })
+        ),
+      };
+    }
+    if (zed.zType === "AuthContainer") {
+      const { auth } = headers;
+      const authZed = auth && (await zed.getAuthZed(auth[0], auth[1]));
+      if (!authZed)
+        throw new UnauthorizedError("Unauthorized", "Unauthorized", {});
+
+      return {
+        ...serviceInfo,
+        ".t": "AuthContainer",
+        authType: await handleZNodeTypeRequest(authZed, headers),
+      };
+    }
+    return handleZNodeTypeSummaryRequest(zed);
   }
 
   async function handleZRequest<Z extends AnyZed>(
@@ -346,7 +370,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
       );
 
     if (path.length === 1 && path[0] === ".type") {
-      return await handleZNodeTypeRequest(zed);
+      return await handleZNodeTypeRequest(zed, headers);
     }
 
     if (zed.zType === "Container") {
@@ -408,7 +432,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
   }
 
   const jsonHandler = json({
-    //   strict: true, // considered false here (thanks to __Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT for edge case and https://github.com/expressjs/body-parser/issues/461)
+    //   strict: true, // considered false here (thanks to _$RAW_VALUE for edge case and https://github.com/expressjs/body-parser/issues/461)
     strict: true,
   });
 
@@ -436,8 +460,8 @@ export async function startZedServer(port: number, zed: AnyZed) {
           return;
         }
         let body = req.body;
-        if (body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT !== undefined) {
-          body = body.__Z_RAW_VALUE_AND_BODY_PARSER_IS_IGNORANT;
+        if (body._$RAW_VALUE !== undefined) {
+          body = body._$RAW_VALUE;
         }
         handleJSONPromise(
           res,

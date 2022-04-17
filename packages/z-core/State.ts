@@ -1,6 +1,9 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
+import { createZMetaContainer } from ".";
 import { createZObservable } from "./Observable";
 import { createZAction, createZContainer } from "./Zed";
+
+const StateContainerContractMeta = { zContract: "State" } as const;
 
 export function createZState<Schema extends JSONSchema>(
   schema: Schema,
@@ -26,8 +29,11 @@ export function createZState<Schema extends JSONSchema>(
       handlers.forEach((handler) => handler(v));
     }
   );
-  return createZContainer({
-    state,
-    set,
-  });
+  return createZMetaContainer(
+    {
+      state,
+      set,
+    },
+    StateContainerContractMeta
+  );
 }

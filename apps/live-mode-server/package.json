@@ -1,5 +1,5 @@
 {
-  "name": "livemode-server",
+  "name": "live-mode-server",
   "private": true,
   "version": "0.0.0",
   "types": "LiveModeServer.ts",

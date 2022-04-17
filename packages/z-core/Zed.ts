@@ -18,9 +18,10 @@ export type ZAction<
   ) => Promise<FromSchema<ResponseSchema>>;
 };
 
-export type ZContainer<Zeds extends Record<string, AnyZed>> = {
+export type ZContainer<Zeds extends Record<string, AnyZed>, Meta> = {
   zType: "Container";
   z: Zeds;
+  meta: Meta;
   get: <S extends keyof Zeds>(zedKey: S) => Promise<Zeds[S]>;
 };
 
@@ -55,7 +56,7 @@ export const AnySchema = {} as const;
 
 export type AnyZed =
   | ZAction<any, any>
-  | ZContainer<any>
+  | ZContainer<any, any>
   | ZAuthContainer<any>
   | ZGroup<any, any, any>
   | ZGettable<any, any>
@@ -84,10 +85,27 @@ export function createZGettable<StateSchema, GetOptions>(
 
 export function createZContainer<Zeds extends Record<string, AnyZed>>(
   z: Zeds
+): ZContainer<Zeds, undefined> {
+  return {
+    zType: "Container",
+    z,
+    meta: undefined,
+    get: async (zedKey) => {
+      if (z[zedKey] === undefined)
+        throw new Error(`Cannot find ${zedKey} in Zeds`);
+      return z[zedKey];
+    },
+  };
+}
+
+export function createZMetaContainer<Zeds extends Record<string, AnyZed>, Meta>(
+  z: Zeds,
+  meta: Meta
 ): ZContainer<Zeds> {
   return {
     zType: "Container",
     z,
+    meta,
     get: async (zedKey) => {
       if (z[zedKey] === undefined)
         throw new Error(`Cannot find ${zedKey} in Zeds`);

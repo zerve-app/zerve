@@ -9,11 +9,14 @@ import {
   FromSchema,
   NullSchema,
   UnauthorizedError,
+  createZMetaContainer,
 } from "@zerve/core";
 import { join } from "path";
 import { randomBytes, createHash } from "crypto";
 import { createSystemFiles, SystemFilesModule } from "@zerve/system-files";
 import { AuthStrategy } from "./AuthStrategy";
+
+const AuthContainerContractMeta = { zContract: "Auth" } as const;
 
 function sha256SumHex(value: string) {
   const hash = createHash("sha256")
@@ -72,136 +75,143 @@ export async function createAuth<
     )
   );
 
-  return createZContainer({
-    createSession: createZAction(
-      createSessionPayloadSchema,
-      NullSchema,
-      async (payload) => {
-        const strategyName: string = payload.strategy;
-        const strategy = strategies[strategyName];
-        const strategyFiles = strategiesFiles[strategyName];
-        if (!strategy || !strategyFiles) {
-          throw new Error(`Strategy ${strategyName} not available.`);
-        }
-        const approvedSession = await strategy.authorize(
-          payload.payload,
-          strategyFiles
-        );
-        if (approvedSession) {
-          const { strategyKey } = approvedSession;
-          const authenticatorId = sha256SumHex(
-            `${strategyName}-${strategyKey}`
-          );
-          const userJsonPath = join(
-            "users",
-            authenticatorId,
-            `authenticator.json`
-          );
-          const prevUser: AuthenticatorFileData | undefined =
-            await files.z.ReadJSON.call({ path: userJsonPath });
-          let user: AuthenticatorFileData =
-            prevUser ||
-            (() => {
-              return {
-                creationTime: Date.now(),
-                authenticatorId,
-                strategyKey,
-                strategyName,
-              };
-            })();
-          if (prevUser !== user) {
-            await files.z.MakeDir.call({
-              path: join("users", authenticatorId),
-            });
-            await files.z.WriteJSON.call({
-              path: userJsonPath,
-              value: user,
-            });
+  return createZMetaContainer(
+    {
+      createSession: createZAction(
+        createSessionPayloadSchema,
+        NullSchema,
+        async (payload) => {
+          const strategyName: string = payload.strategy;
+          const strategy = strategies[strategyName];
+          const strategyFiles = strategiesFiles[strategyName];
+          if (!strategy || !strategyFiles) {
+            throw new Error(`Strategy ${strategyName} not available.`);
           }
-
-          const sessionId = randomBytes(60).toString("hex");
-          const sessionToken = randomBytes(60).toString("hex");
-          const session = {
-            id: sessionId,
-            token: sessionToken,
-            authenticatorId,
-            startTime: Date.now(),
-            strategyKey,
-            strategyName,
-          };
-          await files.z.WriteJSON.call({
-            path: join("users", authenticatorId, `session-${sessionId}.json`),
-            value: session,
-          });
-          return {
-            authUser: authenticatorId,
-            authPass: `${sessionId}.${sessionToken}`,
-          };
-        }
-        return null;
-      }
-    ),
-
-    user: createZAuthContainer(
-      async (authenticatorId: string, authPassword: string) => {
-        const [sessionId, sessionToken] = authPassword.split(".");
-        const session =
-          authenticatorId &&
-          sessionId &&
-          (await files.z.ReadJSON.call({
-            path: join("users", authenticatorId, `session-${sessionId}.json`),
-          }));
-        if (!session) {
-          throw new UnauthorizedError(
-            "Unauthorized",
-            "Provide a session in the Authentication header.",
-            {}
+          const approvedSession = await strategy.authorize(
+            payload.payload,
+            strategyFiles
           );
-        }
-        const defaultUserZeds = {
-          authenticatorId: createZStatic(authenticatorId),
-          info: createZGettable(UserInfoSchema, async () => {
-            const authenticator: AuthenticatorFileData =
-              await files.z.ReadJSON.call({
-                path: join("users", authenticatorId, `authenticator.json`),
-              });
-            const strategy = strategies[authenticator.strategyName];
-            const strategyFiles = strategiesFiles[authenticator.strategyName];
-            if (!strategy || !strategyFiles) {
-              throw new Error("cannot look up this strategy");
-            }
-            // const strategyDetails = await strategy.getDetails(
-            //   strategyFiles,
-            //   authenticator.strategyKey
-            // ); // includes the email/address info...
-            return authenticator;
-          }),
-          logout: createZAction(NullSchema, NullSchema, async () => {
-            await files.z.DeleteFile.call({
-              path: join("users", authenticatorId, `session-${sessionId}.json`),
-            });
-            return null;
-          }),
-          logoutAll: createZAction(NullSchema, NullSchema, async () => {
-            const sessionFiles = (
-              await files.z.ReadDir.call({
+          if (approvedSession) {
+            const { strategyKey } = approvedSession;
+            const authenticatorId = sha256SumHex(
+              `${strategyName}-${strategyKey}`
+            );
+            const userJsonPath = join(
+              "users",
+              authenticatorId,
+              `authenticator.json`
+            );
+            const prevUser: AuthenticatorFileData | undefined =
+              await files.z.ReadJSON.call({ path: userJsonPath });
+            let user: AuthenticatorFileData =
+              prevUser ||
+              (() => {
+                return {
+                  creationTime: Date.now(),
+                  authenticatorId,
+                  strategyKey,
+                  strategyName,
+                };
+              })();
+            if (prevUser !== user) {
+              await files.z.MakeDir.call({
                 path: join("users", authenticatorId),
-              })
-            ).filter(
-              (fileName: string) => !!fileName.match(/^session-(.*)\.json$/)
+              });
+              await files.z.WriteJSON.call({
+                path: userJsonPath,
+                value: user,
+              });
+            }
+
+            const sessionId = randomBytes(60).toString("hex");
+            const sessionToken = randomBytes(60).toString("hex");
+            const session = {
+              id: sessionId,
+              token: sessionToken,
+              authenticatorId,
+              startTime: Date.now(),
+              strategyKey,
+              strategyName,
+            };
+            await files.z.WriteJSON.call({
+              path: join("users", authenticatorId, `session-${sessionId}.json`),
+              value: session,
+            });
+            return {
+              authUser: authenticatorId,
+              authPass: `${sessionId}.${sessionToken}`,
+            };
+          }
+          return null;
+        }
+      ),
+
+      user: createZAuthContainer(
+        async (authenticatorId: string, authPassword: string) => {
+          const [sessionId, sessionToken] = authPassword.split(".");
+          const session =
+            authenticatorId &&
+            sessionId &&
+            (await files.z.ReadJSON.call({
+              path: join("users", authenticatorId, `session-${sessionId}.json`),
+            }));
+          if (!session) {
+            throw new UnauthorizedError(
+              "Unauthorized",
+              "Provide a session in the Authentication header.",
+              {}
             );
-            await Promise.all(
-              sessionFiles.map(async (fileName: string) => {
-                await files.z.DeleteFile.call({
-                  path: join("users", authenticatorId, fileName),
+          }
+          const defaultUserZeds = {
+            authenticatorId: createZStatic(authenticatorId),
+            info: createZGettable(UserInfoSchema, async () => {
+              const authenticator: AuthenticatorFileData =
+                await files.z.ReadJSON.call({
+                  path: join("users", authenticatorId, `authenticator.json`),
                 });
-              })
-            );
-            return null;
-          }),
-        };
-        return createZContainer(getUserZeds(defaultUserZeds));
-      }
-    ),
-  });
+              const strategy = strategies[authenticator.strategyName];
+              const strategyFiles = strategiesFiles[authenticator.strategyName];
+              if (!strategy || !strategyFiles) {
+                throw new Error("cannot look up this strategy");
+              }
+              // const strategyDetails = await strategy.getDetails(
+              //   strategyFiles,
+              //   authenticator.strategyKey
+              // ); // includes the email/address info...
+              return authenticator;
+            }),
+            logout: createZAction(NullSchema, NullSchema, async () => {
+              await files.z.DeleteFile.call({
+                path: join(
+                  "users",
+                  authenticatorId,
+                  `session-${sessionId}.json`
+                ),
+              });
+              return null;
+            }),
+            logoutAll: createZAction(NullSchema, NullSchema, async () => {
+              const sessionFiles = (
+                await files.z.ReadDir.call({
+                  path: join("users", authenticatorId),
+                })
+              ).filter(
+                (fileName: string) => !!fileName.match(/^session-(.*)\.json$/)
+              );
+              await Promise.all(
+                sessionFiles.map(async (fileName: string) => {
+                  await files.z.DeleteFile.call({
+                    path: join("users", authenticatorId, fileName),
+                  });
+                })
+              );
+              return null;
+            }),
+          };
+          return createZContainer(getUserZeds(defaultUserZeds));
+        }
+      ),
+    },
+    AuthContainerContractMeta
+  );
 }

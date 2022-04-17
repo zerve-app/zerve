@@ -57,7 +57,7 @@ export default function RawValueScreen({
   route,
 }: HomeStackScreenProps<"RawValue">) {
   return (
-    <ScreenContainer>
+    <ScreenContainer scroll>
       <RawValuePage route={route} navigation={navigation} />
     </ScreenContainer>
   );
