@@ -74,6 +74,12 @@ export async function startApp() {
     "GenStore"
   );
 
+  const Store2 = await createGeneralStore(
+    Data,
+    createSystemFiles(join(dataDir, "GenStoreCache2")),
+    "GenStore2"
+  );
+
   const InternalCommands = createSystemCommands();
 
   const Admin = createZContainer({
@@ -98,6 +104,7 @@ export async function startApp() {
       }
     ),
     Store,
+    Store2,
     TestLedger,
   });
 

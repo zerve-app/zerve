@@ -73,13 +73,13 @@ export function useZChildren(path: string[], options?: QueryOptions) {
   });
 }
 
-export function useZConnectionSchemas(options?: QueryOptions) {
+export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
   const context = useQueryContext();
   return useQuery(
-    [context?.key, "z", "Store", "State", "$schemas"],
+    [context?.key, "z", ...storePath, "State", "$schemas"],
     async () => {
       if (!context || options?.skipLoading) return undefined;
-      const schemas = await getZ(context, ["Store", "State", "$schemas"]);
+      const schemas = await getZ(context, [...storePath, "State", "$schemas"]);
       return schemas;
     }
   );
@@ -146,8 +146,11 @@ export function connectionSchemasToZSchema(schemas) {
   return finalSchema;
 }
 
-export function useZConnectionJSONSchema(options?: QueryOptions) {
-  const schemas = useZConnectionSchemas(options);
+export function useZStoreJSONSchema(
+  storePath: string[],
+  options?: QueryOptions
+) {
+  const schemas = useZStoreSchemas(storePath, options);
   return useMemo(() => {
     return {
       ...schemas,

@@ -13,7 +13,7 @@ import {
   QueryConnectionProvider,
   useDeleteSchema,
   useSaveSchema,
-  useZConnectionJSONSchema,
+  useZStoreJSONSchema,
   useZNodeValue,
 } from "@zerve/query";
 import { useConnection } from "../app/Connection";
@@ -35,12 +35,14 @@ type NavigationProp = CompositeNavigationProp<
 function ChainSchemasPage({
   connection,
   schema,
+  storePath,
 }: {
   connection: string | null;
   schema: string;
+  storePath: string[];
 }) {
   const { data, isLoading } = useZNodeValue([
-    "Store",
+    ...storePath,
     "State",
     "$schemas",
     schema,
@@ -49,9 +51,9 @@ function ChainSchemasPage({
     data: fullSchema,
     isError,
     isLoading: isSLoading,
-  } = useZConnectionJSONSchema();
-  const saveSchema = useSaveSchema();
-  const deleteSchema = useDeleteSchema();
+  } = useZStoreJSONSchema(storePath);
+  const saveSchema = useSaveSchema(storePath);
+  const deleteSchema = useDeleteSchema(storePath);
   const { goBack, navigate } = useNavigation();
   const openOptions = useActionsSheet(() => [
     {
@@ -102,12 +104,16 @@ export default function ChainSchemaScreen({
   navigation,
   route,
 }: HomeStackScreenProps<"ChainSchema">) {
-  const { connection, schema } = route.params;
+  const { connection, schema, storePath } = route.params;
 
   return (
     <ScreenContainer scroll>
       <QueryConnectionProvider value={useConnection(connection)}>
-        <ChainSchemasPage connection={connection} schema={schema} />
+        <ChainSchemasPage
+          connection={connection}
+          schema={schema}
+          storePath={storePath}
+        />
       </QueryConnectionProvider>
     </ScreenContainer>
   );

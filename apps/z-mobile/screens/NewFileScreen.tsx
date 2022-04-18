@@ -18,7 +18,8 @@ function NewFilePage({
 }) {
   const { replace } =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  const createFile = useCreateFile();
+  const { storePath } = route.params;
+  const createFile = useCreateFile(storePath);
 
   const [name, setName] = React.useState("");
 
@@ -41,6 +42,7 @@ function NewFilePage({
             await createFile.mutate(actualName);
             replace("File", {
               name: actualName,
+              storePath,
               connection: route.params.connection,
             });
           }}

@@ -12,8 +12,7 @@ import {
   connectionSchemasToZSchema,
   QueryConnectionProvider,
   useSaveFileSchema,
-  useZConnectionJSONSchema,
-  useZConnectionSchemas,
+  useZStoreSchemas,
   useZNodeValue,
 } from "@zerve/query";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
@@ -33,17 +32,23 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "FileSchema">
 >;
 
-function FileSchemaPage({ name }: { name: string }) {
-  const { data, isLoading } = useZNodeValue(["Store", "State", name]);
+function FileSchemaPage({
+  name,
+  storePath,
+}: {
+  name: string;
+  storePath: string[];
+}) {
+  const { data, isLoading } = useZNodeValue([...storePath, "State", name]);
 
-  const { data: schemaStore } = useZConnectionSchemas();
+  const { data: schemaStore } = useZStoreSchemas(storePath);
 
   const fullSchema = useMemo(() => {
     return connectionSchemasToZSchema(schemaStore);
   }, [schemaStore]);
 
   const navigation = useNavigation<NavigationProp>();
-  const saveSchema = useSaveFileSchema(schemaStore);
+  const saveSchema = useSaveFileSchema(storePath, schemaStore);
 
   const openOptions = useActionsSheet(() => [
     {
@@ -85,12 +90,12 @@ export default function FileSchemaScreen({
   navigation,
   route,
 }: HomeStackScreenProps<"FileSchema">) {
-  const { connection, name } = route.params;
+  const { connection, name, storePath } = route.params;
 
   return (
     <ScreenContainer scroll>
       <QueryConnectionProvider value={useConnection(connection)}>
-        <FileSchemaPage name={name} />
+        <FileSchemaPage name={name} storePath={storePath} />
       </QueryConnectionProvider>
     </ScreenContainer>
   );

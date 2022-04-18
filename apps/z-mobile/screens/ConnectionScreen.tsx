@@ -21,75 +21,18 @@ import NotFoundScreen from "./NotFoundScreen";
 import { ConnectionStatusRow } from "./ConnectionInfoScreen";
 import {
   CompositeNavigationProp,
-  NavigationProp,
   useNavigation,
 } from "@react-navigation/native";
 import {
   QueryConnectionProvider,
   useQueryContext,
   useConnectionProjects,
-  useConnectionRootType,
-  useConnectionStatus,
 } from "@zerve/query";
-import { View } from "react-native";
 import { displayStoreFileName } from "@zerve/core";
 import { useActionsSheet } from "@zerve/ui-native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-const TempConstStorePath = ["Store"];
-
-export function ConnectionHome({
-  onActions,
-}: {
-  onActions: (actions: ActionButtonDef[]) => void;
-}) {
-  const connection = useQueryContext();
-  const { isConnected } = useConnectionStatus();
-  const { navigate } =
-    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  const connectionRootType = useConnectionRootType();
-  if (isConnected && connectionRootType?.data?.children?.Store) {
-    return (
-      <>
-        <ConnectionProjects
-          onActions={onActions}
-          storePath={TempConstStorePath}
-        />
-        <HStack>
-          <NewFileButton />
-        </HStack>
-        <LinkRowGroup
-          links={[
-            {
-              key: "Events",
-              title: "Event History",
-              icon: "history",
-              onPress: () => {
-                navigate("ChainHistory", {
-                  connection: connection && connection.key,
-                  storePath: TempConstStorePath,
-                });
-              },
-            },
-            {
-              key: "ServerSchemas",
-              title: "Schemas",
-              icon: "crosshairs",
-              onPress: () => {
-                navigate("ChainSchemas", {
-                  connection: connection && connection.key,
-                  storePath: TempConstStorePath,
-                });
-              },
-            },
-          ]}
-        />
-      </>
-    );
-  }
-  return null;
-}
+import { ZLoadedNode, ZNode } from "./ZNodeScreen";
 
 export function ConnectionProjects({
   onActions,
@@ -145,31 +88,6 @@ export function ConnectionProjects({
   );
 }
 
-export function NewFileButton() {
-  const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
-  const conn = useQueryContext();
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        marginBottom: 12,
-      }}
-    >
-      <Button
-        onPress={() => {
-          navigation.navigate("NewFile", { connection: conn?.key || null });
-        }}
-        small
-        title="New File"
-        left={({ color }) => (
-          <FontAwesome name="plus-circle" color={color} size={24} />
-        )}
-      />
-    </View>
-  );
-}
-
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
   NativeStackNavigationProp<HomeStackParamList, "Connection">
@@ -211,12 +129,12 @@ export function ConnectionPage({
   return (
     <ScreenContainer scroll>
       <ScreenHeader
-        title={`Connection: ${conn?.name}`}
+        title={`Connection: ${conn.name}`}
         corner={<OptionsButton onOptions={openOptions} />}
       />
       <VStack>
         <ConnectionStatusRow connection={conn} />
-        <ConnectionHome onActions={() => {}} />
+        <ZLoadedNode path={[]} />
       </VStack>
     </ScreenContainer>
   );

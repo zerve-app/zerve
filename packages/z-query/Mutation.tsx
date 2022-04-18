@@ -9,13 +9,14 @@ import { storeHistoryEvent } from "../../apps/z-mobile/app/History";
 import { useQueryContext } from "./Connection";
 import { postZAction } from "./ServerCalls";
 
-export function useCreateFile() {
+export function useCreateFile(storePath: string[]) {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
+  console.log("USE CREATE FILE", { storePath });
   return useMutation(
     async (name: string) => {
       if (conn) {
-        await postZAction(conn, ["Store", "Dispatch"], {
+        await postZAction(conn, [...storePath, "Dispatch"], {
           name: "WriteSchemaValue",
           value: {
             name,
@@ -37,23 +38,29 @@ export function useCreateFile() {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
-          "Store",
+          ...storePath,
           "State",
           ".node",
         ]);
-        queryClient.invalidateQueries([conn?.key, "z", "Store", "State", name]);
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          ...storePath,
+          "State",
+          name,
+        ]);
       },
     }
   );
 }
 
-export function useCreateSchema() {
+export function useCreateSchema(storePath: string[]) {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (schemaName: string) => {
       if (!conn) return;
-      await postZAction(conn, ["Store", "Dispatch"], {
+      await postZAction(conn, [...storePath, "Dispatch"], {
         name: "WriteSchema",
         value: {
           schemaName,
@@ -66,7 +73,7 @@ export function useCreateSchema() {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
-          "Store",
+          ...storePath,
           "State",
           "$schemas",
         ]);
@@ -75,13 +82,13 @@ export function useCreateSchema() {
   );
 }
 
-export function useDeleteFile() {
+export function useDeleteFile(storePath: string[]) {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (name: string) => {
       if (conn) {
-        await postZAction(conn, ["Store", "Dispatch"], {
+        await postZAction(conn, [...storePath, "Dispatch"], {
           name: "Delete",
           value: {
             name,
@@ -96,7 +103,7 @@ export function useDeleteFile() {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
-          "Store",
+          ...storePath,
           "State",
           ".node",
         ]);
@@ -106,13 +113,14 @@ export function useDeleteFile() {
   );
 }
 
-export function useSaveFile() {
+export function useSaveFile(storePath: string[]) {
+  if (!storePath) throw new Error("Cannot useSaveFile withtout storePath");
   const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { name: string; value: any }) => {
       if (conn) {
-        await postZAction(conn, ["Store", "Dispatch"], {
+        await postZAction(conn, [...storePath, "Dispatch"], {
           name: "WriteValue",
           value: payload,
         });
@@ -125,7 +133,7 @@ export function useSaveFile() {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
-          "Store",
+          ...storePath,
           "State",
           name,
           ".node",
@@ -136,13 +144,13 @@ export function useSaveFile() {
   );
 }
 
-export function useRenameFile() {
+export function useRenameFile(storePath: string[]) {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { prevName: string; newName: string }) => {
       if (conn) {
-        await postZAction(conn, ["Store", "Dispatch"], {
+        await postZAction(conn, [...storePath, "Dispatch"], {
           name: "RenameValue",
           value: payload,
         });
@@ -155,7 +163,7 @@ export function useRenameFile() {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
-          "Store",
+          ...storePath,
           "State", // well this is aggressive..
         ]);
       },
@@ -163,17 +171,16 @@ export function useRenameFile() {
   );
 }
 
-export function useSaveFileSchema(schemaStore: SchemaStore) {
+export function useSaveFileSchema(
+  storePath: string[],
+  schemaStore: SchemaStore
+) {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { name: string; schema: any }) => {
       if (conn) {
-        console.log(
-          "ok OK ",
-          getDefaultSchemaValue(payload.schema, schemaStore)
-        );
-        await postZAction(conn, ["Store", "Dispatch"], {
+        await postZAction(conn, [...storePath, "Dispatch"], {
           name: "WriteSchemaValue",
           value: {
             name: payload.name,
@@ -187,19 +194,25 @@ export function useSaveFileSchema(schemaStore: SchemaStore) {
     },
     {
       onSuccess: (something, { name }) => {
-        queryClient.invalidateQueries([conn?.key, "z", "Store", "State", name]);
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          ...storePath,
+          "State",
+          name,
+        ]);
       },
     }
   );
 }
 
-export function useSaveSchema() {
+export function useSaveSchema(storePath: string[]) {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { schemaName: string; schema: any }) => {
       if (conn) {
-        await postZAction(conn, ["Store", "Dispatch"], {
+        await postZAction(conn, [...storePath, "Dispatch"], {
           name: "WriteSchema",
           value: payload,
         });
@@ -212,7 +225,7 @@ export function useSaveSchema() {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
-          "Store",
+          ...storePath,
           "State",
           "$schemas",
         ]);
@@ -245,7 +258,7 @@ export function useZNodeStateWrite(path: string[]) {
   );
 }
 
-export function useDeleteSchema() {
+export function useDeleteSchema(storePath: string[]) {
   const conn = useQueryContext();
   const queryClient = useQueryClient();
   return useMutation(
@@ -253,7 +266,7 @@ export function useDeleteSchema() {
       if (!conn) {
         return;
       }
-      await postZAction(conn, ["Store", "Dispatch"], {
+      await postZAction(conn, [...storePath, "Dispatch"], {
         name: "DeleteSchema",
         value: payload,
       });
@@ -263,7 +276,7 @@ export function useDeleteSchema() {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
-          "Store",
+          ...storePath,
           "State",
           "$schemas",
         ]);

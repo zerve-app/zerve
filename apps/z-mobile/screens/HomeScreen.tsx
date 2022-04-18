@@ -29,6 +29,7 @@ import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
 import { ConnectionHome } from "./ConnectionScreen";
 import { useActionsSheet, useBottomSheet } from "@zerve/ui-native";
+import { ZLoadedNode, ZNode } from "./ZNodeScreen";
 
 function LocalDocsSection({}: {}) {
   const navigation =
@@ -124,7 +125,7 @@ function ConnectionSection({
       }
     >
       <VStack>
-        <ConnectionHome onActions={setActions} />
+        <ZLoadedNode path={[]} />
       </VStack>
     </DisclosureSection>
   );
@@ -144,7 +145,7 @@ export default function HomeScreen({
           <ConnectionSection connection={connection} />
         </QueryConnectionProvider>
       ))}
-      <LocalDocsSection />
+      {/* <LocalDocsSection /> */}
       <VStack>
         <LinkRowGroup
           links={[

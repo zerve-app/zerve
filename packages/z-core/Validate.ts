@@ -56,7 +56,6 @@ function getSchemaStoreValidator(
 ) {
   const schemasAjv = new Ajv();
   Object.entries(schemaStore).forEach(([schemaName, schema]) => {
-    console.log("lmfao?", schemaName, schema);
     schemasAjv.addSchema(
       {
         ...schema,
@@ -84,6 +83,7 @@ export function validateWithSchemaStore<Schema extends JSONSchema>(
   value: any,
   schemaStore: SchemaStore
 ): FromSchema<Schema> {
+  console.log("validate ss", { schemaStore });
   if (!schemaStoreValidatorMapMap.has(schemaStore)) {
     schemaStoreValidatorMapMap.set(
       schemaStore,

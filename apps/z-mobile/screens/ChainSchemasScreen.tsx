@@ -29,8 +29,8 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "ChainSchemas">
 >;
 
-function CreateSchemaButton({}: {}) {
-  const createSchema = useCreateSchema();
+function CreateSchemaButton({ storePath }: { storePath: string[] }) {
+  const createSchema = useCreateSchema(storePath);
   const onOpenNewSchema = useStringInput<void>(() => ({
     onValue: (name) => {
       const formattedName = prepareStoreFileName(name);
@@ -49,8 +49,18 @@ function CreateSchemaButton({}: {}) {
   );
 }
 
-function ChainSchemasPage({ connection }: { connection: string | null }) {
-  const { data, isLoading } = useZNodeValue(["Store", "State", "$schemas"]);
+function ChainSchemasPage({
+  connection,
+  storePath,
+}: {
+  connection: string | null;
+  storePath: string[];
+}) {
+  const { data, isLoading } = useZNodeValue([
+    ...storePath,
+    "State",
+    "$schemas",
+  ]);
   const { navigate } = useNavigation<NavigationProp>();
   const openOptions = useActionsSheet(() => []);
   return (
@@ -68,12 +78,16 @@ function ChainSchemasPage({ connection }: { connection: string | null }) {
             icon: "crosshairs",
             title: displayStoreFileName(schemaKey),
             onPress: () => {
-              navigate("ChainSchema", { connection, schema: schemaKey });
+              navigate("ChainSchema", {
+                connection,
+                schema: schemaKey,
+                storePath,
+              });
             },
           };
         })}
       />
-      <CreateSchemaButton />
+      <CreateSchemaButton storePath={storePath} />
     </VStack>
   );
 }
@@ -82,12 +96,12 @@ export default function ChainSchemasScreen({
   navigation,
   route,
 }: HomeStackScreenProps<"ChainSchemas">) {
-  const { connection } = route.params;
+  const { connection, storePath } = route.params;
 
   return (
     <ScreenContainer scroll>
       <QueryConnectionProvider value={useConnection(connection)}>
-        <ChainSchemasPage connection={connection} />
+        <ChainSchemasPage connection={connection} storePath={storePath} />
       </QueryConnectionProvider>
     </ScreenContainer>
   );

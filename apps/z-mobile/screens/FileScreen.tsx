@@ -13,7 +13,7 @@ import {
   useDeleteFile,
   useRenameFile,
   useSaveFile,
-  useZConnectionSchemas,
+  useZStoreSchemas,
   useZNodeValue,
 } from "@zerve/query";
 import { useConnection } from "../app/Connection";
@@ -36,22 +36,24 @@ type NavigationProp = CompositeNavigationProp<
 function FilePage({
   name,
   connection,
+  storePath,
 }: {
   name: string;
   connection: string | null;
+  storePath: string[];
 }) {
   const { data: schemaStore, isLoading: isSchemasLoading } =
-    useZConnectionSchemas();
+    useZStoreSchemas(storePath);
   const {
     data,
     isLoading: isNodeLoading,
     refetch,
-  } = useZNodeValue(["Store", "State", name]);
+  } = useZNodeValue([...storePath, "State", name]);
   const isLoading = isSchemasLoading || isNodeLoading;
   const navigation = useNavigation<NavigationProp>();
-  const deleteFile = useDeleteFile();
-  const saveFile = useSaveFile();
-  const renameFile = useRenameFile();
+  const deleteFile = useDeleteFile(storePath);
+  const saveFile = useSaveFile(storePath);
+  const renameFile = useRenameFile(storePath);
   const renameFilePrompt = useStringInput<string>((prevName: string) => {
     return {
       inputLabel: "New File Name",
@@ -80,6 +82,7 @@ function FilePage({
         navigation.navigate("FileSchema", {
           name,
           connection,
+          storePath,
         });
       },
     },
@@ -139,12 +142,12 @@ export default function FileScreen({
   navigation,
   route,
 }: HomeStackScreenProps<"File">) {
-  const { connection, name } = route.params;
+  const { connection, name, storePath } = route.params;
 
   return (
     <ScreenContainer scroll>
       <QueryConnectionProvider value={useConnection(connection)}>
-        <FilePage name={name} connection={connection} />
+        <FilePage name={name} connection={connection} storePath={storePath} />
       </QueryConnectionProvider>
     </ScreenContainer>
   );

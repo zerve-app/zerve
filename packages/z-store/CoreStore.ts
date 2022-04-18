@@ -246,7 +246,8 @@ export async function createGeneralStore(
     input: FromSchema<typeof WriteValueActionSchema>
   ): Promise<void> {
     const schemasNode = await genStore.z.State.getChild("$schemas");
-    const schemaStore = await schemasNode.get();
+    const schemaStore = (await schemasNode.get()) || EmptySchemaStore;
+
     if (input.value === undefined) {
       const storeNode = await genStore.z.State.getChild(input.name);
       const storeNodeValue = await storeNode.get();

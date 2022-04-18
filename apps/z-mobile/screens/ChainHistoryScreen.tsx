@@ -19,8 +19,14 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "ChainHistory">
 >;
 
-function ChainHistoryPage({ connection }: { connection: string | null }) {
-  const { data, isLoading } = useZNodeValue(["Store", "State"]);
+function ChainHistoryPage({
+  connection,
+  storePath,
+}: {
+  connection: string | null;
+  storePath: string[];
+}) {
+  const { data, isLoading } = useZNodeValue([...storePath, "State"]);
   const openOptions = useActionsSheet(() => []);
   return (
     <>
@@ -38,12 +44,12 @@ export default function ChainHistoryScreen({
   navigation,
   route,
 }: HomeStackScreenProps<"ChainHistory">) {
-  const { connection } = route.params;
+  const { connection, storePath } = route.params;
 
   return (
     <ScreenContainer scroll>
       <QueryConnectionProvider value={useConnection(connection)}>
-        <ChainHistoryPage connection={connection} />
+        <ChainHistoryPage connection={connection} storePath={storePath} />
       </QueryConnectionProvider>
     </ScreenContainer>
   );

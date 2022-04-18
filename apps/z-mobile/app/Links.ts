@@ -30,7 +30,7 @@ export type HomeStackParamList = {
   Home: undefined;
   History: undefined;
   HistoryEvent: { eventId: string };
-  NewFile: { connection: null | string };
+  NewFile: { connection: null | string; storePath: string[] };
   ChainHistory: { connection: null | string; storePath: string[] };
   ChainSchemas: { connection: null | string; storePath: string[] };
   ChainSchema: {
@@ -39,8 +39,8 @@ export type HomeStackParamList = {
     schema: string;
   };
   Connection: { connection: string };
-  File: { connection: null | string; name: string };
-  FileSchema: { connection: null | string; name: string };
+  File: { connection: null | string; storePath: string[]; name: string };
+  FileSchema: { connection: null | string; storePath: string[]; name: string };
   ZNode: { connection: null | string; path: string[] };
 };
 

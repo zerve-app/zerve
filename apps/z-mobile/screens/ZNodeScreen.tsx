@@ -8,16 +8,19 @@ import {
 import {
   AsyncButton,
   Button,
+  HStack,
   IconButton,
   LinkRowGroup,
   Paragraph,
   Spinner,
   VStack,
 } from "@zerve/ui";
-import { useBottomSheet } from "@zerve/ui-native";
+import { useActionsSheet, useBottomSheet } from "@zerve/ui-native";
 import {
   postZAction,
   QueryConnectionProvider,
+  useConnectionProjects,
+  useQueryContext,
   useZNode,
   useZNodeStateWrite,
   useZNodeValue,
@@ -36,7 +39,12 @@ import { getZIcon } from "../app/ZIcon";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { appendHistoryAsync, storeHistoryEvent } from "../app/History";
-import { BooleanSchema, BooleanSchemaSchema } from "@zerve/core";
+import {
+  BooleanSchema,
+  BooleanSchemaSchema,
+  displayStoreFileName,
+} from "@zerve/core";
+import { View } from "react-native";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -104,6 +112,141 @@ function ZStateNode({
         writeNode.mutate(value);
       }}
     />
+  );
+}
+
+export function NewFileButton({ path }: { path: string[] }) {
+  const navigation = useNavigation<NavigationProp>();
+  const conn = useQueryContext();
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        marginBottom: 12,
+      }}
+    >
+      <Button
+        onPress={() => {
+          navigation.navigate("NewFile", {
+            connection: conn?.key || null,
+            storePath: path,
+          });
+        }}
+        small
+        title="New File"
+        left={({ color }) => (
+          <FontAwesome name="plus-circle" color={color} size={24} />
+        )}
+      />
+    </View>
+  );
+}
+
+function StoreChildList({
+  list,
+  connection,
+  storePath,
+}: {
+  list: Array<{ key: string; name: string }>;
+  connection: string;
+  storePath: string[];
+}) {
+  const { navigate } = useNavigation<NavigationProp>();
+  if (!list?.length) return <Paragraph>No files here.</Paragraph>;
+
+  return (
+    <LinkRowGroup
+      links={list.map((child) => ({
+        key: child.key,
+        title: displayStoreFileName(child.name),
+        icon: "list-ul",
+        onPress: () => {
+          navigate("File", {
+            connection,
+            storePath,
+            name: child.key,
+          });
+        },
+      }))}
+    />
+  );
+}
+
+function ZStoreNode({
+  type,
+  value,
+  connection,
+  path,
+}: {
+  type: any;
+  value: any;
+  connection: string;
+  path: string[];
+}) {
+  if (type[".t"] !== "Container" || type?.meta?.zContract !== "Store")
+    throw new Error("Unexpected z type info for ZStoreNode");
+
+  const { navigate } = useNavigation<NavigationProp>();
+  const { data, refetch, isLoading } = useConnectionProjects(path);
+  const list = useMemo(() => {
+    return Object.entries(data?.node || {})
+      .filter(([childName]) => {
+        return childName !== "$schemas";
+      })
+      .map(([name, docValue]) => {
+        return { key: name, name, ...docValue };
+      });
+  }, [data]);
+
+  // useEffect(() => {
+  //   const actions: ActionButtonDef[] = [];
+  //   if (refetch && !isLoading) {
+  //     actions.push({
+  //       key: "refresh",
+  //       icon: "refresh",
+  //       title: "Refresh",
+  //       onPress: refetch,
+  //     });
+  //   }
+  //   onActions(actions);
+  // }, [isLoading, refetch]);
+
+  if (!connection) return <Paragraph danger>Connection unavailable.</Paragraph>;
+
+  return (
+    <>
+      <StoreChildList list={list} connection={connection} storePath={path} />
+      <HStack>
+        <NewFileButton path={path} />
+      </HStack>
+      <LinkRowGroup
+        links={[
+          {
+            key: "Events",
+            title: "Event History",
+            icon: "history",
+            onPress: () => {
+              navigate("ChainHistory", {
+                connection,
+                storePath: path,
+              });
+            },
+          },
+          {
+            key: "ServerSchemas",
+            title: "Schemas",
+            icon: "crosshairs",
+            onPress: () => {
+              navigate("ChainSchemas", {
+                connection,
+                storePath: path,
+              });
+            },
+          },
+        ]}
+      />
+    </>
   );
 }
 
@@ -234,7 +377,106 @@ function ZStaticNode({
   return <JSONSchemaForm value={value} schema={{}} />;
 }
 
-function ZNodePage({
+export function ZNode({
+  path,
+  connection,
+  type,
+  value,
+}: {
+  path: string[];
+  connection: string;
+  type: any;
+  value: any;
+}) {
+  const typeName = type?.[".t"];
+  const typeMeta = type?.meta;
+  let body = null;
+  if (typeName === "Static") {
+    body = (
+      <ZStaticNode
+        path={path}
+        type={type}
+        value={value}
+        connection={connection}
+      />
+    );
+  }
+  if (typeName === "Container") {
+    const zContract = typeMeta?.zContract;
+    if (zContract === "State") {
+      body = (
+        <ZStateNode
+          path={path}
+          type={type}
+          value={value}
+          connection={connection}
+        />
+      );
+    } else if (zContract === "Store") {
+      body = (
+        <ZStoreNode
+          path={path}
+          type={type}
+          value={value}
+          connection={connection}
+        />
+      );
+    } else {
+      zContract && console.warn(`Unhandled zContract: ${zContract}`);
+      body = (
+        <ZContainerNode
+          path={path}
+          type={type}
+          value={value}
+          connection={connection}
+        />
+      );
+    }
+  }
+  if (typeName === "Group") {
+    body = (
+      <ZGroupNode
+        path={path}
+        type={type}
+        value={value}
+        connection={connection}
+      />
+    );
+  }
+  if (typeName === "Gettable") {
+    body = (
+      <ZGettableNode
+        path={path}
+        type={type}
+        value={value}
+        connection={connection}
+      />
+    );
+  }
+  if (typeName === "Observable") {
+    body = (
+      <ZObservableNode
+        path={path}
+        type={type}
+        value={value}
+        connection={connection}
+      />
+    );
+  }
+  if (typeName === "Action") {
+    body = (
+      <ZActionNode
+        path={path}
+        type={type}
+        value={value}
+        connection={connection}
+      />
+    );
+  }
+  return body;
+}
+
+export function ZNodePage({
   path,
   connection,
 }: {
@@ -243,118 +485,35 @@ function ZNodePage({
 }) {
   const { isLoading, data, refetch, isRefetching } = useZNode(path);
   const { navigate } = useNavigation<NavigationProp>();
-  const type = data?.type[".t"];
-  const typeMeta = data?.type?.meta;
-  let body = null;
-  if (type === "Static") {
-    body = (
-      <ZStaticNode
-        path={path}
-        type={data?.type}
-        value={data?.node}
-        connection={connection}
-      />
-    );
-  }
-  if (type === "Container") {
-    const zContract = typeMeta?.zContract;
-    if (zContract === "State") {
-      body = (
-        <ZStateNode
-          path={path}
-          type={data?.type}
-          value={data?.node}
-          connection={connection}
-        />
-      );
-    } else if (zContract === "Store") {
-      body = null; //coming next
-    } else {
-      zContract && console.warn(`Unhandled zContract: ${zContract}`);
-      body = (
-        <ZContainerNode
-          path={path}
-          type={data?.type}
-          value={data?.node}
-          connection={connection}
-        />
-      );
-    }
-  }
-  if (type === "Group") {
-    body = (
-      <ZGroupNode
-        path={path}
-        type={data?.type}
-        value={data?.node}
-        connection={connection}
-      />
-    );
-  }
-  if (type === "Gettable") {
-    body = (
-      <ZGettableNode
-        path={path}
-        type={data?.type}
-        value={data?.node}
-        connection={connection}
-      />
-    );
-  }
-  if (type === "Observable") {
-    body = (
-      <ZObservableNode
-        path={path}
-        type={data?.type}
-        value={data?.node}
-        connection={connection}
-      />
-    );
-  }
-  if (type === "Action") {
-    body = (
-      <ZActionNode
-        path={path}
-        type={data?.type}
-        value={data?.node}
-        connection={connection}
-      />
-    );
-  }
-  const onOptions = useBottomSheet(({ onClose }) => (
-    <VStack>
-      <Button
-        title="Refresh"
-        left={(p) => <Icon {...p} name="refresh" />}
-        onPress={() => {
-          refetch();
-          onClose();
-        }}
-      />
-      <Button
-        title="Raw Type"
-        left={(p) => <MaterialCommunityIcons {...p} name="code-json" />}
-        onPress={() => {
-          onClose();
-          navigate("RawValue", {
-            title: `${path.join("/")} Type`,
-            value: data?.type,
-          });
-        }}
-      />
-      <Button
-        title="Raw Value"
-        left={(p) => <MaterialCommunityIcons {...p} name="code-json" />}
-        onPress={() => {
-          onClose();
-          navigate("RawValue", {
-            title: `${path.join("/")} Value`,
-            value: data?.node,
-          });
-        }}
-      />
-    </VStack>
-  ));
+
+  const onOptions = useActionsSheet(() => [
+    {
+      title: "Refresh",
+      icon: "refresh",
+      onPress: refetch,
+    },
+    {
+      title: "Raw Type",
+      icon: "code",
+      onPress: () => {
+        navigate("RawValue", {
+          title: `${path.join("/")} Type`,
+          value: data?.type,
+        });
+      },
+    },
+    {
+      title: "Raw Value",
+      icon: "code",
+      onPress: () => {
+        navigate("RawValue", {
+          title: `${path.join("/")} Value`,
+          value: data?.node,
+        });
+      },
+    },
+  ]);
+
   return (
     <>
       <ScreenHeader
@@ -369,7 +528,32 @@ function ZNodePage({
           />
         }
       ></ScreenHeader>
-      {body}
+      <ZNode
+        path={path}
+        connection={connection}
+        type={data?.type}
+        value={data?.node}
+      />
+    </>
+  );
+}
+
+export function ZLoadedNode({ path }: { path: string[] }) {
+  const conn = useQueryContext();
+  const { isLoading, data, refetch, isRefetching } = useZNode(path);
+  const { navigate } = useNavigation<NavigationProp>();
+  console.log("HI ZLoadedNode", { path, conn, isLoading, data });
+  if (!conn) return null;
+
+  return (
+    <>
+      {isLoading && <Spinner />}
+      <ZNode
+        path={path}
+        connection={conn.key}
+        type={data?.type}
+        value={data?.node}
+      />
     </>
   );
 }
