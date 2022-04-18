@@ -4,6 +4,7 @@ import {
   createZAction,
   SchemaStore,
   validateWithSchemaStore,
+  createZMetaContainer,
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
@@ -273,8 +274,13 @@ export async function createGeneralStore(
     }
   );
 
-  return createZContainer({
-    ...genStore.z,
-    Dispatch,
-  });
+  return createZMetaContainer(
+    {
+      ...genStore.z,
+      Dispatch,
+    },
+    {
+      zContract: "Store",
+    }
+  );
 }

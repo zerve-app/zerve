@@ -43,6 +43,9 @@ export const NumberSchemaSchema = {
   additionalProperties: false,
 } as const;
 export type NumberSchema = FromSchema<typeof NumberSchemaSchema>;
+export const NumberSchema = {
+  type: "number",
+} as const;
 
 // export const IntegerSchemaSchema = {
 //   type: "object",
@@ -76,6 +79,9 @@ export const StringSchemaSchema = {
   additionalProperties: false,
 } as const;
 export type ZStringSchema = FromSchema<typeof StringSchemaSchema>;
+export const StringSchema = {
+  type: "string",
+} as const;
 
 export const BooleanSchemaSchema = {
   type: "object",
@@ -89,6 +95,9 @@ export const BooleanSchemaSchema = {
   additionalProperties: false,
 } as const;
 export type ZBooleanSchema = FromSchema<typeof BooleanSchemaSchema>;
+export const BooleanSchema = {
+  type: "boolean",
+} as const;
 
 export const ConstSchemaSchema = {
   type: "object",

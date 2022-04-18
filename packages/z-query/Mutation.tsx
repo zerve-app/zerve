@@ -5,6 +5,7 @@ import {
 } from "@zerve/core";
 import { showToast } from "@zerve/ui";
 import { useMutation, useQueryClient } from "react-query";
+import { storeHistoryEvent } from "../../apps/z-mobile/app/History";
 import { useQueryContext } from "./Connection";
 import { postZAction } from "./ServerCalls";
 
@@ -215,6 +216,30 @@ export function useSaveSchema() {
           "State",
           "$schemas",
         ]);
+      },
+    }
+  );
+}
+
+export function useZNodeStateWrite(path: string[]) {
+  const conn = useQueryContext();
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (value: any) => {
+      if (!conn) {
+        return;
+      }
+      const response = await postZAction(conn, [...path, "set"], value);
+      const eventId = await storeHistoryEvent("SetZState", {
+        value,
+        path,
+        response,
+        connection: conn.key,
+      });
+    },
+    {
+      onSuccess: () => {
+        // queryClient.invalidateQueries()
       },
     }
   );

@@ -31,11 +31,14 @@ export type HomeStackParamList = {
   History: undefined;
   HistoryEvent: { eventId: string };
   NewFile: { connection: null | string };
-  ChainHistory: { connection: null | string };
-  ChainSchemas: { connection: null | string };
-  ChainSchema: { connection: null | string; schema: string };
+  ChainHistory: { connection: null | string; storePath: string[] };
+  ChainSchemas: { connection: null | string; storePath: string[] };
+  ChainSchema: {
+    connection: null | string;
+    storePath: string[];
+    schema: string;
+  };
   Connection: { connection: string };
-  ConnectionSetup: { connection: string };
   File: { connection: null | string; name: string };
   FileSchema: { connection: null | string; name: string };
   ZNode: { connection: null | string; path: string[] };

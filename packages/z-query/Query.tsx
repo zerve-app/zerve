@@ -14,8 +14,11 @@ export function useConnectionRootType(options?: QueryOptions) {
   return useZNodeValue([".type"], options);
 }
 
-export function useConnectionProjects(options?: QueryOptions) {
-  return useZNode(["Store", "State"], options);
+export function useConnectionProjects(
+  storePath: string[],
+  options?: QueryOptions
+) {
+  return useZNode([...storePath, "State"], options);
 }
 
 export function useDoc(name: string, options?: QueryOptions) {

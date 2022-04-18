@@ -1,7 +1,6 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
-import { createZMetaContainer } from ".";
 import { createZObservable } from "./Observable";
-import { createZAction, createZContainer } from "./Zed";
+import { createZAction, createZMetaContainer } from "./Zed";
 
 const StateContainerContractMeta = { zContract: "State" } as const;
 

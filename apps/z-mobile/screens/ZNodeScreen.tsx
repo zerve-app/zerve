@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import {
   HomeStackParamList,
@@ -11,10 +11,17 @@ import {
   IconButton,
   LinkRowGroup,
   Paragraph,
+  Spinner,
   VStack,
 } from "@zerve/ui";
 import { useBottomSheet } from "@zerve/ui-native";
-import { postZAction, QueryConnectionProvider, useZNode } from "@zerve/query";
+import {
+  postZAction,
+  QueryConnectionProvider,
+  useZNode,
+  useZNodeStateWrite,
+  useZNodeValue,
+} from "@zerve/query";
 import { useConnection, useConnectionsMeta } from "../app/Connection";
 import {
   CompositeNavigationProp,
@@ -29,6 +36,7 @@ import { getZIcon } from "../app/ZIcon";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { appendHistoryAsync, storeHistoryEvent } from "../app/History";
+import { BooleanSchema, BooleanSchemaSchema } from "@zerve/core";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -54,7 +62,7 @@ function ZContainerNode({
         links={childNames.map((childName) => ({
           key: childName,
           title: childName,
-          icon: getZIcon(type.children[childName][".t"]),
+          icon: getZIcon(type.children[childName]),
           onPress: () => {
             dispatch(
               StackActions.push("ZNode", {
@@ -66,6 +74,36 @@ function ZContainerNode({
         }))}
       />
     </VStack>
+  );
+}
+
+function ZStateNode({
+  type,
+  value,
+  connection,
+  path,
+}: {
+  type: any;
+  value: any;
+  connection: string;
+  path: string[];
+}) {
+  const writeNode = useZNodeStateWrite(path);
+  if (type[".t"] !== "Container" || type?.meta?.zContract !== "State")
+    throw new Error("Unexpected z type info for ZStateNode");
+
+  const { data: node, isLoading } = useZNode(
+    useMemo(() => [...path, "state"], [path])
+  );
+  if (isLoading) return <Spinner />;
+  return (
+    <JSONSchemaForm
+      value={node?.node}
+      schema={node?.type?.value}
+      onValue={(value) => {
+        writeNode.mutate(value);
+      }}
+    />
   );
 }
 
@@ -206,6 +244,7 @@ function ZNodePage({
   const { isLoading, data, refetch, isRefetching } = useZNode(path);
   const { navigate } = useNavigation<NavigationProp>();
   const type = data?.type[".t"];
+  const typeMeta = data?.type?.meta;
   let body = null;
   if (type === "Static") {
     body = (
@@ -218,14 +257,29 @@ function ZNodePage({
     );
   }
   if (type === "Container") {
-    body = (
-      <ZContainerNode
-        path={path}
-        type={data?.type}
-        value={data?.node}
-        connection={connection}
-      />
-    );
+    const zContract = typeMeta?.zContract;
+    if (zContract === "State") {
+      body = (
+        <ZStateNode
+          path={path}
+          type={data?.type}
+          value={data?.node}
+          connection={connection}
+        />
+      );
+    } else if (zContract === "Store") {
+      body = null; //coming next
+    } else {
+      zContract && console.warn(`Unhandled zContract: ${zContract}`);
+      body = (
+        <ZContainerNode
+          path={path}
+          type={data?.type}
+          value={data?.node}
+          connection={connection}
+        />
+      );
+    }
   }
   if (type === "Group") {
     body = (

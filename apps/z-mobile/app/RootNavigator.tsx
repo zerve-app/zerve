@@ -28,7 +28,6 @@ import { TestHistoryScreen } from "../screens/TestHistoryScreen";
 import FileSchemaScreen from "../screens/FileSchemaScreen";
 import ChainHistoryScreen from "../screens/ChainHistoryScreen";
 import ChainSchemasScreen from "../screens/ChainSchemasScreen";
-import ConnectionSetupScreen from "../screens/ConnectionSetupScreen";
 import HistoryEventScreen from "../screens/HistoryEventScreen";
 import ChainSchemaScreen from "../screens/ChainSchemaScreen";
 import TestRichTextScreen from "../screens/TestRichTextScreen";
@@ -71,11 +70,6 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="ChainSchema"
         component={ChainSchemaScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="ConnectionSetup"
-        component={ConnectionSetupScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen

@@ -27,13 +27,8 @@ import { QueryConnectionProvider, useConnectionStatus } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
-import {
-  ConnectionHome,
-  ConnectionMetaLinks,
-  ConnectionProjects,
-  NewFileButton,
-} from "./ConnectionScreen";
-import { useBottomSheet } from "@zerve/ui-native";
+import { ConnectionHome } from "./ConnectionScreen";
+import { useActionsSheet, useBottomSheet } from "@zerve/ui-native";
 
 function LocalDocsSection({}: {}) {
   const navigation =
@@ -90,37 +85,30 @@ function ConnectionSection({
   const [actions, setActions] = useState<ActionButtonDef[]>([]);
   const navigation = useNavigation<NavigationProp>();
   const { isConnected } = useConnectionStatus();
-  const onOptions = useBottomSheet<void>(({ onClose }) => (
-    <VStack>
-      {actions.map((action) => (
-        <ActionButton
-          key={action.key}
-          action={{ ...action, onHandled: onClose }}
-        />
-      ))}
-      <LinkRow
-        icon="database"
-        onPress={() => {
-          navigation.navigate("Connection", {
-            connection: connection.key,
-          });
-          onClose();
-        }}
-        title={`Open ${connection.name}`}
-      />
-      <LinkRow
-        title="Connection Info"
-        icon="link"
-        onPress={() => {
-          navigation.navigate("SettingsStack", {
-            screen: "ConnectionInfo",
-            params: { connection: connection.key },
-          });
-          onClose();
-        }}
-      />
-    </VStack>
-  ));
+  const onOptions = useActionsSheet(() => [
+    ...actions,
+    {
+      key: "open",
+      title: `Open ${connection.name}`,
+      icon: "server",
+      onPress: () => {
+        navigation.navigate("Connection", {
+          connection: connection.key,
+        });
+      },
+    },
+    {
+      title: "Connection Info",
+      key: "connInfo",
+      icon: "link",
+      onPress: () => {
+        navigation.navigate("SettingsStack", {
+          screen: "ConnectionInfo",
+          params: { connection: connection.key },
+        });
+      },
+    },
+  ]);
   return (
     <DisclosureSection
       header={<Label>{connection.name}</Label>}
@@ -137,7 +125,6 @@ function ConnectionSection({
     >
       <VStack>
         <ConnectionHome onActions={setActions} />
-        <ConnectionMetaLinks connection={connection} />
       </VStack>
     </DisclosureSection>
   );
