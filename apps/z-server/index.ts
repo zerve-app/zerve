@@ -62,17 +62,6 @@ export async function startApp() {
     fromEmail: `Zerve Admin <admin@zerve.app>`,
   });
 
-  // const AdminSSH = createSystemSSH(InternalCommands)
-
-  // const TestLedger = await createZChainState(
-  //   Data,
-  //   ledgerCacheFiles,
-  //   "MyTestLedger",
-  //   ChainLedgerCalculator
-  // );
-
-  const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
-
   const Store = await createGeneralStore(
     Data,
     createSystemFiles(join(dataDir, "GenStoreCache")),
@@ -80,23 +69,6 @@ export async function startApp() {
   );
 
   const zRoot = createZContainer({
-    Auth: await createAuth(
-      {
-        Email: await createEmailAuthStrategy(Email),
-        Phone: await createSMSAuthStrategy(SMS),
-      },
-      AuthFiles,
-      () => {
-        return {
-          Data,
-          Fetch: SystemFetch.Fetch,
-          RootFiles: InternalRootFiles,
-          Commands: InternalCommands,
-          SMS,
-          Email,
-        };
-      }
-    ),
     Store,
   });
 
