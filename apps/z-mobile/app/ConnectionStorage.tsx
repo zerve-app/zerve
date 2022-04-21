@@ -1,6 +1,12 @@
 import { defineKeySource } from "@zerve/core";
 import { createNativeStorage } from "@zerve/native";
-import { SavedConnection, SavedSession, useLiveConnection } from "@zerve/query";
+import {
+  postZAction,
+  SavedConnection,
+  SavedSession,
+  useConnection,
+  useLiveConnection,
+} from "@zerve/query";
 import { useZObservableMaybe } from "@zerve/react";
 
 const connectionStorage = createNativeStorage({
@@ -63,6 +69,30 @@ export function createConnection(name: string, url: string) {
   mutateConnections((connections) => [...connections, { name, url, key }]);
 }
 
+export async function logout(
+  connection: SavedConnection,
+  session: SavedSession
+) {
+  mutateConnections((connections) =>
+    connections.map((conn) => {
+      if (conn.key !== connection.key) return conn;
+      if (!conn.session) return conn;
+      return {
+        ...conn,
+        session: {
+          ...conn.session,
+          sessionToken: null,
+        },
+      };
+    })
+  );
+  await postZAction(connection, [...session.authPath, "logout"], {
+    authenticatorId: session.authenticatorId,
+    sessionId: session.sessionId,
+  });
+  setSession(connection.key, null);
+}
+
 export function setSession(
   connectionKey: string,
   session: SavedSession | null
@@ -79,7 +109,7 @@ export function setSession(
 }
 
 export function useConnectionStatus() {
-  const savedConn = useSavedConnection();
+  const savedConn = useConnection();
   const connection = useLiveConnection(savedConn);
   const isConnected = useZObservableMaybe(connection?.isConnected);
   return {

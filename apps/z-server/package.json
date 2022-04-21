@@ -19,6 +19,7 @@
     "@zerve/auth": "*",
     "@zerve/node": "*",
     "@zerve/data": "*",
+    "@zerve/store": "*",
     "@zerve/ledger": "*",
     "@zerve/system-files": "*",
     "@zerve/system-commands": "*",

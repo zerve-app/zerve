@@ -1,3 +1,4 @@
+import { SavedSession } from ".";
 import {
   serverGet,
   serverPost,
@@ -21,6 +22,17 @@ export function pathStartsWith(wholePath: string[], maybePrefixPath: string[]) {
   return true;
 }
 
+function extractSessionAuth(path: string[], session?: null | SavedSession) {
+  let auth: null | [string, string] = null;
+  if (session && pathStartsWith(path, session.authPath)) {
+    const { sessionToken, sessionId, authenticatorId } = session;
+    if (sessionToken) {
+      auth = [authenticatorId, `${sessionId}.${sessionToken}`];
+    }
+  }
+  return auth;
+}
+
 export async function getZ(
   context: SavedConnection,
   path: string[],
@@ -31,12 +43,7 @@ export async function getZ(
   if (connectedClientId) {
     query.zClientSubscribe = connectedClientId;
   }
-  let auth: null | [string, string] = null;
-  const session = context?.session;
-  if (session && pathStartsWith(path, session.authPath)) {
-    const { sessionToken, userId } = session;
-    auth = [userId, sessionToken];
-  }
+  const auth = extractSessionAuth(path, context?.session);
   const resp = await serverGet(context, `.z/${path.join("/")}`, query, auth);
   return resp;
 }
@@ -57,12 +64,7 @@ export async function postZAction(
     // express body-parser is dumber than a sack of bricks, if the value is not an object or an array
     finalBody = { _$RAW_VALUE: body };
   }
-  let auth: null | [string, string] = null;
-  const session = context?.session;
-  if (session && pathStartsWith(path, session.authPath)) {
-    const { sessionToken, userId } = session;
-    auth = [userId, sessionToken];
-  }
+  const auth = extractSessionAuth(path, context?.session);
   return await serverPost(context, `.z/${path.join("/")}`, finalBody, auth);
 }
 

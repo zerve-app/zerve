@@ -5,6 +5,7 @@ import {
   SchemaStore,
   validateWithSchemaStore,
   createZMetaContainer,
+  EmptySchemaStore,
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
@@ -103,8 +104,6 @@ function validateNode(
   }
   validateWithSchemaStore(node.schema, node.value, schemas);
 }
-
-export const EmptySchemaStore: SchemaStore = {} as const;
 
 const GenericCalculator = createZChainStateCalculator(
   StateTreeSchema,

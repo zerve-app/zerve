@@ -64,7 +64,7 @@ export function createSystemCommands() {
     } as const,
     async (action) => {
       return await new Promise((resolve, reject) => {
-        execFile(action.command, action.args, {}, (error, out, err) => {
+        execFile(action.command, action.args || [], {}, (error, out, err) => {
           if (error) reject(error);
           else resolve({ out, err });
         });

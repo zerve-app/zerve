@@ -20,9 +20,10 @@ export type SavedConnection = {
 };
 
 export type SavedSession = {
-  userId: string;
+  authenticatorId: string;
+  sessionId: string;
   userLabel: string;
-  sessionToken: string;
+  sessionToken: string | null; // if this token is null, the session is being destroyed!
   authPath: string[];
 };
 

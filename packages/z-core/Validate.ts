@@ -44,6 +44,8 @@ export function validateWithSchema<Schema extends JSONSchema>(
 
 export type SchemaStore = Record<string, ZSchema>;
 
+export const EmptySchemaStore: SchemaStore = {} as const;
+
 const schemaStoreValidatorMapMap = new WeakMap<
   SchemaStore,
   WeakMap<ZSchema, Ajv.ValidateFunction>

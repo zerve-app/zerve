@@ -34,6 +34,7 @@ const secretsFile =
 
 export async function startApp() {
   const InternalRootFiles = createSystemFiles("/");
+  const InternalCommands = createSystemCommands();
   console.log("Starting Data Dir", dataDir);
   const Data = await createCoreData(dataDir);
 
@@ -61,12 +62,16 @@ export async function startApp() {
     fromEmail: `Zerve Admin <admin@zerve.app>`,
   });
 
-  const TestLedger = await createZChainState(
-    Data,
-    ledgerCacheFiles,
-    "MyTestLedger",
-    ChainLedgerCalculator
-  );
+  // const AdminSSH = createSystemSSH(InternalCommands)
+
+  // const TestLedger = await createZChainState(
+  //   Data,
+  //   ledgerCacheFiles,
+  //   "MyTestLedger",
+  //   ChainLedgerCalculator
+  // );
+
+  const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
   const Store = await createGeneralStore(
     Data,
@@ -74,41 +79,26 @@ export async function startApp() {
     "GenStore"
   );
 
-  const Store2 = await createGeneralStore(
-    Data,
-    createSystemFiles(join(dataDir, "GenStoreCache2")),
-    "GenStore2"
-  );
-
-  const InternalCommands = createSystemCommands();
-
-  const Admin = createZContainer({
-    Data,
-    Fetch: SystemFetch.Fetch,
-    RootFiles: InternalRootFiles,
-    Commands: InternalCommands,
-    SSH: createSystemSSH(InternalCommands),
-    SMS,
-    Email,
-  });
-
   const zRoot = createZContainer({
     Auth: await createAuth(
       {
         Email: await createEmailAuthStrategy(Email),
         Phone: await createSMSAuthStrategy(SMS),
       },
-      createSystemFiles(join(dataDir, "Auth")),
-      (z) => {
-        return { ...z, Admin };
+      AuthFiles,
+      () => {
+        return {
+          Data,
+          Fetch: SystemFetch.Fetch,
+          RootFiles: InternalRootFiles,
+          Commands: InternalCommands,
+          SMS,
+          Email,
+        };
       }
     ),
     Store,
-    StoreLol: Store2,
-    TestLedger,
   });
-
-  // const c = zRoot.z.Admin.z.Commands.z.command
 
   await startZedServer(port, zRoot);
 }

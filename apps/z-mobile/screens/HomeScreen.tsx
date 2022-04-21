@@ -23,54 +23,12 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
-import { ConnectionProvider } from "@zerve/query";
+import { ConnectionProvider, SavedConnection } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/ui-native";
 import { ZLoadedNode } from "../components/ZNode";
-
-function LocalDocsSection({}: {}) {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<HomeStackParamList, "Home">>();
-  const docs = useDocs();
-  return (
-    <DisclosureSection header={<Label>Local Projects</Label>}>
-      <VStack>
-        <LinkRowGroup
-          links={docs?.map((name) => ({
-            key: name,
-            title: name,
-            icon: "briefcase",
-            onPress: () => {
-              navigation.navigate("File", { connection: null, name });
-            },
-          }))}
-        />
-      </VStack>
-      <HStack>
-        <Button
-          onPress={() => {
-            navigation.navigate("NewFile", { connection: null });
-          }}
-          title="New File"
-          left={({ color }) => (
-            <FontAwesome name="plus-circle" color={color} size={24} />
-          )}
-        />
-        <Button
-          left={({ color }) => (
-            <FontAwesome name="download" color={color} size={24} />
-          )}
-          onPress={() => {
-            getDocumentAsync({}).then();
-          }}
-          title="Add Files"
-        />
-      </HStack>
-    </DisclosureSection>
-  );
-}
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,

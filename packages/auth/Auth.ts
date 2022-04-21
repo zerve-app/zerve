@@ -1,11 +1,8 @@
 import {
   AnyZed,
-  AnySchema,
   createZAction,
   createZAuthContainer,
   createZContainer,
-  createZGettable,
-  createZStatic,
   FromSchema,
   NullSchema,
   UnauthorizedError,
@@ -13,7 +10,11 @@ import {
 } from "@zerve/core";
 import { join } from "path";
 import { randomBytes, createHash } from "crypto";
-import { createSystemFiles, SystemFilesModule } from "@zerve/system-files";
+import {
+  createSystemFiles,
+  ensureNoPathEscape,
+  SystemFilesModule,
+} from "@zerve/system-files";
 import { AuthStrategy } from "./AuthStrategy";
 
 const AuthContainerContractMeta = { zContract: "Auth" } as const;
@@ -38,6 +39,26 @@ export const UserInfoSchema = {
   additionalProperties: false,
 } as const;
 
+const LogoutPayloadSchema = {
+  type: "object",
+  properties: {
+    authenticatorId: { type: "string" },
+    sessionId: { type: "string" },
+  },
+  required: ["authenticatorId", "sessionId"],
+  additionalProperties: false,
+} as const;
+
+const LogoutAllPayloadSchema = {
+  type: "object",
+  properties: {
+    authenticatorId: { type: "string" },
+    sessionToken: { type: "string" },
+  },
+  required: ["authenticatorId", "sessionToken"],
+  additionalProperties: false,
+} as const;
+
 export type AuthenticatorFileData = FromSchema<typeof UserInfoSchema>;
 
 export async function createAuth<
@@ -46,7 +67,7 @@ export async function createAuth<
 >(
   strategies: Strategies,
   files: SystemFilesModule,
-  getUserZeds: (userZeds: Record<string, AnyZed>) => UserZeds = (u) => u
+  getUserZeds: (sess: { authenticatorId: string }) => UserZeds = (u) => u
 ) {
   await files.z.MakeDir.call({ path: "" });
 
@@ -75,8 +96,75 @@ export async function createAuth<
     )
   );
 
+  async function getValidatedSession(
+    authenticatorId: string,
+    authPassword: string
+  ) {
+    ensureNoPathEscape(authenticatorId);
+    ensureNoPathEscape(authPassword);
+    const [sessionId, sessionToken] = authPassword.split(".");
+    const session =
+      authenticatorId &&
+      sessionId &&
+      (await files.z.ReadJSON.call({
+        path: join("users", authenticatorId, `session-${sessionId}.json`),
+      }));
+    if (!session || sessionToken !== session.token) {
+      throw new UnauthorizedError(
+        "Unauthorized",
+        "Provide a session in the Authentication header.",
+        {}
+      );
+    }
+    return session;
+  }
+
   return createZMetaContainer(
     {
+      logout: createZAction(
+        LogoutPayloadSchema,
+        NullSchema,
+        async ({ authenticatorId, sessionId }) => {
+          ensureNoPathEscape(authenticatorId);
+          ensureNoPathEscape(sessionId);
+          const sessionIdOnly = sessionId.split(".")[0];
+          await files.z.DeleteFile.call({
+            path: join(
+              "users",
+              authenticatorId,
+              `session-${sessionIdOnly}.json`
+            ),
+          });
+          console.log("did log out");
+          return null;
+        }
+      ),
+      logoutAll: createZAction(
+        LogoutAllPayloadSchema,
+        NullSchema,
+        async ({ authenticatorId, sessionToken }) => {
+          const session = await getValidatedSession(
+            authenticatorId,
+            sessionToken
+          );
+          const sessionFiles = (
+            await files.z.ReadDir.call({
+              path: join("users", authenticatorId),
+            })
+          ).filter(
+            (fileName: string) => !!fileName.match(/^session-(.*)\.json$/)
+          );
+          await Promise.all(
+            sessionFiles.map(async (fileName: string) => {
+              await files.z.DeleteFile.call({
+                path: join("users", authenticatorId, fileName),
+              });
+            })
+          );
+          console.log("did log out all");
+          return null;
+        }
+      ),
       createSession: createZAction(
         createSessionPayloadSchema,
         NullSchema,
@@ -138,8 +226,9 @@ export async function createAuth<
               value: session,
             });
             return {
-              authUser: authenticatorId,
-              authPass: `${sessionId}.${sessionToken}`,
+              sessionId,
+              sessionToken,
+              authenticatorId,
             };
           }
           return null;
@@ -148,67 +237,14 @@ export async function createAuth<
 
       user: createZAuthContainer(
         async (authenticatorId: string, authPassword: string) => {
-          const [sessionId, sessionToken] = authPassword.split(".");
-          const session =
-            authenticatorId &&
-            sessionId &&
-            (await files.z.ReadJSON.call({
-              path: join("users", authenticatorId, `session-${sessionId}.json`),
-            }));
-          if (!session) {
-            throw new UnauthorizedError(
-              "Unauthorized",
-              "Provide a session in the Authentication header.",
-              {}
-            );
-          }
-          const defaultUserZeds = {
-            authenticatorId: createZStatic(authenticatorId),
-            info: createZGettable(UserInfoSchema, async () => {
-              const authenticator: AuthenticatorFileData =
-                await files.z.ReadJSON.call({
-                  path: join("users", authenticatorId, `authenticator.json`),
-                });
-              const strategy = strategies[authenticator.strategyName];
-              const strategyFiles = strategiesFiles[authenticator.strategyName];
-              if (!strategy || !strategyFiles) {
-                throw new Error("cannot look up this strategy");
-              }
-              // const strategyDetails = await strategy.getDetails(
-              //   strategyFiles,
-              //   authenticator.strategyKey
-              // ); // includes the email/address info...
-              return authenticator;
-            }),
-            logout: createZAction(NullSchema, NullSchema, async () => {
-              await files.z.DeleteFile.call({
-                path: join(
-                  "users",
-                  authenticatorId,
-                  `session-${sessionId}.json`
-                ),
-              });
-              return null;
-            }),
-            logoutAll: createZAction(NullSchema, NullSchema, async () => {
-              const sessionFiles = (
-                await files.z.ReadDir.call({
-                  path: join("users", authenticatorId),
-                })
-              ).filter(
-                (fileName: string) => !!fileName.match(/^session-(.*)\.json$/)
-              );
-              await Promise.all(
-                sessionFiles.map(async (fileName: string) => {
-                  await files.z.DeleteFile.call({
-                    path: join("users", authenticatorId, fileName),
-                  });
-                })
-              );
-              return null;
-            }),
+          const session = await getValidatedSession(
+            authenticatorId,
+            authPassword
+          );
+          const publicSession = {
+            authenticatorId: session.authenticatorId,
           };
-          return createZContainer(getUserZeds(defaultUserZeds));
+          return createZContainer(getUserZeds(publicSession));
         }
       ),
     },

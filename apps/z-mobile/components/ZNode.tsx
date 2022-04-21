@@ -20,10 +20,11 @@ import {
   useConnection,
   useZNode,
   useZNodeStateWrite,
+  SavedSession,
+  SavedConnection,
 } from "@zerve/query";
 import {
-  ConnectionDefinition,
-  Session,
+  logout,
   setSession,
   useSavedConnection,
 } from "../app/ConnectionStorage";
@@ -332,12 +333,12 @@ function LoginStrategyForm({
             setSession(conn.key, {
               authPath: path,
               userLabel: address,
-              userId: session.authUser,
-              sessionToken: session.authPass,
+              sessionId: session.sessionId,
+              authenticatorId: session.authenticatorId,
+              sessionToken: session.sessionToken,
             });
             showToast(`Logged in.`);
           }}
-          schemaStore={EmptySchemaStore}
           onCancel={() => {
             setAddress(undefined);
           }}
@@ -409,14 +410,21 @@ export function LoggedInAuthNode({
 }: {
   type: any;
   value: any;
-  connection: ConnectionDefinition;
-  session: Session;
+  connection: SavedConnection;
+  session: SavedSession;
   path: string[];
 }) {
   return (
     <>
       <Paragraph>Welcome, {session.userLabel}.</Paragraph>
       <ZInlineNode path={[...path, "user"]} />
+      <AsyncButton
+        onPress={async () => {
+          await logout(connection, session);
+        }}
+        title="Log Out"
+      />
+      {/* <AsyncButton onPress={async () => {}} title="Log Out ALL sessions" /> */}
     </>
   );
 }

@@ -15,7 +15,7 @@ import {
 } from "fs-extra";
 import { join } from "path";
 
-function ensureNoPathEscape(path: string) {
+export function ensureNoPathEscape(path: string) {
   if (path.match(/^\.\./) || path.match(/\/\.\./)) {
     throw new RequestError(
       "PathValidationError",

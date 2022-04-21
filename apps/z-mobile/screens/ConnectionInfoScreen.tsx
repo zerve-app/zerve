@@ -1,12 +1,20 @@
 import React from "react";
 
-import { Button, PageSection, Paragraph, Spinner, VStack } from "@zerve/ui";
+import {
+  AsyncButton,
+  Button,
+  PageSection,
+  Paragraph,
+  Spinner,
+  VStack,
+} from "@zerve/ui";
 import { SettingsStackScreenProps } from "../app/Links";
 import {
   destroyConnection,
   useSavedConnection,
   setSession,
   useConnectionStatus,
+  logout,
 } from "../app/ConnectionStorage";
 import { FontAwesome } from "@expo/vector-icons";
 import { InfoRow } from "@zerve/ui/Row";
@@ -40,6 +48,7 @@ export default function ConnectionInfoScreen({
   if (!conn) {
     return <NotFoundScreen />;
   }
+  const session = conn?.session;
   return (
     <ScreenContainer scroll>
       <ScreenHeader title={`Connection: ${conn?.name}`} />
@@ -47,14 +56,14 @@ export default function ConnectionInfoScreen({
         <ConnectionStatusRow />
         <InfoRow label="URL" value={conn?.url} />
       </VStack>
-      {conn?.session && (
+      {session && (
         <PageSection title="Session">
           <VStack>
-            <Paragraph>{JSON.stringify(conn?.session)}</Paragraph>
-            <Button
-              title="Log out"
-              onPress={() => {
-                setSession(conn.key, null);
+            <InfoRow label="Identity" value={session.userLabel} />
+            <AsyncButton
+              title="Log Out"
+              onPress={async () => {
+                await logout(conn, session);
               }}
             />
           </VStack>
