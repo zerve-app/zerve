@@ -68,8 +68,21 @@ export async function startApp() {
     "GenStore"
   );
 
+  const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
+
   const zRoot = createZContainer({
-    Store,
+    Auth: await createAuth(
+      {
+        Email: await createEmailAuthStrategy(Email),
+        Phone: await createSMSAuthStrategy(SMS),
+      },
+      AuthFiles,
+      () => {
+        return {
+          Store,
+        };
+      }
+    ),
   });
 
   await startZedServer(port, zRoot);
