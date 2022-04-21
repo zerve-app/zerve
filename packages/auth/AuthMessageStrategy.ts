@@ -83,12 +83,14 @@ export function createGenericMessageAuthStrategy<
         const now = Date.now();
 
         if (payload.token) {
-          if (now - config.authTimeoutMs > requestTime) {
-            console.log("Requst timeout has already been reached");
+          if (token !== payload.token) {
+            // verify the user is providing the correct secret token according to our saved authRequest
+            console.log("Requst token does not match");
             throw new Error("Invalid Auth Attempt");
           }
-          if (token !== payload.token) {
-            console.log("Requst token does not match");
+          if (now - config.authTimeoutMs > requestTime) {
+            // ensure this validation is happening fast enough, within the configurable authTimeoutMs
+            console.log("Requst timeout has already been reached");
             throw new Error("Invalid Auth Attempt");
           }
           await strategyFiles.z.WriteJSON.call({
@@ -102,15 +104,22 @@ export function createGenericMessageAuthStrategy<
         } else {
           console.log(Math.floor((now - requestTime) / 1000));
           if (now - config.authResetMs < requestTime) {
-            console.log("Reset time  token does not match");
-
-            throw new Error("Invalid Auth Attempt");
+            // another message has been sent within the "reset" time, which should be lower than the timeout, so we are actually in a good state.
+            // return (null - happy case), also waste some time to pretend that maybe we did actually send an email
+            await new Promise((resolve) =>
+              setTimeout(resolve, 2000 + Math.floor(Math.random() * 2000))
+            );
+            return null;
+          } else {
+            // even though we have a pending authRequest, enough time has passed according to resetTime for us to send a new message.
+            // to send a new message we simply wipe out the previous authRequest so a new one can be created below
+            authRequest = null;
           }
-          authRequest = null;
         }
-        config.authTimeoutMs;
       }
+
       if (!authRequest) {
+        // at this point we need to create a new authRequest by creating a secret token and sending it to the user via their "address"
         if (payload.token) {
           console.log(
             "Cannot provide a token when there is no pending auth request"
@@ -124,6 +133,7 @@ export function createGenericMessageAuthStrategy<
         };
         await handleMessageSend(token, payload.address);
       }
+      // saving the strategy address file
       await strategyFiles.z.WriteJSON.call({
         path: addressFileSubpath,
         value: {
@@ -133,6 +143,7 @@ export function createGenericMessageAuthStrategy<
       });
       return null;
     },
+
     getDetails: async (
       strategyFiles: SystemFilesModule,
       addressKey: string

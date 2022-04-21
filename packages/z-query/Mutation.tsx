@@ -6,11 +6,11 @@ import {
 import { showToast } from "@zerve/ui";
 import { useMutation, useQueryClient } from "react-query";
 import { storeHistoryEvent } from "../../apps/z-mobile/app/History";
-import { useQueryContext } from "./Connection";
+import { useConnection } from "./Connection";
 import { postZAction } from "./ServerCalls";
 
 export function useCreateFile(storePath: string[]) {
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   console.log("USE CREATE FILE", { storePath });
   return useMutation(
@@ -55,7 +55,7 @@ export function useCreateFile(storePath: string[]) {
 }
 
 export function useCreateSchema(storePath: string[]) {
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (schemaName: string) => {
@@ -83,7 +83,7 @@ export function useCreateSchema(storePath: string[]) {
 }
 
 export function useDeleteFile(storePath: string[]) {
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (name: string) => {
@@ -115,7 +115,7 @@ export function useDeleteFile(storePath: string[]) {
 
 export function useSaveFile(storePath: string[]) {
   if (!storePath) throw new Error("Cannot useSaveFile withtout storePath");
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { name: string; value: any }) => {
@@ -145,7 +145,7 @@ export function useSaveFile(storePath: string[]) {
 }
 
 export function useRenameFile(storePath: string[]) {
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { prevName: string; newName: string }) => {
@@ -175,7 +175,7 @@ export function useSaveFileSchema(
   storePath: string[],
   schemaStore: SchemaStore
 ) {
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { name: string; schema: any }) => {
@@ -207,7 +207,7 @@ export function useSaveFileSchema(
 }
 
 export function useSaveSchema(storePath: string[]) {
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { schemaName: string; schema: any }) => {
@@ -235,7 +235,7 @@ export function useSaveSchema(storePath: string[]) {
 }
 
 export function useZNodeStateWrite(path: string[]) {
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (value: any) => {
@@ -259,7 +259,7 @@ export function useZNodeStateWrite(path: string[]) {
 }
 
 export function useDeleteSchema(storePath: string[]) {
-  const conn = useQueryContext();
+  const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (payload: { schemaName: string }) => {

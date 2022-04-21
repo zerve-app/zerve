@@ -5,6 +5,7 @@ export function getZIcon(z: any): ComponentProps<typeof Icon>["name"] {
   if (z?.[".t"] === "Container") {
     if (z?.meta?.zContract === "State") return "edit";
     if (z?.meta?.zContract === "Store") return "book";
+    if (z?.meta?.zContract === "Auth") return "user";
     return "list-ul";
   }
   if (z?.[".t"] === "Gettable") return "download";

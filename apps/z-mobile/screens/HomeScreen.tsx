@@ -6,30 +6,29 @@ import {
   IconButton,
   Label,
   VStack,
-  LinkRow,
   LinkRowGroup,
   ActionButtonDef,
-  ActionButton,
   ThemedText,
 } from "@zerve/ui";
-
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import {
   CompositeNavigationProp,
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ConnectionDefinition, useConnectionsMeta } from "../app/Connection";
+import {
+  useConnectionStatus,
+  useSavedConnections,
+} from "../app/ConnectionStorage";
 import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
-import { QueryConnectionProvider, useConnectionStatus } from "@zerve/query";
+import { ConnectionProvider } from "@zerve/query";
 import { Icon } from "@zerve/ui/Icon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
-import { ConnectionHome } from "./ConnectionScreen";
-import { useActionsSheet, useBottomSheet } from "@zerve/ui-native";
-import { ZLoadedNode, ZNode } from "./ZNodeScreen";
+import { useActionsSheet } from "@zerve/ui-native";
+import { ZLoadedNode } from "../components/ZNode";
 
 function LocalDocsSection({}: {}) {
   const navigation =
@@ -78,11 +77,7 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "Home">
 >;
 
-function ConnectionSection({
-  connection,
-}: {
-  connection: ConnectionDefinition;
-}) {
+function ConnectionSection({ connection }: { connection: SavedConnection }) {
   const [actions, setActions] = useState<ActionButtonDef[]>([]);
   const navigation = useNavigation<NavigationProp>();
   const { isConnected } = useConnectionStatus();
@@ -136,14 +131,14 @@ export default function HomeScreen({
 }: {
   navigation: NavigationProp;
 }) {
-  const connections = useConnectionsMeta();
+  const connections = useSavedConnections();
   return (
     <ScreenContainer scroll safe>
       <ZerveLogo />
       {connections.map((connection) => (
-        <QueryConnectionProvider key={connection.key} value={connection}>
+        <ConnectionProvider key={connection.key} value={connection}>
           <ConnectionSection connection={connection} />
-        </QueryConnectionProvider>
+        </ConnectionProvider>
       ))}
       {/* <LocalDocsSection /> */}
       <VStack>
@@ -155,6 +150,16 @@ export default function HomeScreen({
               icon: "history",
               onPress: () => {
                 navigation.navigate("History");
+              },
+            },
+            {
+              title: "Server Connections",
+              key: "serverConnections",
+              icon: "link",
+              onPress: () => {
+                navigation.navigate("SettingsStack", {
+                  screen: "Connections",
+                });
               },
             },
             {

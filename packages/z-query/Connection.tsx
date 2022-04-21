@@ -11,12 +11,24 @@ import ReconnectingWebsocket from "reconnecting-websocket";
 import { useQueryClient, QueryClient } from "react-query";
 
 export type ServerMessage = {};
-export type QueryContext = {
-  url: string;
+
+export type SavedConnection = {
   key: string;
+  name: string;
+  url: string;
+  session?: SavedSession | null;
 };
+
+export type SavedSession = {
+  userId: string;
+  userLabel: string;
+  sessionToken: string;
+  authPath: string[];
+};
+
 const ClientIdSchema = { type: ["null", "string"] } as const;
-export type Connection = QueryContext & {
+
+export type Connection = SavedConnection & {
   isConnected: ZObservable<ZBooleanSchema>;
   clientId: ZObservable<typeof ClientIdSchema>;
 };
@@ -33,10 +45,10 @@ export type Connection = QueryContext & {
 const liveConnectionStore = new Map<string, [Connection, number, () => void]>();
 
 function startConnection(
-  queryContext: QueryContext,
+  savedConn: SavedConnection,
   queryClient: QueryClient
 ): [Connection, () => void] {
-  const [httpProtocol, hostPort] = queryContext.url.split("://");
+  const [httpProtocol, hostPort] = savedConn.url.split("://");
   const wsProtocol = httpProtocol === "https" ? "wss" : "ws";
   const wsUrl = `${wsProtocol}://${hostPort}`;
   const ws = new ReconnectingWebsocket(wsUrl);
@@ -64,12 +76,12 @@ function startConnection(
       clientId.z.set.call(message.id);
     } else if (message.t === "Update") {
       queryClient.setQueryData(
-        [queryContext?.key, "z", ...message.path, ".node", "value"],
+        [savedConn?.key, "z", ...message.path, ".node", "value"],
         message.value
       );
 
       queryClient.setQueryData(
-        [queryContext?.key, "z", ...message.path, ".node"],
+        [savedConn?.key, "z", ...message.path, ".node"],
         (node) => {
           return { ...node, node: message.value };
         }
@@ -87,10 +99,10 @@ function startConnection(
   };
   function close() {
     ws.close();
-    closeCacheSubscription();
+    // closeCacheSubscription();
   }
   const connection = {
-    ...queryContext,
+    ...savedConn,
     clientId: clientId.z.state,
     isConnected: isConnected.z.state,
   };
@@ -98,13 +110,13 @@ function startConnection(
 }
 
 function leaseConnection(
-  queryContext: QueryContext,
+  savedConn: SavedConnection,
   queryClient: QueryClient
 ): {
   connection: Connection;
   release: () => void;
 } {
-  const connectionKey = queryContext.key;
+  const connectionKey = savedConn.key;
   const stored = liveConnectionStore.get(connectionKey);
   function release() {
     if (!stored) return;
@@ -121,26 +133,32 @@ function leaseConnection(
 
     return { connection, release };
   }
-  const [connection, closeConnection] = startConnection(
-    queryContext,
-    queryClient
-  );
+  const [connection, closeConnection] = startConnection(savedConn, queryClient);
   liveConnectionStore.set(connectionKey, [connection, 1, closeConnection]);
   return { connection, release };
 }
 
-const QueryReactContext = createContext<QueryContext | null>(null);
+const ConnectionContext = createContext<Connection | null>(null);
 
-export const QueryConnectionProvider = QueryReactContext.Provider;
+export const ConnectionProvider = ConnectionContext.Provider;
 
-export function useQueryContext(): QueryContext | null {
-  return useContext(QueryReactContext);
+export function useConnection(): Connection | null {
+  return useContext(ConnectionContext);
+}
+
+function _authHeader(auth: [string, string]) {
+  return {
+    Authorization: `Basic ${Buffer.from(`${auth[0]}:${auth[1]}`).toString(
+      "base64"
+    )}`,
+  };
 }
 
 export async function serverGet<Response>(
-  context: QueryContext,
+  context: SavedConnection,
   path: string,
-  query?: Record<string, string>
+  query?: Record<string, string> | null,
+  auth?: [string, string] | null
 ): Promise<Response> {
   const searchParams = query && new URLSearchParams(query);
   const searchString = searchParams?.toString();
@@ -151,6 +169,7 @@ export async function serverGet<Response>(
     {
       headers: {
         Accept: "application/json",
+        ...(auth ? _authHeader(auth) : {}),
       },
     }
   );
@@ -167,14 +186,16 @@ export async function serverGet<Response>(
 }
 
 export async function serverPost<Request, Response>(
-  context: QueryContext,
+  context: SavedConnection,
   path: string,
-  body: Request
+  body: Request,
+  auth?: [string, string] | null
 ): Promise<Response> {
   const res = await fetch(`${context.url}/${path}`, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...(auth ? _authHeader(auth) : {}),
     },
     method: "post",
     body: JSON.stringify(body),
@@ -182,21 +203,23 @@ export async function serverPost<Request, Response>(
   try {
     const value = await res.json();
     if (res.status !== 200) {
-      console.log("Huh eh", value);
+      console.log("Server Error", value);
       console.log(body);
       throw new Error("Network Error");
     }
     return value;
   } catch (e) {
-    throw new Error("Network request failed");
+    console.log("===EEEEE");
+    console.error(e);
+    throw new Error("Network request2 failed");
   }
 }
 
-export function useLiveConnection(queryContext: QueryContext | null) {
+export function useLiveConnection(savedConn: SavedConnection | null) {
   const queryClient = useQueryClient();
   const connectionLease = useMemo(
-    () => queryContext && leaseConnection(queryContext, queryClient),
-    [queryContext]
+    () => savedConn && leaseConnection(savedConn, queryClient),
+    [savedConn]
   );
   useEffect(() => {
     return () => {
@@ -204,50 +227,4 @@ export function useLiveConnection(queryContext: QueryContext | null) {
     };
   }, [connectionLease]);
   return connectionLease?.connection;
-}
-
-// export function useConnectionStatus() {
-//   const queryContext = useQueryContext();
-//   const conn = useLiveConnection(queryContext);
-//   // let [isConnected, setIsConnected] = useState(false);
-//   let [isLoading, setIsLoading] = useState(true);
-//   let [isReachable, setIsReachable] = useState(false);
-
-//   function doUpdateStatus(connectionUrl: string) {
-//     setIsLoading(true);
-//     fetch(connectionUrl)
-//       .then((resp) => {
-//         setIsReachable(resp.status === 200);
-//       })
-//       .catch((e) => {
-//         setIsReachable(false);
-//       })
-//       .finally(() => {
-//         setIsLoading(false);
-//       });
-//   }
-
-//   useEffect(() => {
-//     if (!queryContext) return;
-//     doUpdateStatus(queryContext.url);
-//     const updateStatusInterval = setInterval(() => {
-//       doUpdateStatus(queryContext.url);
-//     }, 5000);
-//     const [conn, release] = leaseConnection(queryContext);
-//     conn;
-//     return () => {
-//       release();
-//       clearInterval(updateStatusInterval);
-//     };
-//   }, [queryContext?.url]);
-//   return { isConnected, isLoading, isReachable };
-// }
-
-export function useConnectionStatus() {
-  const queryContext = useQueryContext();
-  const connection = useLiveConnection(queryContext);
-  const isConnected = useZObservableMaybe(connection?.isConnected);
-  return {
-    isConnected,
-  };
 }

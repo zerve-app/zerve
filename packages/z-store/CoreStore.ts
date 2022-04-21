@@ -104,7 +104,7 @@ function validateNode(
   validateWithSchemaStore(node.schema, node.value, schemas);
 }
 
-const EmptySchemaStore: SchemaStore = {} as const;
+export const EmptySchemaStore: SchemaStore = {} as const;
 
 const GenericCalculator = createZChainStateCalculator(
   StateTreeSchema,

@@ -4,6 +4,7 @@ import {
   createZGettable,
   createZService,
   createZState,
+  NullSchema,
 } from "@zerve/core";
 import ObsWebSocket from "obs-websocket-js";
 
@@ -67,41 +68,41 @@ export const ZOBSService = createZService(async () => {
       obs.disconnect();
     },
     z: createZContainer({
-      sceneList: createZGettable({} as const, async () => {
-        return await obs.send("GetSceneList");
-      }),
-      currentScene: createZGettable({} as const, async () => {
-        return await obs.send("GetCurrentScene");
-      }),
+      // sceneList: createZGettable({} as const, async () => {
+      //   return await obs.send("GetSceneList");
+      // }),
+      // currentScene: createZGettable({} as const, async () => {
+      //   return await obs.send("GetCurrentScene");
+      // }),
       // recordingStatus: createZGettable({} as const, async () => {
       //   // obs.addListener("RecordingStatus");
       //   return await obs.send("GetRecordingStatus");
       // }),
       activeScene,
       recordingStatus: recordingStatus.z.state,
-      mediaState: createZGettable({} as const, async () => {
-        // return await obs.send("GetMediaState", {sourceName: });
-        return null;
-      }),
-      startRecording: createZAction({} as const, {} as const, async () => {
+      // mediaState: createZGettable({} as const, async () => {
+      //   // return await obs.send("GetMediaState", {sourceName: });
+      //   return null;
+      // }),
+      startRecording: createZAction(NullSchema, NullSchema, async () => {
         await obs.send("StartRecording");
       }),
-      stopRecording: createZAction({} as const, {} as const, async () => {
+      stopRecording: createZAction(NullSchema, NullSchema, async () => {
         await obs.send("StopRecording");
       }),
-      pauseRecording: createZAction({} as const, {} as const, async () => {
+      pauseRecording: createZAction(NullSchema, NullSchema, async () => {
         await obs.send("PauseRecording");
       }),
-      switchScene: createZAction(
-        {
-          title: "SceneName",
-          type: "string",
-        } as const,
-        {} as const,
-        async () => {
-          await obs.send("SetCurrentScene", { "scene-name": "Camera" });
-        }
-      ),
+      // switchScene: createZAction(
+      //   {
+      //     title: "SceneName",
+      //     type: "string",
+      //   } as const,
+      //   {} as const,
+      //   async () => {
+      //     await obs.send("SetCurrentScene", { "scene-name": "Camera" });
+      //   }
+      // ),
     }),
   };
 });

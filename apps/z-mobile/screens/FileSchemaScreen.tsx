@@ -10,13 +10,13 @@ import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
   connectionSchemasToZSchema,
-  QueryConnectionProvider,
+  ConnectionProvider,
   useSaveFileSchema,
   useZStoreSchemas,
   useZNodeValue,
 } from "@zerve/query";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
-import { useConnection } from "../app/Connection";
+import { useSavedConnection } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -94,9 +94,9 @@ export default function FileSchemaScreen({
 
   return (
     <ScreenContainer scroll>
-      <QueryConnectionProvider value={useConnection(connection)}>
+      <ConnectionProvider value={useSavedConnection(connection)}>
         <FileSchemaPage name={name} storePath={storePath} />
-      </QueryConnectionProvider>
+      </ConnectionProvider>
     </ScreenContainer>
   );
 }

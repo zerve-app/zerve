@@ -10,11 +10,11 @@ import { useActionsSheet } from "@zerve/ui-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
-  QueryConnectionProvider,
+  ConnectionProvider,
   useCreateSchema,
   useZNodeValue,
 } from "@zerve/query";
-import { useConnection } from "../app/Connection";
+import { useSavedConnection } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -100,9 +100,9 @@ export default function ChainSchemasScreen({
 
   return (
     <ScreenContainer scroll>
-      <QueryConnectionProvider value={useConnection(connection)}>
+      <ConnectionProvider value={useSavedConnection(connection)}>
         <ChainSchemasPage connection={connection} storePath={storePath} />
-      </QueryConnectionProvider>
+      </ConnectionProvider>
     </ScreenContainer>
   );
 }

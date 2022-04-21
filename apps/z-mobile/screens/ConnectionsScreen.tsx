@@ -7,7 +7,7 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useConnectionsMeta } from "../app/Connection";
+import { useSavedConnections } from "../app/ConnectionStorage";
 import { FontAwesome } from "@expo/vector-icons";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
@@ -21,7 +21,7 @@ export default function ConnectionsScreen() {
       >
     >();
 
-  const connections = useConnectionsMeta();
+  const connections = useSavedConnections();
   return (
     <ScreenContainer scroll>
       <ScreenHeader title="Server Connections" />

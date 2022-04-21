@@ -104,7 +104,7 @@ export async function startApp() {
       }
     ),
     Store,
-    Store2,
+    StoreLol: Store2,
     TestLedger,
   });
 

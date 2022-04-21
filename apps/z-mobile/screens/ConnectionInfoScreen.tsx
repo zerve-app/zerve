@@ -3,16 +3,16 @@ import React from "react";
 import { Button, PageSection, Paragraph, Spinner, VStack } from "@zerve/ui";
 import { SettingsStackScreenProps } from "../app/Links";
 import {
-  ConnectionDefinition,
   destroyConnection,
-  useConnection,
-} from "../app/Connection";
+  useSavedConnection,
+  setSession,
+  useConnectionStatus,
+} from "../app/ConnectionStorage";
 import { FontAwesome } from "@expo/vector-icons";
 import { InfoRow } from "@zerve/ui/Row";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";
-import { useConnectionStatus } from "@zerve/query";
 
 export function ConnectionStatusRow({}: {}) {
   const { isConnected } = useConnectionStatus();
@@ -36,7 +36,7 @@ export default function ConnectionInfoScreen({
   navigation,
   route,
 }: SettingsStackScreenProps<"ConnectionInfo">) {
-  const conn = useConnection(route.params.connection);
+  const conn = useSavedConnection(route.params.connection);
   if (!conn) {
     return <NotFoundScreen />;
   }
@@ -47,6 +47,19 @@ export default function ConnectionInfoScreen({
         <ConnectionStatusRow />
         <InfoRow label="URL" value={conn?.url} />
       </VStack>
+      {conn?.session && (
+        <PageSection title="Session">
+          <VStack>
+            <Paragraph>{JSON.stringify(conn?.session)}</Paragraph>
+            <Button
+              title="Log out"
+              onPress={() => {
+                setSession(conn.key, null);
+              }}
+            />
+          </VStack>
+        </PageSection>
+      )}
       <PageSection title="Delete Connection">
         <VStack>
           <Paragraph>

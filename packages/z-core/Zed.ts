@@ -98,10 +98,16 @@ export function createZContainer<Zeds extends Record<string, AnyZed>>(
   };
 }
 
-export function createZMetaContainer<Zeds extends Record<string, AnyZed>, Meta>(
-  z: Zeds,
-  meta: Meta
-): ZContainer<Zeds> {
+type ContainerMeta = {
+  zContract?: string;
+  index?: string;
+  main?: string;
+};
+
+export function createZMetaContainer<
+  Zeds extends Record<string, AnyZed>,
+  Meta extends ContainerMeta
+>(z: Zeds, meta: Meta): ZContainer<Zeds, Meta> {
   return {
     zType: "Container",
     z,

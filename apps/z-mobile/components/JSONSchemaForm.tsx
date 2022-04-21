@@ -13,7 +13,6 @@ import {
   JSONSchema,
   JSONSchemaPluck,
   LeafSchema,
-  SchemaStore,
 } from "@zerve/core";
 import {
   Button,

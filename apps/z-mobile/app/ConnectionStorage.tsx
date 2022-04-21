@@ -1,17 +1,13 @@
 import { defineKeySource } from "@zerve/core";
 import { createNativeStorage } from "@zerve/native";
+import { SavedConnection, SavedSession, useLiveConnection } from "@zerve/query";
+import { useZObservableMaybe } from "@zerve/react";
 
 const connectionStorage = createNativeStorage({
   id: "ConnectionStorage",
 });
 
-export type ConnectionDefinition = {
-  key: string;
-  name: string;
-  url: string;
-};
-
-const DefaultConnections: ConnectionDefinition[] = [
+const DefaultConnections: SavedConnection[] = [
   ...(__DEV__
     ? [
         {
@@ -33,7 +29,7 @@ const connectionsNode = connectionStorage.getStorageNode(
   DefaultConnections
 );
 
-export function useConnectionsMeta() {
+export function useSavedConnections() {
   return connectionStorage.useNodeState(connectionsNode);
 }
 
@@ -41,15 +37,15 @@ export function getConnection(connectionKey: string) {
   return connectionsNode.get().find((conn) => conn.key === connectionKey);
 }
 
-export function useConnection(connectionKey: string | null) {
+export function useSavedConnection(connectionKey: string | null) {
   if (connectionKey === null) return null;
-  const connections = useConnectionsMeta();
+  const connections = useSavedConnections();
   const conn = connections.find((c) => c.key === connectionKey) || null;
   return conn;
 }
 
 export function mutateConnections(
-  mutator: (connections: ConnectionDefinition[]) => ConnectionDefinition[]
+  mutator: (connections: SavedConnection[]) => SavedConnection[]
 ) {
   connectionStorage.mutateStorage("Connections", DefaultConnections, mutator);
 }
@@ -65,4 +61,28 @@ const getConnectionKey = defineKeySource("Connection");
 export function createConnection(name: string, url: string) {
   const key = getConnectionKey();
   mutateConnections((connections) => [...connections, { name, url, key }]);
+}
+
+export function setSession(
+  connectionKey: string,
+  session: SavedSession | null
+) {
+  mutateConnections((connections) =>
+    connections.map((conn) => {
+      if (conn.key !== connectionKey) return conn;
+      return {
+        ...conn,
+        session,
+      };
+    })
+  );
+}
+
+export function useConnectionStatus() {
+  const savedConn = useSavedConnection();
+  const connection = useLiveConnection(savedConn);
+  const isConnected = useZObservableMaybe(connection?.isConnected);
+  return {
+    isConnected,
+  };
 }

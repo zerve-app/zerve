@@ -9,14 +9,14 @@ import { useActionsSheet } from "@zerve/ui-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
-  QueryConnectionProvider,
+  ConnectionProvider,
   useDeleteFile,
   useRenameFile,
   useSaveFile,
   useZStoreSchemas,
   useZNodeValue,
 } from "@zerve/query";
-import { useConnection } from "../app/Connection";
+import { useSavedConnection } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -146,9 +146,9 @@ export default function FileScreen({
 
   return (
     <ScreenContainer scroll>
-      <QueryConnectionProvider value={useConnection(connection)}>
+      <ConnectionProvider value={useSavedConnection(connection)}>
         <FilePage name={name} connection={connection} storePath={storePath} />
-      </QueryConnectionProvider>
+      </ConnectionProvider>
     </ScreenContainer>
   );
 }

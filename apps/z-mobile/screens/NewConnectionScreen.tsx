@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button, Input, VStack } from "@zerve/ui";
 import { SettingsStackScreenProps } from "../app/Links";
-import { createConnection } from "../app/Connection";
+import { createConnection } from "../app/ConnectionStorage";
 import ScreenHeader from "../components/ScreenHeader";
 import ScreenContainer from "../components/ScreenContainer";
 

@@ -1,6 +1,12 @@
-import { notifyManager, Query, useQuery } from "react-query";
+import {
+  notifyManager,
+  Query,
+  QueryKey,
+  useQuery,
+  UseQueryOptions,
+} from "react-query";
 import { getZ } from "./ServerCalls";
-import { useLiveConnection, useQueryContext } from "./Connection";
+import { useLiveConnection, useConnection, Connection } from "./Connection";
 import { getDoc, listDocs, getActions, getModuleList } from "./ServerCalls";
 import { getTypedZ } from "./ServerCalls";
 import { useEffect, useMemo } from "react";
@@ -21,10 +27,35 @@ export function useConnectionProjects(
   return useZNode([...storePath, "State"], options);
 }
 
+function useConnectionQuery<A, B, C>(
+  conn: Connection | null,
+  path: string[],
+  getQuery: (a: A, key: QueryKey) => Promise<B>,
+  options?: Omit<UseQueryOptions<A, B, C, QueryKey>, "queryKey" | "queryFn">
+) {
+  const queryResult = useQuery<A, B, C>(
+    path,
+    async (a: A, key: QueryKey) => {
+      const result = await getQuery(a, key);
+      return result;
+    },
+    options
+  );
+  useEffect(() => {
+    return conn?.isConnected?.subscribe((isConn) => {
+      if (isConn) {
+        queryResult.refetch();
+      }
+    });
+  }, [conn?.isConnected]);
+  return queryResult;
+}
+
 export function useDoc(name: string, options?: QueryOptions) {
-  const context = useQueryContext();
-  return useQuery(
-    [context?.key, "docs", "children", name, "value"],
+  const conn = useConnection();
+  return useConnectionQuery(
+    conn,
+    [conn?.key, "docs", "children", name, "value"],
     async () => {
       if (!context || !name) return undefined;
       if (options?.skipLoading) return undefined;
@@ -34,13 +65,14 @@ export function useDoc(name: string, options?: QueryOptions) {
 }
 
 export function useZNode(path: string[], options?: QueryOptions) {
-  const context = useQueryContext();
-  const conn = useLiveConnection(context);
-  return useQuery(
-    [context?.key, "z", ...path, ".node"],
+  const conn = useConnection();
+  const liveConn = useLiveConnection(conn);
+  return useConnectionQuery(
+    conn,
+    [conn?.key, "z", ...path, ".node"],
     async () => {
-      if (!context || options?.skipLoading) return undefined;
-      const results = await getTypedZ(context, path, conn);
+      if (!conn || options?.skipLoading) return undefined;
+      const results = await getTypedZ(conn, path, liveConn);
       return results;
     },
     {
@@ -50,12 +82,13 @@ export function useZNode(path: string[], options?: QueryOptions) {
 }
 
 export function useZNodeValue(path: string[], options?: QueryOptions) {
-  const context = useQueryContext();
-  return useQuery(
-    [context?.key, "z", ...path, ".node", "value"],
+  const conn = useConnection();
+  return useConnectionQuery(
+    conn,
+    [conn?.key, "z", ...path, ".node", "value"],
     async () => {
-      if (!context || options?.skipLoading) return undefined;
-      const results = await getZ(context, path);
+      if (!conn || options?.skipLoading) return undefined;
+      const results = await getZ(conn, path);
       return results;
     },
     {
@@ -65,21 +98,26 @@ export function useZNodeValue(path: string[], options?: QueryOptions) {
 }
 
 export function useZChildren(path: string[], options?: QueryOptions) {
-  const context = useQueryContext();
-  return useQuery([context?.key, "z", ...path, "children"], async () => {
-    if (!context || options?.skipLoading) return undefined;
-    const results = await getZ(context, path);
-    return results;
-  });
+  const conn = useConnection();
+  return useConnectionQuery(
+    conn,
+    [conn?.key, "z", ...path, "children"],
+    async () => {
+      if (!conn || options?.skipLoading) return undefined;
+      const results = await getZ(conn, path);
+      return results;
+    }
+  );
 }
 
 export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
-  const context = useQueryContext();
-  return useQuery(
-    [context?.key, "z", ...storePath, "State", "$schemas"],
+  const conn = useConnection();
+  return useConnectionQuery(
+    conn,
+    [conn?.key, "z", ...storePath, "State", "$schemas"],
     async () => {
-      if (!context || options?.skipLoading) return undefined;
-      const schemas = await getZ(context, [...storePath, "State", "$schemas"]);
+      if (!conn || options?.skipLoading) return undefined;
+      const schemas = await getZ(conn, [...storePath, "State", "$schemas"]);
       return schemas;
     }
   );

@@ -1,22 +1,28 @@
-import { serverGet, serverPost, QueryContext, Connection } from "./Connection";
+import {
+  serverGet,
+  serverPost,
+  SavedConnection,
+  Connection,
+} from "./Connection";
 
-export async function serverAction<Action, Response>(
-  context: QueryContext,
-  action: Action
-): Promise<Response> {
-  return await serverPost(context, ".z/.action", action);
-}
-
-export async function listDocs(context: QueryContext) {
+export async function listDocs(context: SavedConnection) {
   return await serverGet(context, `.z`);
 }
 
-export async function getDoc(context: QueryContext, name: string) {
+export async function getDoc(context: SavedConnection, name: string) {
   return await serverGet(context, `.z/${name}`);
 }
 
+export function pathStartsWith(wholePath: string[], maybePrefixPath: string[]) {
+  for (let i in maybePrefixPath) {
+    const shouldMatch = maybePrefixPath[i];
+    if (wholePath[i] !== shouldMatch) return false;
+  }
+  return true;
+}
+
 export async function getZ(
-  context: QueryContext,
+  context: SavedConnection,
   path: string[],
   connection?: Connection | undefined
 ) {
@@ -25,11 +31,18 @@ export async function getZ(
   if (connectedClientId) {
     query.zClientSubscribe = connectedClientId;
   }
-  return await serverGet(context, `.z/${path.join("/")}`, query);
+  let auth: null | [string, string] = null;
+  const session = context?.session;
+  if (session && pathStartsWith(path, session.authPath)) {
+    const { sessionToken, userId } = session;
+    auth = [userId, sessionToken];
+  }
+  const resp = await serverGet(context, `.z/${path.join("/")}`, query, auth);
+  return resp;
 }
 
 export async function postZAction(
-  context: QueryContext,
+  context: SavedConnection,
   path: string[],
   body: any
 ) {
@@ -44,26 +57,35 @@ export async function postZAction(
     // express body-parser is dumber than a sack of bricks, if the value is not an object or an array
     finalBody = { _$RAW_VALUE: body };
   }
-
-  return await serverPost(context, `.z/${path.join("/")}`, finalBody);
+  let auth: null | [string, string] = null;
+  const session = context?.session;
+  if (session && pathStartsWith(path, session.authPath)) {
+    const { sessionToken, userId } = session;
+    auth = [userId, sessionToken];
+  }
+  return await serverPost(context, `.z/${path.join("/")}`, finalBody, auth);
 }
 
 export async function getTypedZ(
-  context: QueryContext,
+  context: SavedConnection,
   path: string[],
   connection?: Connection | undefined
 ) {
-  const [node, type] = await Promise.all([
+  const [node, serverZType] = await Promise.all([
     getZ(context, path, connection),
     getZ(context, [...path, ".type"], connection),
   ]);
+  const type =
+    serverZType?.[".t"] === "AuthContainer" && serverZType.authType
+      ? serverZType.authType
+      : serverZType;
   return { node, type };
 }
-export async function getActions(context: QueryContext, category?: string) {
+export async function getActions(context: SavedConnection, category?: string) {
   if (category) return await serverGet(context, `.z/.action/${category}`);
   return await serverGet(context, `.z/.action`);
 }
 
-export async function getModuleList(context: QueryContext) {
+export async function getModuleList(context: SavedConnection) {
   return await serverGet(context, `.z/.module`);
 }

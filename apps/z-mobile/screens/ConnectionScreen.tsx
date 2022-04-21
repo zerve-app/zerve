@@ -13,8 +13,7 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { ConnectionDefinition, useConnection } from "../app/Connection";
-import { FontAwesome } from "@expo/vector-icons";
+import { useSavedConnection } from "../app/ConnectionStorage";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";
@@ -24,15 +23,15 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import {
-  QueryConnectionProvider,
-  useQueryContext,
+  ConnectionProvider,
+  useConnection,
   useConnectionProjects,
 } from "@zerve/query";
 import { displayStoreFileName } from "@zerve/core";
 import { useActionsSheet } from "@zerve/ui-native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ZLoadedNode, ZNode } from "./ZNodeScreen";
+import { ZLoadedNode } from "../components/ZNode";
 
 export function ConnectionProjects({
   onActions,
@@ -41,7 +40,7 @@ export function ConnectionProjects({
   onActions: (actions: ActionButtonDef[]) => void;
   storePath: string[];
 }) {
-  const connection = useQueryContext();
+  const connection = useSavedConnection();
 
   const { navigate } = useNavigation<NavigationProp<HomeStackParamList>>();
   const { data, refetch, isLoading } = useConnectionProjects(storePath);
@@ -97,7 +96,7 @@ export function ConnectionPage({
   navigation,
   route,
 }: HomeStackScreenProps<"Connection">) {
-  const conn = useConnection(route.params.connection);
+  const conn = useSavedConnection(route.params.connection);
   if (!conn) {
     return <NotFoundScreen />;
   }
@@ -127,7 +126,7 @@ export function ConnectionPage({
     },
   ]);
   return (
-    <ScreenContainer scroll>
+    <>
       <ScreenHeader
         title={`Connection: ${conn.name}`}
         corner={<OptionsButton onOptions={openOptions} />}
@@ -136,7 +135,7 @@ export function ConnectionPage({
         <ConnectionStatusRow connection={conn} />
         <ZLoadedNode path={[]} />
       </VStack>
-    </ScreenContainer>
+    </>
   );
 }
 
@@ -144,15 +143,15 @@ export default function ConnectionScreen({
   navigation,
   route,
 }: HomeStackScreenProps<"Connection">) {
-  const conn = useConnection(route.params.connection);
+  const conn = useSavedConnection(route.params.connection);
   if (!conn) {
     return <NotFoundScreen />;
   }
   return (
     <ScreenContainer scroll>
-      <QueryConnectionProvider value={conn}>
+      <ConnectionProvider value={conn}>
         <ConnectionPage route={route} navigation={navigation} />
-      </QueryConnectionProvider>
+      </ConnectionProvider>
     </ScreenContainer>
   );
 }

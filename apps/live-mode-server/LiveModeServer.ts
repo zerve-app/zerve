@@ -1,12 +1,26 @@
 import { startZedServer } from "@zerve/node";
-import { createZContainer } from "@zerve/core";
+import { createZMetaContainer, createZStatic } from "@zerve/core";
 import { ZOBSService } from "@zerve/obs";
 
 export async function startApp() {
   const service = await ZOBSService.startInstance({});
-  const zRoot = createZContainer({
-    obs: service.z,
-  });
+  const zRoot = createZMetaContainer(
+    {
+      obs: service.z,
+      ActiveScene: createZStatic({
+        ".z": { z: "Reference", path: ["obs", "activeScene"] },
+      }),
+      ControlPanel: createZStatic([
+        { ".z": { z: "Reference", path: ["obs", "activeScene"] } },
+        { ".z": { z: "Reference", path: ["obs", "recordingStatus"] } },
+        { ".z": { z: "Reference", path: ["obs", "startRecording"] } },
+        { ".z": { z: "Reference", path: ["obs", "stopRecording"] } },
+      ]),
+    },
+    {
+      main: "ControlPanel",
+    }
+  );
   await startZedServer(9999, zRoot);
 }
 

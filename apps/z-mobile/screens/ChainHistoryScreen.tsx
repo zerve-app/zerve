@@ -8,8 +8,8 @@ import {
 import { useActionsSheet } from "@zerve/ui-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import { QueryConnectionProvider, useZNodeValue } from "@zerve/query";
-import { useConnection } from "../app/Connection";
+import { ConnectionProvider, useZNodeValue } from "@zerve/query";
+import { useSavedConnection } from "../app/ConnectionStorage";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -48,9 +48,9 @@ export default function ChainHistoryScreen({
 
   return (
     <ScreenContainer scroll>
-      <QueryConnectionProvider value={useConnection(connection)}>
+      <ConnectionProvider value={useSavedConnection(connection)}>
         <ChainHistoryPage connection={connection} storePath={storePath} />
-      </QueryConnectionProvider>
+      </ConnectionProvider>
     </ScreenContainer>
   );
 }

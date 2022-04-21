@@ -2,7 +2,7 @@ import React from "react";
 import { AsyncButton, Button } from "@zerve/ui";
 import { useEffect, useRef, useState } from "react";
 import { JSONSchemaForm } from "./JSONSchemaForm";
-import { SchemaStore } from "@zerve/core";
+import { getDefaultSchemaValue, SchemaStore } from "@zerve/core";
 
 const EmptySchemaStore: SchemaStore = {} as const;
 
@@ -11,15 +11,19 @@ export function JSONSchemaEditor({
   schema,
   saveLabel,
   onValue,
+  onCancel,
   schemaStore,
 }: {
   value: any;
   schema: any;
   saveLabel?: string;
+  onCancel?: () => void;
   onValue: (value: any) => Promise<void>;
   schemaStore?: SchemaStore;
 }) {
-  const [valueState, setValueState] = useState(value);
+  const [valueState, setValueState] = useState(
+    value === undefined ? getDefaultSchemaValue(schema) : value
+  );
   const seenValueState = useRef(value);
   useEffect(() => {
     if (seenValueState.current !== value) {
@@ -47,6 +51,7 @@ export function JSONSchemaEditor({
           <Button
             onPress={() => {
               setValueState(value);
+              onCancel?.();
             }}
             title="Cancel"
           />
