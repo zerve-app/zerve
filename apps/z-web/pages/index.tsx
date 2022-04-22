@@ -2,22 +2,16 @@ import Head from "next/head";
 import { Title } from "@zerve/ui";
 import { PageLayout } from "../components/PageLayout";
 import { getFromStore } from "../stores/getFromStore";
+import ZPathPage from "../components/ZPathPage";
 
-export default function Web({ banner }) {
-  return (
-    <PageLayout>
-      <Head>
-        <title>Demo</title>
-      </Head>
-      <Title title={banner.value} />
-    </PageLayout>
-  );
+export default function Web() {
+  return <ZPathPage path={[]} />;
 }
 
-export async function getServerSideProps() {
-  return {
-    props: {
-      banner: await getFromStore("Home_Banner"),
-    },
-  };
-}
+// export async function getServerSideProps() {
+//   return {
+//     props: {
+//       banner: await getFromStore("Home_Banner"),
+//     },
+//   };
+// }

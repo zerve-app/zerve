@@ -1,6 +1,5 @@
 import {
-  notifyManager,
-  Query,
+  QueryFunctionContext,
   QueryKey,
   useQuery,
   UseQueryOptions,
@@ -10,7 +9,7 @@ import { useLiveConnection, useConnection, Connection } from "./Connection";
 import { getDoc, listDocs, getActions, getModuleList } from "./ServerCalls";
 import { getTypedZ } from "./ServerCalls";
 import { useEffect, useMemo } from "react";
-import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
+import { displayStoreFileName, ZSchema, ZSchemaSchema } from "@zerve/core";
 
 export type QueryOptions = {
   skipLoading?: boolean;
@@ -27,16 +26,19 @@ export function useConnectionProjects(
   return useZNode([...storePath, "State"], options);
 }
 
-function useConnectionQuery<A, B, C>(
+function useConnectionQuery<Result>(
   conn: Connection | null,
   path: string[],
-  getQuery: (a: A, key: QueryKey) => Promise<B>,
-  options?: Omit<UseQueryOptions<A, B, C, QueryKey>, "queryKey" | "queryFn">
+  getQuery: () => Promise<Result>,
+  options?: Omit<
+    UseQueryOptions<Result, void, Result, QueryKey>,
+    "queryKey" | "queryFn"
+  >
 ) {
-  const queryResult = useQuery<A, B, C>(
+  const queryResult = useQuery<Result, void, Result, string[]>(
     path,
-    async (a: A, key: QueryKey) => {
-      const result = await getQuery(a, key);
+    async (ctx: QueryFunctionContext<string[], any>) => {
+      const result = await getQuery();
       return result;
     },
     options
@@ -51,25 +53,13 @@ function useConnectionQuery<A, B, C>(
   return queryResult;
 }
 
-export function useDoc(name: string, options?: QueryOptions) {
-  const conn = useConnection();
-  return useConnectionQuery(
-    conn,
-    [conn?.key, "docs", "children", name, "value"],
-    async () => {
-      if (!context || !name) return undefined;
-      if (options?.skipLoading) return undefined;
-      return await getDoc(context, name);
-    }
-  );
-}
-
 export function useZNode(path: string[], options?: QueryOptions) {
   const conn = useConnection();
+  if (!conn) throw new Error("Cannot useDoc outside of connection context.");
   const liveConn = useLiveConnection(conn);
   return useConnectionQuery(
     conn,
-    [conn?.key, "z", ...path, ".node"],
+    [conn.key, "z", ...path, ".node"],
     async () => {
       if (!conn || options?.skipLoading) return undefined;
       const results = await getTypedZ(conn, path, liveConn);
@@ -83,9 +73,10 @@ export function useZNode(path: string[], options?: QueryOptions) {
 
 export function useZNodeValue(path: string[], options?: QueryOptions) {
   const conn = useConnection();
+  if (!conn) throw new Error("Cannot useDoc outside of connection context.");
   return useConnectionQuery(
     conn,
-    [conn?.key, "z", ...path, ".node", "value"],
+    [conn.key, "z", ...path, ".node", "value"],
     async () => {
       if (!conn || options?.skipLoading) return undefined;
       const results = await getZ(conn, path);
@@ -99,9 +90,10 @@ export function useZNodeValue(path: string[], options?: QueryOptions) {
 
 export function useZChildren(path: string[], options?: QueryOptions) {
   const conn = useConnection();
+  if (!conn) throw new Error("Cannot useDoc outside of connection context.");
   return useConnectionQuery(
     conn,
-    [conn?.key, "z", ...path, "children"],
+    [conn.key, "z", ...path, "children"],
     async () => {
       if (!conn || options?.skipLoading) return undefined;
       const results = await getZ(conn, path);
@@ -112,18 +104,19 @@ export function useZChildren(path: string[], options?: QueryOptions) {
 
 export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
   const conn = useConnection();
-  return useConnectionQuery(
+  if (!conn) throw new Error("Cannot useDoc outside of connection context.");
+  return useConnectionQuery<Record<string, ZSchema>>(
     conn,
-    [conn?.key, "z", ...storePath, "State", "$schemas"],
+    [conn.key, "z", ...storePath, "State", "$schemas"],
     async () => {
       if (!conn || options?.skipLoading) return undefined;
       const schemas = await getZ(conn, [...storePath, "State", "$schemas"]);
-      return schemas;
+      return schemas as Record<string, ZSchema>;
     }
   );
 }
 
-export function connectionSchemasToZSchema(schemas) {
+export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
   const refSchemas = Object.entries(schemas || {}).map(
     ([schemaName, schema]) => {
       return {

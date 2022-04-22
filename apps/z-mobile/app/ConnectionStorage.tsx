@@ -69,13 +69,10 @@ export function createConnection(name: string, url: string) {
   mutateConnections((connections) => [...connections, { name, url, key }]);
 }
 
-export async function logout(
-  connection: SavedConnection,
-  session: SavedSession
-) {
+function clearSessionToken(connectionKey: string) {
   mutateConnections((connections) =>
     connections.map((conn) => {
-      if (conn.key !== connection.key) return conn;
+      if (conn.key !== connectionKey) return conn;
       if (!conn.session) return conn;
       return {
         ...conn,
@@ -86,11 +83,22 @@ export async function logout(
       };
     })
   );
+}
+
+function clearSession(connectionKey: string) {
+  setSession(connectionKey, null);
+}
+
+export async function logout(
+  connection: SavedConnection,
+  session: SavedSession
+) {
+  clearSessionToken(connection.key);
   await postZAction(connection, [...session.authPath, "logout"], {
     authenticatorId: session.authenticatorId,
     sessionId: session.sessionId,
   });
-  setSession(connection.key, null);
+  clearSession(connection.key);
 }
 
 export function setSession(

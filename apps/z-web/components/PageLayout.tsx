@@ -1,3 +1,5 @@
+import { Connection, ConnectionProvider } from "@zerve/query";
+import { useMemo } from "react";
 import { ReactNode } from "react";
 import { View } from "react-native";
 
@@ -18,7 +20,18 @@ export function PageLayout({ children }: { children: ReactNode }) {
           backgroundColor: "#eee",
         }}
       >
-        {children}
+        <ConnectionProvider
+          value={useMemo(() => {
+            return {
+              name: "nothing",
+              url: "http://localhost:3888",
+              key: "static",
+              session: null,
+            } as Connection;
+          }, [])}
+        >
+          {children}
+        </ConnectionProvider>
       </View>
     </View>
   );

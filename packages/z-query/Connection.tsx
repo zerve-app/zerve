@@ -52,7 +52,10 @@ function startConnection(
   const [httpProtocol, hostPort] = savedConn.url.split("://");
   const wsProtocol = httpProtocol === "https" ? "wss" : "ws";
   const wsUrl = `${wsProtocol}://${hostPort}`;
-  const ws = new ReconnectingWebsocket(wsUrl);
+  if (!window) throw new Error("Cannot start live connection on server side.");
+  const ws = new ReconnectingWebsocket(wsUrl, undefined, {
+    constructor: window.WebSocket,
+  });
   const clientId = createZState({ type: ["null", "string"] } as const, null);
   const isConnected = createZState({ type: "boolean" } as const, false);
 
@@ -216,10 +219,12 @@ export async function serverPost<Request, Response>(
   }
 }
 
+const isOnClient = !!global.window;
+
 export function useLiveConnection(savedConn: SavedConnection | null) {
   const queryClient = useQueryClient();
   const connectionLease = useMemo(
-    () => savedConn && leaseConnection(savedConn, queryClient),
+    () => savedConn && isOnClient && leaseConnection(savedConn, queryClient),
     [savedConn]
   );
   useEffect(() => {

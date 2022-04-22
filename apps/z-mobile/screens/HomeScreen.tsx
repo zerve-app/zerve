@@ -93,11 +93,13 @@ export default function HomeScreen({
   return (
     <ScreenContainer scroll safe>
       <ZerveLogo />
-      {connections.map((connection) => (
-        <ConnectionProvider key={connection.key} value={connection}>
-          <ConnectionSection connection={connection} />
-        </ConnectionProvider>
-      ))}
+      {connections.map((connection) => {
+        return (
+          <ConnectionProvider key={connection.key} value={connection}>
+            <ConnectionSection connection={connection} />
+          </ConnectionProvider>
+        );
+      })}
       {/* <LocalDocsSection /> */}
       <VStack>
         <LinkRowGroup

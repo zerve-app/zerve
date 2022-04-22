@@ -71,18 +71,24 @@ export async function startApp() {
   const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
   const zRoot = createZContainer({
-    Auth: await createAuth(
-      {
-        Email: await createEmailAuthStrategy(Email),
-        Phone: await createSMSAuthStrategy(SMS),
-      },
-      AuthFiles,
-      () => {
-        return {
-          Store,
-        };
-      }
-    ),
+    // Auth: await createAuth(
+    //   {
+    //     Email: await createEmailAuthStrategy(Email),
+    //     Phone: await createSMSAuthStrategy(SMS),
+    //   },
+    //   AuthFiles,
+    //   () => {
+    //     return {
+    //       Store,
+    //     };
+    //   }
+    // ),
+    Box: createZContainer({
+      state: Store.z.State,
+    }),
+    Store,
+    Email,
+    SMS,
   });
 
   await startZedServer(port, zRoot);
