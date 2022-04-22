@@ -1,8 +1,8 @@
-import { SavedSession } from ".";
 import {
   serverGet,
   serverPost,
   SavedConnection,
+  SavedSession,
   Connection,
 } from "./Connection";
 

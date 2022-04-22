@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { QueryClientProvider, QueryClient, notifyManager } from "react-query";
+import { QueryClientProvider, QueryClient } from "react-query";
 
 const queryClient = new QueryClient();
 

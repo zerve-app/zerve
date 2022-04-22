@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
   HomeStackParamList,
@@ -51,7 +51,15 @@ function FilePage({
   } = useZNodeValue([...storePath, "State", name]);
   const isLoading = isSchemasLoading || isNodeLoading;
   const navigation = useNavigation<NavigationProp>();
-  const deleteFile = useDeleteFile(storePath);
+  const deleteFile = useDeleteFile(
+    storePath,
+    useMemo(
+      () => ({
+        onSuccess: () => showToast(`${displayStoreFileName(name)} Deleted`),
+      }),
+      [name]
+    )
+  );
   const saveFile = useSaveFile(storePath);
   const renameFile = useRenameFile(storePath);
   const renameFilePrompt = useStringInput<string>((prevName: string) => {

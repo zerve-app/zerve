@@ -10,6 +10,7 @@
     "build": "turbo run build",
     "dev": "concurrently \"yarn workspace z-server dev\" \"yarn workspace z-web dev\"",
     "dev:server": "concurrently \"yarn workspace z-server dev\"",
+    "dev:web": "concurrently \"yarn workspace z-web dev\"",
     "dev:mobile": "watchman watch-del-all && yarn workspace z-mobile start",
     "dev:ios": "yarn workspace z-mobile prebuild && open apps/z-mobile/ios/Zerve.xcworkspace",
     "build:ios": "yarn workspace z-mobile eas build --platform=ios --profile=production",

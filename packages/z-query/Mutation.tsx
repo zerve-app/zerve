@@ -3,9 +3,8 @@ import {
   getDefaultSchemaValue,
   SchemaStore,
 } from "@zerve/core";
-import { showToast } from "@zerve/ui";
+// import { showToast } from "@zerve/ui";
 import { useMutation, useQueryClient } from "react-query";
-import { storeHistoryEvent } from "../../apps/z-mobile/app/History";
 import { useConnection } from "./Connection";
 import { postZAction } from "./ServerCalls";
 
@@ -82,7 +81,10 @@ export function useCreateSchema(storePath: string[]) {
   );
 }
 
-export function useDeleteFile(storePath: string[]) {
+export function useDeleteFile(
+  storePath: string[],
+  opts?: { onSuccess?: () => void }
+) {
   const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
@@ -107,7 +109,7 @@ export function useDeleteFile(storePath: string[]) {
           "State",
           ".node",
         ]);
-        showToast(`${name} Deleted`);
+        opts?.onSuccess?.();
       },
     }
   );
@@ -243,12 +245,13 @@ export function useZNodeStateWrite(path: string[]) {
         return;
       }
       const response = await postZAction(conn, [...path, "set"], value);
-      const eventId = await storeHistoryEvent("SetZState", {
-        value,
-        path,
-        response,
-        connection: conn.key,
-      });
+      // this is not allowed because we are in z-query, so we need some mechanism for this
+      // const eventId = await storeHistoryEvent("SetZState", {
+      //   value,
+      //   path,
+      //   response,
+      //   connection: conn.key,
+      // });
     },
     {
       onSuccess: () => {
@@ -280,7 +283,7 @@ export function useDeleteSchema(storePath: string[]) {
           "State",
           "$schemas",
         ]);
-        showToast(`${schemaName} Schema Deleted`);
+        // showToast(`${schemaName} Schema Deleted`);
       },
     }
   );

@@ -12,6 +12,7 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "react-query": "^3.34.15"
+    "react-query": "^3.34.15",
+    "reconnecting-websocket": "^4.4.0"
   }
 }
