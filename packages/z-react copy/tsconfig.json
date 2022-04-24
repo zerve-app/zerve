@@ -1,9 +1,0 @@
-{
-  "extends": "tsconfig/react-library.json",
-  "include": ["../z-react-native"],
-  "exclude": [
-    "../z-react-native/dist",
-    "../z-react-native/build",
-    "../z-react-native/node_modules"
-  ]
-}
