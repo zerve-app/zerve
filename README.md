@@ -11,6 +11,6 @@ An experimental structured knowledge app for React Native and the web.
 
 ## Mobile (Expo) App
 
-Run the native app within `apps/mobile/ios` or `apps/mobile/android`
+Run the native app within `apps/z-mobile/ios` or `apps/z-mobile/android`
 
 Then start the server with `yarn dev:mobile` or `yarn workspace z-mobile start`
