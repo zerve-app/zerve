@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "zerve",
+    "slug": "zerve",
+    "version": "1.0.0",
+    "sdkVersion": "44.0.0",
+    "scheme": "zerve",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "android": {
+      "package": "app.zerve.main"
+    },
+    "ios": {
+      "bundleIdentifier": "app.zerve.main"
+    }
+  }
+}
