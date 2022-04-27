@@ -1,7 +1,3 @@
-hades.main.zerve.dev {
-  reverse_proxy http://localhost:9988
-}
-
 dev.zerve.app {
   tls {
     dns cloudflare {env.CLOUDFLARE_AUTH_TOKEN}
