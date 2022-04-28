@@ -2,6 +2,8 @@
 
 // $10/mo DO server w/ Debian 11
 
+sudo hostname hades.main.zerve.dev
+
 apt update
 apt upgrade -y
 apt install -y mosh git
@@ -12,9 +14,6 @@ ssh-keygen -f /root/.ssh/id_rsa -N ''
 
 git config pull.rebase true
 
-// if you want to write, set up public key with GH then:
-git clone git@github.com:zerve-app/zerve.git zerve
-// otherwise if read only
 git clone https://github.com/zerve-app/zerve.git zerve
 
 # from https://github.com/nodesource/distributions/blob/master/README.md
@@ -32,6 +31,19 @@ apt install -y debian-keyring debian-archive-keyring apt-transport-https
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | tee /etc/apt/trusted.gpg.d/caddy-stable.asc
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
 apt update
+
+sudo apt install -y caddy
+systemctl stop caddy
+curl -o /usr/bin/caddy -L "https://caddyserver.com/api/download?os=linux&arch=amd64&p=github.com%2Fcaddy-dns%2Fcloudflare&idempotency=81071685807062"
+chmod ugo+x /usr/bin/caddy
+sudo vi /lib/systemd/system/caddy.service
+
+# append to [service]
+
+Environment=CLOUDFLARE_AUTH_TOKEN=xxxx
+
+systemctl daemon-reload
+systemctl start caddy
 
 # add a system user, "zerve" for our server to run under.
 
@@ -105,8 +117,6 @@ as eric:
 chsh -s $(which zsh)
 
 write secrets file to /home/eric/secrets.json
-
-sudo hostname hades.main.zerve.dev
 
 cd ~
 
