@@ -1,19 +1,36 @@
 {
   "expo": {
-    "name": "zerve",
+    "name": "Zerve",
     "slug": "zerve",
     "version": "1.0.0",
-    "sdkVersion": "44.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
     "scheme": "zerve",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/8610ab44-2040-43d7-8673-0aa5984278fb"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.zerve.main"
+    },
     "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
       "package": "app.zerve.main"
     },
-    "ios": {
-      "bundleIdentifier": "app.zerve.main"
-    }
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "runtimeVersion": "1.0.0"
   }
 }
