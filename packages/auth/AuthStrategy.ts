@@ -1,17 +1,21 @@
 import { FromSchema, JSONSchema } from "@zerve/core";
 import { SystemFilesModule } from "@zerve/system-files";
 
-type AuthorizationToken = {
+type StrategyAuthorization<AuthorizationDetails extends Object = {}> = {
   strategyKey: string;
-  userKey: string;
-};
+  authTime: number;
+} & AuthorizationDetails;
 
-export type AuthStrategy<AuthorizePayloadSchema extends JSONSchema, Details> = {
+export type AuthStrategy<
+  AuthorizePayloadSchema extends JSONSchema,
+  Details,
+  AuthorizationDetails = {}
+> = {
   authorizeSchema: AuthorizePayloadSchema;
   authorize: (
     payload: FromSchema<AuthorizePayloadSchema>,
     strategyFiles: SystemFilesModule
-  ) => Promise<null | AuthorizationToken>;
+  ) => Promise<null | StrategyAuthorization<AuthorizationDetails>>;
   getDetails: (
     strategyFiles: SystemFilesModule,
     strategyKey: string

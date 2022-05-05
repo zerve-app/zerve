@@ -7,6 +7,7 @@ import {
   NullSchema,
   UnauthorizedError,
   createZMetaContainer,
+  validateWithSchema,
 } from "@zerve/core";
 import { join } from "path";
 import { randomBytes, createHash } from "crypto";
@@ -59,15 +60,45 @@ const LogoutAllPayloadSchema = {
   additionalProperties: false,
 } as const;
 
+const StoredSessionSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    token: { type: "string" },
+    authenticatorId: { type: "string" },
+    startTime: { type: "number" },
+    strategyKey: { type: "string" },
+    strategyName: { type: "string" },
+  },
+  required: [
+    "id",
+    "token",
+    "authenticatorId",
+    "startTime",
+    "strategyKey",
+    "strategyName",
+  ],
+  additionalProperties: false,
+} as const;
+type StoredSession = FromSchema<typeof StoredSessionSchema>;
+
 export type AuthenticatorFileData = FromSchema<typeof UserInfoSchema>;
+
+const UsernameSchema = {
+  title: "Username",
+  type: "string",
+} as const;
+
+export type Username = FromSchema<typeof UsernameSchema>;
 
 export async function createAuth<
   Strategies extends Record<string, AuthStrategy<any, any>>,
-  UserZeds extends Record<string, AnyZed>
+  UserZeds extends Record<string, AnyZed>,
+  UserAdminZeds extends Record<string, AnyZed>
 >(
   strategies: Strategies,
   files: SystemFilesModule,
-  getUserZeds: (sess: { authenticatorId: string }) => UserZeds = (u) => u
+  getUserZeds: (user: UserAdminZeds) => UserZeds = (u) => u
 ) {
   await files.z.MakeDir.call({ path: "" });
 
@@ -95,20 +126,50 @@ export async function createAuth<
       })
     )
   );
+  const strategyAuthorizationsFiles = Object.fromEntries(
+    await Promise.all(
+      Object.entries(strategies).map(async ([strategyKey, strategy]) => {
+        const authorizationsFiles = createSystemFiles(
+          join(files.z.Path.value, "authorizations", strategyKey)
+        );
+        await authorizationsFiles.z.MakeDir.call({ path: "" });
+        return [strategyKey, authorizationsFiles];
+      })
+    )
+  );
+
+  function getZLoggedInUser(session: StoredSession) {
+    return {
+      setUsername: createZAction(
+        UsernameSchema,
+        NullSchema,
+        async (username: Username) => {
+          console.log("trying to change username!", username, session);
+          return null;
+        }
+      ),
+    };
+  }
 
   async function getValidatedSession(
     authenticatorId: string,
     authPassword: string
-  ) {
+  ): Promise<StoredSession> {
     ensureNoPathEscape(authenticatorId);
     ensureNoPathEscape(authPassword);
     const [sessionId, sessionToken] = authPassword.split(".");
-    const session =
+    const sessionData =
       authenticatorId &&
       sessionId &&
       (await files.z.ReadJSON.call({
-        path: join("users", authenticatorId, `session-${sessionId}.json`),
+        path: join(
+          // FIX ME FIX ME, session should be stored under the user
+          "authorizations",
+          authenticatorId,
+          `session-${sessionId}.json`
+        ),
       }));
+    const session = validateWithSchema(StoredSessionSchema, sessionData);
     if (!session || sessionToken !== session.token) {
       throw new UnauthorizedError(
         "Unauthorized",
@@ -121,6 +182,7 @@ export async function createAuth<
 
   return createZMetaContainer(
     {
+      // anybody can call this action! all they need is the sessionId to log out.
       logout: createZAction(
         LogoutPayloadSchema,
         NullSchema,
@@ -130,7 +192,7 @@ export async function createAuth<
           const sessionIdOnly = sessionId.split(".")[0];
           await files.z.DeleteFile.call({
             path: join(
-              "users",
+              "authenticators",
               authenticatorId,
               `session-${sessionIdOnly}.json`
             ),
@@ -139,6 +201,8 @@ export async function createAuth<
           return null;
         }
       ),
+
+      // ANYbody can call this action, it is not protected. So we have to check for the session that is passed through the body, with getValidatedSession!
       logoutAll: createZAction(
         LogoutAllPayloadSchema,
         NullSchema,
@@ -149,7 +213,7 @@ export async function createAuth<
           );
           const sessionFiles = (
             await files.z.ReadDir.call({
-              path: join("users", authenticatorId),
+              path: join("authenticators", authenticatorId),
             })
           ).filter(
             (fileName: string) => !!fileName.match(/^session-(.*)\.json$/)
@@ -157,7 +221,7 @@ export async function createAuth<
           await Promise.all(
             sessionFiles.map(async (fileName: string) => {
               await files.z.DeleteFile.call({
-                path: join("users", authenticatorId, fileName),
+                path: join("authenticators", authenticatorId, fileName),
               });
             })
           );
@@ -175,22 +239,27 @@ export async function createAuth<
           if (!strategy || !strategyFiles) {
             throw new Error(`Strategy ${strategyName} not available.`);
           }
-          const approvedSession = await strategy.authorize(
+          const strategyAuthorization = await strategy.authorize(
             payload.payload,
             strategyFiles
           );
-          if (approvedSession) {
-            const { strategyKey } = approvedSession;
+          if (strategyAuthorization) {
+            const { strategyKey } = strategyAuthorization;
             const authenticatorId = sha256SumHex(
               `${strategyName}-${strategyKey}`
             );
-            const userJsonPath = join(
-              "users",
+            const authenticatorJsonPath = join(
               authenticatorId,
               `authenticator.json`
             );
+            const authorizationsFiles =
+              strategyAuthorizationsFiles[strategyName];
+            if (!authorizationsFiles)
+              throw new Error("Cannot find storage for " + strategyName);
             const prevUser: AuthenticatorFileData | undefined =
-              await files.z.ReadJSON.call({ path: userJsonPath });
+              await authorizationsFiles.z.ReadJSON.call({
+                path: authenticatorJsonPath,
+              });
             let user: AuthenticatorFileData =
               prevUser ||
               (() => {
@@ -202,18 +271,18 @@ export async function createAuth<
                 };
               })();
             if (prevUser !== user) {
-              await files.z.MakeDir.call({
-                path: join("users", authenticatorId),
+              await authorizationsFiles.z.MakeDir.call({
+                path: authenticatorId,
               });
-              await files.z.WriteJSON.call({
-                path: userJsonPath,
+              await authorizationsFiles.z.WriteJSON.call({
+                path: authenticatorJsonPath,
                 value: user,
               });
             }
 
             const sessionId = randomBytes(60).toString("hex");
             const sessionToken = randomBytes(60).toString("hex");
-            const session = {
+            const session: StoredSession = {
               id: sessionId,
               token: sessionToken,
               authenticatorId,
@@ -222,7 +291,11 @@ export async function createAuth<
               strategyName,
             };
             await files.z.WriteJSON.call({
-              path: join("users", authenticatorId, `session-${sessionId}.json`),
+              path: join(
+                "authenticators",
+                authenticatorId,
+                `session-${sessionId}.json`
+              ),
               value: session,
             });
             return {
@@ -241,10 +314,9 @@ export async function createAuth<
             authenticatorId,
             authPassword
           );
-          const publicSession = {
-            authenticatorId: session.authenticatorId,
-          };
-          return createZContainer(getUserZeds(publicSession));
+
+          const loggedInUser = getZLoggedInUser(session);
+          return createZContainer(getUserZeds(loggedInUser));
         }
       ),
     },

@@ -32,7 +32,8 @@ const AuthMessageStrategyDefaultConfig = {
   authResetMs: 30 * 60 * 1000,
 };
 export function createGenericMessageAuthStrategy<
-  AddressSchema extends JSONSchema
+  AddressSchema extends JSONSchema,
+  AuthDetails
 >(
   addressSchema: AddressSchema,
   handleMessageSend: (
@@ -41,6 +42,12 @@ export function createGenericMessageAuthStrategy<
   ) => Promise<void>,
   configInput?: Partial<AuthMessageStrategyConfig>
 ) {
+  type Address = FromSchema<AddressSchema>;
+
+  type AuthorizationDetail = {
+    address: Address;
+  };
+
   const config = {
     ...AuthMessageStrategyDefaultConfig,
     ...(configInput || {}),
@@ -100,7 +107,7 @@ export function createGenericMessageAuthStrategy<
               authRequest: null,
             } as AddressFileData,
           });
-          return { strategyKey: addressKey };
+          return { strategyKey: addressKey, authTime: Date.now(), address };
         } else {
           console.log(Math.floor((now - requestTime) / 1000));
           if (now - config.authResetMs < requestTime) {
@@ -153,5 +160,5 @@ export function createGenericMessageAuthStrategy<
       });
       return details;
     },
-  } as AuthStrategy<typeof authorizeSchema>;
+  } as AuthStrategy<typeof authorizeSchema, AuthDetails, AuthorizationDetail>;
 }

@@ -10,13 +10,9 @@ import {
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore } from "@zerve/store";
 import { createSystemFiles } from "@zerve/system-files";
-import SystemFetch from "@zerve/system-fetch";
-import { createSystemSSH } from "@zerve/system-ssh";
-import { ChainLedgerCalculator } from "@zerve/ledger";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
 import { createSystemCommands } from "@zerve/system-commands";
-import { createZChainState } from "@zerve/chain";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 
@@ -33,11 +29,10 @@ const secretsFile =
   process.env.ZERVE_SECRETS_JSON || join(process.cwd(), "../../secrets.json");
 
 export async function startApp() {
-  const InternalRootFiles = createSystemFiles("/");
-  const InternalCommands = createSystemCommands();
   console.log("Starting Data Dir", dataDir);
   const Data = await createCoreData(dataDir);
 
+  const InternalRootFiles = createSystemFiles("/");
   const ledgerCacheFiles = createSystemFiles(join(dataDir, "LedgerStateCache"));
   const secrets = await InternalRootFiles.z.ReadJSON.call({
     path: secretsFile,
@@ -71,24 +66,19 @@ export async function startApp() {
   const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
   const zRoot = createZContainer({
-    // Auth: await createAuth(
-    //   {
-    //     Email: await createEmailAuthStrategy(Email),
-    //     Phone: await createSMSAuthStrategy(SMS),
-    //   },
-    //   AuthFiles,
-    //   () => {
-    //     return {
-    //       Store,
-    //     };
-    //   }
-    // ),
-    Box: createZContainer({
-      state: Store.z.State,
-    }),
-    Store,
-    Email,
-    SMS,
+    Auth: await createAuth(
+      {
+        Email: await createEmailAuthStrategy(Email),
+        Phone: await createSMSAuthStrategy(SMS),
+      },
+      AuthFiles,
+      (user) => {
+        return {
+          ...user,
+          Store,
+        };
+      }
+    ),
   });
 
   await startZedServer(port, zRoot);
