@@ -334,7 +334,7 @@ function LoginStrategyForm({
               authPath: path,
               userLabel: address,
               sessionId: session.sessionId,
-              authenticatorId: session.authenticatorId,
+              userId: session.userId,
               sessionToken: session.sessionToken,
             });
             showToast(`Logged in.`);

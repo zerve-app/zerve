@@ -44,7 +44,7 @@ export function createGenericMessageAuthStrategy<
 ) {
   type Address = FromSchema<AddressSchema>;
 
-  type AuthorizationDetail = {
+  type AuthenticationDetails = {
     address: Address;
   };
 
@@ -71,8 +71,9 @@ export function createGenericMessageAuthStrategy<
       payload: AuthorizePayload,
       strategyFiles: SystemFilesModule
     ) => {
+      const { address } = payload;
       const addressKey = createHash("sha256")
-        .update(stringify(payload.address), "utf8")
+        .update(stringify(address), "utf8")
         .digest()
         .toString("hex");
       const addressFileSubpath = `${addressKey}.json`;
@@ -160,5 +161,5 @@ export function createGenericMessageAuthStrategy<
       });
       return details;
     },
-  } as AuthStrategy<typeof authorizeSchema, AuthDetails, AuthorizationDetail>;
+  } as AuthStrategy<typeof authorizeSchema, AuthDetails, AuthenticationDetails>;
 }

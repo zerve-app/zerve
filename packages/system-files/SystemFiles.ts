@@ -148,7 +148,7 @@ export function createSystemFiles<FilesRoot extends string>(
   const Move = createZAction(
     {
       type: "object",
-      required: ["path"],
+      required: ["from", "to"],
       additionalProperties: false,
       properties: {
         from: { type: "string" },

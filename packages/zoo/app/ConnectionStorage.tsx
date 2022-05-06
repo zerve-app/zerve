@@ -95,7 +95,7 @@ export async function logout(
 ) {
   clearSessionToken(connection.key);
   await postZAction(connection, [...session.authPath, "logout"], {
-    authenticatorId: session.authenticatorId,
+    userId: session.userId,
     sessionId: session.sessionId,
   });
   clearSession(connection.key);

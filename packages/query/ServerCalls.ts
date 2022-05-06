@@ -25,9 +25,9 @@ export function pathStartsWith(wholePath: string[], maybePrefixPath: string[]) {
 function extractSessionAuth(path: string[], session?: null | SavedSession) {
   let auth: null | [string, string] = null;
   if (session && pathStartsWith(path, session.authPath)) {
-    const { sessionToken, sessionId, authenticatorId } = session;
+    const { sessionToken, sessionId, userId } = session;
     if (sessionToken) {
-      auth = [authenticatorId, `${sessionId}.${sessionToken}`];
+      auth = [userId, `${sessionId}.${sessionToken}`];
     }
   }
   return auth;

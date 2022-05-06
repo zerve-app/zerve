@@ -28,35 +28,43 @@ function sha256SumHex(value: string) {
   return hash;
 }
 
-export const UserInfoSchema = {
+export const AuthenticatorDataSchema = {
   type: "object",
   properties: {
     authenticatorId: { type: "string" },
+    userId: { type: "string" },
     strategyKey: { type: "string" },
     strategyName: { type: "string" },
     creationTime: { type: "integer" },
   },
-  required: ["authenticatorId", "strategyKey", "strategyName", "creationTime"],
+  required: [
+    "authenticatorId",
+    "userId",
+    "strategyKey",
+    "strategyName",
+    "creationTime",
+  ],
   additionalProperties: false,
 } as const;
 
 const LogoutPayloadSchema = {
   type: "object",
   properties: {
-    authenticatorId: { type: "string" },
+    userId: { type: "string" },
     sessionId: { type: "string" },
   },
-  required: ["authenticatorId", "sessionId"],
+  required: ["userId", "sessionId"],
   additionalProperties: false,
 } as const;
 
 const LogoutAllPayloadSchema = {
   type: "object",
   properties: {
-    authenticatorId: { type: "string" },
+    userId: { type: "string" },
+    sessionId: { type: "string" },
     sessionToken: { type: "string" },
   },
-  required: ["authenticatorId", "sessionToken"],
+  required: ["userId", "sessionId", "sessionToken"],
   additionalProperties: false,
 } as const;
 
@@ -82,7 +90,23 @@ const StoredSessionSchema = {
 } as const;
 type StoredSession = FromSchema<typeof StoredSessionSchema>;
 
-export type AuthenticatorFileData = FromSchema<typeof UserInfoSchema>;
+export type AuthenticationFileData = FromSchema<typeof AuthenticatorDataSchema>;
+
+const UserDataSchema = {
+  type: "object",
+  properties: {
+    authenticatorIds: {
+      type: "array",
+      items: {
+        type: "string",
+      },
+    },
+  },
+  required: ["authenticatorIds"],
+  additionalProperties: false,
+} as const;
+
+export type UserData = FromSchema<typeof UserDataSchema>;
 
 const UsernameSchema = {
   title: "Username",
@@ -126,25 +150,56 @@ export async function createAuth<
       })
     )
   );
-  const strategyAuthorizationsFiles = Object.fromEntries(
-    await Promise.all(
-      Object.entries(strategies).map(async ([strategyKey, strategy]) => {
-        const authorizationsFiles = createSystemFiles(
-          join(files.z.Path.value, "authorizations", strategyKey)
-        );
-        await authorizationsFiles.z.MakeDir.call({ path: "" });
-        return [strategyKey, authorizationsFiles];
-      })
-    )
+
+  const authenticationFiles = createSystemFiles(
+    join(files.z.Path.value, "authentications")
   );
 
-  function getZLoggedInUser(session: StoredSession) {
+  const usersFiles = createSystemFiles(join(files.z.Path.value, "users"));
+  await usersFiles.z.MakeDir.call({
+    path: "",
+  });
+  function getZLoggedInUser(userId: string, session: StoredSession) {
     return {
       setUsername: createZAction(
         UsernameSchema,
         NullSchema,
-        async (username: Username) => {
-          console.log("trying to change username!", username, session);
+        async (newUserId: Username) => {
+          if (newUserId === userId) return null;
+
+          const userData: UserData = await usersFiles.z.ReadJSON.call({
+            path: join(userId, "user.json"),
+          });
+          const { authenticatorIds } = userData;
+
+          await Promise.all(
+            authenticatorIds.map(async (authenticatorId) => {
+              const authenticator = await authenticationFiles.z.ReadJSON.call({
+                path: `${authenticatorId}/authenticator.json`,
+              });
+              await authenticationFiles.z.WriteJSON.call({
+                path: `${authenticatorId}/authenticator.json`,
+                value: { ...authenticator, userId: authenticatorId },
+              });
+            })
+          );
+
+          await usersFiles.z.Move.call({
+            from: userId,
+            to: newUserId,
+          });
+
+          await Promise.all(
+            authenticatorIds.map(async (authenticatorId) => {
+              const authenticator = await authenticationFiles.z.ReadJSON.call({
+                path: `${authenticatorId}/authenticator.json`,
+              });
+              await authenticationFiles.z.WriteJSON.call({
+                path: `${authenticatorId}/authenticator.json`,
+                value: { ...authenticator, userId: newUserId },
+              });
+            })
+          );
           return null;
         }
       ),
@@ -152,28 +207,29 @@ export async function createAuth<
   }
 
   async function getValidatedSession(
-    authenticatorId: string,
+    userId: string,
     authPassword: string
   ): Promise<StoredSession> {
-    ensureNoPathEscape(authenticatorId);
+    ensureNoPathEscape(userId);
     ensureNoPathEscape(authPassword);
     const [sessionId, sessionToken] = authPassword.split(".");
     const sessionData =
-      authenticatorId &&
+      userId &&
       sessionId &&
       (await files.z.ReadJSON.call({
-        path: join(
-          // FIX ME FIX ME, session should be stored under the user
-          "authorizations",
-          authenticatorId,
-          `session-${sessionId}.json`
-        ),
+        path: join("users", userId, "sessions", `session-${sessionId}.json`),
       }));
+    if (!sessionData)
+      throw new UnauthorizedError(
+        "Unauthorized",
+        "Provide a valid session in the Authentication header.",
+        {}
+      );
     const session = validateWithSchema(StoredSessionSchema, sessionData);
     if (!session || sessionToken !== session.token) {
       throw new UnauthorizedError(
         "Unauthorized",
-        "Provide a session in the Authentication header.",
+        "Provide a valid session in the Authentication header.",
         {}
       );
     }
@@ -186,14 +242,15 @@ export async function createAuth<
       logout: createZAction(
         LogoutPayloadSchema,
         NullSchema,
-        async ({ authenticatorId, sessionId }) => {
-          ensureNoPathEscape(authenticatorId);
+        async ({ userId, sessionId }) => {
+          ensureNoPathEscape(userId);
           ensureNoPathEscape(sessionId);
           const sessionIdOnly = sessionId.split(".")[0];
           await files.z.DeleteFile.call({
             path: join(
-              "authenticators",
-              authenticatorId,
+              "users",
+              userId,
+              "sessions",
               `session-${sessionIdOnly}.json`
             ),
           });
@@ -206,14 +263,14 @@ export async function createAuth<
       logoutAll: createZAction(
         LogoutAllPayloadSchema,
         NullSchema,
-        async ({ authenticatorId, sessionToken }) => {
+        async ({ sessionToken, sessionId, userId }) => {
           const session = await getValidatedSession(
-            authenticatorId,
-            sessionToken
+            userId,
+            `${sessionId}.${sessionToken}`
           );
           const sessionFiles = (
             await files.z.ReadDir.call({
-              path: join("authenticators", authenticatorId),
+              path: join("users", userId, "sessions"),
             })
           ).filter(
             (fileName: string) => !!fileName.match(/^session-(.*)\.json$/)
@@ -221,7 +278,7 @@ export async function createAuth<
           await Promise.all(
             sessionFiles.map(async (fileName: string) => {
               await files.z.DeleteFile.call({
-                path: join("authenticators", authenticatorId, fileName),
+                path: join("users", userId, "sessions", fileName),
               });
             })
           );
@@ -239,12 +296,13 @@ export async function createAuth<
           if (!strategy || !strategyFiles) {
             throw new Error(`Strategy ${strategyName} not available.`);
           }
-          const strategyAuthorization = await strategy.authorize(
+          const strategyAuthentication = await strategy.authorize(
             payload.payload,
             strategyFiles
           );
-          if (strategyAuthorization) {
-            const { strategyKey } = strategyAuthorization;
+
+          if (strategyAuthentication) {
+            const { strategyKey } = strategyAuthentication;
             const authenticatorId = sha256SumHex(
               `${strategyName}-${strategyKey}`
             );
@@ -252,36 +310,63 @@ export async function createAuth<
               authenticatorId,
               `authenticator.json`
             );
-            const authorizationsFiles =
-              strategyAuthorizationsFiles[strategyName];
-            if (!authorizationsFiles)
-              throw new Error("Cannot find storage for " + strategyName);
-            const prevUser: AuthenticatorFileData | undefined =
-              await authorizationsFiles.z.ReadJSON.call({
+            const prevAuthentication: AuthenticationFileData | undefined =
+              await authenticationFiles.z.ReadJSON.call({
                 path: authenticatorJsonPath,
               });
-            let user: AuthenticatorFileData =
-              prevUser ||
+            let authentication: AuthenticationFileData =
+              prevAuthentication ||
               (() => {
                 return {
                   creationTime: Date.now(),
                   authenticatorId,
                   strategyKey,
                   strategyName,
+                  userId: authenticatorId,
                 };
               })();
-            if (prevUser !== user) {
-              await authorizationsFiles.z.MakeDir.call({
+
+            // eventually mutate the authenticator here?
+
+            if (prevAuthentication !== authentication) {
+              await authenticationFiles.z.MakeDir.call({
                 path: authenticatorId,
               });
-              await authorizationsFiles.z.WriteJSON.call({
+              await authenticationFiles.z.WriteJSON.call({
                 path: authenticatorJsonPath,
-                value: user,
+                value: authentication,
+              });
+            }
+            console.log("CREATING SESSION authenticator", authentication);
+            const { userId } = authentication;
+            const userDataPath = join(userId, "user.json");
+
+            const prevUserData: UserData | undefined =
+              await authenticationFiles.z.ReadJSON.call({
+                path: userDataPath,
+              });
+
+            const userData =
+              prevUserData ||
+              (() => ({
+                authenticatorIds: [authenticatorId],
+              }))();
+            if (userData !== prevUserData) {
+              await usersFiles.z.MakeDir.call({
+                path: userId,
+              });
+              await usersFiles.z.MakeDir.call({
+                path: join(userId, "sessions"),
+              });
+              await usersFiles.z.WriteJSON.call({
+                path: userDataPath,
+                value: userData,
               });
             }
 
             const sessionId = randomBytes(60).toString("hex");
             const sessionToken = randomBytes(60).toString("hex");
+
             const session: StoredSession = {
               id: sessionId,
               token: sessionToken,
@@ -290,18 +375,14 @@ export async function createAuth<
               strategyKey,
               strategyName,
             };
-            await files.z.WriteJSON.call({
-              path: join(
-                "authenticators",
-                authenticatorId,
-                `session-${sessionId}.json`
-              ),
+            await usersFiles.z.WriteJSON.call({
+              path: join(userId, "sessions", `session-${sessionId}.json`),
               value: session,
             });
             return {
               sessionId,
               sessionToken,
-              authenticatorId,
+              userId,
             };
           }
           return null;
@@ -309,13 +390,10 @@ export async function createAuth<
       ),
 
       user: createZAuthContainer(
-        async (authenticatorId: string, authPassword: string) => {
-          const session = await getValidatedSession(
-            authenticatorId,
-            authPassword
-          );
+        async (userId: string, authPassword: string) => {
+          const session = await getValidatedSession(userId, authPassword);
 
-          const loggedInUser = getZLoggedInUser(session);
+          const loggedInUser = getZLoggedInUser(userId, session);
           return createZContainer(getUserZeds(loggedInUser));
         }
       ),

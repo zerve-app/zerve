@@ -6,6 +6,7 @@ import {
   createAuth,
   createEmailAuthStrategy,
   createSMSAuthStrategy,
+  createTestAuthStrategy,
 } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore } from "@zerve/store";
@@ -70,6 +71,7 @@ export async function startApp() {
       {
         Email: await createEmailAuthStrategy(Email),
         Phone: await createSMSAuthStrategy(SMS),
+        // Test: createTestAuthStrategy("Test0"),
       },
       AuthFiles,
       (user) => {
