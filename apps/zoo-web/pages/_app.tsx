@@ -1,8 +1,8 @@
-import { Provider } from '@zerve/zoo/provider'
-import Head from 'next/head'
-import React from 'react'
-import type { SolitoAppProps } from 'solito'
-import 'raf/polyfill'
+import { Provider } from "@zerve/zoo/provider";
+import Head from "next/head";
+import React from "react";
+import type { SolitoAppProps } from "solito";
+import "raf/polyfill";
 
 function MyApp({ Component, pageProps }: SolitoAppProps) {
   return (
@@ -37,7 +37,7 @@ function MyApp({ Component, pageProps }: SolitoAppProps) {
         <Component {...pageProps} />
       </Provider>
     </>
-  )
+  );
 }
 
-export default MyApp
+export default MyApp;

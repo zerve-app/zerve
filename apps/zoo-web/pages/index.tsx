@@ -1,3 +1,6 @@
-import { HomeScreen } from '@zerve/zoo/features/home/screen'
+import { ZPathPage } from "@zerve/zoo/components/ZPathPage";
+import React from "react";
 
-export default HomeScreen
+export default function HomeScreen() {
+  return <ZPathPage path={[]} />;
+}

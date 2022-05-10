@@ -10,14 +10,14 @@ export function ZPath({ path }: { path: string[] }) {
       <Head>
         <title>{path.at(-1) || "Z"}</title>
       </Head>
-      <Title title="Helol" />
+      <Title title={path.length ? path.join("/") : "z"} />
       {isLoading && <Spinner />}
       <Paragraph>{JSON.stringify(data)}</Paragraph>
     </>
   );
 }
 
-export default function ZPathPage({ path }: { path: string[] }) {
+export function ZPathPage({ path }: { path: string[] }) {
   return (
     <PageLayout>
       <ZPath path={path} />

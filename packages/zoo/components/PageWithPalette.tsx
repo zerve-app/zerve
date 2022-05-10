@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ReactNode } from "react";
 import { Text, View } from "react-native";
 
-import Palette from "../components/Palette";
+import Palette from "./Palette";
 import { useKeyboardEffect } from "../stores/Keyboard";
 
 export function PageWithPalette({

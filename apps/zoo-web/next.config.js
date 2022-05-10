@@ -1,22 +1,69 @@
 /** @type {import('next').NextConfig} */
+
+const { readdirSync, readFileSync } = require("fs");
+const { withPlugins } = require("next-compose-plugins");
+const packageDirNames = readdirSync("../../packages");
+const packageJsons = packageDirNames.map((pkgName) => {
+  try {
+    return JSON.parse(
+      readFileSync(`../../packages/${pkgName}/package.json`, {
+        encoding: "utf-8",
+      })
+    );
+  } catch (e) {
+    return null;
+  }
+});
+
+const localPackageNames = packageJsons.map((p) => p?.name).filter(Boolean);
+
 const nextConfig = {
   reactStrictMode: true,
   webpack5: true,
-}
+  webpack: (config, options) => {
+    // config.resolve.alias = {
+    //   ...(config.resolve.alias || {}),
+    //   // Transform all direct `react-native` imports to `react-native-web`
+    //   "react-native$": "react-native-web",
+    // };
+    // config.resolve.extensions = [
+    //   ".web.js",
+    //   ".web.ts",
+    //   ".web.tsx",
+    //   ...config.resolve.extensions,
+    // ];
+    // config.module.rules.push({
+    //   test: /\.js$/,
+    //   exclude:
+    //     /node_modules\/(?!(react-native-elements|react-native-vector-icons|\@expo\/vector-icons)\/).*/,
+    //   loader: options.defaultLoaders.babel,
+    // });
+    config.module.rules.push({
+      test: /\.ttf$/,
+      loader: "url-loader",
+      // include: /node_modules\/react-native-vector-icons\/*/,
+      // include: resolve(
+      //   __dirname,
+      //   "../../node_modules/react-native-vector-icons"
+      // ),
+    });
 
-const { withExpo } = require('@expo/next-adapter')
-const withPlugins = require('next-compose-plugins')
-const withTM = require('next-transpile-modules')([
-  'solito',
-  'dripsy',
-  '@dripsy/core',
-  'moti',
-  '@motify/core',
-  '@motify/components',
-  '@zerve/zoo',
-])
+    return config;
+  },
+};
+
+const { withExpo } = require("@expo/next-adapter");
+const withTM = require("next-transpile-modules")([
+  "solito",
+  "dripsy",
+  "@dripsy/core",
+  "moti",
+  "@motify/core",
+  "@motify/components",
+  ...localPackageNames,
+]);
 
 module.exports = withPlugins(
   [withTM, [withExpo, { projectRoot: __dirname }]],
   nextConfig
-)
+);

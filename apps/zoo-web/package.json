@@ -11,8 +11,7 @@
   "dependencies": {
     "@expo/next-adapter": "^3.1.20",
     "@zerve/zoo": "*",
-    "next": "12.1.5",
-    "raf": "^3.4.1"
+    "next": "12.1.6"
   },
   "devDependencies": {
     "@types/node": "17.0.25",

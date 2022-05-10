@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { ScrollView, Text, View } from "react-native";
 import { Button, DisclosureSection, Label, useColors, VStack } from "@zerve/ui";
 
-import { useAppDispatch } from "../stores/Dispatch";
+import { useAppDispatch } from "../../../apps/z-web/stores/Dispatch";
 import { ReactNode } from "react";
 
 function SmallSection({

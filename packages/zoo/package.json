@@ -8,6 +8,10 @@
     "dripsy": "^3.6.0",
     "expo-linking": "^3.0.0",
     "moti": "canary",
+    "@zerve/core": "*",
+    "@zerve/query": "*",
+    "@zerve/react": "*",
+    "@zerve/ui": "*",
     "solito": "latest"
   },
   "devDependencies": {
