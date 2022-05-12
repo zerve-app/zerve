@@ -1,7 +1,13 @@
 import { join } from "path";
 import { startZedServer } from "@zerve/node";
 
-import { createZContainer } from "@zerve/core";
+import {
+  createZAction,
+  createZContainer,
+  createZGettable,
+  NullSchema,
+  NumberSchema,
+} from "@zerve/core";
 import {
   createAuth,
   createEmailAuthStrategy,
@@ -66,21 +72,44 @@ export async function startApp() {
 
   const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
+  // const zRoot = createZContainer({
+  //   Auth: await createAuth(
+  //     {
+  //       Email: await createEmailAuthStrategy(Email),
+  //       Phone: await createSMSAuthStrategy(SMS),
+  //       // Test: createTestAuthStrategy("Test0"),
+  //     },
+  //     AuthFiles,
+  //     (user) => {
+  //       return {
+  //         ...user,
+  //         Store,
+  //       };
+  //     }
+  //   ),
+  // });
+
+  const zGetString = createZGettable(
+    {
+      type: "string",
+    } as const,
+    async (params: null) => {
+      return "Hello";
+    }
+  );
+
+  const zAction = createZAction(
+    NumberSchema,
+    NullSchema,
+    async (value: number) => {
+      console.log("doing the thing. your number is: ", value);
+      return null;
+    }
+  );
+
   const zRoot = createZContainer({
-    Auth: await createAuth(
-      {
-        Email: await createEmailAuthStrategy(Email),
-        Phone: await createSMSAuthStrategy(SMS),
-        // Test: createTestAuthStrategy("Test0"),
-      },
-      AuthFiles,
-      (user) => {
-        return {
-          ...user,
-          Store,
-        };
-      }
-    ),
+    zGetString,
+    zAction,
   });
 
   await startZedServer(port, zRoot);
