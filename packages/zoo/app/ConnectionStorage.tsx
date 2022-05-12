@@ -1,5 +1,3 @@
-import { defineKeySource } from "@zerve/core";
-import { createNativeStorage } from "@zerve/native";
 import {
   postZAction,
   SavedConnection,
@@ -7,12 +5,7 @@ import {
   useConnection,
   useLiveConnection,
 } from "@zerve/query";
-import { useZObservableMaybe } from "@zerve/react";
-
-const connectionStorage = createNativeStorage({
-  id: "ConnectionStorage",
-});
-
+console.log("ConnectinStorage!! ");
 const DefaultConnections: SavedConnection[] = [
   ...(__DEV__
     ? [
@@ -30,97 +23,40 @@ const DefaultConnections: SavedConnection[] = [
   },
 ];
 
-const connectionsNode = connectionStorage.getStorageNode(
-  "Connections",
-  DefaultConnections
-);
-
-export function useSavedConnections() {
-  return connectionStorage.useNodeState(connectionsNode);
-}
+export function useSavedConnections() {}
 
 export function getConnection(connectionKey: string) {
-  return connectionsNode.get().find((conn) => conn.key === connectionKey);
+  throw new Error("lulz no conn on web");
 }
 
 export function useSavedConnection(connectionKey: string | null) {
-  if (connectionKey === null) return null;
-  const connections = useSavedConnections();
-  const conn = connections.find((c) => c.key === connectionKey) || null;
-  return conn;
+  return null;
 }
 
 export function mutateConnections(
   mutator: (connections: SavedConnection[]) => SavedConnection[]
-) {
-  connectionStorage.mutateStorage("Connections", DefaultConnections, mutator);
-}
+) {}
 
-export function destroyConnection(key: string) {
-  mutateConnections((connections) =>
-    connections.filter((conn) => conn.key !== key)
-  );
-}
+export function destroyConnection(key: string) {}
 
-const getConnectionKey = defineKeySource("Connection");
+export function createConnection(name: string, url: string) {}
 
-export function createConnection(name: string, url: string) {
-  const key = getConnectionKey();
-  mutateConnections((connections) => [...connections, { name, url, key }]);
-}
+function clearSessionToken(connectionKey: string) {}
 
-function clearSessionToken(connectionKey: string) {
-  mutateConnections((connections) =>
-    connections.map((conn) => {
-      if (conn.key !== connectionKey) return conn;
-      if (!conn.session) return conn;
-      return {
-        ...conn,
-        session: {
-          ...conn.session,
-          sessionToken: null,
-        },
-      };
-    })
-  );
-}
-
-function clearSession(connectionKey: string) {
-  setSession(connectionKey, null);
-}
+function clearSession(connectionKey: string) {}
 
 export async function logout(
   connection: SavedConnection,
   session: SavedSession
-) {
-  clearSessionToken(connection.key);
-  await postZAction(connection, [...session.authPath, "logout"], {
-    userId: session.userId,
-    sessionId: session.sessionId,
-  });
-  clearSession(connection.key);
-}
+) {}
 
 export function setSession(
   connectionKey: string,
   session: SavedSession | null
-) {
-  mutateConnections((connections) =>
-    connections.map((conn) => {
-      if (conn.key !== connectionKey) return conn;
-      return {
-        ...conn,
-        session,
-      };
-    })
-  );
-}
+) {}
 
 export function useConnectionStatus() {
-  const savedConn = useConnection();
-  const connection = useLiveConnection(savedConn);
-  const isConnected = useZObservableMaybe(connection?.isConnected);
   return {
-    isConnected,
+    isConnected: true,
   };
 }

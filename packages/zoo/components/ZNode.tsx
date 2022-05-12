@@ -728,8 +728,9 @@ function ErrorBox({ error }: { error: any }) {
     </Paragraph>
   );
 }
-
+console.log("eval ZNode");
 export function ZLoadedNode({ path }: { path: string[] }) {
+  console.log("RENDERING Z LOADED NODE");
   const conn = useConnection();
   const { isLoading, data, refetch, error, isError, isRefetching } =
     useZNode(path);

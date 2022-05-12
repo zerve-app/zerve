@@ -21,17 +21,17 @@ const nextConfig = {
   reactStrictMode: true,
   webpack5: true,
   webpack: (config, options) => {
-    // config.resolve.alias = {
-    //   ...(config.resolve.alias || {}),
-    //   // Transform all direct `react-native` imports to `react-native-web`
-    //   "react-native$": "react-native-web",
-    // };
-    // config.resolve.extensions = [
-    //   ".web.js",
-    //   ".web.ts",
-    //   ".web.tsx",
-    //   ...config.resolve.extensions,
-    // ];
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      // Transform all direct `react-native` imports to `react-native-web`
+      "react-native$": "react-native-web",
+    };
+    config.resolve.extensions = [
+      ".web.js",
+      ".web.ts",
+      ".web.tsx",
+      ...config.resolve.extensions,
+    ];
     // config.module.rules.push({
     //   test: /\.js$/,
     //   exclude:
@@ -54,6 +54,8 @@ const nextConfig = {
 
 const { withExpo } = require("@expo/next-adapter");
 const withTM = require("next-transpile-modules")([
+  "react-native",
+  "react-native-web",
   "solito",
   "dripsy",
   "@dripsy/core",
