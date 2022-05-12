@@ -5,7 +5,7 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { useActionsSheet } from "@zerve/ui-native";
+import { useActionsSheet } from "@zerve/zen-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
@@ -23,7 +23,7 @@ import {
 } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { showToast } from "@zerve/ui/Toast";
+import { showToast } from "@zerve/zen/Toast";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
 import { useStringInput } from "../components/StringInput";

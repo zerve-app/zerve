@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Input, VStack } from "@zerve/ui";
+import { Input, VStack } from "@zerve/zen";
 import { HomeStackParamList, HomeStackScreenProps } from "../app/Links";
 import { AsyncButton } from "../components/Button";
 import ScreenContainer from "../components/ScreenContainer";

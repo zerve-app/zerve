@@ -1,8 +1,8 @@
-import { Button, DisclosureSection, Label, VStack } from "@zerve/ui";
-import { useBottomSheet } from "@zerve/ui-native";
+import { Button, DisclosureSection, Label, VStack } from "@zerve/zen";
+import { useBottomSheet } from "@zerve/zen-native";
 import React, { useState } from "react";
 import ScreenContainer from "../components/ScreenContainer";
-import { showErrorToast, showToast } from "@zerve/ui/Toast";
+import { showErrorToast, showToast } from "@zerve/zen/Toast";
 import ScreenHeader from "../components/ScreenHeader";
 
 function BottomSheetSection() {

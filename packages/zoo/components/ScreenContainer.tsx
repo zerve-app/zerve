@@ -1,10 +1,10 @@
-import { useColors } from "@zerve/ui";
-import { BottomSheetProvider } from "@zerve/ui-native";
-import { bigShadow } from "@zerve/ui/Style";
+import { useColors } from "@zerve/zen";
+import { BottomSheetProvider } from "@zerve/zen-native";
+import { bigShadow } from "@zerve/zen/Style";
 import React, { ReactNode } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ToastContainer } from "@zerve/ui/Toast";
+import { ToastContainer } from "@zerve/zen/Toast";
 
 export default function ScreenContainer({
   children,

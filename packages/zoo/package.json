@@ -11,7 +11,7 @@
     "@zerve/core": "*",
     "@zerve/query": "*",
     "@zerve/react": "*",
-    "@zerve/ui": "*",
+    "@zerve/zen": "*",
     "solito": "latest"
   },
   "devDependencies": {

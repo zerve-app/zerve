@@ -6,7 +6,7 @@ import {
   LinkRow,
   ThemedText,
   VStack,
-} from "@zerve/ui";
+} from "@zerve/zen";
 import { reportHistoryEvent, useHistory } from "../app/History";
 import ScreenContainer from "../components/ScreenContainer";
 import { useNavigation } from "@react-navigation/native";

@@ -1,6 +1,12 @@
 import { useRouter } from "next/router";
 import { ScrollView, Text, View } from "react-native";
-import { Button, DisclosureSection, Label, useColors, VStack } from "@zerve/ui";
+import {
+  Button,
+  DisclosureSection,
+  Label,
+  useColors,
+  VStack,
+} from "@zerve/zen";
 
 import { useAppDispatch } from "../../../apps/z-web/stores/Dispatch";
 import { ReactNode } from "react";

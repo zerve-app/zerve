@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 
-import { IconButton } from "@zerve/ui";
+import { IconButton } from "@zerve/zen";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 

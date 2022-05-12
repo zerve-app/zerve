@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Spinner, Title } from "@zerve/ui";
+import { Spinner, Title } from "@zerve/zen";
 import { View } from "react-native";
 import { BackButton } from "./BackButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

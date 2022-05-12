@@ -7,7 +7,7 @@ import {
   VStack,
   Button,
   HStack,
-} from "@zerve/ui";
+} from "@zerve/zen";
 import {
   HomeStackParamList,
   HomeStackScreenProps,
@@ -28,7 +28,7 @@ import {
   useConnectionProjects,
 } from "@zerve/query";
 import { displayStoreFileName } from "@zerve/core";
-import { useActionsSheet } from "@zerve/ui-native";
+import { useActionsSheet } from "@zerve/zen-native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ZLoadedNode } from "../components/ZNode";

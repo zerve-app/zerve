@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Button, ButtonProps } from "@zerve/ui";
+import { Button, ButtonProps } from "@zerve/zen";
 
 export function AsyncButton({
   onPress,

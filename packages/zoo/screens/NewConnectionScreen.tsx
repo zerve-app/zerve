@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Input, VStack } from "@zerve/ui";
+import { Button, Input, VStack } from "@zerve/zen";
 import { SettingsStackScreenProps } from "../app/Links";
 import { createConnection } from "../app/ConnectionStorage";
 import ScreenHeader from "../components/ScreenHeader";

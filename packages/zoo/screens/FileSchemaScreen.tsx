@@ -5,7 +5,7 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { useActionsSheet } from "@zerve/ui-native";
+import { useActionsSheet } from "@zerve/zen-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
@@ -25,7 +25,7 @@ import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
-import { showToast } from "@zerve/ui/Toast";
+import { showToast } from "@zerve/zen/Toast";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,

@@ -4,11 +4,11 @@ import {
   RootStackParamList,
   RootStackScreenProps,
 } from "../app/Links";
-import { Button, IconButton, Paragraph, VStack } from "@zerve/ui";
-import { useBottomSheet } from "@zerve/ui-native";
+import { Button, IconButton, Paragraph, VStack } from "@zerve/zen";
+import { useBottomSheet } from "@zerve/zen-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { setString } from "expo-clipboard";
-import { Icon } from "@zerve/ui/Icon";
+import { Icon } from "@zerve/zen/Icon";
 import { Pressable } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";

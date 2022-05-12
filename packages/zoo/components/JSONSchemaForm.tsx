@@ -26,8 +26,8 @@ import {
   VStack,
   HStack,
   ActionButtonDef,
-} from "@zerve/ui";
-import { Dropdown, useBottomSheet, useActionsSheet } from "@zerve/ui-native";
+} from "@zerve/zen";
+import { Dropdown, useBottomSheet, useActionsSheet } from "@zerve/zen-native";
 import { NavigationContext, useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView } from "react-native";
 import { View } from "react-native";
@@ -44,7 +44,7 @@ import Animated, {
   FadeOutUp,
   Layout,
 } from "react-native-reanimated";
-import { showErrorToast } from "@zerve/ui/Toast";
+import { showErrorToast } from "@zerve/zen/Toast";
 import { useStringInput } from "./StringInput";
 
 // function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {

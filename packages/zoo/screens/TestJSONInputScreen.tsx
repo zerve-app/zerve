@@ -7,7 +7,7 @@ import {
   LinkRow,
   PageTitle,
   Paragraph,
-} from "@zerve/ui";
+} from "@zerve/zen";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { JSONSchema } from "@zerve/core";
 import { useNavigation } from "@react-navigation/native";

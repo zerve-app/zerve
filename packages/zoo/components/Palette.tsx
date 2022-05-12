@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
-import { Button } from "@zerve/ui";
+import { Button } from "@zerve/zen";
 
 import { useAppDispatch } from "../stores/Dispatch";
 import { useKeyboardEffect } from "../stores/Keyboard";

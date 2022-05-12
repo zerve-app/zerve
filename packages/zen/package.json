@@ -1,0 +1,23 @@
+{
+  "name": "@zerve/zen",
+  "version": "0.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "devDependencies": {
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "^17.0.11",
+    "@types/react-native": "*",
+    "config": "*",
+    "tsconfig": "*",
+    "typescript": "^4.6.3"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-bottom-sheet": "*",
+    "react-native-web": "*",
+    "react-native-reanimated": "*",
+    "@expo/vector-icons": "*"
+  }
+}

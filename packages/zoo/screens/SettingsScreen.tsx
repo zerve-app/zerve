@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
-import { Button, PageSection, VStack, LinkRow, AsyncButton } from "@zerve/ui";
+import { Button, PageSection, VStack, LinkRow, AsyncButton } from "@zerve/zen";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   checkForUpdateAsync,
@@ -12,13 +12,13 @@ import {
   UpdateCheckResult,
   updateId,
 } from "expo-updates";
-import { InfoRow } from "@zerve/ui/Row";
-import { Icon } from "@zerve/ui/Icon";
+import { InfoRow } from "@zerve/zen/Row";
+import { Icon } from "@zerve/zen/Icon";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { clearLocalHistoryStorage } from "../app/History";
-import { showToast } from "@zerve/ui";
+import { showToast } from "@zerve/zen";
 
 function AppUpdater() {
   const [update, setUpdate] = useState<null | UpdateCheckResult>(null);

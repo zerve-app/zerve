@@ -1,4 +1,4 @@
-import { Icon } from "@zerve/ui/Icon";
+import { Icon } from "@zerve/zen/Icon";
 import { ComponentProps } from "react";
 
 export function getZIcon(z: any): ComponentProps<typeof Icon>["name"] {

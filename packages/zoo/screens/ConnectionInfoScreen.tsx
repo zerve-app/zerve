@@ -7,7 +7,7 @@ import {
   Paragraph,
   Spinner,
   VStack,
-} from "@zerve/ui";
+} from "@zerve/zen";
 import { SettingsStackScreenProps } from "../app/Links";
 import {
   destroyConnection,
@@ -17,7 +17,7 @@ import {
   logout,
 } from "../app/ConnectionStorage";
 import { FontAwesome } from "@expo/vector-icons";
-import { InfoRow } from "@zerve/ui/Row";
+import { InfoRow } from "@zerve/zen/Row";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";

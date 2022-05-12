@@ -1,5 +1,5 @@
 import React from "react";
-import { AsyncButton, Button } from "@zerve/ui";
+import { AsyncButton, Button } from "@zerve/zen";
 import { useEffect, useRef, useState } from "react";
 import { JSONSchemaForm } from "./JSONSchemaForm";
 import {

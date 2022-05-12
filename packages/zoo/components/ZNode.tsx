@@ -11,7 +11,7 @@ import {
   showErrorToast,
   Spinner,
   VStack,
-} from "@zerve/ui";
+} from "@zerve/zen";
 import {
   pathStartsWith,
   postZAction,
@@ -35,7 +35,7 @@ import {
 } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { JSONSchemaForm } from "./JSONSchemaForm";
-import { Icon } from "@zerve/ui/Icon";
+import { Icon } from "@zerve/zen/Icon";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { getZIcon } from "../app/ZIcon";
 import { storeHistoryEvent } from "../app/History";

@@ -1,5 +1,5 @@
 import { ConnectionProvider, useZNode } from "@zerve/query";
-import { Paragraph, Spinner, Title } from "@zerve/ui";
+import { Paragraph, Spinner, Title } from "@zerve/zen";
 import Head from "next/head";
 import { ZLoadedNode } from "./ZNode";
 import { PageLayout } from "./PageLayout";

@@ -1,6 +1,6 @@
 import { defineKeySource } from "@zerve/core";
-import { ThemedText, useAllColors, useColors } from "@zerve/ui";
-import { AbsoluteFill, bigShadow } from "@zerve/ui/Style";
+import { ThemedText, useAllColors, useColors } from "@zerve/zen";
+import { AbsoluteFill, bigShadow } from "@zerve/zen/Style";
 import React, { ReactNode, useEffect, useState } from "react";
 import { Text } from "react-native";
 import { Pressable } from "react-native";

@@ -1,4 +1,4 @@
-import { Card, LinkRow, ThemedText } from "@zerve/ui";
+import { Card, LinkRow, ThemedText } from "@zerve/zen";
 import React, { useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import ScreenContainer from "../components/ScreenContainer";

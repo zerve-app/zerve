@@ -3,7 +3,7 @@ import {
   getDefaultSchemaValue,
   SchemaStore,
 } from "@zerve/core";
-// import { showToast } from "@zerve/ui";
+// import { showToast } from "@zerve/zen";
 import { useMutation, useQueryClient } from "react-query";
 import { useConnection } from "./Connection";
 import { postZAction } from "./ServerCalls";

@@ -9,7 +9,7 @@ import {
   LinkRowGroup,
   ActionButtonDef,
   ThemedText,
-} from "@zerve/ui";
+} from "@zerve/zen";
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import {
   CompositeNavigationProp,
@@ -24,10 +24,10 @@ import { FontAwesome } from "@expo/vector-icons";
 import { ZerveLogo } from "../components/ZerveLogo";
 import { useDocs } from "@zerve/native";
 import { ConnectionProvider, SavedConnection } from "@zerve/query";
-import { Icon } from "@zerve/ui/Icon";
+import { Icon } from "@zerve/zen/Icon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
-import { useActionsSheet } from "@zerve/ui-native";
+import { useActionsSheet } from "@zerve/zen-native";
 import { ZLoadedNode } from "../components/ZNode";
 
 type NavigationProp = CompositeNavigationProp<

@@ -1,4 +1,4 @@
-import { PageTitle, Title, useColors } from "@zerve/ui";
+import { PageTitle, Title, useColors } from "@zerve/zen";
 import { useCallback } from "react";
 import { useState } from "react";
 import { ReactNode } from "react";

@@ -5,8 +5,8 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { Button, Icon, LinkRowGroup, showToast, VStack } from "@zerve/ui";
-import { useActionsSheet } from "@zerve/ui-native";
+import { Button, Icon, LinkRowGroup, showToast, VStack } from "@zerve/zen";
+import { useActionsSheet } from "@zerve/zen-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {

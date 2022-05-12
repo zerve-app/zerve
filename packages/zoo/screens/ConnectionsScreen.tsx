@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, LinkRow, VStack } from "@zerve/ui";
+import { Button, LinkRow, VStack } from "@zerve/zen";
 
 import { RootStackParamList, SettingsStackParamList } from "../app/Links";
 import {

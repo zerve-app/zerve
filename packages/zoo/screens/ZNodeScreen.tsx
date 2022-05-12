@@ -5,8 +5,8 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { IconButton } from "@zerve/ui";
-import { useActionsSheet } from "@zerve/ui-native";
+import { IconButton } from "@zerve/zen";
+import { useActionsSheet } from "@zerve/zen-native";
 import { ConnectionProvider, useZNode } from "@zerve/query";
 import { useSavedConnections } from "../app/ConnectionStorage";
 import {
