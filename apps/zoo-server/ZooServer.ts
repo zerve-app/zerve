@@ -5,6 +5,7 @@ import {
   createZAction,
   createZContainer,
   createZGettable,
+  createZGroup,
   NullSchema,
   NumberSchema,
 } from "@zerve/core";
@@ -15,7 +16,7 @@ import {
   createTestAuthStrategy,
 } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
-import { createGeneralStore } from "@zerve/store";
+import { createGeneralStore, GeneralStoreModule } from "@zerve/store";
 import { createSystemFiles } from "@zerve/system-files";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
@@ -40,7 +41,7 @@ export async function startApp() {
   const Data = await createCoreData(dataDir);
 
   const InternalRootFiles = createSystemFiles("/");
-  const ledgerCacheFiles = createSystemFiles(join(dataDir, "LedgerStateCache"));
+
   const secrets = await InternalRootFiles.z.ReadJSON.call({
     path: secretsFile,
   });
@@ -64,52 +65,40 @@ export async function startApp() {
     fromEmail: `Zerve Admin <admin@zerve.app>`,
   });
 
-  const Store = await createGeneralStore(
-    Data,
-    createSystemFiles(join(dataDir, "GenStoreCache")),
-    "GenStore"
-  );
-
   const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
-  // const zRoot = createZContainer({
-  //   Auth: await createAuth(
-  //     {
-  //       Email: await createEmailAuthStrategy(Email),
-  //       Phone: await createSMSAuthStrategy(SMS),
-  //       // Test: createTestAuthStrategy("Test0"),
-  //     },
-  //     AuthFiles,
-  //     (user) => {
-  //       return {
-  //         ...user,
-  //         Store,
-  //       };
-  //     }
-  //   ),
-  // });
+  const stores: Record<string, GeneralStoreModule> = {};
 
-  const zGetString = createZGettable(
-    {
-      type: "string",
-    } as const,
-    async (params: null) => {
-      return "Hello";
-    }
-  );
-
-  const zAction = createZAction(
-    NumberSchema,
-    NullSchema,
-    async (value: number) => {
-      console.log("doing the thing. your number is: ", value);
-      return null;
-    }
-  );
+  async function getUserStore(id: string): Promise<GeneralStoreModule> {
+    if (stores[id]) return stores[id];
+    stores[id] = await createGeneralStore(
+      Data,
+      createSystemFiles(join(dataDir, `${id}_StoreCache`)),
+      `${id}_Store`
+    );
+    return stores[id];
+  }
 
   const zRoot = createZContainer({
-    zGetString,
-    zAction,
+    StoreState: createZGroup(async (userId) => {
+      const store = await getUserStore(userId);
+      return store.z.State;
+    }),
+
+    Auth: await createAuth(
+      {
+        Email: await createEmailAuthStrategy(Email),
+        Phone: await createSMSAuthStrategy(SMS),
+      },
+      AuthFiles,
+      async (user, { userId }) => {
+        console.log("the user is:", userId);
+        return {
+          ...user,
+          Store: await getUserStore(userId),
+        };
+      }
+    ),
   });
 
   await startZedServer(port, zRoot);

@@ -122,7 +122,10 @@ export async function createAuth<
 >(
   strategies: Strategies,
   files: SystemFilesModule,
-  getUserZeds: (user: UserAdminZeds) => UserZeds = (u) => u
+  getUserZeds: (
+    user: UserAdminZeds,
+    userInfo: { userId: string }
+  ) => UserZeds = (u) => u
 ) {
   await files.z.MakeDir.call({ path: "" });
 
@@ -394,7 +397,7 @@ export async function createAuth<
           const session = await getValidatedSession(userId, authPassword);
 
           const loggedInUser = getZLoggedInUser(userId, session);
-          return createZContainer(getUserZeds(loggedInUser));
+          return createZContainer(await getUserZeds(loggedInUser, { userId }));
         }
       ),
     },

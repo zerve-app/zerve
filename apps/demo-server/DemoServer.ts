@@ -4,46 +4,46 @@ import {
   createZContainer,
   createZGettable,
   createZState,
+  NullSchema,
+  NumberSchema,
 } from "@zerve/core";
+import {
+  createAuth,
+  createEmailAuthStrategy,
+  createSMSAuthStrategy,
+  createTestAuthStrategy,
+} from "@zerve/auth";
+import { createCoreData } from "@zerve/data";
+import { createGeneralStore } from "@zerve/store";
+import { createSystemFiles } from "@zerve/system-files";
+import { join } from "path";
+
+const homeDir = process.env.HOME;
+const defaultZDataDir = `${homeDir}/.zerve-demo`;
+
+const dataDir =
+  process.env.ZERVE_DATA_DIR ||
+  (process.env.NODE_ENV === "dev"
+    ? join(process.cwd(), "dev-data")
+    : defaultZDataDir);
+
+const listenPort = process.env.PORT || 3899;
 
 export async function startApp() {
-  const calculatorValue = createZState({ type: "number" } as const, 0);
+  console.log("Starting Data Dir", dataDir);
+  const Data = await createCoreData(dataDir);
 
-  const realTimeCalculator = createZContainer({
-    value: calculatorValue.z.state,
-    add: createZAction(
-      { type: "number", title: "Number to Add" } as const,
-      { type: "number" } as const,
-      async (value: number) => {
-        const sum = value + calculatorValue.z.state.get();
-        calculatorValue.z.set.call(sum);
-        return sum;
-      }
-    ),
-  });
-
-  let internalValue = 0;
-
-  const calculator = createZContainer({
-    value: createZGettable({ type: "number" } as const, async () => {
-      return internalValue;
-    }),
-    add: createZAction(
-      { type: "number", title: "Number to Add" } as const,
-      { type: "number" } as const,
-      async (value: number) => {
-        internalValue += value;
-        return internalValue;
-      }
-    ),
-  });
+  const Store = await createGeneralStore(
+    Data,
+    createSystemFiles(join(dataDir, "DemoGenStoreCache")),
+    "GenStore"
+  );
 
   const zRoot = createZContainer({
-    calculator,
-    realTimeCalculator,
+    Store,
   });
 
-  await startZedServer(3999, zRoot);
+  await startZedServer(listenPort, zRoot);
 }
 
 startApp().catch((e) => {

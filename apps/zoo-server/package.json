@@ -1,13 +1,13 @@
 {
-  "name": "z-server",
+  "name": "zoo-server",
   "private": true,
   "version": "0.0.0",
   "types": "index.ts",
   "main": "index.ts",
   "scripts": {
-    "start": "node ./build/index.js",
-    "start:watch": "nodemon ./build/index.js",
-    "build": "esbuild ./index.ts --bundle --platform=node --outfile=build/index.js",
+    "start": "node ./build/ZooServer.js",
+    "start:watch": "nodemon ./build/ZooServer.js",
+    "build": "esbuild ./ZooServer.ts --bundle --platform=node --outfile=build/ZooServer.js",
     "build:watch": "yarn build --watch",
     "dev": "concurrently \"yarn start:watch\" \"yarn build:watch\"",
     "typecheck": "tsc",

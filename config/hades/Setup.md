@@ -131,7 +131,7 @@ yarn --offline
 rm -rf yarn-package-cache ./.git
 
 yarn workspace z-web build
-yarn workspace z-server build
+yarn workspace zoo-server build
 
 cd ..
 

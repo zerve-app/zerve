@@ -11,7 +11,6 @@ import { postZAction } from "./ServerCalls";
 export function useCreateFile(storePath: string[]) {
   const conn = useConnection();
   const queryClient = useQueryClient();
-  console.log("USE CREATE FILE", { storePath });
   return useMutation(
     async (name: string) => {
       if (conn) {

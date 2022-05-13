@@ -4,10 +4,12 @@ An experimental structured knowledge app for React Native and the web.
 
 ## Web App
 
+To run the
+
 `yarn dev` will spawn the following:
 
-- API Server in "apps/server" (`yarn workspace z-server dev`)
-- Next Web App "apps/web" (`yarn workspace z-web dev`)
+- API Server in "apps/zoo-server" (`yarn workspace zoo-server dev`)
+- Next Web App "apps/zoo-web" (`yarn workspace z-web dev`)
 
 ## Mobile (Expo) App
 

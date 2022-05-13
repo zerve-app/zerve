@@ -85,7 +85,6 @@ export function validateWithSchemaStore<Schema extends JSONSchema>(
   value: any,
   schemaStore: SchemaStore
 ): FromSchema<Schema> {
-  console.log("validate ss", { schemaStore });
   if (!schemaStoreValidatorMapMap.has(schemaStore)) {
     schemaStoreValidatorMapMap.set(
       schemaStore,

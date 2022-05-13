@@ -213,6 +213,8 @@ const GenericCalculator = createZChainStateCalculator(
   }
 );
 
+export type GeneralStoreModule = Awaited<ReturnType<typeof createGeneralStore>>;
+
 export async function createGeneralStore(
   data: CoreDataModule,
   cacheFiles: SystemFilesModule,
@@ -236,7 +238,7 @@ export async function createGeneralStore(
       const valid = validateWithSchemaStore(
         storeNodeValue.schema,
         input.value,
-        schemaStore
+        schemaStore || EmptySchemaStore
       );
     }
   }
@@ -269,7 +271,6 @@ export async function createGeneralStore(
       if (action.name === "WriteValue") await validateWriteValue(action.value);
       if (action.name === "WriteSchemaValue")
         await validateWriteSchemaValue(action.value);
-
       return await genStore.z.Dispatch.call(action);
     }
   );

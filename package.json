@@ -8,8 +8,8 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "concurrently \"yarn workspace z-server dev\" \"yarn workspace z-web dev\"",
-    "dev:server": "concurrently \"yarn workspace z-server dev\"",
+    "dev": "concurrently \"yarn workspace zoo-server dev\" \"yarn workspace z-web dev\"",
+    "dev:server": "concurrently \"yarn workspace zoo-server dev\"",
     "dev:web": "concurrently \"yarn workspace z-web dev\"",
     "dev:mobile": "watchman watch-del-all && yarn workspace zoo-mobile start",
     "dev:ios": "yarn workspace zoo-mobile prebuild && open apps/zoo-mobile/ios/Zerve.xcworkspace",
