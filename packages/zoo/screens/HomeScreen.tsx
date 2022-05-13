@@ -78,7 +78,7 @@ function ConnectionSection({ connection }: { connection: SavedConnection }) {
       }
     >
       <VStack>
-        <ZLoadedNode path={[]} />
+        <ZLoadedNode path={[]} onActions={setActions} />
       </VStack>
     </DisclosureSection>
   );

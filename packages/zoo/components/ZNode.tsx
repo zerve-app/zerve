@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import {
@@ -11,6 +11,7 @@ import {
   showErrorToast,
   Spinner,
   VStack,
+  ActionButtonDef,
 } from "@zerve/zen";
 import {
   pathStartsWith,
@@ -728,13 +729,29 @@ function ErrorBox({ error }: { error: any }) {
     </Paragraph>
   );
 }
-console.log("eval ZNode");
-export function ZLoadedNode({ path }: { path: string[] }) {
-  console.log("RENDERING Z LOADED NODE");
+export function ZLoadedNode({
+  path,
+  onActions,
+}: {
+  path: string[];
+  onActions?: (actions: ActionButtonDef[]) => void;
+}) {
   const conn = useConnection();
   const { isLoading, data, refetch, error, isError, isRefetching } =
     useZNode(path);
 
+  React.useEffect(() => {
+    onActions?.([
+      {
+        title: "Refresh",
+        key: "refresh",
+        icon: "refresh",
+        onPress: () => {
+          refetch();
+        },
+      },
+    ]);
+  }, [refetch]);
   if (!conn) return null;
 
   return (
