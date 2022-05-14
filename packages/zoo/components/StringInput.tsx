@@ -1,7 +1,7 @@
 import React from "react";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+// import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { Input, VStack } from "@zerve/zen";
-import { useBottomSheet } from "@zerve/zen-native";
+// import { useBottomSheet } from "@zerve/zen-native";
 import { useState } from "react";
 import { showErrorToast } from "@zerve/zen/Toast";
 
@@ -31,7 +31,7 @@ export function StatefulInput({
             showErrorToast(e.message);
           }
         }}
-        InputComponent={BottomSheetTextInput}
+        // InputComponent={BottomSheetTextInput}
       />
     </>
   );
@@ -44,19 +44,20 @@ export function useStringInput<A>(
     defaultValue: string;
   }
 ) {
-  return useBottomSheet<A>(({ onClose, options }) => {
-    const { inputLabel, defaultValue, onValue } = onGetInput(options);
-    return (
-      <VStack>
-        <StatefulInput
-          inputLabel={inputLabel}
-          defaultValue={defaultValue}
-          onSubmit={(value) => {
-            onValue(value, options);
-            onClose();
-          }}
-        />
-      </VStack>
-    );
-  });
+  return () => {};
+  // return useBottomSheet<A>(({ onClose, options }) => {
+  //   const { inputLabel, defaultValue, onValue } = onGetInput(options);
+  //   return (
+  //     <VStack>
+  //       <StatefulInput
+  //         inputLabel={inputLabel}
+  //         defaultValue={defaultValue}
+  //         onSubmit={(value) => {
+  //           onValue(value, options);
+  //           onClose();
+  //         }}
+  //       />
+  //     </VStack>
+  //   );
+  // });
 }

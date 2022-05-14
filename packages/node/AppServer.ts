@@ -63,7 +63,14 @@ export async function startZedServer(port: number, zed: AnyZed) {
   app.use((req, res, next) => {
     // todo proper cors policy
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With, Content-Type, Authorization"
+    );
+    if (req.method === "OPTIONS") {
+      res.send();
+      return;
+    }
     next();
   });
 

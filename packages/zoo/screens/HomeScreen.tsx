@@ -28,7 +28,7 @@ import { Icon } from "@zerve/zen/Icon";
 import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen-native";
-import { ZLoadedNode } from "../components/ZNode";
+import { ZLoadedNode } from "../components/ZLoadedNode";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,

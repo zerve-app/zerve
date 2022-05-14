@@ -19,15 +19,18 @@ export function VStack({
   style?: ViewStyle;
 }) {
   return (
-    <View
-      style={[
-        { flexDirection: "column", padding: 6, paddingHorizontal: 12 },
-        style,
-      ]}
-    >
-      {Children.map(children, (el) => (
-        <View style={{ flex: 1, marginVertical: 6 }}>{el}</View>
-      ))}
+    <View style={[{ flexDirection: "column", paddingVertical: 6 }, style]}>
+      {Children.map(children, (el) =>
+        el === null ? null : (
+          <View
+            style={{
+              marginVertical: 6,
+            }}
+          >
+            {el}
+          </View>
+        )
+      )}
     </View>
   );
 }

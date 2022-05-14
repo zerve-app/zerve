@@ -27,7 +27,7 @@ import {
   HStack,
   ActionButtonDef,
 } from "@zerve/zen";
-import { Dropdown, useBottomSheet, useActionsSheet } from "@zerve/zen-native";
+// import { Dropdown, useBottomSheet, useActionsSheet } from "@zerve/zen-native";
 import { NavigationContext, useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView } from "react-native";
 import { View } from "react-native";
@@ -46,10 +46,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { showErrorToast } from "@zerve/zen/Toast";
 import { useStringInput } from "./StringInput";
-
-// function JSONSchemaForm({value, onValue, schema}: {value: any, onValue: (v: any)=> void, schema: JSONSchema}) {
-//   return null;
-// }
 
 function extractTypeSchema(type, schemaObj) {
   const subType = { type };
@@ -491,7 +487,7 @@ function EnumFormField({
         value={value}
         actions={actions}
       />
-      <Dropdown
+      {/* <Dropdown
         value={value}
         unselectedLabel={`Choose: ${schema.enum.slice(0, 5).join(",")}`}
         onOptionSelect={onValue}
@@ -499,7 +495,7 @@ function EnumFormField({
           title: String(optionValue),
           value: optionValue,
         }))}
-      />
+      /> */}
       {schema.description && <Paragraph>{schema.description}</Paragraph>}
     </>
   );
@@ -518,24 +514,24 @@ function FormFieldHeader({
   schema?: any;
   actions?: ActionButtonDef[];
 }) {
-  const openActions = useActionsSheet(() => {
-    return [
-      ...(actions || []),
-      value !== null &&
-        typeof value !== "boolean" && {
-          title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
-          icon: "clipboard",
-          onPress: () => {
-            setString(
-              typeof value === "string" ? value : JSON.stringify(value)
-            );
-          },
-        },
-    ].filter(Boolean);
-  });
+  // const openActions = useActionsSheet(() => {
+  //   return [
+  //     ...(actions || []),
+  //     value !== null &&
+  //       typeof value !== "boolean" && {
+  //         title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
+  //         icon: "clipboard",
+  //         onPress: () => {
+  //           setString(
+  //             typeof value === "string" ? value : JSON.stringify(value)
+  //           );
+  //         },
+  //       },
+  //   ].filter(Boolean);
+  // });
 
   return (
-    <TouchableOpacity onPress={() => openActions()}>
+    <TouchableOpacity onPress={() => {}}>
       <View
         style={{
           flexDirection: "row",
@@ -571,20 +567,20 @@ export function OneOfFormField({
   const matched = unionOptions.match(value);
   const matchedSchema = schema.oneOf[matched];
 
-  const onChooseType = useActionsSheet(() =>
-    unionOptions.options.map((option, optionIndex: number) => {
-      return {
-        title: option.title,
-        onPress: () => {
-          const converter = unionOptions.converters[optionIndex];
-          if (converter && onValue) {
-            onValue(converter(value));
-          }
-        },
-        key: optionIndex,
-      };
-    })
-  );
+  // const onChooseType = useActionsSheet(() =>
+  //   unionOptions.options.map((option, optionIndex: number) => {
+  //     return {
+  //       title: option.title,
+  //       onPress: () => {
+  //         const converter = unionOptions.converters[optionIndex];
+  //         if (converter && onValue) {
+  //           onValue(converter(value));
+  //         }
+  //       },
+  //       key: optionIndex,
+  //     };
+  //   })
+  // );
   const fieldActions = useMemo(
     () => [
       ...(actions || []),
@@ -592,10 +588,10 @@ export function OneOfFormField({
         key: "ChangeType",
         title: "Change Schema Option",
         icon: "crosshairs",
-        onPress: onChooseType,
+        onPress: () => {},
       },
     ],
-    [actions, onChooseType]
+    [actions, () => {}]
   );
 
   return (
@@ -608,7 +604,7 @@ export function OneOfFormField({
             actions={fieldActions}
           />
 
-          {onValue && (
+          {/* {onValue && (
             <Dropdown
               options={unionOptions.options}
               unselectedLabel={`Select Type`}
@@ -619,7 +615,7 @@ export function OneOfFormField({
                 onValue(convertedValue);
               }}
             />
-          )}
+          )} */}
         </>
       ) : (
         <FormField
@@ -889,7 +885,7 @@ export function JSONSchemaForm({
     const matchedSchema = expandedSchema.oneOf[matched];
     return (
       <>
-        {onValue && (
+        {/* {onValue && (
           <Dropdown
             options={unionOptions.options}
             value={matched}
@@ -900,7 +896,7 @@ export function JSONSchemaForm({
               onValue(convertedValue);
             }}
           />
-        )}
+        )} */}
         {matchedSchema != null && (
           <JSONSchemaForm
             value={value}

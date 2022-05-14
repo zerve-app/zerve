@@ -32,8 +32,8 @@ import {
 import {
   CompositeNavigationProp,
   StackActions,
-  useNavigation,
 } from "@react-navigation/native";
+import { useNavigation } from "../app/useNavigation";
 import { FontAwesome } from "@expo/vector-icons";
 import { JSONSchemaForm } from "./JSONSchemaForm";
 import { Icon } from "@zerve/zen/Icon";
@@ -44,6 +44,8 @@ import { displayStoreFileName, EmptySchemaStore } from "@zerve/core";
 import { View } from "react-native";
 import { JSONSchemaEditor } from "./JSONSchemaEditor";
 import { showToast } from "../app/Toast";
+import { ZLoadedNode } from "./ZLoadedNode";
+import { Link } from "solito/link";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -117,15 +119,16 @@ export function ZStateNode({
     useMemo(() => [...path, "state"], [path])
   );
   if (isLoading) return <Spinner />;
-  return (
-    <JSONSchemaForm
-      value={node?.node}
-      schema={node?.type?.value}
-      onValue={(value) => {
-        writeNode.mutate(value);
-      }}
-    />
-  );
+  return null;
+  // return (
+  //   <JSONSchemaForm
+  //     value={node?.node}
+  //     schema={node?.type?.value}
+  //     onValue={(value) => {
+  //       writeNode.mutate(value);
+  //     }}
+  //   />
+  // );
 }
 
 export function NewFileButton({ path }: { path: string[] }) {
@@ -443,7 +446,7 @@ export function ZAuthNode({
   if (type[".t"] !== "Container" || type?.meta?.zContract !== "Auth")
     throw new Error("Unexpected z type info for ZAuthNode");
 
-  const conn = useSavedConnection(connection);
+  const conn = useConnection();
   if (!connection || !conn)
     return <Paragraph danger>Connection unavailable.</Paragraph>;
 
@@ -493,7 +496,7 @@ export function ZGroupNode({
 
   return (
     <VStack>
-      <JSONSchemaForm value={value} schema={type.value} />
+      {/* <JSONSchemaForm value={value} schema={type.value} /> */}
       {childNames.map((childName: string) => (
         <Button
           title={childName}
@@ -524,12 +527,12 @@ export function ZActionNode({
   path: string[];
 }) {
   const [actionValue, setActionValue] = useState(null);
-  const conn = useSavedConnection(connection);
+  const conn = useConnection();
   const { navigate } = useNavigation<NavigationProp>();
   if (!conn) throw new Error("connection");
 
   return (
-    <VStack>
+    <>
       <JSONSchemaForm
         value={actionValue}
         onValue={setActionValue}
@@ -550,7 +553,7 @@ export function ZActionNode({
           navigate("HistoryEvent", { eventId });
         }}
       />
-    </VStack>
+    </>
   );
 }
 
@@ -722,48 +725,10 @@ export function ZNode({
   return body;
 }
 
-function ErrorBox({ error }: { error: any }) {
+export function ErrorBox({ error }: { error: any }) {
   return (
     <Paragraph danger>
       Error: {error.message || JSON.stringify(error)}
     </Paragraph>
-  );
-}
-export function ZLoadedNode({
-  path,
-  onActions,
-}: {
-  path: string[];
-  onActions?: (actions: ActionButtonDef[]) => void;
-}) {
-  const conn = useConnection();
-  const { isLoading, data, refetch, error, isError, isRefetching } =
-    useZNode(path);
-
-  React.useEffect(() => {
-    onActions?.([
-      {
-        title: "Refresh",
-        key: "refresh",
-        icon: "refresh",
-        onPress: () => {
-          refetch();
-        },
-      },
-    ]);
-  }, [refetch]);
-  if (!conn) return null;
-
-  return (
-    <>
-      {isLoading && <Spinner />}
-      {isError && <ErrorBox error={error} />}
-      <ZNode
-        path={path}
-        connection={conn.key}
-        type={data?.type}
-        value={data?.node}
-      />
-    </>
   );
 }

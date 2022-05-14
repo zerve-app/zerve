@@ -5,6 +5,8 @@ import {
   useConnection,
   useLiveConnection,
 } from "@zerve/query";
+import { AsyncStorage } from "react-native";
+
 console.log("ConnectinStorage!! ");
 const DefaultConnections: SavedConnection[] = [
   ...(__DEV__
@@ -53,7 +55,10 @@ export async function logout(
 export function setSession(
   connectionKey: string,
   session: SavedSession | null
-) {}
+) {
+  console.log("SETSESSOIN");
+  // AsyncStorage.setItem('Session', JSON.stringify(session))
+}
 
 export function useConnectionStatus() {
   return {

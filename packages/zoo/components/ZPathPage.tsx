@@ -1,8 +1,8 @@
 import { ConnectionProvider, useZNode } from "@zerve/query";
 import { Paragraph, Spinner, Title } from "@zerve/zen";
 import Head from "next/head";
-import { ZLoadedNode } from "./ZNode";
 import { PageLayout } from "./PageLayout";
+import { ZLoadedNode } from "./ZLoadedNode";
 
 export function ZPath({ path }: { path: string[] }) {
   return (
@@ -11,7 +11,7 @@ export function ZPath({ path }: { path: string[] }) {
         <title>{path.at(-1) || "Z"}</title>
       </Head>
       <Title title={path.length ? path.join("/") : "z"} />
-      {/* <ZLoadedNode path={path} /> */}
+      <ZLoadedNode path={path} />
     </>
   );
 }

@@ -31,7 +31,7 @@ import { displayStoreFileName } from "@zerve/core";
 import { useActionsSheet } from "@zerve/zen-native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ZLoadedNode } from "../components/ZNode";
+import { ZLoadedNode } from "../components/ZLoadedNode";
 
 export function ConnectionProjects({
   onActions,

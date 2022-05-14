@@ -1,11 +1,13 @@
 import { startZedServer } from "@zerve/node";
 import {
+  BooleanSchema,
   createZAction,
   createZContainer,
   createZGettable,
   createZState,
   NullSchema,
   NumberSchema,
+  StringSchema,
 } from "@zerve/core";
 import {
   createAuth,
@@ -27,7 +29,7 @@ const dataDir =
     ? join(process.cwd(), "dev-data")
     : defaultZDataDir);
 
-const listenPort = process.env.PORT || 3899;
+const listenPort = Number(process.env.PORT) || 3899;
 
 export async function startApp() {
   console.log("Starting Data Dir", dataDir);
@@ -39,8 +41,33 @@ export async function startApp() {
     "GenStore"
   );
 
+  const RobotValue = createZState(NumberSchema, 0);
+
   const zRoot = createZContainer({
     Store,
+    RobotValue,
+    State: createZGettable(StringSchema, async () => "hello"),
+    SetLights: createZAction(
+      {
+        type: "object",
+        properties: {
+          lightId: {
+            title: "Light ID",
+            description: "What Hue light ID to set",
+            type: "number",
+          },
+          isOn: { type: "boolean" },
+        },
+        required: ["lightId", "isOn"],
+        additionalProperties: false,
+      } as const,
+      NullSchema,
+      async (action) => {
+        console.log(action);
+
+        return null;
+      }
+    ),
   });
 
   await startZedServer(listenPort, zRoot);
