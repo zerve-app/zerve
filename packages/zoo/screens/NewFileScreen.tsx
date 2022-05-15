@@ -5,11 +5,11 @@ import { HomeStackParamList, HomeStackScreenProps } from "../app/Links";
 import { AsyncButton } from "../components/Button";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import { ConnectionProvider, useCreateFile } from "@zerve/query";
-import { useSavedConnection } from "../app/ConnectionStorage";
+import { useCreateFile } from "@zerve/query";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { prepareStoreFileName } from "@zerve/core";
+import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 
 function NewFilePage({
   route,
@@ -55,12 +55,11 @@ function NewFilePage({
 export default function NewFileScreen({
   route,
 }: HomeStackScreenProps<"NewFile">) {
-  const conn = useSavedConnection(route.params.connection);
   return (
     <ScreenContainer scroll>
-      <ConnectionProvider value={conn}>
+      <ConnectionKeyProvider value={route.params.connection}>
         <NewFilePage route={route} />
-      </ConnectionProvider>
+      </ConnectionKeyProvider>
     </ScreenContainer>
   );
 }

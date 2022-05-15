@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import {
-  Button,
   DisclosureSection,
-  HStack,
   IconButton,
   Label,
   VStack,
@@ -16,19 +14,18 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import {
-  useConnectionStatus,
-  useSavedConnections,
-} from "../app/ConnectionStorage";
-import { FontAwesome } from "@expo/vector-icons";
+import { useSavedConnections } from "../app/ConnectionStorage";
 import { ZerveLogo } from "../components/ZerveLogo";
-import { useDocs } from "@zerve/native";
-import { ConnectionProvider, SavedConnection } from "@zerve/query";
+import {
+  ConnectionProvider,
+  SavedConnection,
+  SavedConnectionProvider,
+} from "@zerve/query";
 import { Icon } from "@zerve/zen/Icon";
-import { getDocumentAsync } from "expo-document-picker";
 import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen-native";
 import { ZLoadedNode } from "../components/ZLoadedNode";
+import { useConnectionStatus } from "../app/ConnectionStatus";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -95,9 +92,9 @@ export default function HomeScreen({
       <ZerveLogo />
       {connections.map((connection) => {
         return (
-          <ConnectionProvider key={connection.key} value={connection}>
+          <SavedConnectionProvider key={connection.key} value={connection}>
             <ConnectionSection connection={connection} />
-          </ConnectionProvider>
+          </SavedConnectionProvider>
         );
       })}
       {/* <LocalDocsSection /> */}

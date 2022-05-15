@@ -9,12 +9,8 @@ import { Button, Icon, LinkRowGroup, VStack } from "@zerve/zen";
 import { useActionsSheet } from "@zerve/zen-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import {
-  ConnectionProvider,
-  useCreateSchema,
-  useZNodeValue,
-} from "@zerve/query";
-import { useSavedConnection } from "../app/ConnectionStorage";
+import { useCreateSchema, useZNodeValue } from "@zerve/query";
+import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -100,9 +96,9 @@ export default function ChainSchemasScreen({
 
   return (
     <ScreenContainer scroll>
-      <ConnectionProvider value={useSavedConnection(connection)}>
+      <ConnectionKeyProvider value={connection}>
         <ChainSchemasPage connection={connection} storePath={storePath} />
-      </ConnectionProvider>
+      </ConnectionKeyProvider>
     </ScreenContainer>
   );
 }

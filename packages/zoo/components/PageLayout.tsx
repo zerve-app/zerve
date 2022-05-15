@@ -3,6 +3,13 @@ import { useMemo } from "react";
 import { ReactNode } from "react";
 import { View } from "react-native";
 
+const staticConnection = {
+  name: "nothing",
+  url: "http://localhost:3888",
+  key: "static",
+  session: null,
+} as Connection;
+
 export function PageLayout({ children }: { children: ReactNode }) {
   return (
     <View
@@ -20,16 +27,7 @@ export function PageLayout({ children }: { children: ReactNode }) {
           backgroundColor: "#eee",
         }}
       >
-        <ConnectionProvider
-          value={useMemo(() => {
-            return {
-              name: "nothing",
-              url: "http://localhost:3899",
-              key: "static",
-              session: null,
-            } as Connection;
-          }, [])}
-        >
+        <ConnectionProvider value={staticConnection}>
           {children}
         </ConnectionProvider>
       </View>

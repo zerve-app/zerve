@@ -9,14 +9,13 @@ import { useActionsSheet } from "@zerve/zen-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
-  ConnectionProvider,
   useDeleteFile,
   useRenameFile,
   useSaveFile,
   useZStoreSchemas,
   useZNodeValue,
 } from "@zerve/query";
-import { useSavedConnection } from "../app/ConnectionStorage";
+import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -154,9 +153,9 @@ export default function FileScreen({
 
   return (
     <ScreenContainer scroll>
-      <ConnectionProvider value={useSavedConnection(connection)}>
+      <ConnectionKeyProvider value={connection}>
         <FilePage name={name} connection={connection} storePath={storePath} />
-      </ConnectionProvider>
+      </ConnectionKeyProvider>
     </ScreenContainer>
   );
 }

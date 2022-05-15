@@ -5,26 +5,24 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { Button, Icon, LinkRowGroup, showToast, VStack } from "@zerve/zen";
+import { showToast, VStack } from "@zerve/zen";
 import { useActionsSheet } from "@zerve/zen-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
-  ConnectionProvider,
   useDeleteSchema,
   useSaveSchema,
   useZStoreJSONSchema,
   useZNodeValue,
 } from "@zerve/query";
-import { useSavedConnection } from "../app/ConnectionStorage";
+import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
   useNavigation,
 } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
-import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
+import { displayStoreFileName } from "@zerve/core";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 
 type NavigationProp = CompositeNavigationProp<
@@ -108,13 +106,13 @@ export default function ChainSchemaScreen({
 
   return (
     <ScreenContainer scroll>
-      <ConnectionProvider value={useSavedConnection(connection)}>
+      <ConnectionKeyProvider value={connection}>
         <ChainSchemasPage
           connection={connection}
           schema={schema}
           storePath={storePath}
         />
-      </ConnectionProvider>
+      </ConnectionKeyProvider>
     </ScreenContainer>
   );
 }

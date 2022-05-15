@@ -52,7 +52,7 @@ export async function startApp() {
         type: "object",
         properties: {
           lightId: {
-            title: "Light ID",
+            title: "Hue Light ID",
             description: "What Hue light ID to set",
             type: "number",
           },

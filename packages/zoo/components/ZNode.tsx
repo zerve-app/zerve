@@ -23,6 +23,7 @@ import {
   useZNodeStateWrite,
   SavedSession,
   SavedConnection,
+  Connection,
 } from "@zerve/query";
 import {
   logout,
@@ -320,6 +321,10 @@ function LoginStrategyForm({
         <JSONSchemaEditor
           schema={CodeSchema}
           saveLabel="Log In"
+          onCancel={() => {
+            setToken("");
+            setAddress(undefined);
+          }}
           value={token}
           onValue={async (t: string) => {
             setToken(t);
@@ -333,7 +338,14 @@ function LoginStrategyForm({
                   token: t,
                 },
               }
-            );
+            ).catch((e) => {
+              setToken("");
+              throw e;
+            });
+            if (!session) {
+              setToken("");
+              throw new Error("Failed to authenticate.");
+            }
             setSession(conn.key, {
               authPath: path,
               userLabel: address,
@@ -414,7 +426,7 @@ export function LoggedInAuthNode({
 }: {
   type: any;
   value: any;
-  connection: SavedConnection;
+  connection: Connection;
   session: SavedSession;
   path: string[];
 }) {
@@ -473,11 +485,6 @@ export function ZAuthNode({
 
   // if not authenticated...
   return <LoginForm path={path} authMeta={type.meta} />;
-  return (
-    <>
-      <Paragraph>This is Protected.</Paragraph>
-    </>
-  );
 }
 
 export function ZGroupNode({

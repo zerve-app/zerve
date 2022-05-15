@@ -2,10 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { MMKVConfiguration } from "react-native-mmkv";
 import { createNativeCoreStorage } from "./CoreStorage";
 
-type Doc = { name: string; id: string };
-type BlockLink = { type: "BlockLink"; id: string };
-type DocList = Doc[];
-
 type StorageNode<ValueType> = {
   key: string;
   get: () => ValueType;

@@ -5,8 +5,7 @@ import {
   UseQueryOptions,
 } from "react-query";
 import { getZ } from "./ServerCalls";
-import { useLiveConnection, useConnection, Connection } from "./Connection";
-import { getDoc, listDocs, getActions, getModuleList } from "./ServerCalls";
+import { useConnection, Connection } from "./Connection";
 import { getTypedZ } from "./ServerCalls";
 import { useEffect, useMemo } from "react";
 import { displayStoreFileName, ZSchema, ZSchemaSchema } from "@zerve/core";
@@ -54,15 +53,15 @@ function useConnectionQuery<Result>(
 }
 
 export function useZNode(path: string[], options?: QueryOptions) {
-  const conn = useConnection();
-  if (!conn) throw new Error("Cannot useDoc outside of connection context.");
-  const liveConn = useLiveConnection(conn);
+  const connection = useConnection();
+  if (!connection)
+    throw new Error("Cannot useDoc outside of connection context.");
   return useConnectionQuery(
-    conn,
-    [conn.key, "z", ...path, ".node"],
+    connection,
+    [connection.key, "z", ...path, ".node"],
     async () => {
-      if (!conn || options?.skipLoading) return undefined;
-      const results = await getTypedZ(conn, path, liveConn);
+      if (!connection || options?.skipLoading) return undefined;
+      const results = await getTypedZ(connection, path);
       return results;
     },
     {

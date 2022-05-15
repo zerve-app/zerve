@@ -13,7 +13,6 @@ import {
   destroyConnection,
   useSavedConnection,
   setSession,
-  useConnectionStatus,
   logout,
 } from "../app/ConnectionStorage";
 import { FontAwesome } from "@expo/vector-icons";
@@ -21,6 +20,7 @@ import { InfoRow } from "@zerve/zen/Row";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";
+import { useConnectionStatus } from "../app/ConnectionStatus";
 
 export function ConnectionStatusRow({}: {}) {
   const { isConnected } = useConnectionStatus();

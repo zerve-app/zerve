@@ -42,22 +42,22 @@ export function JSONSchemaEditor({
         schemaStore={schemaStore || EmptySchemaStore}
       />
       {valueState !== value && (
-        <>
-          <AsyncButton
-            title={saveLabel || "Save"}
-            primary
-            onPress={async () => {
-              await onValue(valueState);
-            }}
-          />
-          <Button
-            onPress={() => {
-              setValueState(value);
-              onCancel?.();
-            }}
-            title="Cancel"
-          />
-        </>
+        <AsyncButton
+          title={saveLabel || "Save"}
+          primary
+          onPress={async () => {
+            await onValue(valueState);
+          }}
+        />
+      )}
+      {(valueState !== value || !!onCancel) && (
+        <Button
+          onPress={() => {
+            setValueState(value);
+            onCancel?.();
+          }}
+          title="Cancel"
+        />
       )}
     </>
   );

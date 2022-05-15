@@ -1,12 +1,5 @@
-import {
-  BooleanSchemaSchema,
-  createZState,
-  ZBooleanSchema,
-  ZObservable,
-  ZStringSchema,
-} from "@zerve/core";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useAction, useZObservable, useZObservableMaybe } from "@zerve/react";
+import { createZState, ZBooleanSchema, ZObservable } from "@zerve/core";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import ReconnectingWebsocket from "reconnecting-websocket";
 import { useQueryClient, QueryClient } from "react-query";
 
@@ -133,8 +126,14 @@ function leaseConnection(
   }
   if (stored) {
     stored[1] += 1;
-    const [connection] = stored;
-
+    let [connection] = stored;
+    if (connection.session !== savedConn.session) {
+      stored[0] = {
+        ...connection,
+        session: savedConn.session || null,
+      };
+      connection = stored[0];
+    }
     return { connection, release };
   }
   const [connection, closeConnection] = startConnection(savedConn, queryClient);
@@ -213,24 +212,33 @@ export async function serverPost<Request, Response>(
     }
     return value;
   } catch (e) {
-    console.log("===EEEEE");
     console.error(e);
-    throw new Error("Network request2 failed");
+    throw new Error("Network request failed");
   }
 }
 
 const isOnClient = !!global.window;
 
-export function useLiveConnection(savedConn: SavedConnection | null) {
+export function useConnectionLease(savedConn: SavedConnection | null) {
   const queryClient = useQueryClient();
-  const connectionLease = useMemo(
-    () => savedConn && isOnClient && leaseConnection(savedConn, queryClient),
-    [savedConn]
-  );
+  const connectionLease = useMemo(() => {
+    return savedConn && isOnClient && leaseConnection(savedConn, queryClient);
+  }, [savedConn]);
   useEffect(() => {
     return () => {
       connectionLease?.release();
     };
   }, [connectionLease]);
-  return connectionLease?.connection;
+  return connectionLease?.connection || null;
+}
+
+export function SavedConnectionProvider({
+  children,
+  value,
+}: {
+  children: React.ReactNode;
+  value: null | SavedConnection;
+}) {
+  const connection = useConnectionLease(value);
+  return <ConnectionProvider value={connection}>{children}</ConnectionProvider>;
 }

@@ -7,8 +7,8 @@ import {
 } from "../app/Links";
 import { IconButton } from "@zerve/zen";
 import { useActionsSheet } from "@zerve/zen-native";
-import { ConnectionProvider, useZNode } from "@zerve/query";
-import { useSavedConnections } from "../app/ConnectionStorage";
+import { useZNode } from "@zerve/query";
+import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -18,6 +18,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { ZNode } from "../components/ZNode";
+import NotFoundScreen from "./NotFoundScreen";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -91,15 +92,14 @@ export default function ZNodeScreen({
   route,
 }: HomeStackScreenProps<"ZNode">) {
   const { connection, path } = route.params;
-  const connections = useSavedConnections();
-  if (!connection) throw new Error("null connection");
-  const conn = connections.find((conn) => conn.key === connection);
-  if (!conn) throw new Error("Connection not found");
+  if (!connection) {
+    return <NotFoundScreen />;
+  }
   return (
-    <ConnectionProvider value={conn}>
+    <ConnectionKeyProvider value={connection}>
       <ScreenContainer scroll>
         <ZNodePage path={path} connection={connection} />
       </ScreenContainer>
-    </ConnectionProvider>
+    </ConnectionKeyProvider>
   );
 }

@@ -13,7 +13,10 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { useSavedConnection } from "../app/ConnectionStorage";
+import {
+  ConnectionKeyProvider,
+  useSavedConnection,
+} from "../app/ConnectionStorage";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";
@@ -143,15 +146,11 @@ export default function ConnectionScreen({
   navigation,
   route,
 }: HomeStackScreenProps<"Connection">) {
-  const conn = useSavedConnection(route.params.connection);
-  if (!conn) {
-    return <NotFoundScreen />;
-  }
   return (
     <ScreenContainer scroll>
-      <ConnectionProvider value={conn}>
+      <ConnectionKeyProvider value={route.params.connection}>
         <ConnectionPage route={route} navigation={navigation} />
-      </ConnectionProvider>
+      </ConnectionKeyProvider>
     </ScreenContainer>
   );
 }

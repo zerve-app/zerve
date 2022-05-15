@@ -33,23 +33,19 @@ function extractSessionAuth(path: string[], session?: null | SavedSession) {
   return auth;
 }
 
-export async function getZ(
-  context: SavedConnection,
-  path: string[],
-  connection?: Connection | undefined
-) {
+export async function getZ(connection: Connection, path: string[]) {
   const query: Record<string, string> = {};
   const connectedClientId = connection?.clientId.get();
   if (connectedClientId) {
     query.zClientSubscribe = connectedClientId;
   }
-  const auth = extractSessionAuth(path, context?.session);
-  const resp = await serverGet(context, `.z/${path.join("/")}`, query, auth);
+  const auth = extractSessionAuth(path, connection?.session);
+  const resp = await serverGet(connection, `.z/${path.join("/")}`, query, auth);
   return resp;
 }
 
 export async function postZAction(
-  context: SavedConnection,
+  connection: Connection,
   path: string[],
   body: any
 ) {
@@ -64,30 +60,18 @@ export async function postZAction(
     // express body-parser is dumber than a sack of bricks, if the value is not an object or an array
     finalBody = { _$RAW_VALUE: body };
   }
-  const auth = extractSessionAuth(path, context?.session);
-  return await serverPost(context, `.z/${path.join("/")}`, finalBody, auth);
+  const auth = extractSessionAuth(path, connection?.session);
+  return await serverPost(connection, `.z/${path.join("/")}`, finalBody, auth);
 }
 
-export async function getTypedZ(
-  context: SavedConnection,
-  path: string[],
-  connection?: Connection | undefined
-) {
+export async function getTypedZ(connection: Connection, path: string[]) {
   const [node, serverZType] = await Promise.all([
-    getZ(context, path, connection),
-    getZ(context, [...path, ".type"], connection),
+    getZ(connection, path),
+    getZ(connection, [...path, ".type"]),
   ]);
   const type =
     serverZType?.[".t"] === "AuthContainer" && serverZType.authType
       ? serverZType.authType
       : serverZType;
   return { node, type };
-}
-export async function getActions(context: SavedConnection, category?: string) {
-  if (category) return await serverGet(context, `.z/.action/${category}`);
-  return await serverGet(context, `.z/.action`);
-}
-
-export async function getModuleList(context: SavedConnection) {
-  return await serverGet(context, `.z/.module`);
 }
