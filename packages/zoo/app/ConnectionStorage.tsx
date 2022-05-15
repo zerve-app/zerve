@@ -101,8 +101,6 @@ export function setSession(
   connectionKey: string,
   session: SavedSession | null
 ) {
-  console.log("setSession!", connectionKey, session);
-
   mutateConnections((connections) =>
     connections.map((conn) => {
       if (conn.key !== connectionKey) return conn;

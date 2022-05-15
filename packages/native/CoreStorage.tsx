@@ -6,22 +6,28 @@ export type NativeCoreStorageModule = ReturnType<
 
 export function createNativeCoreStorage(config: MMKVConfiguration | undefined) {
   console.log("webstore init", config);
+  const storeId = config.id;
+
+  const grossStorage = global.window?.localStorage;
 
   function dangerouslyDeleteEverything() {
     console.log("DELETINGEVERYTHING");
   }
 
   function getStoredJSON(key: string) {
-    console.log("getStoredJSON", key);
-    return undefined;
+    if (!grossStorage) return;
+    const data = grossStorage[`${storeId}_${key}`];
+    return data && JSON.parse(data);
   }
 
   function saveJSON(key: string, value: Parameters<typeof JSON.stringify>[0]) {
-    console.log("saveJSON", key, value);
+    if (!grossStorage) return;
+    grossStorage[`${storeId}_${key}`] = JSON.stringify(value);
   }
 
   function deleteKey(key: string) {
-    console.log("deleteKey", key);
+    if (!grossStorage) return;
+    delete grossStorage[`${storeId}_${key}`];
   }
 
   return { getStoredJSON, saveJSON, dangerouslyDeleteEverything, deleteKey };

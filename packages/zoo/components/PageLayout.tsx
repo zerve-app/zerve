@@ -1,14 +1,8 @@
-import { Connection, ConnectionProvider } from "@zerve/query";
+import { SavedConnection, SavedConnectionProvider } from "@zerve/query";
 import { useMemo } from "react";
 import { ReactNode } from "react";
 import { View } from "react-native";
-
-const staticConnection = {
-  name: "nothing",
-  url: "http://localhost:3888",
-  key: "static",
-  session: null,
-} as Connection;
+import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 
 export function PageLayout({ children }: { children: ReactNode }) {
   return (
@@ -27,9 +21,7 @@ export function PageLayout({ children }: { children: ReactNode }) {
           backgroundColor: "#eee",
         }}
       >
-        <ConnectionProvider value={staticConnection}>
-          {children}
-        </ConnectionProvider>
+        <ConnectionKeyProvider value={"dev"}>{children}</ConnectionKeyProvider>
       </View>
     </View>
   );
