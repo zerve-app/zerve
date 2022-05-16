@@ -25,9 +25,9 @@ import {
   Icon,
   VStack,
   HStack,
+  Dropdown,
   ActionButtonDef,
 } from "@zerve/zen";
-// import { Dropdown, useBottomSheet, useActionsSheet } from "@zerve/zen-native";
 import { NavigationContext, useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView } from "react-native";
 import { View } from "react-native";
@@ -487,7 +487,7 @@ function EnumFormField({
         value={value}
         actions={actions}
       />
-      {/* <Dropdown
+      <Dropdown
         value={value}
         unselectedLabel={`Choose: ${schema.enum.slice(0, 5).join(",")}`}
         onOptionSelect={onValue}
@@ -495,7 +495,7 @@ function EnumFormField({
           title: String(optionValue),
           value: optionValue,
         }))}
-      /> */}
+      />
       {schema.description && <Paragraph>{schema.description}</Paragraph>}
     </>
   );
@@ -604,7 +604,7 @@ export function OneOfFormField({
             actions={fieldActions}
           />
 
-          {/* {onValue && (
+          {onValue && (
             <Dropdown
               options={unionOptions.options}
               unselectedLabel={`Select Type`}
@@ -615,7 +615,7 @@ export function OneOfFormField({
                 onValue(convertedValue);
               }}
             />
-          )} */}
+          )}
         </>
       ) : (
         <FormField
@@ -885,7 +885,7 @@ export function JSONSchemaForm({
     const matchedSchema = expandedSchema.oneOf[matched];
     return (
       <>
-        {/* {onValue && (
+        {onValue && (
           <Dropdown
             options={unionOptions.options}
             value={matched}
@@ -896,7 +896,7 @@ export function JSONSchemaForm({
               onValue(convertedValue);
             }}
           />
-        )} */}
+        )}
         {matchedSchema != null && (
           <JSONSchemaForm
             value={value}
