@@ -23,7 +23,7 @@ import {
 } from "@zerve/query";
 import { Icon } from "@zerve/zen/Icon";
 import ScreenContainer from "../components/ScreenContainer";
-import { useActionsSheet } from "@zerve/zen-native";
+import { useActionsSheet } from "@zerve/zen";
 import { ZLoadedNode } from "../components/ZLoadedNode";
 import { useConnectionStatus } from "../app/ConnectionStatus";
 

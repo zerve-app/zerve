@@ -1,20 +1,19 @@
 import React, { ReactNode } from "react";
 
 import { IconButton } from "@zerve/zen";
-import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "../app/useNavigation";
 
-export function BackButton() {
-  const { canGoBack, goBack, getState } = useNavigation();
+export function BackButton({ cancelButton }: { cancelButton?: boolean }) {
+  const { canGoBack, goBack } = useNavigation();
   const backable = canGoBack();
-  const index = getState().index;
   return (
     (backable || null) && (
       <IconButton
         icon={(props) => (
           <FontAwesome
             {...props}
-            name={index === 0 ? "close" : "chevron-left"}
+            name={cancelButton ? "close" : "chevron-left"}
           />
         )}
         altTitle="close"

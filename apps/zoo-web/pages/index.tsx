@@ -1,6 +1,6 @@
-import { ZPathPage } from "@zerve/zoo/components/ZPathPage";
+import { WebPathRoot } from "@zerve/zoo/app/WebPathRoot";
 import React from "react";
 
 export default function HomeScreen() {
-  return <ZPathPage path={[]} />;
+  return <WebPathRoot path={[]} />;
 }

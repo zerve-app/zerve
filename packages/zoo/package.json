@@ -18,7 +18,8 @@
     "tsconfig": "*"
   },
   "peerDependencies": {
-    "react": "*"
+    "react": "*",
+    "react-native-safe-area-context": "*"
   },
   "sideEffects": false
 }

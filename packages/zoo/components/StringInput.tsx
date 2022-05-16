@@ -1,7 +1,6 @@
 import React from "react";
-// import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { Input, VStack } from "@zerve/zen";
-// import { useBottomSheet } from "@zerve/zen-native";
+import { useBottomSheet } from "@zerve/zen-native";
 import { useState } from "react";
 import { showErrorToast } from "@zerve/zen/Toast";
 

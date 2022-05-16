@@ -6,7 +6,7 @@ import {
   RootStackParamList,
 } from "../app/Links";
 import { Button, Icon, LinkRowGroup, VStack } from "@zerve/zen";
-import { useActionsSheet } from "@zerve/zen-native";
+import { useActionsSheet } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { useCreateSchema, useZNodeValue } from "@zerve/query";

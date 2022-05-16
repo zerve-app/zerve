@@ -2,23 +2,25 @@ import React, { ReactNode } from "react";
 import { Spinner, Title } from "@zerve/zen";
 import { View } from "react-native";
 import { BackButton } from "./BackButton";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Pressable } from "react-native";
+import { useSafeArea } from "../provider/SafeArea/useSafeArea";
 
 export default function ScreenHeader({
   title,
   isLoading,
+  hideBackButton,
   backButtonCancelStyle,
   corner,
   onLongPress,
 }: {
   title: string;
+  hideBackButton?: boolean;
   backButtonCancelStyle?: boolean;
   isLoading?: boolean;
   corner?: ReactNode;
   onLongPress?: () => void;
 }) {
-  const { top, left, right } = useSafeAreaInsets();
+  const { top, left, right } = useSafeArea();
   return (
     <View
       style={{
@@ -34,7 +36,9 @@ export default function ScreenHeader({
             justifyContent: "space-between",
           }}
         >
-          <BackButton />
+          {!hideBackButton && (
+            <BackButton cancelButton={backButtonCancelStyle} />
+          )}
           {isLoading && <Spinner style={{ marginHorizontal: 12 }} />}
         </View>
         <View

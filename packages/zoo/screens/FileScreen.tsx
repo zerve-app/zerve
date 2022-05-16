@@ -5,146 +5,17 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../app/Links";
-import { useActionsSheet } from "@zerve/zen-native";
 import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
-import {
-  useDeleteFile,
-  useRenameFile,
-  useSaveFile,
-  useZStoreSchemas,
-  useZNodeValue,
-} from "@zerve/query";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
-import {
-  CompositeNavigationProp,
-  useNavigation,
-} from "@react-navigation/native";
-import { OptionsButton } from "../components/OptionsButton";
+import { CompositeNavigationProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { showToast } from "@zerve/zen/Toast";
-import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
-import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
-import { useStringInput } from "../components/StringInput";
+import { FileFeature } from "../features/FileFeature";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
   NativeStackNavigationProp<HomeStackParamList, "File">
 >;
 
-function FilePage({
-  name,
-  connection,
-  storePath,
-}: {
-  name: string;
-  connection: string | null;
-  storePath: string[];
-}) {
-  const { data: schemaStore, isLoading: isSchemasLoading } =
-    useZStoreSchemas(storePath);
-  const {
-    data,
-    isLoading: isNodeLoading,
-    refetch,
-  } = useZNodeValue([...storePath, "State", name]);
-  const isLoading = isSchemasLoading || isNodeLoading;
-  const navigation = useNavigation<NavigationProp>();
-  const deleteFile = useDeleteFile(
-    storePath,
-    useMemo(
-      () => ({
-        onSuccess: () => showToast(`${displayStoreFileName(name)} Deleted`),
-      }),
-      [name]
-    )
-  );
-  const saveFile = useSaveFile(storePath);
-  const renameFile = useRenameFile(storePath);
-  const renameFilePrompt = useStringInput<string>((prevName: string) => {
-    return {
-      inputLabel: "New File Name",
-      defaultValue: prevName,
-      onValue: (inputName: string) => {
-        const formattedName = prepareStoreFileName(inputName);
-        navigation.setParams({ name: formattedName });
-        renameFile.mutate({ prevName: name, newName: formattedName });
-      },
-    };
-  });
-  const openOptions = useActionsSheet(() => [
-    {
-      key: "Refresh",
-      title: "Refresh",
-      icon: "refresh",
-      onPress: () => {
-        refetch();
-      },
-    },
-    {
-      key: "EditSchema",
-      title: "Edit Schema",
-      icon: "crosshairs",
-      onPress: () => {
-        navigation.navigate("FileSchema", {
-          name,
-          connection,
-          storePath,
-        });
-      },
-    },
-    {
-      key: "RawValue",
-      title: "Raw Value",
-      icon: "code",
-      onPress: () => {
-        navigation.navigate("RawValue", {
-          title: `${displayStoreFileName(name)} Value`,
-          value: data?.value,
-        });
-      },
-    },
-    {
-      key: "Rename",
-      title: "Rename File",
-      icon: "edit",
-      onPress: () => {
-        renameFilePrompt(displayStoreFileName(name));
-      },
-    },
-    {
-      key: "DeleteFile",
-      title: "Delete File",
-      icon: "trash",
-      danger: true,
-      onPress: () => {
-        deleteFile.mutate(name);
-      },
-      onHandled: navigation.goBack,
-    },
-  ]);
-  return (
-    <>
-      <ScreenHeader
-        title={displayStoreFileName(name)}
-        isLoading={isLoading}
-        corner={<OptionsButton onOptions={openOptions} />}
-        onLongPress={openOptions}
-      />
-      {data && (
-        <JSONSchemaEditor
-          onValue={async (value) => {
-            await saveFile.mutateAsync({ name, value });
-            showToast("File has been updated.");
-          }}
-          value={data.value}
-          schema={data.schema}
-          schemaStore={schemaStore}
-        />
-      )}
-    </>
-  );
-}
 export default function FileScreen({
   navigation,
   route,
@@ -154,7 +25,11 @@ export default function FileScreen({
   return (
     <ScreenContainer scroll>
       <ConnectionKeyProvider value={connection}>
-        <FilePage name={name} connection={connection} storePath={storePath} />
+        <FileFeature
+          name={name}
+          connection={connection}
+          storePath={storePath}
+        />
       </ConnectionKeyProvider>
     </ScreenContainer>
   );

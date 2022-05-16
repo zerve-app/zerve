@@ -80,6 +80,12 @@ export async function startApp() {
   }
 
   const zRoot = createZContainer({
+    CustomStore: await createGeneralStore(
+      Data,
+      createSystemFiles(join(dataDir, `CustomStore_StoreCache`)),
+      `CustomStore_Store`
+    ),
+
     StoreState: createZGroup(async (userId) => {
       const store = await getUserStore(userId);
       return store.z.State;
@@ -92,7 +98,6 @@ export async function startApp() {
       },
       AuthFiles,
       async (user, { userId }) => {
-        console.log("the user is:", userId);
         return {
           ...user,
           Store: await getUserStore(userId),

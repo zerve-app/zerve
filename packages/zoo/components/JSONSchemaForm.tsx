@@ -27,8 +27,9 @@ import {
   HStack,
   Dropdown,
   ActionButtonDef,
+  useActionsSheet,
 } from "@zerve/zen";
-import { NavigationContext, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "../app/useNavigation";
 import { KeyboardAvoidingView } from "react-native";
 import { View } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -514,24 +515,24 @@ function FormFieldHeader({
   schema?: any;
   actions?: ActionButtonDef[];
 }) {
-  // const openActions = useActionsSheet(() => {
-  //   return [
-  //     ...(actions || []),
-  //     value !== null &&
-  //       typeof value !== "boolean" && {
-  //         title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
-  //         icon: "clipboard",
-  //         onPress: () => {
-  //           setString(
-  //             typeof value === "string" ? value : JSON.stringify(value)
-  //           );
-  //         },
-  //       },
-  //   ].filter(Boolean);
-  // });
+  const openActions = useActionsSheet(() => {
+    return [
+      ...(actions || []),
+      value !== null &&
+        typeof value !== "boolean" && {
+          title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
+          icon: "clipboard",
+          onPress: () => {
+            setString(
+              typeof value === "string" ? value : JSON.stringify(value)
+            );
+          },
+        },
+    ].filter(Boolean);
+  });
 
   return (
-    <TouchableOpacity onPress={() => {}}>
+    <TouchableOpacity onPress={openActions}>
       <View
         style={{
           flexDirection: "row",
@@ -567,20 +568,20 @@ export function OneOfFormField({
   const matched = unionOptions.match(value);
   const matchedSchema = schema.oneOf[matched];
 
-  // const onChooseType = useActionsSheet(() =>
-  //   unionOptions.options.map((option, optionIndex: number) => {
-  //     return {
-  //       title: option.title,
-  //       onPress: () => {
-  //         const converter = unionOptions.converters[optionIndex];
-  //         if (converter && onValue) {
-  //           onValue(converter(value));
-  //         }
-  //       },
-  //       key: optionIndex,
-  //     };
-  //   })
-  // );
+  const onChooseType = useActionsSheet(() =>
+    unionOptions.options.map((option, optionIndex: number) => {
+      return {
+        title: option.title,
+        onPress: () => {
+          const converter = unionOptions.converters[optionIndex];
+          if (converter && onValue) {
+            onValue(converter(value));
+          }
+        },
+        key: optionIndex,
+      };
+    })
+  );
   const fieldActions = useMemo(
     () => [
       ...(actions || []),

@@ -2,10 +2,16 @@ import { useMemo } from "react";
 import { useRouter } from "next/router";
 
 export function useNavigation() {
-  const { push } = useRouter();
+  const { push, back } = useRouter();
   return useMemo(
     () => ({
-      navigate: (...args) => {
+      navigate: (routeName: string, params: {}) => {
+        if (routeName === "File") {
+          const path = `${params.storePath.join("/")}/$files/${params.name}`;
+          push(path);
+          return;
+        }
+
         console.error("Navigate not implemented here!", args);
       },
       dispatch: (action) => {
@@ -17,6 +23,10 @@ export function useNavigation() {
           return;
         }
         console.error("Dispatch not implemented here!", args);
+      },
+      canGoBack: () => true,
+      goBack: () => {
+        back();
       },
     }),
     [push]

@@ -5,9 +5,9 @@ import DraggableFlatList, {
   ShadowDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
+import { useSafeArea } from "../provider/SafeArea/useSafeArea";
 
 const NUM_ITEMS = 10;
 function getColor(i: number) {
@@ -63,7 +63,7 @@ function TestSortPage() {
     );
   };
 
-  const safeAreaInsets = useSafeAreaInsets();
+  const safeAreaInsets = useSafeArea();
   return (
     <View style={{ flex: 1 }}>
       <DraggableFlatList

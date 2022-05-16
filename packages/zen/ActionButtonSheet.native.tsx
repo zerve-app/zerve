@@ -1,6 +1,6 @@
 import React from "react";
 import { ActionButton, ActionButtonDef, VStack } from "@zerve/zen";
-import { useBottomSheet } from "./BottomSheet";
+import { useBottomSheet } from "@zerve/zen-native";
 
 export function useActionsSheet(getActions: () => ActionButtonDef[]) {
   return useBottomSheet<void>(({ onClose }) => (

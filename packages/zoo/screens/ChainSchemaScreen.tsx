@@ -6,7 +6,7 @@ import {
   RootStackParamList,
 } from "../app/Links";
 import { showToast, VStack } from "@zerve/zen";
-import { useActionsSheet } from "@zerve/zen-native";
+import { useActionsSheet } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import {
