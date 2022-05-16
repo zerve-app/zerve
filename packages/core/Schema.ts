@@ -53,13 +53,14 @@ export function getDefaultSchemaValue(
   if (usableSchema.type === "integer") return 0;
   if (usableSchema.type === "string") return "";
   if (usableSchema.type === "array") return []; // todo: handle tuples..
-  if (usableSchema.type === "object")
+  if (usableSchema.type === "object") {
     return Object.fromEntries(
-      Object.entries(schema.properties || {}).map(
+      Object.entries(usableSchema.properties || {}).map(
         ([propertyName, propertySchema]) => [
           propertyName,
           getDefaultSchemaValue(propertySchema, schemaStore),
         ]
       )
     );
+  }
 }
