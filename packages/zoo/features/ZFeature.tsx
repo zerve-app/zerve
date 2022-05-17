@@ -2,12 +2,12 @@ import React, { useMemo, useState } from "react";
 
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import { IconButton, useActionsSheet } from "@zerve/zen";
-import { useZNode } from "@zerve/query";
+import { UnauthorizedSymbol, useZNode } from "@zerve/query";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import ScreenHeader from "../components/ScreenHeader";
-import { ZNode } from "../components/ZNode";
+import { ErrorBox, ZNode } from "../components/ZNode";
 import { useNavigation } from "../app/useNavigation";
 
 type NavigationProp = CompositeNavigationProp<
@@ -67,6 +67,14 @@ export function ZFeature({
 
   return (
     <>
+      {(data?.node === UnauthorizedSymbol ||
+        data?.type === UnauthorizedSymbol) && (
+        <ErrorBox
+          error={
+            "You are not authorized to view this. Please log out and log back in."
+          }
+        />
+      )}
       <ScreenHeader
         hideBackButton={path.length === 0}
         isLoading={isLoading || isRefetching}

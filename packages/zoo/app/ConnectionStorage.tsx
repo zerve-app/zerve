@@ -97,6 +97,10 @@ export async function logout(connection: Connection, session: SavedSession) {
   clearSession(connection.key);
 }
 
+export async function forceLocalLogout(connection: Connection) {
+  clearSession(connection.key);
+}
+
 export function setSession(
   connectionKey: string,
   session: SavedSession | null

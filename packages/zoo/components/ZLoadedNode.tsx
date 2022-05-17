@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Spinner, ActionButtonDef } from "@zerve/zen";
-import { useConnection, useZNode } from "@zerve/query";
+import { UnauthorizedSymbol, useConnection, useZNode } from "@zerve/query";
 import { ErrorBox, ZNode } from "./ZNode";
 
 export function ZLoadedNode({
@@ -32,6 +32,14 @@ export function ZLoadedNode({
   return (
     <>
       {isLoading && <Spinner />}
+      {(data?.node === UnauthorizedSymbol ||
+        data?.type === UnauthorizedSymbol) && (
+        <ErrorBox
+          error={
+            "You are not authorized to view this. Please log out and log back in."
+          }
+        />
+      )}
       {isError && <ErrorBox error={error} />}
       <ZNode
         path={path}

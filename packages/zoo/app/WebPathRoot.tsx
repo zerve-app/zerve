@@ -13,9 +13,10 @@ function getPathFeature(path: string[]): () => JSX.Element | null {
   const filesPathIndex = path.indexOf("$files");
   if (filesPathIndex !== -1) {
     const storePath = [...path].splice(0, filesPathIndex);
+    const name = path[filesPathIndex + 1];
     return () => (
       <FileFeature
-        name={[...path].splice(filesPathIndex)[filesPathIndex + 1]}
+        name={name}
         storePath={storePath}
         connection={webConnectionTEMP}
       />

@@ -157,6 +157,8 @@ function _authHeader(auth: [string, string]) {
   };
 }
 
+export const UnauthorizedSymbol = Symbol("Unauthorized");
+
 export async function serverGet<Response>(
   context: SavedConnection,
   path: string,
@@ -180,6 +182,9 @@ export async function serverGet<Response>(
     const value = await res.json();
     if (res.status !== 200) {
       console.error("Request Error", value);
+      if (res.status === 401) {
+        return UnauthorizedSymbol;
+      }
       throw new Error("Network Error");
     }
     return value;

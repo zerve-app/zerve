@@ -26,6 +26,7 @@ import {
   Connection,
 } from "@zerve/query";
 import {
+  forceLocalLogout,
   logout,
   setSession,
   useSavedConnection,
@@ -120,16 +121,16 @@ export function ZStateNode({
     useMemo(() => [...path, "state"], [path])
   );
   if (isLoading) return <Spinner />;
-  return null;
-  // return (
-  //   <JSONSchemaForm
-  //     value={node?.node}
-  //     schema={node?.type?.value}
-  //     onValue={(value) => {
-  //       writeNode.mutate(value);
-  //     }}
-  //   />
-  // );
+  return (
+    <JSONSchemaForm
+      value={node?.node}
+      schema={node?.type?.value}
+      onValue={(value) => {
+        writeNode.mutate(value);
+      }}
+      schemaStore={EmptySchemaStore}
+    />
+  );
 }
 
 export function NewFileButton({ path }: { path: string[] }) {
@@ -365,9 +366,6 @@ function LoginStrategyForm({
             });
             showToast(`Logged in.`);
           }}
-          onCancel={() => {
-            setAddress(undefined);
-          }}
         />
       </>
     );
@@ -496,6 +494,39 @@ function LoginForm({ path, authMeta }: { path: string[]; authMeta: any }) {
   );
 }
 
+function LogoutButton({
+  connection,
+  session,
+}: {
+  connection: Connection;
+  session: SavedSession;
+}) {
+  const [readyForForceLogout, setReadyForForceLogout] = useState(false);
+  return (
+    <>
+      <AsyncButton
+        onPress={async () => {
+          try {
+            await logout(connection, session);
+          } catch (e) {
+            setReadyForForceLogout(true);
+            throw e;
+          }
+        }}
+        title="Log Out"
+      />
+      {readyForForceLogout && (
+        <AsyncButton
+          onPress={async () => {
+            await forceLocalLogout(connection);
+          }}
+          title="Force Log Out (delete session)"
+        />
+      )}
+    </>
+  );
+}
+
 export function LoggedInAuthNode({
   type,
   value,
@@ -513,12 +544,7 @@ export function LoggedInAuthNode({
     <>
       <Paragraph>Welcome, {session.userLabel}.</Paragraph>
       <ZInlineNode path={[...path, "user"]} />
-      <AsyncButton
-        onPress={async () => {
-          await logout(connection, session);
-        }}
-        title="Log Out"
-      />
+      <LogoutButton connection={connection} session={session} />
       {/* <AsyncButton onPress={async () => {}} title="Log Out ALL sessions" /> */}
     </>
   );
@@ -623,6 +649,7 @@ export function ZActionNode({
         value={actionValue}
         onValue={setActionValue}
         schema={type.payload}
+        schemaStore={EmptySchemaStore}
       />
       <AsyncButton
         title={type.payload?.submitLabel || "Submit"}
@@ -656,7 +683,13 @@ export function ZGettableNode({
 }) {
   if (type[".t"] !== "Gettable")
     throw new Error("Unexpected z type for ZGettableNode");
-  return <JSONSchemaForm value={value} schema={type.value} />;
+  return (
+    <JSONSchemaForm
+      value={value}
+      schema={type.value}
+      schemaStore={EmptySchemaStore}
+    />
+  );
 }
 
 export function ZObservableNode({
@@ -672,7 +705,13 @@ export function ZObservableNode({
 }) {
   if (type[".t"] !== "Observable")
     throw new Error("Unexpected z type for ZObservableNode");
-  return <JSONSchemaForm value={value} schema={type.value} />;
+  return (
+    <JSONSchemaForm
+      value={value}
+      schema={type.value}
+      schemaStore={EmptySchemaStore}
+    />
+  );
 }
 
 export function ZStaticNode({
@@ -691,16 +730,31 @@ export function ZStaticNode({
   if (zStaticType === "Reference" && zStatic.path) {
     return <ZInlineNode path={[...path.slice(0, -1), ...zStatic.path]} />;
   } else if (Array.isArray(value)) {
-    return value.map((childValue, childIndex) => {
-      const zStatic = childValue?.[".z"];
-      const zStaticType = zStatic?.z;
-      if (zStaticType === "Reference" && zStatic.path) {
-        return <ZInlineNode path={[...path.slice(0, -1), ...zStatic.path]} />;
-      }
-      return <JSONSchemaForm key={childIndex} value={childValue} schema={{}} />;
-    });
+    return (
+      <>
+        {value.map((childValue, childIndex) => {
+          const zStatic = childValue?.[".z"];
+          const zStaticType = zStatic?.z;
+          if (zStaticType === "Reference" && zStatic.path) {
+            return (
+              <ZInlineNode path={[...path.slice(0, -1), ...zStatic.path]} />
+            );
+          }
+          return (
+            <JSONSchemaForm
+              key={childIndex}
+              value={childValue}
+              schema={{}}
+              schemaStore={EmptySchemaStore}
+            />
+          );
+        })}
+      </>
+    );
   }
-  return <JSONSchemaForm value={value} schema={{}} />;
+  return (
+    <JSONSchemaForm value={value} schema={{}} schemaStore={EmptySchemaStore} />
+  );
 }
 
 export function ZNode({
