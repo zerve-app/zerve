@@ -288,6 +288,16 @@ const LoginStrategies = [
       format: "email",
     },
   },
+  {
+    icon: "user",
+    label: "Username + Password",
+    key: "Username",
+    schema: {
+      title: "Password",
+      type: "string",
+      minLength: 6,
+    },
+  },
 ] as const;
 
 const CodeSchema = {
@@ -386,6 +396,66 @@ function LoginStrategyForm({
     </>
   );
 }
+const UsernamePasswordSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    username: { type: "string" },
+    password: { type: "string" },
+  },
+  requiredProperties: ["username", "password"],
+} as const;
+
+const InitialLoginFormValue = {
+  username: "",
+  password: "",
+} as const;
+
+function UsernamePasswordLoginForm({
+  path,
+  onCancel,
+}: {
+  path: string[];
+  onCancel?: () => void;
+}) {
+  const conn = useConnection();
+  if (!conn) throw new Error("QueryContext missing");
+
+  return (
+    <>
+      <JSONSchemaEditor
+        schema={UsernamePasswordSchema}
+        saveLabel="Log in"
+        value={InitialLoginFormValue}
+        onSubmit={async (formValues) => {
+          const session = await postZAction(
+            conn,
+            [...path, "createSessionWithPassword"],
+            {
+              userId: formValues.username,
+              password: formValues.password,
+            }
+          ).catch((e) => {
+            throw e;
+          });
+          if (!session) {
+            throw new Error("Failed to authenticate.");
+          }
+          setSession(conn.key, {
+            authPath: path,
+            userLabel: formValues.username,
+            sessionId: session.sessionId,
+            userId: session.userId,
+            sessionToken: session.sessionToken,
+          });
+          showToast(`Logged in.`);
+        }}
+        schemaStore={EmptySchemaStore}
+        onCancel={onCancel}
+      />
+    </>
+  );
+}
 
 function LoginForm({ path, authMeta }: { path: string[]; authMeta: any }) {
   const [selectedStrategy, setSelectedStrategy] = useState<
@@ -404,14 +474,23 @@ function LoginForm({ path, authMeta }: { path: string[]; authMeta: any }) {
             }}
           />
         ))}
-      {selectedStrategy && (
-        <LoginStrategyForm
-          strategy={selectedStrategy}
+      {selectedStrategy === "Username" ? (
+        <UsernamePasswordLoginForm
           path={path}
           onCancel={() => {
             setSelectedStrategy(null);
           }}
         />
+      ) : (
+        selectedStrategy && (
+          <LoginStrategyForm
+            strategy={selectedStrategy}
+            path={path}
+            onCancel={() => {
+              setSelectedStrategy(null);
+            }}
+          />
+        )
       )}
     </VStack>
   );

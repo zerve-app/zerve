@@ -5,7 +5,6 @@ export type NativeCoreStorageModule = ReturnType<
 >;
 
 export function createNativeCoreStorage(config: MMKVConfiguration | undefined) {
-  console.log("webstore init", config);
   const storeId = config.id;
 
   const grossStorage = global.window?.localStorage;

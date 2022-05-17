@@ -13,15 +13,16 @@
   },
   "peerDependencies": {
     "@expo/vector-icons": "*",
+    "dripsy": "*",
     "react": "*",
     "react-native": "*",
     "react-native-bottom-sheet": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
-    "react-native-web": "*",
-    "dripsy": "*"
+    "react-native-web": "*"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^0.1.7",
     "@radix-ui/react-dropdown-menu": "^0.1.6"
   }
 }

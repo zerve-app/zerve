@@ -5,7 +5,7 @@ import {
   RootStackScreenProps,
 } from "../app/Links";
 import { Button, IconButton, Paragraph, VStack } from "@zerve/zen";
-import { useBottomSheet } from "@zerve/zen-native";
+import { useBottomSheet } from "@zerve/zen";
 import { FontAwesome } from "@expo/vector-icons";
 import { setString } from "expo-clipboard";
 import { Icon } from "@zerve/zen/Icon";

@@ -46,7 +46,7 @@ import Animated, {
   Layout,
 } from "react-native-reanimated";
 import { showErrorToast } from "@zerve/zen/Toast";
-import { useStringInput } from "./StringInput";
+import { useTextInputFormModal } from "./TextInputFormModal";
 
 function extractTypeSchema(type, schemaObj) {
   const subType = { type };
@@ -203,7 +203,7 @@ export function JSONSchemaObjectForm({
     [schema.additionalProperties]
   );
 
-  const propertyNameInput = useStringInput<null | string>(
+  const propertyNameInput = useTextInputFormModal<null | string>(
     (propertyEditKey) => ({
       onValue: (propertyName) => {
         if (!onValue) return;

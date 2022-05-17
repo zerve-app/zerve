@@ -91,19 +91,19 @@ export async function startApp() {
       return store.z.State;
     }),
 
-    Auth: await createAuth(
-      {
+    Auth: await createAuth({
+      strategies: {
         Email: await createEmailAuthStrategy(Email),
         Phone: await createSMSAuthStrategy(SMS),
       },
-      AuthFiles,
-      async (user, { userId }) => {
+      files: AuthFiles,
+      getUserZeds: async (user, { userId }) => {
         return {
           ...user,
           Store: await getUserStore(userId),
         };
-      }
-    ),
+      },
+    }),
   });
 
   await startZedServer(port, zRoot);

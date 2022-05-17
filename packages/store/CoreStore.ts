@@ -37,7 +37,7 @@ const StateTreeSchema = {
 const WriteValueActionSchema = {
   type: "object",
   properties: {
-    name: { type: "string" },
+    name: { type: "string", minLength: 1 },
     value: {},
   },
   additionalProperties: false,
@@ -47,8 +47,8 @@ const WriteValueActionSchema = {
 const RenameValueActionSchema = {
   type: "object",
   properties: {
-    prevName: { type: "string" },
-    newName: { type: "string" },
+    prevName: { type: "string", minLength: 1 },
+    newName: { type: "string", minLength: 1 },
   },
   additionalProperties: false,
   required: ["prevName", "newName"],
@@ -66,7 +66,7 @@ const DeleteActionSchema = {
 const WriteSchemaValueActionSchema = {
   type: "object",
   properties: {
-    name: { type: "string" },
+    name: { type: "string", minLength: 1 },
     schema: {},
     value: {},
   },
@@ -77,7 +77,7 @@ const WriteSchemaValueActionSchema = {
 const WriteSchemaActionSchema = {
   type: "object",
   properties: {
-    schemaName: { type: "string" },
+    schemaName: { type: "string", minLength: 1 },
     schema: {},
   },
   additionalProperties: false,
@@ -87,7 +87,7 @@ const WriteSchemaActionSchema = {
 const DeleteSchemaActionSchema = {
   type: "object",
   properties: {
-    schemaName: { type: "string" },
+    schemaName: { type: "string", minLength: 1 },
   },
   additionalProperties: false,
   required: ["schemaName"],
@@ -179,23 +179,6 @@ const GenericCalculator = createZChainStateCalculator(
         return newState;
       },
     },
-    WriteSchema: {
-      schema: WriteSchemaActionSchema,
-      handler: (
-        state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof WriteSchemaActionSchema>
-      ) => {
-        const schemas = state.$schemas || {};
-        schemas[action.schemaName] = {
-          ...action.schema,
-          $id: `https://type.zerve.link/${action.schemaName}`,
-        };
-        return {
-          ...state,
-          $schemas: schemas,
-        };
-      },
-    },
     DeleteSchema: {
       schema: DeleteSchemaActionSchema,
       handler: (
@@ -208,6 +191,23 @@ const GenericCalculator = createZChainStateCalculator(
           ...state,
           $schemas: schemas,
         };
+      },
+      WriteSchema: {
+        schema: WriteSchemaActionSchema,
+        handler: (
+          state: FromSchema<typeof StateTreeSchema>,
+          action: FromSchema<typeof WriteSchemaActionSchema>
+        ) => {
+          const schemas = state.$schemas || {};
+          schemas[action.schemaName] = {
+            ...action.schema,
+            $id: `https://type.zerve.link/${action.schemaName}`,
+          };
+          return {
+            ...state,
+            $schemas: schemas,
+          };
+        },
       },
     },
   }

@@ -19,3 +19,5 @@ export * from "./Page";
 export * from "./Toast";
 export * from "./Dropdown";
 export * from "./ActionButtonSheet";
+export * from "./Modal";
+export * from "./BottomSheet";

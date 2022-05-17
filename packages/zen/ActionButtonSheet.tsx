@@ -1,11 +1,11 @@
-import React, { ReactNode, useMemo, useState } from "react";
-import { ActionButton, ActionButtonDef, VStack } from "@zerve/zen";
-import { P, Text } from "dripsy";
+import React, { ReactNode, useState } from "react";
+import { Text } from "dripsy";
 import { Pressable } from "react-native";
-
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { useAllColors, useColors } from "./useColors";
+
+import { ActionButtonDef } from "./ActionButton";
 import { smallShadow } from "./Style";
+import { useAllColors, useColors } from "./useColors";
 
 function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
   const colors = useAllColors();
@@ -20,33 +20,31 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
   };
   return (
     <Pressable onPress={handlePress} onLongPress={handleLongPress}>
-      {({ hovered, focused }) => (
-        <DropdownMenu.Item
-          onSelect={handlePress}
-          onFocus={() => {
-            setIsFocused(true);
-          }}
-          onBlur={() => {
-            setIsFocused(false);
-          }}
-          style={{
-            paddingTop: 5,
-            paddingBottom: 5,
-            paddingLeft: 10,
-            paddingRight: 10,
-            cursor: "pointer",
-            backgroundColor: isFocused ? colors.active.tint : "transparent",
+      <DropdownMenu.Item
+        onSelect={handlePress}
+        onFocus={() => {
+          setIsFocused(true);
+        }}
+        onBlur={() => {
+          setIsFocused(false);
+        }}
+        style={{
+          paddingTop: 5,
+          paddingBottom: 5,
+          paddingLeft: 10,
+          paddingRight: 10,
+          cursor: "pointer",
+          backgroundColor: isFocused ? colors.active.tint : "transparent",
+        }}
+      >
+        <Text
+          sx={{
+            color: isFocused ? colors.inverted.text : colors.active.text,
           }}
         >
-          <Text
-            sx={{
-              color: isFocused ? colors.inverted.text : colors.active.text,
-            }}
-          >
-            {action.title}
-          </Text>
-        </DropdownMenu.Item>
-      )}
+          {action.title}
+        </Text>
+      </DropdownMenu.Item>
     </Pressable>
   );
 }

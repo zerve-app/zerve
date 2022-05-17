@@ -21,8 +21,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { showToast } from "@zerve/zen/Toast";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
-import { useStringInput } from "../components/StringInput";
 import { useActionsSheet } from "@zerve/zen";
+import { useTextInputFormModal } from "../components/TextInputFormModal";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -63,7 +63,7 @@ export function FileFeature({
   );
   const saveFile = useSaveFile(storePath);
   const renameFile = useRenameFile(storePath);
-  const renameFilePrompt = useStringInput<string>((prevName: string) => {
+  const renameFilePrompt = useTextInputFormModal<string>((prevName: string) => {
     return {
       inputLabel: "New File Name",
       defaultValue: prevName,

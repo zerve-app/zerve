@@ -14,13 +14,15 @@ export function JSONSchemaEditor({
   saveLabel,
   onValue,
   onCancel,
+  onSubmit,
   schemaStore,
 }: {
   value: any;
   schema: any;
   saveLabel?: string;
   onCancel?: () => void;
-  onValue: (value: any) => Promise<void>;
+  onValue?: (value: any) => Promise<void>;
+  onSubmit?: (value: any) => Promise<void>;
   schemaStore?: SchemaStore;
 }) {
   const [valueState, setValueState] = useState(
@@ -41,12 +43,14 @@ export function JSONSchemaEditor({
         schema={schema}
         schemaStore={schemaStore || EmptySchemaStore}
       />
-      {valueState !== value && (
+      {(valueState !== value || onSubmit) && (
         <AsyncButton
           title={saveLabel || "Save"}
           primary
           onPress={async () => {
-            await onValue(valueState);
+            console.log("hellooo1?", valueState);
+            await onValue?.(valueState);
+            await onSubmit?.(valueState);
           }}
         />
       )}

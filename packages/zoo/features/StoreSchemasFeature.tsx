@@ -1,5 +1,3 @@
-import React from "react";
-
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import {
   Button,
@@ -14,8 +12,8 @@ import { CompositeNavigationProp } from "@react-navigation/native";
 import { useNavigation } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useStringInput } from "../components/StringInput";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
+import { useTextInputFormModal } from "../components/TextInputFormModal";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -24,8 +22,9 @@ type NavigationProp = CompositeNavigationProp<
 
 function CreateSchemaButton({ storePath }: { storePath: string[] }) {
   const createSchema = useCreateSchema(storePath);
-  const onOpenNewSchema = useStringInput<void>(() => ({
+  const onOpenNewSchema = useTextInputFormModal<void>(() => ({
     onValue: (name) => {
+      console.log("hello name is!: ", name);
       const formattedName = prepareStoreFileName(name);
       createSchema.mutate(formattedName);
     },
