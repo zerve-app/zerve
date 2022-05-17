@@ -31,9 +31,9 @@ export type HomeStackParamList = {
   History: undefined;
   HistoryEvent: { eventId: string };
   NewFile: { connection: null | string; storePath: string[] };
-  ChainHistory: { connection: null | string; storePath: string[] };
-  ChainSchemas: { connection: null | string; storePath: string[] };
-  ChainSchema: {
+  StoreHistory: { connection: null | string; storePath: string[] };
+  StoreSchemas: { connection: null | string; storePath: string[] };
+  StoreSchema: {
     connection: null | string;
     storePath: string[];
     schema: string;

@@ -104,36 +104,36 @@ export function ConnectionPage({
     return <NotFoundScreen />;
   }
   const { navigate } = useNavigation<NavigationProp>();
-  const openOptions = useActionsSheet(() => [
-    {
-      key: "info",
-      title: "Connection Info",
-      icon: "link",
-      onPress: () => {
-        navigate("SettingsStack", {
-          screen: "ConnectionInfo",
-          params: { connection: conn.key },
-        });
+  const [optionsButton] = useActionsSheet(
+    (onOpen) => <OptionsButton onOptions={onOpen} />,
+    () => [
+      {
+        key: "info",
+        title: "Connection Info",
+        icon: "link",
+        onPress: () => {
+          navigate("SettingsStack", {
+            screen: "ConnectionInfo",
+            params: { connection: conn.key },
+          });
+        },
       },
-    },
-    {
-      key: "api",
-      title: "API",
-      icon: "code",
-      onPress: () => {
-        navigate("ZNode", {
-          connection: conn.key,
-          path: [],
-        });
+      {
+        key: "api",
+        title: "API",
+        icon: "code",
+        onPress: () => {
+          navigate("ZNode", {
+            connection: conn.key,
+            path: [],
+          });
+        },
       },
-    },
-  ]);
+    ]
+  );
   return (
     <>
-      <ScreenHeader
-        title={`Connection: ${conn.name}`}
-        corner={<OptionsButton onOptions={openOptions} />}
-      />
+      <ScreenHeader title={`Connection: ${conn.name}`} corner={optionsButton} />
       <VStack>
         <ConnectionStatusRow connection={conn} />
         <ZLoadedNode path={[]} />

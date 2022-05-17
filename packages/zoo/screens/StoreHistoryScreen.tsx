@@ -16,10 +16,10 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "ChainHistory">
+  NativeStackNavigationProp<HomeStackParamList, "StoreHistory">
 >;
 
-function ChainHistoryPage({
+function StoreHistoryPage({
   connection,
   storePath,
 }: {
@@ -27,29 +27,32 @@ function ChainHistoryPage({
   storePath: string[];
 }) {
   const { data, isLoading } = useZNodeValue([...storePath, "State"]);
-  const openOptions = useActionsSheet(() => []);
+  const [optionsButton, openOptions] = useActionsSheet(
+    (onOpen) => <OptionsButton onOptions={onOpen} />,
+    () => []
+  );
   return (
     <>
       <ScreenHeader
         title={"Chain History"}
         isLoading={isLoading}
-        corner={<OptionsButton onOptions={openOptions} />}
+        corner={optionsButton}
         onLongPress={openOptions}
       />
     </>
   );
 }
 
-export default function ChainHistoryScreen({
+export default function StoreHistoryScreen({
   navigation,
   route,
-}: HomeStackScreenProps<"ChainHistory">) {
+}: HomeStackScreenProps<"StoreHistory">) {
   const { connection, storePath } = route.params;
 
   return (
     <ScreenContainer scroll>
       <ConnectionKeyProvider value={connection}>
-        <ChainHistoryPage connection={connection} storePath={storePath} />
+        <StoreHistoryPage connection={connection} storePath={storePath} />
       </ConnectionKeyProvider>
     </ScreenContainer>
   );

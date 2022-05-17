@@ -17,7 +17,7 @@ export default {
     background: "#fff",
     backgroundDim: "#fdfafd",
     tintInverted: "#D2B4E4",
-    tint: "#47225E",
+    tint: "#9b65bc",
   } as ColorTheme,
   dark: {
     text: "#fff",
@@ -25,7 +25,7 @@ export default {
     dangerText: "#F95A3E",
     background: "#19141c",
     backgroundDim: "#000",
-    tintInverted: "#47225E",
+    tintInverted: "#9b65bc",
     tint: "#D2B4E4",
   } as ColorTheme,
 };

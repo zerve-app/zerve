@@ -25,36 +25,45 @@ export function ZFeature({
   const { isLoading, data, refetch, isRefetching } = useZNode(path);
   const { navigate } = useNavigation<NavigationProp>();
 
-  const onOptions = useActionsSheet(() => [
-    {
-      key: "refresh",
-      title: "Refresh",
-      icon: "refresh",
-      onPress: refetch,
-    },
-    {
-      key: "rawType",
-      title: "Raw Type",
-      icon: "code",
-      onPress: () => {
-        navigate("RawValue", {
-          title: `${path.join("/")} Type`,
-          value: data?.type,
-        });
+  const [sheetContent, onOptions] = useActionsSheet(
+    (handlePress) => (
+      <IconButton
+        altTitle="Options"
+        onPress={handlePress}
+        icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
+      />
+    ),
+    () => [
+      {
+        key: "refresh",
+        title: "Refresh",
+        icon: "refresh",
+        onPress: refetch,
       },
-    },
-    {
-      key: "value",
-      title: "Raw Value",
-      icon: "code",
-      onPress: () => {
-        navigate("RawValue", {
-          title: `${path.join("/")} Value`,
-          value: data?.node,
-        });
+      {
+        key: "rawType",
+        title: "Raw Type",
+        icon: "code",
+        onPress: () => {
+          navigate("RawValue", {
+            title: `${path.join("/")} Type`,
+            value: data?.type,
+          });
+        },
       },
-    },
-  ]);
+      {
+        key: "value",
+        title: "Raw Value",
+        icon: "code",
+        onPress: () => {
+          navigate("RawValue", {
+            title: `${path.join("/")} Value`,
+            value: data?.node,
+          });
+        },
+      },
+    ]
+  );
 
   return (
     <>
@@ -63,13 +72,7 @@ export function ZFeature({
         isLoading={isLoading || isRefetching}
         title={path.length ? path.join("/") : "Z Connection API"}
         onLongPress={onOptions}
-        corner={
-          <IconButton
-            altTitle="Options"
-            onPress={onOptions}
-            icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
-          />
-        }
+        corner={sheetContent}
       ></ScreenHeader>
       <ZNode
         path={path}

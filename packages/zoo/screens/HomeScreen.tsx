@@ -36,40 +36,45 @@ function ConnectionSection({ connection }: { connection: SavedConnection }) {
   const [actions, setActions] = useState<ActionButtonDef[]>([]);
   const navigation = useNavigation<NavigationProp>();
   const { isConnected } = useConnectionStatus();
-  const onOptions = useActionsSheet(() => [
-    ...actions,
-    {
-      key: "open",
-      title: `Open ${connection.name}`,
-      icon: "server",
-      onPress: () => {
-        navigation.navigate("Connection", {
-          connection: connection.key,
-        });
+  const [optionsButton] = useActionsSheet(
+    (onOpen) => (
+      <IconButton
+        altTitle="Options"
+        onPress={onOpen}
+        icon={(p) => <Icon name="ellipsis-h" {...p} />}
+      />
+    ),
+    () => [
+      ...actions,
+      {
+        key: "open",
+        title: `Open ${connection.name}`,
+        icon: "server",
+        onPress: () => {
+          navigation.navigate("Connection", {
+            connection: connection.key,
+          });
+        },
       },
-    },
-    {
-      title: "Connection Info",
-      key: "connInfo",
-      icon: "link",
-      onPress: () => {
-        navigation.navigate("SettingsStack", {
-          screen: "ConnectionInfo",
-          params: { connection: connection.key },
-        });
+      {
+        title: "Connection Info",
+        key: "connInfo",
+        icon: "link",
+        onPress: () => {
+          navigation.navigate("SettingsStack", {
+            screen: "ConnectionInfo",
+            params: { connection: connection.key },
+          });
+        },
       },
-    },
-  ]);
+    ]
+  );
   return (
     <DisclosureSection
       header={<Label>{connection.name}</Label>}
       right={
         <>
-          <IconButton
-            altTitle="Options"
-            onPress={onOptions}
-            icon={(p) => <Icon name="ellipsis-h" {...p} />}
-          />
+          {optionsButton}
           <ThemedText>{isConnected ? "🟢" : "🔴"}</ThemedText>
         </>
       }

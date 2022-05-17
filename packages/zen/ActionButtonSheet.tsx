@@ -1,6 +1,89 @@
-import React from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import { ActionButton, ActionButtonDef, VStack } from "@zerve/zen";
+import { P, Text } from "dripsy";
+import { Pressable } from "react-native";
 
-export function useActionsSheet(getActions: () => ActionButtonDef[]) {
-  return () => {};
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useAllColors, useColors } from "./useColors";
+import { smallShadow } from "./Style";
+
+function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
+  const colors = useAllColors();
+  const [isFocused, setIsFocused] = React.useState(false);
+  const handlePress = () => {
+    action.onPress();
+    action.onHandled?.();
+  };
+  const handleLongPress = () => {
+    action.onLongPress?.();
+    action.onHandled?.();
+  };
+  return (
+    <Pressable onPress={handlePress} onLongPress={handleLongPress}>
+      {({ hovered, focused }) => (
+        <DropdownMenu.Item
+          onSelect={handlePress}
+          onFocus={() => {
+            setIsFocused(true);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+          }}
+          style={{
+            paddingTop: 5,
+            paddingBottom: 5,
+            paddingLeft: 10,
+            paddingRight: 10,
+            cursor: "pointer",
+            backgroundColor: isFocused ? colors.active.tint : "transparent",
+          }}
+        >
+          <Text
+            sx={{
+              color: isFocused ? colors.inverted.text : colors.active.text,
+            }}
+          >
+            {action.title}
+          </Text>
+        </DropdownMenu.Item>
+      )}
+    </Pressable>
+  );
+}
+const ActionMenuItem = React.memo(ActionMenuItemUnmemo);
+
+export function useActionsSheet(
+  renderButton: (onOpen: () => void) => ReactNode,
+  getActions: () => ActionButtonDef[]
+): readonly [null | ReactNode, () => void] {
+  const [isOpen, setIsOpen] = useState(false);
+  function onOpen() {
+    setIsOpen(true);
+  }
+  const colors = useColors();
+  return [
+    <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenu.Trigger style={{ border: "none" }}>
+        {renderButton(onOpen)}
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content
+        style={{
+          minWidth: 130,
+          borderRadius: 2,
+          backgroundColor: colors.background,
+          ...smallShadow,
+          boxShadow: "0 2px 5px #00000040",
+          paddingTop: 8,
+          paddingBottom: 8,
+          zIndex: 10000000,
+        }}
+      >
+        {getActions().map((action) => (
+          <ActionMenuItem action={action} key={action.key} />
+        ))}
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>,
+
+    () => {},
+  ] as const;
 }

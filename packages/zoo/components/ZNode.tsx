@@ -241,10 +241,10 @@ export function ZStoreNode({
         links={[
           {
             key: "Events",
-            title: "Event History",
+            title: "Change History",
             icon: "history",
             onPress: () => {
-              navigate("ChainHistory", {
+              navigate("StoreHistory", {
                 connection,
                 storePath: path,
               });
@@ -255,7 +255,7 @@ export function ZStoreNode({
             title: "Schemas",
             icon: "crosshairs",
             onPress: () => {
-              navigate("ChainSchemas", {
+              navigate("StoreSchemas", {
                 connection,
                 storePath: path,
               });

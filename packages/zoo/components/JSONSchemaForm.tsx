@@ -515,39 +515,42 @@ function FormFieldHeader({
   schema?: any;
   actions?: ActionButtonDef[];
 }) {
-  const openActions = useActionsSheet(() => {
-    return [
-      ...(actions || []),
-      value !== null &&
-        typeof value !== "boolean" && {
-          title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
-          icon: "clipboard",
-          onPress: () => {
-            setString(
-              typeof value === "string" ? value : JSON.stringify(value)
-            );
+  const [header] = useActionsSheet(
+    (onOpen) => (
+      <TouchableOpacity onPress={onOpen}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingBottom: 6,
+          }}
+        >
+          {typeof label === "string" ? <Label>{label}</Label> : label}
+          <View style={{ width: 40 }} />
+          <Label style={{ flex: 1, textAlign: "right" }} secondary>
+            {typeLabel}
+          </Label>
+        </View>
+      </TouchableOpacity>
+    ),
+    () => {
+      return [
+        ...(actions || []),
+        value !== null &&
+          typeof value !== "boolean" && {
+            title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
+            icon: "clipboard",
+            onPress: () => {
+              setString(
+                typeof value === "string" ? value : JSON.stringify(value)
+              );
+            },
           },
-        },
-    ].filter(Boolean);
-  });
-
-  return (
-    <TouchableOpacity onPress={openActions}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          paddingBottom: 6,
-        }}
-      >
-        {typeof label === "string" ? <Label>{label}</Label> : label}
-        <View style={{ width: 40 }} />
-        <Label style={{ flex: 1, textAlign: "right" }} secondary>
-          {typeLabel}
-        </Label>
-      </View>
-    </TouchableOpacity>
+      ].filter(Boolean);
+    }
   );
+
+  return header;
 }
 
 export function OneOfFormField({
@@ -568,20 +571,6 @@ export function OneOfFormField({
   const matched = unionOptions.match(value);
   const matchedSchema = schema.oneOf[matched];
 
-  const onChooseType = useActionsSheet(() =>
-    unionOptions.options.map((option, optionIndex: number) => {
-      return {
-        title: option.title,
-        onPress: () => {
-          const converter = unionOptions.converters[optionIndex];
-          if (converter && onValue) {
-            onValue(converter(value));
-          }
-        },
-        key: optionIndex,
-      };
-    })
-  );
   const fieldActions = useMemo(
     () => [
       ...(actions || []),

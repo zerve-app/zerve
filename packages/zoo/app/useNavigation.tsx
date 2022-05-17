@@ -7,22 +7,31 @@ export function useNavigation() {
     () => ({
       navigate: (routeName: string, params: {}) => {
         if (routeName === "File") {
-          const path = `${params.storePath.join("/")}/$files/${params.name}`;
+          const path = `/${params.storePath.join("/")}/$files/${params.name}`;
           push(path);
-          return;
+        } else if (routeName === "NewFile") {
+          push(`/${params.storePath.join("/")}/$new-file`);
+        } else if (routeName === "StoreHistory") {
+          push(`/${params.storePath.join("/")}/$history`);
+        } else if (routeName === "StoreSchemas") {
+          push(`/${params.storePath.join("/")}/$schemas`);
+        } else if (routeName === "StoreSchema") {
+          debugger;
+          push(`/${params.storePath.join("/")}/$schemas`);
+        } else {
+          console.error("Navigate not implemented here!", routeName, params);
         }
-
-        console.error("Navigate not implemented here!", args);
       },
       dispatch: (action) => {
         const { payload, type } = action;
         if (type === "PUSH" && payload.name === "ZNode") {
           const path = `/${payload.params.path.join("/")}`;
-          console.log("will go to:", path);
           push(path);
-          return;
+        } else if (type === "BACK") {
+          back();
+        } else {
+          console.error("Dispatch not implemented here!", action);
         }
-        console.error("Dispatch not implemented here!", args);
       },
       canGoBack: () => true,
       goBack: () => {

@@ -25,10 +25,10 @@ import HistoryScreen from "../screens/HistoryScreen";
 import ConnectionScreen from "../screens/ConnectionScreen";
 import { TestHistoryScreen } from "../screens/TestHistoryScreen";
 import FileSchemaScreen from "../screens/FileSchemaScreen";
-import ChainHistoryScreen from "../screens/ChainHistoryScreen";
-import ChainSchemasScreen from "../screens/ChainSchemasScreen";
+import StoreHistoryScreen from "../screens/StoreHistoryScreen";
+import StoreSchemasScreen from "../screens/StoreSchemasScreen";
 import HistoryEventScreen from "../screens/HistoryEventScreen";
-import ChainSchemaScreen from "../screens/ChainSchemaScreen";
+import StoreSchemaScreen from "../screens/StoreSchemaScreen";
 import TestRichTextScreen from "../screens/TestRichTextScreen";
 import { LogBox } from "react-native";
 
@@ -63,18 +63,18 @@ function HomeNavigator() {
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
-        name="ChainHistory"
-        component={ChainHistoryScreen}
+        name="StoreHistory"
+        component={StoreHistoryScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
-        name="ChainSchemas"
-        component={ChainSchemasScreen}
+        name="StoreSchemas"
+        component={StoreSchemasScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
-        name="ChainSchema"
-        component={ChainSchemaScreen}
+        name="StoreSchema"
+        component={StoreSchemaScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen

@@ -27,10 +27,10 @@ import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "ChainSchema">
+  NativeStackNavigationProp<HomeStackParamList, "StoreSchema">
 >;
 
-function ChainSchemasPage({
+function StoreSchemasPage({
   connection,
   schema,
   storePath,
@@ -53,35 +53,38 @@ function ChainSchemasPage({
   const saveSchema = useSaveSchema(storePath);
   const deleteSchema = useDeleteSchema(storePath);
   const { goBack, navigate } = useNavigation();
-  const openOptions = useActionsSheet(() => [
-    {
-      key: "RawValue",
-      title: "Raw Schema Value",
-      icon: "code",
-      onPress: () => {
-        navigate("RawValue", {
-          title: `${schema} Value`,
-          value: data,
-        });
+  const [optionsButton, openOptions] = useActionsSheet(
+    (onOpen) => <OptionsButton onOptions={onOpen} />,
+    () => [
+      {
+        key: "RawValue",
+        title: "Raw Schema Value",
+        icon: "code",
+        onPress: () => {
+          navigate("RawValue", {
+            title: `${schema} Value`,
+            value: data,
+          });
+        },
       },
-    },
-    {
-      key: "Delete",
-      title: "Delete Schema",
-      icon: "trash",
-      danger: true,
-      onPress: () => {
-        deleteSchema.mutate({ schemaName: schema });
-        goBack();
+      {
+        key: "Delete",
+        title: "Delete Schema",
+        icon: "trash",
+        danger: true,
+        onPress: () => {
+          deleteSchema.mutate({ schemaName: schema });
+          goBack();
+        },
       },
-    },
-  ]);
+    ]
+  );
   return (
     <VStack>
       <ScreenHeader
         title={`${displayStoreFileName(schema)} Schema`}
         isLoading={isLoading}
-        corner={<OptionsButton onOptions={openOptions} />}
+        corner={optionsButton}
         onLongPress={openOptions}
       />
       <JSONSchemaEditor
@@ -98,16 +101,16 @@ function ChainSchemasPage({
   );
 }
 
-export default function ChainSchemaScreen({
+export default function StoreSchemaScreen({
   navigation,
   route,
-}: HomeStackScreenProps<"ChainSchema">) {
+}: HomeStackScreenProps<"StoreSchema">) {
   const { connection, schema, storePath } = route.params;
 
   return (
     <ScreenContainer scroll>
       <ConnectionKeyProvider value={connection}>
-        <ChainSchemasPage
+        <StoreSchemasPage
           connection={connection}
           schema={schema}
           storePath={storePath}

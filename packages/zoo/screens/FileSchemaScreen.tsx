@@ -48,25 +48,28 @@ function FileSchemaPage({
   const navigation = useNavigation<NavigationProp>();
   const saveSchema = useSaveFileSchema(storePath, schemaStore);
 
-  const openOptions = useActionsSheet(() => [
-    {
-      key: "RawValue",
-      title: "Raw Schema Value",
-      icon: "code",
-      onPress: () => {
-        navigation.navigate("RawValue", {
-          title: `${name} Value`,
-          value: data?.schema,
-        });
+  const [optionsButton, openOptions] = useActionsSheet(
+    (onOpen) => <OptionsButton onOptions={onOpen} />,
+    () => [
+      {
+        key: "RawValue",
+        title: "Raw Schema Value",
+        icon: "code",
+        onPress: () => {
+          navigation.navigate("RawValue", {
+            title: `${name} Value`,
+            value: data?.schema,
+          });
+        },
       },
-    },
-  ]);
+    ]
+  );
   return (
     <>
       <ScreenHeader
         title={`${displayStoreFileName(name)} Schema`}
         isLoading={isLoading}
-        corner={<OptionsButton onOptions={openOptions} />}
+        corner={optionsButton}
         onLongPress={openOptions}
       />
       {data && !isLoading && (

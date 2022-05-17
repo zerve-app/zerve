@@ -1,4 +1,4 @@
-import { DripsyProvider, makeTheme } from 'dripsy'
+import { DripsyProvider, makeTheme } from "dripsy";
 
 const theme = makeTheme({
   // https://www.dripsy.xyz/usage/theming/create
@@ -7,7 +7,7 @@ const theme = makeTheme({
       fontSize: 16,
     },
   },
-})
+});
 
 export function Dripsy({ children }: { children: React.ReactNode }) {
   return (
@@ -18,5 +18,5 @@ export function Dripsy({ children }: { children: React.ReactNode }) {
     >
       {children}
     </DripsyProvider>
-  )
+  );
 }

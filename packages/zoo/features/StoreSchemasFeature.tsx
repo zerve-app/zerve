@@ -1,20 +1,17 @@
 import React from "react";
 
+import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import {
-  HomeStackParamList,
-  HomeStackScreenProps,
-  RootStackParamList,
-} from "../app/Links";
-import { Button, Icon, LinkRowGroup, VStack } from "@zerve/zen";
-import { useActionsSheet } from "@zerve/zen";
-import ScreenContainer from "../components/ScreenContainer";
+  Button,
+  Icon,
+  LinkRowGroup,
+  VStack,
+  useActionsSheet,
+} from "@zerve/zen";
 import ScreenHeader from "../components/ScreenHeader";
 import { useCreateSchema, useZNodeValue } from "@zerve/query";
-import { ConnectionKeyProvider } from "../app/ConnectionStorage";
-import {
-  CompositeNavigationProp,
-  useNavigation,
-} from "@react-navigation/native";
+import { CompositeNavigationProp } from "@react-navigation/native";
+import { useNavigation } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useStringInput } from "../components/StringInput";
@@ -22,7 +19,7 @@ import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "ChainSchemas">
+  NativeStackNavigationProp<HomeStackParamList, "StoreSchemas">
 >;
 
 function CreateSchemaButton({ storePath }: { storePath: string[] }) {
@@ -45,7 +42,7 @@ function CreateSchemaButton({ storePath }: { storePath: string[] }) {
   );
 }
 
-function ChainSchemasPage({
+export function StoreSchemasFeature({
   connection,
   storePath,
 }: {
@@ -58,13 +55,16 @@ function ChainSchemasPage({
     "$schemas",
   ]);
   const { navigate } = useNavigation<NavigationProp>();
-  const openOptions = useActionsSheet(() => []);
+  const [optionsButton, openOptions] = useActionsSheet(
+    (onOpen) => <OptionsButton onOptions={onOpen} />,
+    () => []
+  );
   return (
     <VStack>
       <ScreenHeader
         title={"Schemas"}
         isLoading={isLoading}
-        corner={<OptionsButton onOptions={openOptions} />}
+        corner={optionsButton}
         onLongPress={openOptions}
       />
       <LinkRowGroup
@@ -74,7 +74,7 @@ function ChainSchemasPage({
             icon: "crosshairs",
             title: displayStoreFileName(schemaKey),
             onPress: () => {
-              navigate("ChainSchema", {
+              navigate("StoreSchema", {
                 connection,
                 schema: schemaKey,
                 storePath,
@@ -85,20 +85,5 @@ function ChainSchemasPage({
       />
       <CreateSchemaButton storePath={storePath} />
     </VStack>
-  );
-}
-
-export default function ChainSchemasScreen({
-  navigation,
-  route,
-}: HomeStackScreenProps<"ChainSchemas">) {
-  const { connection, storePath } = route.params;
-
-  return (
-    <ScreenContainer scroll>
-      <ConnectionKeyProvider value={connection}>
-        <ChainSchemasPage connection={connection} storePath={storePath} />
-      </ConnectionKeyProvider>
-    </ScreenContainer>
   );
 }

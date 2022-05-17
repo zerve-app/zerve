@@ -9,7 +9,7 @@ import ScreenContainer from "../components/ScreenContainer";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { FileFeature } from "../features/FileFeature";
+import { FileFeature } from "../features/StoreFileFeature";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,

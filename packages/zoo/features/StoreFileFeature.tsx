@@ -74,63 +74,66 @@ export function FileFeature({
       },
     };
   });
-  const openOptions = useActionsSheet(() => [
-    {
-      key: "Refresh",
-      title: "Refresh",
-      icon: "refresh",
-      onPress: () => {
-        refetch();
+  const [optionsButton, openOptions] = useActionsSheet(
+    (onOpen) => <OptionsButton onOptions={onOpen} />,
+    () => [
+      {
+        key: "Refresh",
+        title: "Refresh",
+        icon: "refresh",
+        onPress: () => {
+          refetch();
+        },
       },
-    },
-    {
-      key: "EditSchema",
-      title: "Edit Schema",
-      icon: "crosshairs",
-      onPress: () => {
-        navigation.navigate("FileSchema", {
-          name,
-          connection,
-          storePath,
-        });
+      {
+        key: "EditSchema",
+        title: "Edit Schema",
+        icon: "crosshairs",
+        onPress: () => {
+          navigation.navigate("FileSchema", {
+            name,
+            connection,
+            storePath,
+          });
+        },
       },
-    },
-    {
-      key: "RawValue",
-      title: "Raw Value",
-      icon: "code",
-      onPress: () => {
-        navigation.navigate("RawValue", {
-          title: `${displayStoreFileName(name)} Value`,
-          value: data?.value,
-        });
+      {
+        key: "RawValue",
+        title: "Raw Value",
+        icon: "code",
+        onPress: () => {
+          navigation.navigate("RawValue", {
+            title: `${displayStoreFileName(name)} Value`,
+            value: data?.value,
+          });
+        },
       },
-    },
-    {
-      key: "Rename",
-      title: "Rename File",
-      icon: "edit",
-      onPress: () => {
-        renameFilePrompt(displayStoreFileName(name));
+      {
+        key: "Rename",
+        title: "Rename File",
+        icon: "edit",
+        onPress: () => {
+          renameFilePrompt(displayStoreFileName(name));
+        },
       },
-    },
-    {
-      key: "DeleteFile",
-      title: "Delete File",
-      icon: "trash",
-      danger: true,
-      onPress: () => {
-        deleteFile.mutate(name);
+      {
+        key: "DeleteFile",
+        title: "Delete File",
+        icon: "trash",
+        danger: true,
+        onPress: () => {
+          deleteFile.mutate(name);
+        },
+        onHandled: navigation.goBack,
       },
-      onHandled: navigation.goBack,
-    },
-  ]);
+    ]
+  );
   return (
     <>
       <ScreenHeader
         title={displayStoreFileName(name)}
         isLoading={isLoading}
-        corner={<OptionsButton onOptions={openOptions} />}
+        corner={optionsButton}
         onLongPress={openOptions}
       />
       {data && (
