@@ -41,6 +41,7 @@ export async function startApp() {
   const Data = await createCoreData(dataDir);
 
   const InternalRootFiles = createSystemFiles("/");
+  const DataDirFiles = createSystemFiles(dataDir);
 
   const secrets = await InternalRootFiles.z.ReadJSON.call({
     path: secretsFile,
@@ -73,8 +74,8 @@ export async function startApp() {
     if (stores[id]) return stores[id];
     stores[id] = await createGeneralStore(
       Data,
-      createSystemFiles(join(dataDir, `${id}_StoreCache`)),
-      `${id}_Store`
+      createSystemFiles(join(dataDir, "userData", id, `StoreCache`)),
+      `User_${id}_Store`
     );
     return stores[id];
   }
@@ -97,6 +98,27 @@ export async function startApp() {
         Phone: await createSMSAuthStrategy(SMS),
       },
       files: AuthFiles,
+      handleUserIdChange: async (prevUserId: string, userId: string) => {
+        console.log("handleUserIdChange", prevUserId, userId);
+        try {
+          await DataDirFiles.z.Move.call({
+            from: join("userData", prevUserId),
+            to: join("userData", userId),
+          });
+        } catch (e) {
+          if (e.code === "ENOENT") return;
+          throw e;
+        }
+        try {
+          await Data.z.Actions.z.MoveDoc.call({
+            from: `User_${prevUserId}_Store`,
+            to: `User_${userId}_Store`,
+          });
+        } catch (e) {
+          if (e.code === "ENOENT") return;
+          throw e;
+        }
+      },
       getUserZeds: async (user, { userId }) => {
         return {
           ...user,

@@ -116,6 +116,23 @@ export function setSession(
   );
 }
 
+export function setSessionUserId(connectionKey: string, userId: string) {
+  mutateConnections((connections) =>
+    connections.map((conn) => {
+      if (conn.key !== connectionKey) return conn;
+      if (!conn.session) return conn;
+      return {
+        ...conn,
+        session: {
+          ...conn.session,
+          userId,
+          userLabel: userId,
+        },
+      };
+    })
+  );
+}
+
 export function ConnectionKeyProvider({
   children,
   value,

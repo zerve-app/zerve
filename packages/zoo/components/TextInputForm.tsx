@@ -13,14 +13,14 @@ export function TextInputForm({
   defaultValue?: string;
   inputLabel?: string;
 }) {
-  const [s, setS] = useState(defaultValue);
+  const [s, setS] = useState(defaultValue || "");
   const handleSubmit = useCallback(() => {
     try {
       onSubmit(s);
     } catch (e) {
       showErrorToast(e.message);
     }
-  }, []);
+  }, [s]);
   return (
     <Form onSubmit={handleSubmit}>
       <Input

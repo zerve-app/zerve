@@ -71,7 +71,9 @@ export function ZFeature({
         data?.type === UnauthorizedSymbol) && (
         <ErrorBox
           error={
-            "You are not authorized to view this. Please log out and log back in."
+            connection.session
+              ? "You are not properly authenticated. Please log out and back in again."
+              : "Please log in to view this."
           }
         />
       )}

@@ -29,6 +29,7 @@ import {
   forceLocalLogout,
   logout,
   setSession,
+  setSessionUserId,
   useSavedConnection,
 } from "../app/ConnectionStorage";
 import {
@@ -48,6 +49,7 @@ import { JSONSchemaEditor } from "./JSONSchemaEditor";
 import { showToast } from "../app/Toast";
 import { ZLoadedNode } from "./ZLoadedNode";
 import { Link } from "solito/link";
+import { useTextInputFormModal } from "./TextInputFormModal";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -527,6 +529,44 @@ function LogoutButton({
   );
 }
 
+function ChangeUsernameButton({
+  connection,
+  session,
+}: {
+  connection: Connection;
+  session: SavedSession;
+}) {
+  const promptNewUserName = useTextInputFormModal<void>(() => {
+    return {
+      inputLabel: "New User Name",
+      defaultValue: session.userId || "?",
+      onValue: (username) => {
+        postZAction(
+          connection,
+          [...session.authPath, "user", "setUsername"],
+          username
+        )
+          .then(() => {
+            setSessionUserId(connection.key, username);
+          })
+          .catch((e) => {
+            console.log("catch failed username change");
+            throw e;
+          });
+      },
+    };
+  });
+
+  return (
+    <Button
+      onPress={() => {
+        promptNewUserName();
+      }}
+      title="Change Username"
+    />
+  );
+}
+
 export function LoggedInAuthNode({
   type,
   value,
@@ -543,8 +583,9 @@ export function LoggedInAuthNode({
   return (
     <>
       <Paragraph>Welcome, {session.userLabel}.</Paragraph>
-      <ZInlineNode path={[...path, "user"]} />
+      <ZLoadedNode path={[...path, "user"]} />
       <LogoutButton connection={connection} session={session} />
+      <ChangeUsernameButton connection={connection} session={session} />
       {/* <AsyncButton onPress={async () => {}} title="Log Out ALL sessions" /> */}
     </>
   );

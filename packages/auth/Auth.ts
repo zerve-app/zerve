@@ -162,7 +162,8 @@ const MaybeSessionSchema = {
 function getSetUsernameAction(
   usersFiles: SystemFilesModule,
   authenticationFiles: SystemFilesModule,
-  userId: string
+  userId: string,
+  handleUserIdChange?: (prevUserId: string, userId: string) => Promise<void>
 ) {
   return createZAction(
     UsernameSchema,
@@ -203,6 +204,8 @@ function getSetUsernameAction(
           });
         })
       );
+
+      if (handleUserIdChange) await handleUserIdChange(userId, newUserId);
       return null;
     }
   );
@@ -263,10 +266,12 @@ export async function createAuth<
   strategies,
   files,
   getUserZeds,
+  handleUserIdChange,
 }: {
   strategies: Strategies;
   files: SystemFilesModule;
   getUserZeds: (user: UserAdminZeds, userInfo: { userId: string }) => UserZeds;
+  handleUserIdChange?: (prevUserId: string, userId: string) => Promise<void>;
 }) {
   await files.z.MakeDir.call({ path: "" });
 
@@ -312,7 +317,8 @@ export async function createAuth<
       setUsername: getSetUsernameAction(
         usersFiles,
         authenticationFiles,
-        userId
+        userId,
+        handleUserIdChange
       ),
       setPassword: getSetPasswordAction(
         usersFiles,

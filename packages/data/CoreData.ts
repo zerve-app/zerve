@@ -7,6 +7,7 @@ import {
   JSONSchema,
   ZGettable,
   NotFoundError,
+  NullSchema,
 } from "@zerve/core";
 import { createJSONBlock } from "@zerve/crypto";
 import {
@@ -17,6 +18,7 @@ import {
   readdir,
   readFile,
   rename,
+  move,
 } from "fs-extra";
 import { join } from "path";
 
@@ -175,6 +177,25 @@ export async function createCoreData(dataDir: string) {
     }
   );
 
+  const MoveDoc = createZAction(
+    {
+      type: "object",
+      properties: {
+        from: { type: "string" },
+        to: { type: "string" },
+      },
+      required: ["from", "to"],
+      additionalProperties: false,
+    } as const,
+    NullSchema,
+    async ({ from, to }) => {
+      const fromDocFile = join(_docsDir, from);
+      const toDocFile = join(_docsDir, to);
+      await move(fromDocFile, toDocFile);
+      return null;
+    }
+  );
+
   const DeleteDoc = createZAction(
     {
       type: "object",
@@ -243,6 +264,7 @@ export async function createCoreData(dataDir: string) {
       DeleteDoc,
       DeleteBlock,
       SetDoc,
+      MoveDoc,
       GetBlockJSON,
     } as const),
   } as const);
