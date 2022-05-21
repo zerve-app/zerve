@@ -1,10 +1,8 @@
 import { MMKVConfiguration } from "react-native-mmkv";
 
-export type NativeCoreStorageModule = ReturnType<
-  typeof createNativeCoreStorage
->;
+export type NativeCoreStorageModule = ReturnType<typeof createLocalStorage>;
 
-export function createNativeCoreStorage(config: MMKVConfiguration | undefined) {
+export function createLocalStorage(config: MMKVConfiguration | undefined) {
   const storeId = config.id;
 
   const grossStorage = global.window?.localStorage;

@@ -1,13 +1,17 @@
-import { ConnectionProvider, useZNode } from "@zerve/query";
-import { Paragraph, Spinner, Title } from "@zerve/zen";
-import Head from "next/head";
+import {
+  SavedConnection,
+  SavedConnectionProvider,
+} from "@zerve/client/Connection";
 import { FileFeature } from "../features/StoreFileFeature";
 import { PageLayout } from "../components/PageLayout";
-import { ZLoadedNode } from "../components/ZLoadedNode";
 import { ZFeature } from "../features/ZFeature";
 import { StoreSchemasFeature } from "../features/StoreSchemasFeature";
+import { SiteConfig } from "./SiteConfig";
+import { WebPathRootServerProps } from "../web/ZooWebServer";
+import { useMemo } from "react";
+import { useSavedConnection } from "./ConnectionStorage";
 
-const webConnectionTEMP = __DEV__ ? "dev" : "main";
+const WEB_PRIMARY_CONN = __DEV__ ? "dev" : "main";
 
 function getPathFeature(path: string[]): () => JSX.Element | null {
   const filesPathIndex = path.indexOf("$files");
@@ -18,7 +22,7 @@ function getPathFeature(path: string[]): () => JSX.Element | null {
       <FileFeature
         name={name}
         storePath={storePath}
-        connection={webConnectionTEMP}
+        connection={WEB_PRIMARY_CONN}
       />
     );
   }
@@ -29,14 +33,39 @@ function getPathFeature(path: string[]): () => JSX.Element | null {
     return () => (
       <StoreSchemasFeature
         storePath={storePath}
-        connection={webConnectionTEMP}
+        connection={WEB_PRIMARY_CONN}
       />
     );
   }
-  return () => <ZFeature path={path} connection={webConnectionTEMP} />;
+  return () => <ZFeature path={path} connection={WEB_PRIMARY_CONN} />;
 }
 
-export function WebPathRoot({ path }: { path: string[] }) {
+export type WebPathRootProps = WebPathRootServerProps & {
+  path: string[];
+};
+
+function useWebConn(config: SiteConfig): SavedConnection {
+  const savedConn = useSavedConnection(WEB_PRIMARY_CONN);
+  const conn = useMemo(() => {
+    return (
+      savedConn || {
+        key: WEB_PRIMARY_CONN,
+        name: config?.name ? config.name : "Main",
+        url: config.origin,
+        session: null,
+      }
+    );
+  }, [savedConn]);
+
+  return conn;
+}
+
+export function WebPathRoot({ path, config }: WebPathRootProps) {
   const renderFeature = getPathFeature(path);
-  return <PageLayout>{renderFeature()}</PageLayout>;
+  const conn = useWebConn(config);
+  return (
+    <SavedConnectionProvider value={conn}>
+      <PageLayout>{renderFeature()}</PageLayout>
+    </SavedConnectionProvider>
+  );
 }

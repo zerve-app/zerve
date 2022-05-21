@@ -1,23 +1,12 @@
 import React from "react";
 
-import {
-  HomeStackParamList,
-  HomeStackScreenProps,
-  RootStackParamList,
-} from "../app/Links";
+import { HomeStackScreenProps } from "../app/Links";
 import { useActionsSheet } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import { useZNodeValue } from "@zerve/query";
+import { useZNodeValue } from "@zerve/client/Query";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
-import { CompositeNavigationProp } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-type NavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "StoreHistory">
->;
 
 function StoreHistoryPage({
   connection,

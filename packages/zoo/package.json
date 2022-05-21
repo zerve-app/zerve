@@ -9,7 +9,7 @@
     "expo-linking": "^3.0.0",
     "moti": "canary",
     "@zerve/core": "*",
-    "@zerve/query": "*",
+    "@zerve/client": "*",
     "@zerve/react": "*",
     "@zerve/zen": "*",
     "solito": "latest"

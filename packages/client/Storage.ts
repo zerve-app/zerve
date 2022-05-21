@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { MMKVConfiguration } from "react-native-mmkv";
-import { createNativeCoreStorage } from "./CoreStorage";
+import { createLocalStorage } from "./LocalStorage";
 
 type StorageNode<ValueType> = {
   key: string;
@@ -11,10 +11,10 @@ type StorageNode<ValueType> = {
   destroy: () => void;
 };
 
-export type NativeStorageModule = ReturnType<typeof createNativeCoreStorage>;
+export type NativeStorageModule = ReturnType<typeof createLocalStorage>;
 
-export function createNativeStorage(config: MMKVConfiguration | undefined) {
-  const nativeStore = createNativeCoreStorage(config);
+export function createStorage(config: MMKVConfiguration | undefined) {
+  const nativeStore = createLocalStorage(config);
 
   function dangerouslyClearAllStorage() {
     nativeStore.dangerouslyDeleteEverything();

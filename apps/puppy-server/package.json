@@ -1,0 +1,28 @@
+{
+  "name": "puppy-server",
+  "private": true,
+  "version": "0.0.0",
+  "types": "PuppyServer.ts",
+  "main": "PuppyServer.ts",
+  "scripts": {
+    "start": "node ./build/PuppyServer.js",
+    "start:watch": "nodemon ./build/PuppyServer.js",
+    "build": "esbuild ./PuppyServer.ts --bundle --platform=node --outfile=build/PuppyServer.js",
+    "build:watch": "yarn build --watch",
+    "dev": "concurrently \"yarn start:watch\" \"yarn build:watch\"",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:fix": "yarn lint:fix"
+  },
+  "dependencies": {
+    "@zerve/core": "*",
+    "@zerve/node": "*",
+    "@zerve/data": "*"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "esbuild": "^0.14.13",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.6.3"
+  }
+}

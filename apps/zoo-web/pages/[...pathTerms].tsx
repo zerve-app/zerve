@@ -1,8 +1,12 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { WebPathRoot } from "@zerve/zoo/app/WebPathRoot";
+import {
+  getWebRootServerProps,
+  WebPathRootServerProps,
+} from "@zerve/zoo/web/ZooWebServer";
 
-export default function PathScreen() {
+export default function PathScreen(props: WebPathRootServerProps) {
   const router = useRouter();
   if (!router.isReady) return null;
   return (
@@ -14,6 +18,9 @@ export default function PathScreen() {
           ? [router.query.pathTerms]
           : []
       }
+      {...props}
     />
   );
 }
+
+export const getServerSideProps = getWebRootServerProps;

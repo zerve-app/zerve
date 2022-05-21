@@ -1,10 +1,8 @@
 import { MMKV, MMKVConfiguration } from "react-native-mmkv";
 
-export type NativeCoreStorageModule = ReturnType<
-  typeof createNativeCoreStorage
->;
+export type NativeCoreStorageModule = ReturnType<typeof createLocalStorage>;
 
-export function createNativeCoreStorage(config: MMKVConfiguration | undefined) {
+export function createLocalStorage(config: MMKVConfiguration | undefined) {
   const storage = new MMKV(config);
 
   function dangerouslyDeleteEverything() {

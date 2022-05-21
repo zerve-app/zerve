@@ -48,7 +48,6 @@ export function JSONSchemaEditor({
           title={saveLabel || "Save"}
           primary
           onPress={async () => {
-            console.log("hellooo1?", valueState);
             await onValue?.(valueState);
             await onSubmit?.(valueState);
           }}

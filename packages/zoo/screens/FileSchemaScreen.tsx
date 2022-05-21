@@ -8,12 +8,12 @@ import {
 import { useActionsSheet } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
+import { useSaveFileSchema } from "@zerve/client/Mutation";
 import {
   connectionSchemasToZSchema,
-  useSaveFileSchema,
   useZStoreSchemas,
   useZNodeValue,
-} from "@zerve/query";
+} from "@zerve/client/Query";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
@@ -22,7 +22,7 @@ import {
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
-import { displayStoreFileName, ZSchemaSchema } from "@zerve/core";
+import { displayStoreFileName } from "@zerve/core";
 import { showToast } from "@zerve/zen/Toast";
 
 type NavigationProp = CompositeNavigationProp<

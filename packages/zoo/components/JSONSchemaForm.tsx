@@ -538,6 +538,7 @@ function FormFieldHeader({
         ...(actions || []),
         value !== null &&
           typeof value !== "boolean" && {
+            key: "clipboard",
             title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
             icon: "clipboard",
             onPress: () => {

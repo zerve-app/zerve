@@ -1,18 +1,19 @@
 import { defineKeySource } from "@zerve/core";
-import { createNativeStorage } from "@zerve/native";
+import { createStorage } from "@zerve/client/Storage";
+import { postZAction } from "@zerve/client/ServerCalls";
 import {
   Connection,
-  postZAction,
   SavedConnection,
   SavedConnectionProvider,
   SavedSession,
-} from "@zerve/query";
+} from "@zerve/client/Connection";
+import { Platform } from "react-native";
 
-const connectionStorage = createNativeStorage({
+const connectionStorage = createStorage({
   id: "ConnectionStorage",
 });
 
-const DefaultConnections: SavedConnection[] = [
+const NativeDefaultConnections: SavedConnection[] = [
   ...(__DEV__
     ? [
         {
@@ -28,6 +29,10 @@ const DefaultConnections: SavedConnection[] = [
     url: "https://zerve.app",
   },
 ];
+
+// on web we don't need to store any connections by default, because it connects to its own host. in contrast to the mobile app
+const DefaultConnections =
+  Platform.OS === "web" ? [] : NativeDefaultConnections;
 
 const connectionsNode = connectionStorage.getStorageNode(
   "Connections",

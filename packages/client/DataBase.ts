@@ -10,9 +10,9 @@ import {
   NotFoundError,
 } from "@zerve/core";
 import stringify from "json-stable-stringify";
-import { createNativeStorage } from "./Storage";
+import { createStorage } from "./Storage";
 
-const nativeData = createNativeStorage({ id: "MainDB" });
+const dbData = createStorage({ id: "MainDB" });
 
 export async function createJSONBlock(
   value: any,
@@ -44,14 +44,14 @@ export async function createJSONBlock(
 type DocValue = undefined | { type: "BlockLink"; id: string };
 
 function getDocNode(docName: string) {
-  return nativeData.getStorageNode<DocValue>(`Docs/${docName}`, undefined);
+  return dbData.getStorageNode<DocValue>(`Docs/${docName}`, undefined);
 }
 export type ListedDoc = string;
 
-const docList = nativeData.getStorageNode<string[]>("Docs:List", []);
+const docList = dbData.getStorageNode<string[]>("Docs:List", []);
 
 function getBlockNode<BlockValue>(blockId: string, value: BlockValue) {
-  return nativeData.getStorageNode<BlockValue>(`Docs/${blockId}`, value);
+  return dbData.getStorageNode<BlockValue>(`Docs/${blockId}`, value);
 }
 
 export function listDocs() {
@@ -149,5 +149,5 @@ export async function dispatch<AppendValue>(
 }
 
 export function useDocs() {
-  return nativeData.useNodeState(docList);
+  return dbData.useNodeState(docList);
 }

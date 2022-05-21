@@ -14,7 +14,7 @@
     "@testing-library/react-native": "^9.0.0",
     "@zerve/core": "*",
     "@zerve/node": "*",
-    "@zerve/query": "*",
+    "@zerve/client": "*",
     "@zerve/react": "*",
     "@zerve/zen": "*",
     "next": "12.0.9",

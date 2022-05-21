@@ -1,16 +1,16 @@
 import Head from "next/head";
 import { Title } from "@zerve/zen";
-import { PageLayout } from "../components/PageLayout";
+import { DemoPageLayout } from "../components/DemoPageLayout";
 import { getFromStore } from "../stores/getFromStore";
 
 export default function Web({ banner }) {
   return (
-    <PageLayout>
+    <DemoPageLayout>
       <Head>
         <title>Demo</title>
       </Head>
       <Title title={banner.value} />
-    </PageLayout>
+    </DemoPageLayout>
   );
 }
 

@@ -17,10 +17,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useSavedConnections } from "../app/ConnectionStorage";
 import { ZerveLogo } from "../components/ZerveLogo";
 import {
-  ConnectionProvider,
   SavedConnection,
   SavedConnectionProvider,
-} from "@zerve/query";
+} from "@zerve/client/Connection";
 import { Icon } from "@zerve/zen/Icon";
 import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen";

@@ -2,7 +2,8 @@ import React, { useMemo, useState } from "react";
 
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import { IconButton, useActionsSheet } from "@zerve/zen";
-import { UnauthorizedSymbol, useZNode } from "@zerve/query";
+import { useZNode } from "@zerve/client/Query";
+import { UnauthorizedSymbol } from "@zerve/client/Connection";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";

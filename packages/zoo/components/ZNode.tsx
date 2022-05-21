@@ -8,29 +8,24 @@ import {
   InfoRow,
   LinkRowGroup,
   Paragraph,
-  showErrorToast,
   Spinner,
   VStack,
-  ActionButtonDef,
 } from "@zerve/zen";
+
+import { pathStartsWith, postZAction } from "@zerve/client/ServerCalls";
+import { useZNode, useConnectionProjects } from "@zerve/client/Query";
+import { useZNodeStateWrite } from "@zerve/client/Mutation";
 import {
-  pathStartsWith,
-  postZAction,
-  serverPost,
-  useConnectionProjects,
   useConnection,
-  useZNode,
-  useZNodeStateWrite,
   SavedSession,
-  SavedConnection,
   Connection,
-} from "@zerve/query";
+  serverPost,
+} from "@zerve/client/Connection";
 import {
   forceLocalLogout,
   logout,
   setSession,
   setSessionUserId,
-  useSavedConnection,
 } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,
@@ -48,7 +43,6 @@ import { View } from "react-native";
 import { JSONSchemaEditor } from "./JSONSchemaEditor";
 import { showToast } from "../app/Toast";
 import { ZLoadedNode } from "./ZLoadedNode";
-import { Link } from "solito/link";
 import { useTextInputFormModal } from "./TextInputFormModal";
 
 type NavigationProp = CompositeNavigationProp<

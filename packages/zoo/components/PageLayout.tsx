@@ -1,8 +1,5 @@
-import { SavedConnection, SavedConnectionProvider } from "@zerve/query";
-import { useMemo } from "react";
 import { ReactNode } from "react";
 import { View } from "react-native";
-import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 
 export function PageLayout({ children }: { children: ReactNode }) {
   return (
@@ -21,7 +18,7 @@ export function PageLayout({ children }: { children: ReactNode }) {
           backgroundColor: "#eee",
         }}
       >
-        <ConnectionKeyProvider value={"dev"}>{children}</ConnectionKeyProvider>
+        {children}
       </View>
     </View>
   );

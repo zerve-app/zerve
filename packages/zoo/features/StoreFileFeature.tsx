@@ -1,19 +1,13 @@
 import React, { useMemo } from "react";
 
-import {
-  HomeStackParamList,
-  HomeStackScreenProps,
-  RootStackParamList,
-} from "../app/Links";
-import ScreenContainer from "../components/ScreenContainer";
+import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import ScreenHeader from "../components/ScreenHeader";
 import {
   useDeleteFile,
   useRenameFile,
   useSaveFile,
-  useZStoreSchemas,
-  useZNodeValue,
-} from "@zerve/query";
+} from "@zerve/client/Mutation";
+import { useZStoreSchemas, useZNodeValue } from "@zerve/client/Query";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { useNavigation } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
@@ -38,11 +32,6 @@ export function FileFeature({
   connection: string | null;
   storePath: string[];
 }) {
-  console.log({
-    name,
-    connection,
-    storePath,
-  });
   const { data: schemaStore, isLoading: isSchemasLoading } =
     useZStoreSchemas(storePath);
   const {

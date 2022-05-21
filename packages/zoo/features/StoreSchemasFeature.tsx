@@ -7,7 +7,8 @@ import {
   useActionsSheet,
 } from "@zerve/zen";
 import ScreenHeader from "../components/ScreenHeader";
-import { useCreateSchema, useZNodeValue } from "@zerve/query";
+import { useZNodeValue } from "@zerve/client/Query";
+import { useCreateSchema } from "@zerve/client/Mutation";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { useNavigation } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";

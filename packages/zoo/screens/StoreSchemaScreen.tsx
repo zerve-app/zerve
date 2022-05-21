@@ -9,12 +9,8 @@ import { showToast, VStack } from "@zerve/zen";
 import { useActionsSheet } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import {
-  useDeleteSchema,
-  useSaveSchema,
-  useZStoreJSONSchema,
-  useZNodeValue,
-} from "@zerve/query";
+import { useDeleteSchema, useSaveSchema } from "@zerve/client/Mutation";
+import { useZStoreJSONSchema, useZNodeValue } from "@zerve/client/Query";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import {
   CompositeNavigationProp,

@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import {
-  ActionButtonDef,
-  LinkRowGroup,
-  Paragraph,
-  VStack,
-  Button,
-  HStack,
-} from "@zerve/zen";
+import { ActionButtonDef, LinkRowGroup, Paragraph, VStack } from "@zerve/zen";
 import {
   HomeStackParamList,
   HomeStackScreenProps,
@@ -25,16 +18,12 @@ import {
   CompositeNavigationProp,
   useNavigation,
 } from "@react-navigation/native";
-import {
-  ConnectionProvider,
-  useConnection,
-  useConnectionProjects,
-} from "@zerve/query";
 import { displayStoreFileName } from "@zerve/core";
 import { useActionsSheet } from "@zerve/zen";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ZLoadedNode } from "../components/ZLoadedNode";
+import { useConnectionProjects } from "@zerve/client/Query";
 
 export function ConnectionProjects({
   onActions,
@@ -135,7 +124,7 @@ export function ConnectionPage({
     <>
       <ScreenHeader title={`Connection: ${conn.name}`} corner={optionsButton} />
       <VStack>
-        <ConnectionStatusRow connection={conn} />
+        <ConnectionStatusRow />
         <ZLoadedNode path={[]} />
       </VStack>
     </>

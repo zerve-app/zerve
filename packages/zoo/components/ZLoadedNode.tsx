@@ -1,7 +1,8 @@
 import React from "react";
 
 import { Spinner, ActionButtonDef } from "@zerve/zen";
-import { UnauthorizedSymbol, useConnection, useZNode } from "@zerve/query";
+import { UnauthorizedSymbol, useConnection } from "@zerve/client/Connection";
+import { useZNode } from "@zerve/client/Query";
 import { ErrorBox, ZNode } from "./ZNode";
 
 export function ZLoadedNode({
