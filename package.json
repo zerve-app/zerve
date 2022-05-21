@@ -22,7 +22,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "dependencies": {
-    "react-native": "0.64.3"
+    "react-native": "0.68.2"
   },
   "devDependencies": {
     "prettier": "^2.6.2",

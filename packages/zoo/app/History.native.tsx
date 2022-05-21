@@ -1,5 +1,5 @@
 import { defineKeySource } from "@zerve/core";
-import { createNativeStorage } from "@zerve/native";
+import { createStorage } from "@zerve/client/Storage";
 import { useEffect, useMemo, useState } from "react";
 
 export type InternalHistoryEvent = {
@@ -25,7 +25,7 @@ type HistoryBlock = {
 const defaultHistoryBlockLink: HistoryBlockLink = {
   historyBlockId: null,
 };
-const historyStorage = createNativeStorage({
+const historyStorage = createStorage({
   id: "History",
 });
 const latestHistoryBlockLink = historyStorage.getStorageNode(
