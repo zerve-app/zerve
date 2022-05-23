@@ -179,6 +179,23 @@ const GenericCalculator = createZChainStateCalculator(
         return newState;
       },
     },
+    WriteSchema: {
+      schema: WriteSchemaActionSchema,
+      handler: (
+        state: FromSchema<typeof StateTreeSchema>,
+        action: FromSchema<typeof WriteSchemaActionSchema>
+      ) => {
+        const schemas = state.$schemas || {};
+        schemas[action.schemaName] = {
+          ...action.schema,
+          $id: `https://type.zerve.link/${action.schemaName}`,
+        };
+        return {
+          ...state,
+          $schemas: schemas,
+        };
+      },
+    },
     DeleteSchema: {
       schema: DeleteSchemaActionSchema,
       handler: (
@@ -191,23 +208,6 @@ const GenericCalculator = createZChainStateCalculator(
           ...state,
           $schemas: schemas,
         };
-      },
-      WriteSchema: {
-        schema: WriteSchemaActionSchema,
-        handler: (
-          state: FromSchema<typeof StateTreeSchema>,
-          action: FromSchema<typeof WriteSchemaActionSchema>
-        ) => {
-          const schemas = state.$schemas || {};
-          schemas[action.schemaName] = {
-            ...action.schema,
-            $id: `https://type.zerve.link/${action.schemaName}`,
-          };
-          return {
-            ...state,
-            $schemas: schemas,
-          };
-        },
       },
     },
   }
