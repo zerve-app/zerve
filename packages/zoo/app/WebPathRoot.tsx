@@ -8,8 +8,8 @@ import { ZFeature } from "../features/ZFeature";
 import { StoreSchemasFeature } from "../features/StoreSchemasFeature";
 import { SiteConfig } from "./SiteConfig";
 import { WebPathRootServerProps } from "../web/ZooWebServer";
-import { useMemo } from "react";
-import { useSavedConnection } from "./ConnectionStorage";
+import { useEffect, useMemo } from "react";
+import { resetConnection, useSavedConnection } from "./ConnectionStorage";
 
 const WEB_PRIMARY_CONN = __DEV__ ? "dev" : "main";
 
@@ -56,6 +56,10 @@ function useWebConn(config: SiteConfig): SavedConnection {
       }
     );
   }, [savedConn]);
+  useEffect(() => {
+    if (config.origin !== savedConn?.url)
+      resetConnection(WEB_PRIMARY_CONN, config.origin);
+  }, [config, savedConn]);
 
   return conn;
 }

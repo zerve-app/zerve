@@ -55,6 +55,10 @@
   },
   "engines": {
     "npm": ">=7.0.0",
-    "node": ">=14.0.0"
+    "node": ">=16.0.0 <17.0.0"
+  },
+  "resolutions": {
+    "@babel/core": "7.17.12",
+    "@babel/types": "7.17.12"
   }
 }

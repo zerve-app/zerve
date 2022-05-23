@@ -4,6 +4,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
+    "dev": "yarn start",
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios"
@@ -56,7 +57,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@types/react": "~17.0.21",
-    "@types/react-native": "~0.66.13",
+    "@types/react-native": "~0.67.7",
     "eas-cli": "^0.52.0",
     "tsconfig": "*",
     "typescript": "~4.6.4"

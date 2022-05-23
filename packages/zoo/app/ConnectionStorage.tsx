@@ -66,6 +66,15 @@ export function destroyConnection(key: string) {
   );
 }
 
+export function resetConnection(key: string, url: string) {
+  mutateConnections((connections) =>
+    connections.map((conn) => {
+      if (conn.key === key) return { key, name: conn.name, url, session: null };
+      return conn;
+    })
+  );
+}
+
 const getConnectionKey = defineKeySource("Connection");
 
 export function createConnection(name: string, url: string) {

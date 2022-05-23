@@ -1,0 +1,10 @@
+{
+  "name": "@zerve/infra-digitalocean",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./InfraDigitalOcean.ts",
+  "types": "./InfraDigitalOcean.ts",
+  "dependencies": {
+    "digitalocean-js": "^1.5.11"
+  }
+}
