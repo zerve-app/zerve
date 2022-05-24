@@ -73,12 +73,13 @@ export async function startApp() {
     Info: createZStatic("Aardvark"),
     Auth: await createAuth({
       strategies: {
-        Email: await createEmailAuthStrategy(Email),
+        Email: await createEmailAuthStrategy(Email, {
+          domainAllowlist: ["zerve.app"],
+        }),
         // Phone: await createSMSAuthStrategy(SMS),
       },
       files: AuthFiles,
       handleUserIdChange: async (prevUserId: string, userId: string) => {
-        console.log("handleUserIdChange", prevUserId, userId);
         try {
           await DataDirFiles.z.Move.call({
             from: join("userData", prevUserId),
@@ -91,6 +92,10 @@ export async function startApp() {
       },
       getUserZeds: async (user, { userId }) => {
         return {
+          deployZebra: createZAction(NullSchema, NullSchema, async () => {
+            console.log("Zebra deploy behavior?! You must be Eric");
+            return null;
+          }),
           ...user,
         };
       },

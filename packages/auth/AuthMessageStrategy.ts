@@ -21,10 +21,6 @@ type AddressFileData = {
   };
 };
 
-type AuthMessageStrategyConfig = {
-  authTimeoutMs: number;
-  authResetMs: number;
-};
 const AuthMessageStrategyDefaultConfig = {
   // time user has to input the code
   authTimeoutMs: 90 * 60 * 1000,
@@ -40,7 +36,11 @@ export function createGenericMessageAuthStrategy<
     token: string,
     address: FromSchema<AddressSchema>
   ) => Promise<void>,
-  configInput?: Partial<AuthMessageStrategyConfig>
+  configInput?: {
+    authTimeoutMs?: number;
+    authResetMs?: number;
+    validateAddress?: (address: FromSchema<AddressSchema>) => boolean;
+  }
 ) {
   type Address = FromSchema<AddressSchema>;
 
@@ -72,6 +72,10 @@ export function createGenericMessageAuthStrategy<
       strategyFiles: SystemFilesModule
     ) => {
       const { address } = payload;
+      const validateAddress = configInput?.validateAddress;
+      if (validateAddress && !validateAddress(address)) {
+        throw new Error("Invalid address!");
+      }
       const addressKey = createHash("sha256")
         .update(stringify(address), "utf8")
         .digest()
