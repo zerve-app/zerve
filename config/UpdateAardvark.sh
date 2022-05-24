@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
-cd /root/zerve.git
-git fetch
-cd /root
-git clone zerve.git aardvark-build
-cd aardvark-build
-./config/UpdateAardvark.sh
+# # Steps to run this script
+# cd /root/zerve.git
+# git fetch
+# cd /root
+# git clone zerve.git aardvark-build
+# cd aardvark-build
+# ./config/UpdateAardvark.sh
 
 
 yarn
