@@ -6,6 +6,7 @@ import {
   createZContainer,
   createZGettable,
   createZGroup,
+  createZStatic,
   NullSchema,
   NumberSchema,
 } from "@zerve/core";
@@ -68,28 +69,12 @@ export async function startApp() {
 
   const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
-  const stores: Record<string, GeneralStoreModule> = {};
-
-  async function getUserStore(id: string): Promise<GeneralStoreModule> {
-    if (stores[id]) return stores[id];
-    stores[id] = await createGeneralStore(
-      Data,
-      createSystemFiles(join(dataDir, "userData", id, `StoreCache`)),
-      `User_${id}_Store`
-    );
-    return stores[id];
-  }
-
   const zRoot = createZContainer({
-    StoreState: createZGroup(async (userId) => {
-      const store = await getUserStore(userId);
-      return store.z.State;
-    }),
-
+    Info: createZStatic("Aardvark"),
     Auth: await createAuth({
       strategies: {
         Email: await createEmailAuthStrategy(Email),
-        Phone: await createSMSAuthStrategy(SMS),
+        // Phone: await createSMSAuthStrategy(SMS),
       },
       files: AuthFiles,
       handleUserIdChange: async (prevUserId: string, userId: string) => {
@@ -103,20 +88,10 @@ export async function startApp() {
           if (e.code === "ENOENT") return;
           throw e;
         }
-        try {
-          await Data.z.Actions.z.MoveDoc.call({
-            from: `User_${prevUserId}_Store`,
-            to: `User_${userId}_Store`,
-          });
-        } catch (e) {
-          if (e.code === "ENOENT") return;
-          throw e;
-        }
       },
       getUserZeds: async (user, { userId }) => {
         return {
           ...user,
-          Store: await getUserStore(userId),
         };
       },
     }),
