@@ -12,6 +12,10 @@ cd aardvark-build
 
 '
 
+echo "==================="
+echo "==UPDATE AARDVARK=="
+echo "==================="
+
 yarn
 
 rm -rf yarn-package-cache ./.git
@@ -23,10 +27,9 @@ yarn workspace aardvark-server build
 systemctl stop AardvarkWeb.service
 systemctl stop AardvarkServer.service
 
-cd /root
-mv aardvark aardvark-old
-mv aardvark-build aardvark
-cp secrets.json aardvark/secrets.json
+mv /root/aardvark /root/aardvark-old
+mv /root/aardvark-build /root/aardvark
+cp /root/secrets.json /root/aardvark/secrets.json
 
 systemctl start AardvarkWeb.service
 systemctl start AardvarkServer.service
@@ -34,4 +37,4 @@ systemctl start AardvarkServer.service
 systemctl status AardvarkWeb.service
 systemctl status AardvarkServer.service
 
-rm -rf aardvark-old
+rm -rf /root/aardvark-old
