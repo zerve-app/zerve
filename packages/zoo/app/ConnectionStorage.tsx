@@ -8,6 +8,8 @@ import {
   SavedSession,
 } from "@zerve/client/Connection";
 import { Platform } from "react-native";
+import { SiteConfig } from "./SiteConfig";
+import { useEffect, useMemo } from "react";
 
 const connectionStorage = createStorage({
   id: "ConnectionStorage",
@@ -54,6 +56,29 @@ export function useSavedConnection(connectionKey: string | null) {
   return conn;
 }
 
+export const WEB_PRIMARY_CONN = __DEV__ ? "dev" : "main";
+
+export function useWebConnection(config: SiteConfig) {
+
+  const savedConn = useSavedConnection(WEB_PRIMARY_CONN);
+  const conn = useMemo(() => {
+    return (
+      savedConn || {
+        key: WEB_PRIMARY_CONN,
+        name: config?.name ? config.name : "Main",
+        url: config.origin,
+        session: null,
+      }
+    );
+  }, [savedConn]);
+  useEffect(() => {
+    if (config.origin !== savedConn?.url)
+      resetConnection(WEB_PRIMARY_CONN, config.origin);
+  }, [config, savedConn]);
+
+  return conn;
+}
+
 export function mutateConnections(
   mutator: (connections: SavedConnection[]) => SavedConnection[]
 ) {
@@ -67,12 +92,17 @@ export function destroyConnection(key: string) {
 }
 
 export function resetConnection(key: string, url: string) {
-  mutateConnections((connections) =>
-    connections.map((conn) => {
-      if (conn.key === key) return { key, name: conn.name, url, session: null };
-      return conn;
-    })
-  );
+  mutateConnections((connections) => {
+    if (connections.findIndex((conn) => conn.key === key) !== -1) {
+      return connections.map((conn) => {
+        if (conn.key === key)
+          return { key, name: conn.name, url, session: null };
+        return conn;
+      });
+    } else {
+      return [...connections, { key, name: key, url, session: null }];
+    }
+  });
 }
 
 const getConnectionKey = defineKeySource("Connection");

@@ -6,12 +6,8 @@ import { FileFeature } from "../features/StoreFileFeature";
 import { PageLayout } from "../components/PageLayout";
 import { ZFeature } from "../features/ZFeature";
 import { StoreSchemasFeature } from "../features/StoreSchemasFeature";
-import { SiteConfig } from "./SiteConfig";
 import { WebPathRootServerProps } from "../web/ZooWebServer";
-import { useEffect, useMemo } from "react";
-import { resetConnection, useSavedConnection } from "./ConnectionStorage";
-
-const WEB_PRIMARY_CONN = __DEV__ ? "dev" : "main";
+import { useWebConnection, WEB_PRIMARY_CONN } from "./ConnectionStorage";
 
 function getPathFeature(path: string[]): () => JSX.Element | null {
   const filesPathIndex = path.indexOf("$files");
@@ -44,29 +40,9 @@ export type WebPathRootProps = WebPathRootServerProps & {
   path: string[];
 };
 
-function useWebConn(config: SiteConfig): SavedConnection {
-  const savedConn = useSavedConnection(WEB_PRIMARY_CONN);
-  const conn = useMemo(() => {
-    return (
-      savedConn || {
-        key: WEB_PRIMARY_CONN,
-        name: config?.name ? config.name : "Main",
-        url: config.origin,
-        session: null,
-      }
-    );
-  }, [savedConn]);
-  useEffect(() => {
-    if (config.origin !== savedConn?.url)
-      resetConnection(WEB_PRIMARY_CONN, config.origin);
-  }, [config, savedConn]);
-
-  return conn;
-}
-
 export function WebPathRoot({ path, config }: WebPathRootProps) {
   const renderFeature = getPathFeature(path);
-  const conn = useWebConn(config);
+  const conn = useWebConnection(config);
   return (
     <SavedConnectionProvider value={conn}>
       <PageLayout>{renderFeature()}</PageLayout>
