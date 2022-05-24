@@ -2,6 +2,7 @@ import { createZState, ZBooleanSchema, ZObservable } from "@zerve/core";
 import { createContext, useContext, useEffect, useMemo } from "react";
 import ReconnectingWebsocket from "reconnecting-websocket";
 import { useQueryClient, QueryClient } from "react-query";
+import { Buffer } from "buffer";
 
 export type ServerMessage = {};
 
