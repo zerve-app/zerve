@@ -3,7 +3,7 @@ dev.zerve.app {
     dns cloudflare {env.CLOUDFLARE_AUTH_TOKEN}
   }
   route /.z* {
-    reverse_proxy http://localhost:9920
+    reverse_proxy http://localhost:9999
   }
-  reverse_proxy http://localhost:9921
+  reverse_proxy http://localhost:9990
 }
