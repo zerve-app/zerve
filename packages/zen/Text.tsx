@@ -3,16 +3,14 @@ import { StyleProp, StyleSheet, TextStyle, View } from "react-native";
 import { useColors } from "./useColors";
 import { ThemedText } from "./Themed";
 
-export function Title({ title, style }: { title: string; style?: TextStyle }) {
+export function Title({ title, sx }: { title: string; sx?: TextStyle }) {
   return (
     <ThemedText
-      style={[
-        {
-          fontWeight: "bold",
-          fontSize: 28,
-        },
-        style,
-      ]}
+      sx={{
+        fontWeight: "bold",
+        fontSize: 24,
+        ...(sx || {}),
+      }}
     >
       {title}
     </ThemedText>
@@ -23,8 +21,8 @@ export function PageTitle({ title }: { title: string }) {
   return (
     <View>
       <Title
-        style={{
-          fontSize: 42,
+        sx={{
+          fontSize: 30,
           margin: 12,
           marginBottom: 24,
         }}
@@ -36,7 +34,7 @@ export function PageTitle({ title }: { title: string }) {
 
 export function SmallSectionTitle({ children }: { children: ReactNode }) {
   return (
-    <ThemedText style={{ fontWeight: "bold", fontSize: 14 }}>
+    <ThemedText sx={{ fontWeight: "bold", fontSize: 14 }}>
       {children}
     </ThemedText>
   );
@@ -44,19 +42,19 @@ export function SmallSectionTitle({ children }: { children: ReactNode }) {
 
 export function Label({
   children,
-  style,
+  sx,
   minor,
   secondary,
 }: {
   children: ReactNode;
   secondary?: boolean;
   minor?: boolean;
-  style?: StyleProp<TextStyle>;
+  sx?: StyleProp<TextStyle>;
 }) {
   return (
     <ThemedText
       secondary={secondary}
-      style={[{ fontWeight: "bold", fontSize: minor ? 14 : 16 }, style]}
+      sx={{ fontWeight: "bold", fontSize: minor ? 14 : 16, ...(sx || {}) }}
     >
       {children}
     </ThemedText>
@@ -65,24 +63,22 @@ export function Label({
 
 export function Paragraph({
   children,
-  style,
+  sx,
   danger,
   secondary,
 }: {
   children: ReactNode;
-  style?: StyleProp<TextStyle>;
+  sx?: StyleProp<TextStyle>;
   danger?: boolean;
   secondary?: boolean;
 }) {
   return (
     <ThemedText
-      style={[
-        {
-          fontSize: 14,
-          margin: 12,
-        },
-        style,
-      ]}
+      style={{
+        fontSize: 14,
+        margin: 12,
+        ...(sx || {}),
+      }}
       danger={danger}
       secondary={secondary}
     >

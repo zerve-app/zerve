@@ -1,6 +1,7 @@
-import React from "react";
-import { Text as DefaultText, View as DefaultView } from "react-native";
+import React, { ComponentProps } from "react";
+import { View as DefaultView } from "react-native";
 import { useColorScheme } from "./useColorScheme";
+import { Text } from "dripsy";
 
 import Colors from "./Colors";
 import { useColors } from "./useColors";
@@ -24,7 +25,7 @@ type ThemeProps = {
   darkColor?: string;
 };
 
-export type TextProps = ThemeProps & DefaultText["props"];
+export type TextProps = ThemeProps & ComponentProps<typeof Text>;
 export type ViewProps = ThemeProps & DefaultView["props"];
 
 export function ThemedText(
@@ -35,17 +36,17 @@ export function ThemedText(
   } & TextProps
 ) {
   const colors = useColors();
-  const { style, lightColor, darkColor, ...otherProps } = props;
+  const { sx, lightColor, darkColor, ...otherProps } = props;
   const color = props.danger
     ? colors.dangerText
     : props.secondary
     ? colors.secondaryText
     : colors.text;
   return (
-    <DefaultText
+    <Text
       numberOfLines={props.oneLine ? 1 : undefined}
       ellipsizeMode="tail"
-      style={[{ color }, style]}
+      sx={{ color, ...sx }}
       {...otherProps}
     />
   );

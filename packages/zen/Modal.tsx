@@ -45,14 +45,22 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     <ModalContext.Provider value={context}>
       <Dialog.Root
         open={!!openDialogContent}
-        onOpenChange={(v) => setOpenDialogContent(null)}
+        onOpenChange={(v) => {
+          setOpenDialogContent(null);
+        }}
       >
         {children}
-        <Dialog.Overlay asChild>
-          <View sx={{ ...AbsoluteFill, backgroundColor: "#ccc5" }} />
-        </Dialog.Overlay>
-        <Dialog.DialogContent asChild>
+        <Dialog.Overlay>
           <View
+            sx={{
+              ...AbsoluteFill,
+              backgroundColor: "#ccc5",
+            }}
+          />
+        </Dialog.Overlay>
+        <Dialog.DialogContent>
+          <View
+            pointerEvents="box-none"
             sx={{
               ...AbsoluteFill,
               justifyContent: "center",
@@ -68,7 +76,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
               }}
             >
               {openDialogContent}
-              <Dialog.Close>hello!?</Dialog.Close>
             </View>
           </View>
         </Dialog.DialogContent>

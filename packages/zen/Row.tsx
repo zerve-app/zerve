@@ -48,7 +48,7 @@ export function InfoRow({
         {label}
       </Label>
       {children}
-      {value != undefined && <ThemedText style={{}}>{value}</ThemedText>}
+      {value != undefined && <ThemedText>{value}</ThemedText>}
     </View>
   );
 }

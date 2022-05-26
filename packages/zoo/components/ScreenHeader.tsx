@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Spinner, Title } from "@zerve/zen";
-import { View } from "react-native";
+import { View } from "dripsy";
 import { BackButton } from "./BackButton";
 import { Pressable } from "react-native";
 import { useSafeArea } from "../provider/SafeArea/useSafeArea";
@@ -52,7 +52,7 @@ export default function ScreenHeader({
           }}
         >
           <Pressable onLongPress={onLongPress}>
-            <Title title={title} style={{ flex: 1 }} />
+            <Title title={title} sx={{ flex: 1 }} />
           </Pressable>
           {corner}
         </View>
