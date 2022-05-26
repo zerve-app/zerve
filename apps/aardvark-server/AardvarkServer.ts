@@ -37,14 +37,23 @@ const dataDir =
 const secretsFile =
   process.env.ZERVE_SECRETS_JSON || join(process.cwd(), "../../secrets.json");
 
+const BuildPayloadSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    commitId: { type: "string" },
+  },
+  required: ["commitId"],
+} as const;
+
 export async function startApp() {
   console.log("Starting Data Dir", dataDir);
-  const Data = await createCoreData(dataDir);
 
-  const InternalRootFiles = createSystemFiles("/");
+  const SystemCommands = createSystemCommands();
+  const SystemFiles = createSystemFiles("/");
   const DataDirFiles = createSystemFiles(dataDir);
 
-  const secrets = await InternalRootFiles.z.ReadJSON.call({
+  const secrets = await SystemFiles.z.ReadJSON.call({
     path: secretsFile,
   });
   function requireSecret(secretKey: string): string {
@@ -92,6 +101,27 @@ export async function startApp() {
       },
       getUserZeds: async (user, { userId }) => {
         return {
+          Workflows: createZWorkflowEnvironment(
+            {
+              SystemCommands,
+              SystemFiles,
+            },
+            {
+              Uptime: createZWorkflow({
+                startPayloadSchema: NullSchema,
+                steps: [
+                  zWorkflowCallStep(
+                    "SystemCommands/command",
+                    {
+                      command: "uptime",
+                      args: [],
+                    },
+                    { as: "uptimeResult" }
+                  ),
+                ],
+              }),
+            }
+          ),
           deployZebra: createZAction(NullSchema, NullSchema, async () => {
             console.log("Zebra deploy behavior?! You must be Eric");
             return null;

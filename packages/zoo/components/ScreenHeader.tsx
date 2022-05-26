@@ -12,13 +12,14 @@ export default function ScreenHeader({
   backButtonCancelStyle,
   corner,
   onLongPress,
+  onBack,
 }: {
   title: string;
-  hideBackButton?: boolean;
   backButtonCancelStyle?: boolean;
   isLoading?: boolean;
   corner?: ReactNode;
   onLongPress?: () => void;
+  onBack?: (() => void) | null;
 }) {
   const { top, left, right } = useSafeArea();
   return (
@@ -36,8 +37,8 @@ export default function ScreenHeader({
             justifyContent: "space-between",
           }}
         >
-          {!hideBackButton && (
-            <BackButton cancelButton={backButtonCancelStyle} />
+          {!!onBack && (
+            <BackButton cancelButton={backButtonCancelStyle} onPress={onBack} />
           )}
           {isLoading && <Spinner style={{ marginHorizontal: 12 }} />}
         </View>

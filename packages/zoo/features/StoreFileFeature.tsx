@@ -8,28 +8,22 @@ import {
   useSaveFile,
 } from "@zerve/client/Mutation";
 import { useZStoreSchemas, useZNodeValue } from "@zerve/client/Query";
-import { CompositeNavigationProp } from "@react-navigation/native";
-import { useNavigation } from "../app/useNavigation";
+import {
+  useGlobalNavigation,
+  useStoreFileNavigation,
+} from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { showToast } from "@zerve/zen/Toast";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
 import { useActionsSheet } from "@zerve/zen";
 import { useTextInputFormModal } from "../components/TextInputFormModal";
 
-type NavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "File">
->;
-
 export function FileFeature({
   name,
-  connection,
   storePath,
 }: {
   name: string;
-  connection: string | null;
   storePath: string[];
 }) {
   const { data: schemaStore, isLoading: isSchemasLoading } =
@@ -40,7 +34,11 @@ export function FileFeature({
     refetch,
   } = useZNodeValue([...storePath, "State", name]);
   const isLoading = isSchemasLoading || isNodeLoading;
-  const navigation = useNavigation<NavigationProp>();
+  const { setFileName, openSchema, leave } = useStoreFileNavigation(
+    storePath,
+    name
+  );
+  const { openRawJSON } = useGlobalNavigation();
   const deleteFile = useDeleteFile(
     storePath,
     useMemo(
@@ -58,7 +56,7 @@ export function FileFeature({
       defaultValue: prevName,
       onValue: (inputName: string) => {
         const formattedName = prepareStoreFileName(inputName);
-        navigation.setParams({ name: formattedName });
+        setFileName(formattedName);
         renameFile.mutate({ prevName: name, newName: formattedName });
       },
     };
@@ -79,11 +77,7 @@ export function FileFeature({
         title: "Edit Schema",
         icon: "crosshairs",
         onPress: () => {
-          navigation.navigate("FileSchema", {
-            name,
-            connection,
-            storePath,
-          });
+          openSchema();
         },
       },
       {
@@ -91,10 +85,7 @@ export function FileFeature({
         title: "Raw Value",
         icon: "code",
         onPress: () => {
-          navigation.navigate("RawValue", {
-            title: `${displayStoreFileName(name)} Value`,
-            value: data?.value,
-          });
+          openRawJSON(`${displayStoreFileName(name)} Value`, data?.value);
         },
       },
       {
@@ -113,7 +104,7 @@ export function FileFeature({
         onPress: () => {
           deleteFile.mutate(name);
         },
-        onHandled: navigation.goBack,
+        onHandled: leave,
       },
     ]
   );
@@ -124,6 +115,7 @@ export function FileFeature({
         isLoading={isLoading}
         corner={optionsButton}
         onLongPress={openOptions}
+        onBack={leave}
       />
       {data && (
         <JSONSchemaEditor

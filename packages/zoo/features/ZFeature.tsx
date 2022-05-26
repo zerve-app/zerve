@@ -1,20 +1,15 @@
 import React, { useMemo, useState } from "react";
 
-import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import { IconButton, useActionsSheet } from "@zerve/zen";
 import { useZNode } from "@zerve/client/Query";
 import { UnauthorizedSymbol } from "@zerve/client/Connection";
-import { CompositeNavigationProp } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import ScreenHeader from "../components/ScreenHeader";
 import { ErrorBox, ZNode } from "../components/ZNode";
-import { useNavigation } from "../app/useNavigation";
-
-type NavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "ZNode">
->;
+import {
+  useConnectionNavigation,
+  useGlobalNavigation,
+} from "../app/useNavigation";
 
 export function ZFeature({
   path,
@@ -24,7 +19,8 @@ export function ZFeature({
   connection: string;
 }) {
   const { isLoading, data, refetch, isRefetching } = useZNode(path);
-  const { navigate } = useNavigation<NavigationProp>();
+  const { openRawJSON } = useGlobalNavigation();
+  const { closeZ } = useConnectionNavigation();
 
   const [sheetContent, onOptions] = useActionsSheet(
     (handlePress) => (
@@ -46,10 +42,7 @@ export function ZFeature({
         title: "Raw Type",
         icon: "code",
         onPress: () => {
-          navigate("RawValue", {
-            title: `${path.join("/")} Type`,
-            value: data?.type,
-          });
+          openRawJSON(`${path.join("/")} Type`, data?.type);
         },
       },
       {
@@ -57,10 +50,7 @@ export function ZFeature({
         title: "Raw Value",
         icon: "code",
         onPress: () => {
-          navigate("RawValue", {
-            title: `${path.join("/")} Value`,
-            value: data?.node,
-          });
+          openRawJSON(`${path.join("/")} Value`, data?.node);
         },
       },
     ]
@@ -79,11 +69,11 @@ export function ZFeature({
         />
       )}
       <ScreenHeader
-        hideBackButton={path.length === 0}
         isLoading={isLoading || isRefetching}
         title={path.length ? path.join("/") : "Z Connection API"}
         onLongPress={onOptions}
         corner={sheetContent}
+        onBack={() => closeZ(path)}
       ></ScreenHeader>
       <ZNode
         path={path}

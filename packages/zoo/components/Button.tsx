@@ -1,24 +1,24 @@
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { Button, ButtonProps } from "@zerve/zen";
+import { useGlobalNavigation } from "../app/useNavigation";
 
-export function AsyncButton({
+export function AsyncButton<PromiseValue>({
   onPress,
   ...props
 }: { onPress: () => Promise<void> } & ButtonProps) {
   const [error, setError] = useState(null);
-  const [promise, setPromise] = useState();
-  const navigation = useNavigation();
+  const [promise, setPromise] = useState<null | Promise<PromiseValue>>();
+  const { openError } = useGlobalNavigation();
   return (
     <Button
       onPress={() => {
-        const promise = onPress()
+        const p = onPress()
           .then(() => {})
           .catch((e) => {
-            navigation.navigate("Error", { error: e });
+            openError(e);
           });
-        setPromise(promise);
-        promise.finally(() => {
+        setPromise(p);
+        p.finally(() => {
           setPromise(null);
         });
       }}

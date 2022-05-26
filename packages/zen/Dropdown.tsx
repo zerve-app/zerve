@@ -1,3 +1,5 @@
+import { Text } from "dripsy";
+
 export function Dropdown() {
-  return null;
+  return <Text>Soon.</Text>;
 }

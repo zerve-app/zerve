@@ -114,7 +114,6 @@ export function createGenericMessageAuthStrategy<
           });
           return { strategyKey: addressKey, authTime: Date.now(), address };
         } else {
-          console.log(Math.floor((now - requestTime) / 1000));
           if (now - config.authResetMs < requestTime) {
             // another message has been sent within the "reset" time, which should be lower than the timeout, so we are actually in a good state.
             // return (null - happy case), also waste some time to pretend that maybe we did actually send an email

@@ -25,6 +25,7 @@ import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen";
 import { ZLoadedNode } from "../components/ZLoadedNode";
 import { useConnectionStatus } from "../app/ConnectionStatus";
+import { useGlobalNavigation } from "../app/useNavigation";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -90,6 +91,7 @@ export default function HomeScreen({
 }: {
   navigation: NavigationProp;
 }) {
+  const { openHistory } = useGlobalNavigation();
   const connections = useSavedConnections();
   return (
     <ScreenContainer scroll safe>
@@ -110,7 +112,7 @@ export default function HomeScreen({
               title: "Local History",
               icon: "history",
               onPress: () => {
-                navigation.navigate("History");
+                openHistory();
               },
             },
             {

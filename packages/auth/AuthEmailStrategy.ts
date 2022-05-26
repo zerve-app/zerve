@@ -37,7 +37,6 @@ export async function createEmailAuthStrategy(
         if (domainAllowlist) {
           const emailDomain: null | string = email.match(/@(.*)$/)?.[1];
           if (!emailDomain) return false;
-          console.log({ emailDomain });
           const isFoundInAllowList =
             domainAllowlist.indexOf(emailDomain) !== -1;
           return isFoundInAllowList;

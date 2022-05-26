@@ -1,4 +1,3 @@
-import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import {
   Button,
   Icon,
@@ -9,23 +8,15 @@ import {
 import ScreenHeader from "../components/ScreenHeader";
 import { useZNodeValue } from "@zerve/client/Query";
 import { useCreateSchema } from "@zerve/client/Mutation";
-import { CompositeNavigationProp } from "@react-navigation/native";
-import { useNavigation } from "../app/useNavigation";
+import { useStoreNavigation } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
 import { useTextInputFormModal } from "../components/TextInputFormModal";
-
-type NavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "StoreSchemas">
->;
 
 function CreateSchemaButton({ storePath }: { storePath: string[] }) {
   const createSchema = useCreateSchema(storePath);
   const onOpenNewSchema = useTextInputFormModal<void>(() => ({
     onValue: (name) => {
-      console.log("hello name is!: ", name);
       const formattedName = prepareStoreFileName(name);
       createSchema.mutate(formattedName);
     },
@@ -42,23 +33,19 @@ function CreateSchemaButton({ storePath }: { storePath: string[] }) {
   );
 }
 
-export function StoreSchemasFeature({
-  connection,
-  storePath,
-}: {
-  connection: string | null;
-  storePath: string[];
-}) {
+export function StoreSchemasFeature({ storePath }: { storePath: string[] }) {
   const { data, isLoading } = useZNodeValue([
     ...storePath,
     "State",
     "$schemas",
   ]);
-  const { navigate } = useNavigation<NavigationProp>();
+
+  const { openSchema } = useStoreNavigation(storePath);
   const [optionsButton, openOptions] = useActionsSheet(
     (onOpen) => <OptionsButton onOptions={onOpen} />,
     () => []
   );
+
   return (
     <VStack>
       <ScreenHeader
@@ -74,11 +61,7 @@ export function StoreSchemasFeature({
             icon: "crosshairs",
             title: displayStoreFileName(schemaKey),
             onPress: () => {
-              navigate("StoreSchema", {
-                connection,
-                schema: schemaKey,
-                storePath,
-              });
+              openSchema(schemaKey);
             },
           };
         })}

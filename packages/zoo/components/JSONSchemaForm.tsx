@@ -29,7 +29,7 @@ import {
   ActionButtonDef,
   useActionsSheet,
 } from "@zerve/zen";
-import { useNavigation } from "../app/useNavigation";
+import { useGlobalNavigation } from "../app/useNavigation";
 import { KeyboardAvoidingView } from "react-native";
 import { View } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -411,9 +411,7 @@ function ObjectFormField({
   schema: JSONSchema;
   actions?: ActionButtonDef[];
 }) {
-  const { push } =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+  const { openSchemaInput } = useGlobalNavigation();
   return (
     <>
       <FormFieldHeader
@@ -425,7 +423,12 @@ function ObjectFormField({
       <Button
         title={(JSON.stringify(value) || "").slice(0, 60)}
         onPress={() => {
-          push("JSONInput", { schema, value, onValue });
+          openSchemaInput(
+            label || schema.title || schema.type || "object",
+            schema,
+            value,
+            onValue
+          );
         }}
       />
     </>
@@ -444,8 +447,7 @@ function ArrayFormField({
   schema: JSONSchema;
   actions?: ActionButtonDef[];
 }) {
-  const { push } =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { openSchemaInput } = useGlobalNavigation();
   return (
     <>
       <FormFieldHeader
@@ -457,7 +459,12 @@ function ArrayFormField({
       <Button
         title={(JSON.stringify(value) || "").slice(0, 60)}
         onPress={() => {
-          push("JSONInput", { schema, value, onValue });
+          openSchemaInput(
+            label || schema.title || schema.type || "array",
+            schema,
+            value,
+            onValue
+          );
         }}
       />
     </>

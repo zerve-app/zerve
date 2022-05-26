@@ -6,7 +6,7 @@ export type WebPathRootServerProps = {
 
 export function getWebRootServerProps(): { props: WebPathRootServerProps } {
   const config: SiteConfig = {
-    origin: process.env.Z_ORIGIN || `http://localhost:8888`,
+    origin: process.env.Z_ORIGIN || `http://localhost:3888`,
   };
   return {
     props: {

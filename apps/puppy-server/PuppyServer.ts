@@ -73,7 +73,6 @@ export async function startApp() {
     startPayloadSchema: EstablishServerSchema,
     steps: [
       zWorkflowCallStep("zCreateKeyPair", null, { as: "key1" }),
-      zWorkflowCallStep("zCreateKeyPair", null, { as: "key2" }),
       zWorkflowCallStep("zCreateKeyPair", null, {
         as: "keyAfter",
         after: ["key1", "key2"],

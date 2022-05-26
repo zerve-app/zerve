@@ -28,15 +28,6 @@ export type Connection = SavedConnection & {
   clientId: ZObservable<typeof ClientIdSchema>;
 };
 
-// const DefaultProductionConnection = {
-//   url: `https://zerve.app`,
-//   key: "DefaultProductionConnection",
-// };
-// const DefaultDevConnection = {
-//   url: `http://localhost:3888`,
-//   key: "DefaultDevConnection",
-// };
-
 const liveConnectionStore = new Map<string, [Connection, number, () => void]>();
 
 function startConnection(

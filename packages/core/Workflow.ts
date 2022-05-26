@@ -1,5 +1,10 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
-import { createZAction, createZMetaContainer, createZGroup } from "./Zed";
+import {
+  createZAction,
+  createZMetaContainer,
+  createZGroup,
+  AnyZed,
+} from "./Zed";
 
 const CallActionStepSchema = {
   type: "object",
@@ -27,6 +32,11 @@ export type CallOptions = {
 };
 
 const RunKeySchema = { type: "string", title: "Run ID" } as const;
+
+export function createZWorkflowEnvironment(
+  zedRecord: Record<string, AnyZed>,
+  workflows: Record<string, AnyZed>
+) {}
 
 export function createZWorkflow<Payload extends JSONSchema>(definition: {
   startPayloadSchema: Payload;

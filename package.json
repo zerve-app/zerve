@@ -8,9 +8,9 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "concurrently \"yarn workspace zoo-server-standalone dev\" \"yarn workspace z-web dev\"",
+    "dev": "concurrently \"yarn workspace zoo-server-standalone dev\" \"yarn workspace zoo-web dev\"",
     "dev:server": "concurrently \"yarn workspace zoo-server-standalone dev\"",
-    "dev:web": "concurrently \"yarn workspace z-web dev\"",
+    "dev:web": "concurrently \"yarn workspace zoo-web dev\"",
     "dev:mobile": "watchman watch-del-all && yarn workspace zoo-mobile start",
     "dev:ios": "yarn workspace zoo-mobile prebuild && open apps/zoo-mobile/ios/Zerve.xcworkspace",
     "build:ios": "yarn workspace zoo-mobile eas build --platform=ios --profile=production",
@@ -19,7 +19,8 @@
     "build:android:dev": "yarn workspace zoo-mobile eas build --platform=android --profile=development",
     "build:android": "yarn workspace zoo-mobile eas build --platform=android --profile=production",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "aardvark": "ssh root@aardvark.zerve.dev -i ~/aardvark/ServerKey /root/aardvark-update.sh"
   },
   "dependencies": {
     "react-native": "0.68.2"

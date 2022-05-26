@@ -28,14 +28,13 @@ import {
   setSessionUserId,
 } from "../app/ConnectionStorage";
 import {
-  CompositeNavigationProp,
-  StackActions,
-} from "@react-navigation/native";
-import { useNavigation } from "../app/useNavigation";
+  useConnectionNavigation,
+  useGlobalNavigation,
+  useStoreNavigation,
+} from "../app/useNavigation";
 import { FontAwesome } from "@expo/vector-icons";
 import { JSONSchemaForm } from "./JSONSchemaForm";
 import { Icon } from "@zerve/zen/Icon";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { getZIcon } from "../app/ZIcon";
 import { storeHistoryEvent } from "../app/History";
 import { displayStoreFileName, EmptySchemaStore } from "@zerve/core";
@@ -45,10 +44,6 @@ import { showToast } from "../app/Toast";
 import { ZLoadedNode } from "./ZLoadedNode";
 import { useTextInputFormModal } from "./TextInputFormModal";
 
-type NavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "ZNode">
->;
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
 }
@@ -63,7 +58,7 @@ export function ZContainerNode({
   connection: string;
   path: string[];
 }) {
-  const { dispatch } = useNavigation<NavigationProp>();
+  const { openZ } = useConnectionNavigation();
   const childNames = Object.keys(type.children);
   const main = type?.meta?.main && type.children[type?.meta?.main];
   const index = type?.meta?.index && type.children[type?.meta?.index];
@@ -84,12 +79,7 @@ export function ZContainerNode({
             title: childName,
             icon: getZIcon(type.children[childName]),
             onPress: () => {
-              dispatch(
-                StackActions.push("ZNode", {
-                  connection,
-                  path: [...path, childName],
-                })
-              );
+              openZ([...path, childName]);
             },
           }))}
         />
@@ -130,7 +120,7 @@ export function ZStateNode({
 }
 
 export function NewFileButton({ path }: { path: string[] }) {
-  const navigation = useNavigation<NavigationProp>();
+  const { openNewFile } = useStoreNavigation(path);
   const conn = useConnection();
   return (
     <View
@@ -142,10 +132,7 @@ export function NewFileButton({ path }: { path: string[] }) {
     >
       <Button
         onPress={() => {
-          navigation.navigate("NewFile", {
-            connection: conn?.key || null,
-            storePath: path,
-          });
+          openNewFile();
         }}
         small
         title="New File"
@@ -166,7 +153,7 @@ function StoreChildList({
   connection: string;
   storePath: string[];
 }) {
-  const { navigate } = useNavigation<NavigationProp>();
+  const { openFile } = useStoreNavigation(storePath);
   if (!list?.length) return <Paragraph>No files here.</Paragraph>;
 
   return (
@@ -176,11 +163,7 @@ function StoreChildList({
         title: displayStoreFileName(child.name),
         icon: "list-ul",
         onPress: () => {
-          navigate("File", {
-            connection,
-            storePath,
-            name: child.key,
-          });
+          openFile(child.key);
         },
       }))}
     />
@@ -200,8 +183,7 @@ export function ZStoreNode({
 }) {
   if (type[".t"] !== "Container" || type?.meta?.zContract !== "Store")
     throw new Error("Unexpected z type info for ZStoreNode");
-
-  const { navigate } = useNavigation<NavigationProp>();
+  const { openHistory, openSchemas } = useStoreNavigation(path);
   const { data, refetch, isLoading } = useConnectionProjects(path);
   const list = useMemo(() => {
     return Object.entries(data?.node || {})
@@ -241,10 +223,7 @@ export function ZStoreNode({
             title: "Change History",
             icon: "history",
             onPress: () => {
-              navigate("StoreHistory", {
-                connection,
-                storePath: path,
-              });
+              openHistory();
             },
           },
           {
@@ -252,10 +231,7 @@ export function ZStoreNode({
             title: "Schemas",
             icon: "crosshairs",
             onPress: () => {
-              navigate("StoreSchemas", {
-                connection,
-                storePath: path,
-              });
+              openSchemas();
             },
           },
         ]}
@@ -638,8 +614,8 @@ export function ZGroupNode({
   connection: string;
   path: string[];
 }) {
-  const { dispatch } = useNavigation<NavigationProp>();
   const childNames = value?.children || [];
+  const { openZ } = useConnectionNavigation();
 
   return (
     <VStack>
@@ -649,12 +625,7 @@ export function ZGroupNode({
           title={childName}
           key={childName}
           onPress={() => {
-            dispatch(
-              StackActions.push("ZNode", {
-                connection,
-                path: [...path, childName],
-              })
-            );
+            openZ([...path, childName]);
           }}
         />
       ))}
@@ -675,7 +646,8 @@ export function ZActionNode({
 }) {
   const [actionValue, setActionValue] = useState(null);
   const conn = useConnection();
-  const { navigate } = useNavigation<NavigationProp>();
+
+  const { openHistoryEvent } = useGlobalNavigation();
   if (!conn) throw new Error("connection");
 
   return (
@@ -698,7 +670,7 @@ export function ZActionNode({
             connection,
             path,
           });
-          navigate("HistoryEvent", { eventId });
+          openHistoryEvent(eventId);
         }}
       />
     </>
