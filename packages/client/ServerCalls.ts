@@ -61,7 +61,8 @@ export async function postZAction(
     finalBody = { _$RAW_VALUE: body };
   }
   const auth = extractSessionAuth(path, connection?.session);
-  return await serverPost(connection, `.z/${path.join("/")}`, finalBody, auth);
+  const serverPath = `.z/${path.join("/")}`;
+  return await serverPost(connection, serverPath, finalBody, auth);
 }
 
 export async function getTypedZ(connection: Connection, path: string[]) {

@@ -8,10 +8,16 @@ import { getZ } from "./ServerCalls";
 import { useConnection, Connection } from "./Connection";
 import { getTypedZ } from "./ServerCalls";
 import { useEffect, useMemo } from "react";
-import { displayStoreFileName, ZSchema, ZSchemaSchema } from "@zerve/core";
+import {
+  displayStoreFileName,
+  GenericError,
+  ZSchema,
+  ZSchemaSchema,
+} from "@zerve/core";
 
 export type QueryOptions = {
   skipLoading?: boolean;
+  onError?: (e: GenericError<any, any>) => void;
 };
 
 export function useConnectionRootType(options?: QueryOptions) {
@@ -66,6 +72,7 @@ export function useZNode(path: string[], options?: QueryOptions) {
     },
     {
       cacheTime: 10000,
+      onError: options?.onError,
     }
   );
 }
@@ -83,6 +90,7 @@ export function useZNodeValue(path: string[], options?: QueryOptions) {
     },
     {
       cacheTime: 10000,
+      onError: options?.onError,
     }
   );
 }
@@ -97,6 +105,9 @@ export function useZChildren(path: string[], options?: QueryOptions) {
       if (!conn || options?.skipLoading) return undefined;
       const results = await getZ(conn, path);
       return results;
+    },
+    {
+      onError: options?.onError,
     }
   );
 }
@@ -111,6 +122,9 @@ export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
       if (!conn || options?.skipLoading) return undefined;
       const schemas = await getZ(conn, [...storePath, "State", "$schemas"]);
       return schemas as Record<string, ZSchema>;
+    },
+    {
+      onError: options?.onError,
     }
   );
 }

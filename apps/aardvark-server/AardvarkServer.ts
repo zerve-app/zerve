@@ -22,7 +22,11 @@ import { createSystemFiles } from "@zerve/system-files";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
 import { createSystemCommands } from "@zerve/system-commands";
-
+import {
+  zWorkflow,
+  zWorkflowEnvironment,
+  zWorkflowCallStep,
+} from "@zerve/core/Workflow";
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 
 const homeDir = process.env.HOME;
@@ -101,13 +105,13 @@ export async function startApp() {
       },
       getUserZeds: async (user, { userId }) => {
         return {
-          Workflows: createZWorkflowEnvironment(
+          Workflows: zWorkflowEnvironment(
             {
               SystemCommands,
               SystemFiles,
             },
             {
-              Uptime: createZWorkflow({
+              Uptime: zWorkflow({
                 startPayloadSchema: NullSchema,
                 steps: [
                   zWorkflowCallStep(

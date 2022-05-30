@@ -167,7 +167,7 @@ export function AsyncButton({ onPress, onCatch, ...props }: AsyncButtonProps) {
         const promise = onPress()
           .then(() => {})
           .catch((e) => {
-            showErrorToast(e?.message || "Uknown Error");
+            showErrorToast(e?.message || "Unknown Error");
             setError(e);
             onCatch?.(e);
           });

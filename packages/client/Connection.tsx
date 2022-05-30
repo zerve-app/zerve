@@ -1,4 +1,9 @@
-import { createZState, ZBooleanSchema, ZObservable } from "@zerve/core";
+import {
+  createZState,
+  ZBooleanSchema,
+  ZObservable,
+  NotFoundError,
+} from "@zerve/core";
 import { createContext, useContext, useEffect, useMemo } from "react";
 import ReconnectingWebsocket from "reconnecting-websocket";
 import { useQueryClient, QueryClient } from "react-query";
@@ -176,22 +181,28 @@ export async function serverGet<Response>(
       console.error("Request Error", value);
       if (res.status === 401) {
         return UnauthorizedSymbol;
-      }
-      throw new Error("Network Error");
+      } else if (res.status === 404) {
+        throw new NotFoundError(
+          value?.code || "NotFound",
+          value?.message || "Not Found.",
+          value?.details
+        );
+      } else throw new Error("Network Error");
     }
     return value;
   } catch (e) {
-    throw new Error("Network Error");
+    if (e.code) throw e;
+    else throw new Error("Network Error");
   }
 }
 
 export async function serverPost<Request, Response>(
-  context: SavedConnection,
+  conn: SavedConnection,
   path: string,
   body: Request,
   auth?: [string, string] | null
 ): Promise<Response> {
-  const res = await fetch(`${context.url}/${path}`, {
+  const res = await fetch(`${conn.url}/${path}`, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",

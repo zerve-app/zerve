@@ -20,6 +20,7 @@
     "build:android": "yarn workspace zoo-mobile eas build --platform=android --profile=production",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "gambit": "concurrently \"yarn workspace gambit-server dev\" \"yarn workspace gambit-web dev\"",
     "aardvark": "ssh root@aardvark.zerve.dev -i ~/aardvark/ServerKey /root/aardvark-update.sh"
   },
   "dependencies": {

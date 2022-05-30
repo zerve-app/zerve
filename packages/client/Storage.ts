@@ -11,7 +11,7 @@ type StorageNode<ValueType> = {
   destroy: () => void;
 };
 
-export type NativeStorageModule = ReturnType<typeof createLocalStorage>;
+export type LocalStorageModule = ReturnType<typeof createLocalStorage>;
 
 export function createStorage(config: MMKVConfiguration | undefined) {
   const nativeStore = createLocalStorage(config);

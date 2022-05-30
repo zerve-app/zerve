@@ -4,6 +4,7 @@ import {
   createZMetaContainer,
   createZGroup,
   AnyZed,
+  createZContainer,
 } from "./Zed";
 
 const CallActionStepSchema = {
@@ -31,57 +32,55 @@ export type CallOptions = {
   after?: string[];
 };
 
+type ZWorkflowDefinition = {};
+type ZCallsCollection = {};
+
 const RunKeySchema = { type: "string", title: "Run ID" } as const;
 
-export function createZWorkflowEnvironment(
-  zedRecord: Record<string, AnyZed>,
-  workflows: Record<string, AnyZed>
-) {}
+function zWorkflowCallsCollection(
+  parent?: ZCallsCollection | null
+): ZCallsCollection {
+  return {};
+}
+function zWorkflowInstance(
+  workflow: ZWorkflowDefinition,
+  actions: Record<string, AnyZed>,
+  parentCalls: ZCallsCollection
+) {
+  const calls = zWorkflowCallsCollection(parentCalls);
+  return { start, calls };
+}
 
-export function createZWorkflow<Payload extends JSONSchema>(definition: {
-  startPayloadSchema: Payload;
-  steps: WorkflowSteps;
-}) {
+export function zWorkflowEnvironment(
+  actions: Record<string, AnyZed>,
+  workflows: Record<string, AnyZed>
+) {
+  console.log("creating z workflow env");
+  const calls = zWorkflowCallsCollection();
   return createZMetaContainer(
     {
-      start: createZAction(
-        definition.startPayloadSchema,
-        RunKeySchema,
-        async (startPayload: FromSchema<Payload>) => {
-          let stepIndex = 0;
-          const statePromised = {};
-          const stateResolved = {};
-          const stateRejected = {};
-          function getStepKey() {
-            const k = `step${stepIndex}`;
-            stepIndex += 1;
-            return k;
-          }
-          const stateSteps = definition.steps.map((step) => {
-            const defaultStepKey = getStepKey();
-            const stepKey = step.callOptions?.as || defaultStepKey;
-            return [stepKey, step];
-          });
-
-          async function performReadySteps() {
-            const readySteps = Object.stateSteps;
-          }
-
-          console.log("doing workflow now, ok?!", definition.steps.length);
-          return "runId";
-        }
+      actions,
+      calls,
+      workflows: createZContainer(
+        Object.fromEntries(
+          Object.entries(workflows).map(([workflowName, workflow]) => [
+            workflowName,
+            zWorkflowInstance(workflow, actions, calls),
+          ])
+        )
       ),
-      runs: createZGroup(async (id: string) => {
-        return createZContainer({
-          runId: createZStatic(id),
-          isRunning: createZStatic(false),
-        });
-      }),
     },
     {
-      zContract: "Workflow",
+      zContract: "WorkflowEnvironment",
     }
   );
+}
+
+export function zWorkflow<Payload extends JSONSchema>(definition: {
+  startPayloadSchema: Payload;
+  steps: WorkflowSteps;
+}): ZWorkflowDefinition {
+  return {};
 }
 
 export function zWorkflowCallStep<P>(
