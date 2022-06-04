@@ -1,5 +1,5 @@
 import { defineKeySource } from "@zerve/core";
-import { createStorage } from "@zerve/client/Storage";
+import { createStorage } from "@zerve/client-storage/Storage";
 import { postZAction } from "@zerve/client/ServerCalls";
 import {
   Connection,

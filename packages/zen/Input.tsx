@@ -3,6 +3,7 @@ import { Switch, TextInput, View } from "react-native";
 import { useColors } from "./useColors";
 import { Label } from "./Text";
 import { marginHInset, marginVInset, RowStyles } from "./Row";
+import { ZTextInputType } from "@zerve/core";
 
 export function Input({
   value,
@@ -15,6 +16,7 @@ export function Input({
   disabled,
   keyboardType,
   returnKeyType,
+  autoComplete,
   enablesReturnKeyAutomatically,
   InputComponent,
   onBlur,
@@ -31,20 +33,8 @@ export function Input({
   onBlur?: () => void;
   enablesReturnKeyAutomatically?: boolean;
   returnKeyType?: ComponentProps<typeof TextInput>["returnKeyType"];
-  keyboardType?:
-    | "default"
-    | "numeric"
-    | "email-address"
-    | "ascii-capable"
-    | "numbers-and-punctuation"
-    | "url"
-    | "number-pad"
-    | "phone-pad"
-    | "name-phone-pad"
-    | "decimal-pad"
-    | "twitter"
-    | "web-search"
-    | "visible-password";
+  autoComplete?: ComponentProps<typeof TextInput>["autoComplete"];
+  keyboardType?: ZTextInputType;
 }) {
   const colors = useColors();
   const TextInputComponent = InputComponent || TextInput;
@@ -63,13 +53,15 @@ export function Input({
           backgroundColor: colors.background,
         }}
         focusable={!disabled}
-        keyboardType={keyboardType}
+        keyboardType={keyboardType === "password" ? "default" : keyboardType}
+        secureTextEntry={keyboardType === "password"}
         returnKeyType={returnKeyType}
         editable={!disabled}
         enablesReturnKeyAutomatically={enablesReturnKeyAutomatically}
         autoCapitalize={autoCapitalize}
         onSubmitEditing={onSubmitEditing}
         value={value}
+        autoComplete={autoComplete}
         placeholder={placeholder}
         onChangeText={onValue}
         onBlur={onBlur}

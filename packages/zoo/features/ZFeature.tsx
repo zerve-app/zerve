@@ -65,10 +65,10 @@ export function ZFeature({
       )}
       <ScreenHeader
         isLoading={isLoading || isRefetching}
-        title={path.length ? path.join("/") : "Z Connection API"}
+        title={path.length ? path.join("/") : "Zerve"}
         onLongPress={onOptions}
         corner={sheetContent}
-        onBack={() => closeZ(path)}
+        onBack={!!path.length ? () => closeZ(path) : undefined}
       ></ScreenHeader>
       <ZNode
         path={path}

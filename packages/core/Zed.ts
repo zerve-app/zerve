@@ -141,18 +141,37 @@ export function createZGroup<ChildZType extends AnyZed>(
   };
 }
 
-export function createZGettableGroup<
-  GetSchema extends JSONSchema,
-  ChildZType extends AnyZed,
-  GetOptions
->(
-  valueSchema: GetSchema,
+export const ChildrenListSchema = {
+  type: "object",
+  required: ["children", "more", "cursor"],
+  properties: {
+    children: { type: "array", items: { type: "string" } },
+    more: { type: "boolean" },
+    cursor: { type: "string" },
+  },
+  additionalProperties: false,
+} as const;
+export type ChildrenList = FromSchema<typeof ChildrenListSchema>;
+
+export const ChildrenListOptionsSchema = {
+  type: "object",
+  required: [],
+  properties: {
+    query: { type: "string" },
+    cursor: { type: "string" },
+    reverse: { type: "boolean" },
+  },
+  additionalProperties: false,
+} as const;
+export type ChildrenListOptions = FromSchema<typeof ChildrenListOptionsSchema>;
+
+export function createZGettableGroup<ChildZType extends AnyZed>(
   getChild: (key: string) => Promise<ChildZType | undefined>,
-  get: (options: GetOptions) => Promise<FromSchema<GetSchema>>
-): ZGroup<ChildZType, GetOptions, GetSchema> {
+  get: (getOptions: ChildrenListOptions) => Promise<ChildrenList>
+): ZGroup<ChildZType, ChildrenListOptions, typeof ChildrenListSchema> {
   return {
     zType: "Group",
-    valueSchema,
+    valueSchema: ChildrenListSchema,
     getChild,
     get,
   };

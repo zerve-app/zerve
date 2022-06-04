@@ -10,11 +10,11 @@ export default function NewConnectionScreen({
   navigation,
 }: SettingsStackScreenProps<"NewConnection">) {
   const [name, setName] = React.useState("");
-  const [url, setUrl] = React.useState("");
+  const [url, setUrl] = React.useState("https://zerve.app");
   return (
     <ScreenContainer scroll>
       <ScreenHeader title="New Connection" />
-      <VStack>
+      <VStack padded>
         <Input
           value={name}
           label="Name"
@@ -27,10 +27,12 @@ export default function NewConnectionScreen({
           label="URL"
           onValue={setUrl}
           autoCapitalize="none"
+          keyboardType="url"
           placeholder="https://zerve.app"
+          autoComplete="off"
         />
         <Button
-          title="Create"
+          title="Connect to Server"
           primary
           onPress={() => {
             createConnection(name, url);

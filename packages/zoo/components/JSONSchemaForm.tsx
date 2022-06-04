@@ -535,8 +535,14 @@ function FormFieldHeader({
             paddingBottom: 6,
           }}
         >
-          {typeof label === "string" ? <Label>{label}</Label> : label}
-          <View style={{ width: 40 }} />
+          {label && typeof label === "string" ? (
+            <>
+              <Label>{label}</Label>
+              <View style={{ width: 40 }} />
+            </>
+          ) : (
+            label
+          )}
           <Label style={{ flex: 1, textAlign: "right" }} secondary>
             {typeLabel}
           </Label>
@@ -790,6 +796,7 @@ export function LeafFormField({
           placeholder={schema.placeholder}
           autoCapitalize={autoCapitalize}
           returnKeyType="done"
+          keyboardType={schema.inputType}
           onSubmitEditing={onSubmitEditing}
         />
         {description}

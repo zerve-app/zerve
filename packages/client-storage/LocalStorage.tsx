@@ -8,7 +8,7 @@ export function createLocalStorage(config: MMKVConfiguration | undefined) {
   const grossStorage = global.window?.localStorage;
 
   function dangerouslyDeleteEverything() {
-    console.log("DELETINGEVERYTHING");
+    throw new Error("dangerouslyDeleteEverything Not implemented");
   }
 
   function getStoredJSON(key: string) {

@@ -51,7 +51,7 @@ const BuildPayloadSchema = {
 } as const;
 
 export async function startApp() {
-  console.log("Starting Data Dir", dataDir);
+  console.log("Starting AardvarkServer. DataDir: " + dataDir);
 
   const SystemCommands = createSystemCommands();
   const SystemFiles = createSystemFiles("/");
@@ -135,6 +135,7 @@ export async function startApp() {
             }
           ),
           ZerveStore: Store,
+          Data,
           deployZebra: createZAction(NullSchema, NullSchema, async () => {
             console.log("Zebra deploy behavior?! You must be Eric");
             return null;

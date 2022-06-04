@@ -376,13 +376,13 @@ const UsernamePasswordSchema: ZSchema = {
   additionalProperties: false,
   properties: {
     username: { type: "string" },
-    password: { type: "string" },
+    password: { type: "string", inputType: "password" },
   },
   propertyTitles: {
     username: "Username",
     password: "Password",
   },
-  requiredProperties: ["username", "password"],
+  required: ["username", "password"],
 } as const;
 
 const InitialLoginFormValue = {

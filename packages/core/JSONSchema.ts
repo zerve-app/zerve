@@ -65,6 +65,26 @@ export const CapitalizeSchema = {
   default: "none",
 } as const;
 
+const TextInputTypeSchemaSchema = {
+  oneOf: [
+    { const: "default" },
+    { const: "numeric" },
+    { const: "email-address" },
+    { const: "ascii-capable" },
+    { const: "numbers-and-punctuation" },
+    { const: "url" },
+    { const: "number-pad" },
+    { const: "phone-pad" },
+    { const: "name-phone-pad" },
+    { const: "decimal-pad" },
+    { const: "twitter" },
+    { const: "web-search" },
+    { const: "password" },
+    { const: "visible-password" },
+  ],
+} as const;
+export type ZTextInputType = FromSchema<typeof TextInputTypeSchemaSchema>;
+
 export const StringSchemaSchema = {
   type: "object",
   title: "Text",
@@ -73,6 +93,7 @@ export const StringSchemaSchema = {
     ...SchemaMeta,
     default: { type: "string" }, // uhh this implies the need of a more powerful generic/recursion o_O
     placeholder: { type: "string" },
+    inputType: TextInputTypeSchemaSchema,
     capitalize: CapitalizeSchema,
   },
   required: ["type"],
@@ -164,7 +185,7 @@ export const ObjectSchemaSchema = {
       type: "object",
       additionalProperties: { type: "string" },
     } as const,
-    required: { type: "array", items: { type: "string" } },
+    required: { type: "array", items: { type: "string" }, readOnly: true },
   },
   propertyTitles: {
     properties: "Properties",

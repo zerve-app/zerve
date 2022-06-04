@@ -11,6 +11,10 @@ export function HStack({ children }: { children: ReactNode }) {
   );
 }
 
+export function Padding({ children }: { children: ReactNode }) {
+  return <View style={{ margin: 12 }}>{children}</View>;
+}
+
 export function VStack({
   children,
   style,

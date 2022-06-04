@@ -41,13 +41,14 @@ export function createZMessageEmail(config: {
     } as const,
     async ({ message, subject, toEmail }) => {
       try {
-        await sgMail.send({
+        const sgRequest = {
           to: toEmail,
           from: config.fromEmail,
           subject: subject,
           text: message,
           html: message,
-        });
+        };
+        const sgResponse = await sgMail.send(sgRequest);
       } catch (e) {
         const sgError = (e as any)?.response?.body?.errors?.[0];
         if (sgError?.message === "Does not contain a valid address.") {

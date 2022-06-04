@@ -6,7 +6,6 @@ import {
   StringSchema,
   RequestError,
 } from "@zerve/core";
-import { ChildrenListSchema } from "@zerve/data";
 import { DigitalOcean } from "digitalocean-js";
 
 export type ZDigitalOcean = ReturnType<typeof createZDigitalOcean>;
@@ -45,7 +44,6 @@ export function createZDigitalOcean(config: { apiKey: string }) {
       }
     ),
     droplets: createZGettableGroup(
-      ChildrenListSchema,
       (dropletId) => {
         return createZContainer({
           id: createZStatic(dropletId),
@@ -59,6 +57,8 @@ export function createZDigitalOcean(config: { apiKey: string }) {
             console.log("LOL droplet", d);
             return d.id;
           }),
+          more: false,
+          cursor: "",
         };
       }
     ),

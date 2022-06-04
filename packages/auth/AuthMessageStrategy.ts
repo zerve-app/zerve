@@ -82,7 +82,6 @@ export function createGenericMessageAuthStrategy<
         .digest()
         .toString("hex");
       const addressFileSubpath = `${addressKey}.json`;
-      console.log("yooo");
 
       const addressFile: AddressFileData = (await strategyFiles.z.ReadJSON.call(
         {
@@ -93,7 +92,6 @@ export function createGenericMessageAuthStrategy<
         addressKey,
       };
       let authRequest: AddressFileData["authRequest"] = addressFile.authRequest;
-      console.log(authRequest);
       if (authRequest) {
         const { requestTime, token } = authRequest;
         const now = Date.now();
@@ -116,7 +114,6 @@ export function createGenericMessageAuthStrategy<
               authRequest: null,
             } as AddressFileData,
           });
-          console.log("ok");
 
           return { strategyKey: addressKey, authTime: Date.now(), address };
         } else {

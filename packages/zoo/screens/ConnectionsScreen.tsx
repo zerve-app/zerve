@@ -1,5 +1,5 @@
 import React, { ComponentFactory, ReactNode, useMemo } from "react";
-import { AbsoluteFill, Button, LinkRow, VStack } from "@zerve/zen";
+import { AbsoluteFill, Button, LinkRow, Padding, VStack } from "@zerve/zen";
 
 import { RootStackParamList, SettingsStackParamList } from "../app/Links";
 import {
@@ -30,16 +30,18 @@ function ConnectionsScreenHeader() {
 function ConnectionsScreenFooter() {
   const navigation = useNavigation();
   return (
-    <Button
-      onPress={() => {
-        navigation.navigate("NewConnection");
-      }}
-      left={({ color }) => (
-        <FontAwesome name="plus-circle" color={color} size={24} />
-      )}
-      primary
-      title="New Connection"
-    />
+    <Padding>
+      <Button
+        onPress={() => {
+          navigation.navigate("NewConnection");
+        }}
+        left={({ color }) => (
+          <FontAwesome name="plus-circle" color={color} size={24} />
+        )}
+        primary
+        title="New Connection"
+      />
+    </Padding>
   );
 }
 
@@ -101,18 +103,20 @@ export default function ConnectionsScreen() {
     <OrderScreenContainer<SavedConnection>
       data={connections}
       renderItem={({ item, drag, isActive }) => (
-        <LinkRow
-          key={item.key}
-          title={item.name}
-          icon="link"
-          onLongPress={drag}
-          disabled={isActive}
-          onPress={() => {
-            navigation.navigate("ConnectionInfo", {
-              connection: item.key,
-            });
-          }}
-        />
+        <Padding>
+          <LinkRow
+            key={item.key}
+            title={item.name}
+            icon="link"
+            onLongPress={drag}
+            disabled={isActive}
+            onPress={() => {
+              navigation.navigate("ConnectionInfo", {
+                connection: item.key,
+              });
+            }}
+          />
+        </Padding>
       )}
       Footer={ConnectionsScreenFooter}
       onMove={reorderConnection}

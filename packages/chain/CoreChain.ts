@@ -12,7 +12,6 @@ import {
   FromSchema,
   ajv,
   RequestError,
-  createZGettableGroup,
   ZGroup,
 } from "@zerve/core";
 import { createJSONBlock } from "@zerve/crypto";
@@ -392,11 +391,11 @@ export async function createZChainState<
         throw new Error("Cannot Eval path within non-object schema");
       }
     });
-    return createZGettableGroup(
+    return createZGettable(
       schema,
-      async (childKey: string) => {
-        return createZEval([...path, childKey]);
-      },
+      // async (childKey: string) => {
+      //   return createZEval([...path, childKey]);
+      // },
       async () => {
         let evalResult = await _getEval();
         for (let pathIndex in path) {

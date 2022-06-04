@@ -1,0 +1,20 @@
+{
+  "name": "@zerve/client-storage",
+  "version": "0.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "config": "*",
+    "tsconfig": "*",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-mmkv": "^2.1.0"
+  }
+}

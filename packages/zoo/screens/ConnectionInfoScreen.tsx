@@ -52,13 +52,13 @@ export default function ConnectionInfoScreen({
   return (
     <ScreenContainer scroll>
       <ScreenHeader title={`Connection: ${conn?.name}`} />
-      <VStack>
+      <VStack padded>
         <ConnectionStatusRow />
         <InfoRow label="URL" value={conn?.url} />
       </VStack>
       {session && (
         <PageSection title="Session">
-          <VStack>
+          <VStack padded>
             <InfoRow label="Identity" value={session.userLabel} />
             <AsyncButton
               title="Log Out"
@@ -70,7 +70,7 @@ export default function ConnectionInfoScreen({
         </PageSection>
       )}
       <PageSection title="Delete Connection">
-        <VStack>
+        <VStack padded>
           <Paragraph>
             Delete connection to this server. This is dangerous, but you can
             re-add it later.

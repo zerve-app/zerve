@@ -2,7 +2,7 @@ import { Text, View } from "dripsy";
 import React, { useState } from "react";
 import { AbsoluteFill, AsyncButton, Button, Spinner } from "@zerve/zen";
 import { postZAction } from "@zerve/client/ServerCalls";
-import { createStorage } from "@zerve/client/Storage";
+import { createStorage } from "@zerve/client-storage/Storage";
 import {
   SavedConnectionProvider,
   useConnection,

@@ -5,6 +5,8 @@ import {
   createZGroup,
   AnyZed,
   createZContainer,
+  createZGettableGroup,
+  createZStatic,
 } from "./Zed";
 
 const CallActionStepSchema = {
@@ -33,18 +35,31 @@ export type CallOptions = {
 };
 
 type ZWorkflowDefinition = {};
-type ZCallsCollection = {};
 
 const RunKeySchema = { type: "string", title: "Run ID" } as const;
 
-function zWorkflowCallsCollection(
-  parent?: ZCallsCollection | null
-): ZCallsCollection {
-  return {};
+const WorkflowCallSchema = {
+  type: "object",
+  properties: {
+    startTime: { type: "number" },
+  },
+  required: [],
+  additionalProperties: false,
+} as const;
+
+function zWorkflowCallsCollection(parent?: ZCallsCollection | null) {
+  return createZGettableGroup(
+    async (id) => {
+      return createZStatic(id);
+    },
+    async ({}) => {
+      return { children: ["foo", "bar"], more: false, cursor: "" };
+    }
+  );
 }
 function zWorkflowInstance(
   workflow: ZWorkflowDefinition,
-  actions: Record<string, AnyZed>,
+  zContext: Record<string, AnyZed>,
   parentCalls: ZCallsCollection
 ) {
   const calls = zWorkflowCallsCollection(parentCalls);
@@ -52,20 +67,19 @@ function zWorkflowInstance(
 }
 
 export function zWorkflowEnvironment(
-  actions: Record<string, AnyZed>,
+  zContext: Record<string, AnyZed>,
   workflows: Record<string, AnyZed>
 ) {
-  console.log("creating z workflow env");
   const calls = zWorkflowCallsCollection();
   return createZMetaContainer(
     {
-      actions,
+      context: createZContainer(zContext),
       calls,
       workflows: createZContainer(
         Object.fromEntries(
           Object.entries(workflows).map(([workflowName, workflow]) => [
             workflowName,
-            zWorkflowInstance(workflow, actions, calls),
+            zWorkflowInstance(workflow, zContext, calls),
           ])
         )
       ),

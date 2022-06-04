@@ -1,5 +1,5 @@
 {
-  "name": "script-fleet",
+  "name": "@zerve/script-fleet",
   "private": true,
   "version": "0.0.0",
   "scripts": {

@@ -10,6 +10,7 @@
     "moti": "canary",
     "@zerve/core": "*",
     "@zerve/client": "*",
+    "@zerve/client-storage": "*",
     "@zerve/react": "*",
     "@zerve/zen": "*",
     "solito": "latest"

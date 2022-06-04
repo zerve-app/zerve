@@ -8,6 +8,7 @@ import {
   ZGettable,
   NotFoundError,
   NullSchema,
+  ChildrenList,
 } from "@zerve/core";
 import { createJSONBlock } from "@zerve/crypto";
 import {
@@ -21,15 +22,6 @@ import {
   move,
 } from "fs-extra";
 import { join } from "path";
-
-export const ChildrenListSchema = {
-  type: "object",
-  required: ["children"],
-  properties: {
-    children: { type: "array", items: { type: "string" } },
-  },
-  additionalProperties: false,
-} as const;
 
 export async function ensureDir(dir: string) {
   await mkdirp(dir);
@@ -63,11 +55,9 @@ export async function createCoreData(dataDir: string) {
   await ensureDir(_trashDir);
 
   const Docs = createZGettableGroup<
-    typeof ChildrenListSchema,
     ZGettable<typeof DocValueSchema, void>,
     void
   >(
-    ChildrenListSchema,
     async (name: string) => {
       return createZGettable(DocValueSchema, async () => {
         const doc = await _getDocValue(name);
@@ -80,11 +70,9 @@ export async function createCoreData(dataDir: string) {
   );
 
   const Blocks = createZGettableGroup<
-    typeof ChildrenListSchema,
     ZGettable<typeof DocValueSchema, void>,
     void
   >(
-    ChildrenListSchema,
     async (id: string) => {
       return createZGettable({}, async () => {
         const blockValue = await GetBlockJSON.call({ id });
@@ -232,14 +220,14 @@ export async function createCoreData(dataDir: string) {
     }
   );
 
-  async function _listBlocks() {
+  async function _listBlocks(): Promise<ChildrenList> {
     const blockList = (await readdir(_blocksDir)).filter(prefixedWithDot);
-    return { children: blockList };
+    return { children: blockList, more: false, cursor: "" };
   }
 
-  async function _listDocs(): Promise<FromSchema<typeof ChildrenList>> {
+  async function _listDocs(): Promise<ChildrenList> {
     const docList = (await readdir(_docsDir)).filter(prefixedWithDot);
-    return { children: docList };
+    return { children: docList, more: false, cursor: "" };
   }
 
   async function _getDocValue(name: string) {
