@@ -65,6 +65,7 @@ export type ButtonProps = {
   style?: StyleProp<ViewStyle>;
   border?: number;
   small?: boolean;
+  disabled?: boolean;
   textAlign?: "right" | "left" | "center";
 };
 export function Button({
@@ -78,6 +79,7 @@ export function Button({
   onLongPress,
   border,
   small,
+  disabled,
   textAlign = "center",
 }: ButtonProps) {
   const colors = useColors();
@@ -122,6 +124,7 @@ export function Button({
       }}
       hitSlop={{ left: 6, right: 6, top: 6, bottom: 6 }}
       onLongPress={onLongPress}
+      disabled={disabled}
       onResponderEnd={() => {}}
       onPressIn={() => {
         pressHeight.value = withSpring(1, { mass: 0.5 });

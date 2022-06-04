@@ -63,7 +63,7 @@ export function useConnectionNavigation() {
       },
       closeZ: (path: string[]) => {
         const parent = path.slice(0, -1);
-        push(parent.join("/"));
+        push(parent.length ? parent.join("/") : "/");
       },
       backToZ: (path: string[]) => {
         push(path.join("/"));

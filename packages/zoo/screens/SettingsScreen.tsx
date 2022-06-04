@@ -50,7 +50,7 @@ export default function SettingsScreen({
   return (
     <ScreenContainer scroll>
       <ScreenHeader title="App Settings" backButtonCancelStyle />
-      <VStack>
+      <VStack padded>
         <LinkRow
           title="Server Connections"
           icon="link"
@@ -60,7 +60,7 @@ export default function SettingsScreen({
         />
       </VStack>
       <PageSection title="Dev Features">
-        <VStack>
+        <VStack padded>
           <LinkRow
             title="Kitchen Sink"
             icon="shower"
@@ -71,7 +71,7 @@ export default function SettingsScreen({
         </VStack>
       </PageSection>
       <PageSection title="Local Data">
-        <VStack>
+        <VStack padded>
           {/* <Button
             title="Export Local Database"
             left={({ color }) => (
@@ -120,7 +120,7 @@ export default function SettingsScreen({
         </VStack>
       </PageSection>
       <PageSection title="App Info / Version">
-        <VStack>
+        <VStack padded>
           <AppUpdater />
 
           <Button

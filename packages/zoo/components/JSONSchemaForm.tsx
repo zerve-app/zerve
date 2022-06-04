@@ -1,13 +1,6 @@
-import React, {
-  ComponentProps,
-  ReactNode,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { ReactNode, useMemo } from "react";
 import {
   CapitalizeSchema,
-  createZSchema,
   exploreUnionSchema,
   getDefaultSchemaValue,
   JSONSchema,
@@ -24,18 +17,17 @@ import {
   ThemedText,
   Icon,
   VStack,
-  HStack,
   Dropdown,
   ActionButtonDef,
   useActionsSheet,
 } from "@zerve/zen";
 import { useGlobalNavigation } from "../app/useNavigation";
-import { KeyboardAvoidingView } from "react-native";
 import { View } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../app/Links";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { setString } from "expo-clipboard";
+import {
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
+import { setStringAsync } from "expo-clipboard";
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -45,7 +37,6 @@ import Animated, {
   FadeOutUp,
   Layout,
 } from "react-native-reanimated";
-import { showErrorToast } from "@zerve/zen/Toast";
 import { useTextInputFormModal } from "./TextInputFormModal";
 
 function extractTypeSchema(type, schemaObj) {
@@ -156,13 +147,15 @@ export function JSONSchemaObjectForm({
   onValue,
   schema,
   schemaStore,
+  onSubmitEditing,
 }: {
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   schemaStore: SchemaStore;
+  onSubmitEditing?: () => void;
 }) {
-  const { properties, additionalProperties } = schema;
+  const { properties, additionalProperties, propertyTitles } = schema;
   if (schema?.type && schema?.type !== "object") {
     throw new Error(
       "JSONSchemaObjectForm can not handle type: " + schema?.type
@@ -241,7 +234,7 @@ export function JSONSchemaObjectForm({
       {!!errors.length && (
         <Paragraph>Errors: {errors.map((e) => e.message).join(". ")}</Paragraph>
       )}
-      {[...propertyKeys].map((propertyName) => {
+      {[...propertyKeys].map((propertyName, propertyIndex, allKeys) => {
         const actions = [];
         if (!schema.required || schema.required.indexOf(propertyName) === -1) {
           actions.push({
@@ -255,12 +248,20 @@ export function JSONSchemaObjectForm({
             },
           });
         }
+        const isLastKey = propertyIndex === allKeys.length - 1;
         return (
           <FormField
             key={propertyName}
             value={value?.[propertyName]}
             schema={expandedPropertiesSchema[propertyName]}
-            label={propertyName}
+            label={propertyTitles?.[propertyName] || propertyName}
+            onSubmitEditing={
+              isLastKey
+                ? onSubmitEditing
+                : () => {
+                    // todo, focus the next key when the non-last key is selected
+                  }
+            }
             actions={actions}
             onValue={
               onValue
@@ -325,11 +326,13 @@ export function JSONSchemaArrayForm({
   onValue,
   schema,
   schemaStore,
+  onSubmitEditing,
 }: {
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   schemaStore: SchemaStore;
+  onSubmitEditing?: () => void;
 }) {
   const expandedItemsSchema = useMemo(
     () => expandSchema(schema.items || defaultArrayItemsSchema, schemaStore),
@@ -548,8 +551,8 @@ function FormFieldHeader({
             key: "clipboard",
             title: typeLabel ? `Copy ${typeLabel} Value` : "Copy Value",
             icon: "clipboard",
-            onPress: () => {
-              setString(
+            onPress: async () => {
+              await setStringAsync(
                 typeof value === "string" ? value : JSON.stringify(value)
               );
             },
@@ -567,13 +570,14 @@ export function OneOfFormField({
   onValue,
   schema,
   actions,
+  onSubmitEditing,
 }: {
   label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
-
   actions?: ActionButtonDef[];
+  onSubmitEditing?: () => void;
 }) {
   const unionOptions = exploreUnionSchema(schema);
   const matched = unionOptions.match(value);
@@ -622,6 +626,7 @@ export function OneOfFormField({
           schema={matchedSchema}
           label={label}
           actions={fieldActions}
+          onSubmitEditing={onSubmitEditing}
           typeLabel={
             matched == null ? "?" : unionOptions.options[matched].title
           }
@@ -638,6 +643,7 @@ export function FormField({
   schema,
   typeLabel,
   actions,
+  onSubmitEditing,
 }: {
   label: string | ReactNode;
   value: any;
@@ -645,6 +651,7 @@ export function FormField({
   schema: JSONSchema;
   typeLabel?: string;
   actions?: ActionButtonDef[];
+  onSubmitEditing?: () => void;
 }) {
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
   if (!expandedSchema)
@@ -662,6 +669,7 @@ export function FormField({
         onValue={onValue}
         typeLabel={typeLabel}
         actions={actions}
+        onSubmitEditing={onSubmitEditing}
       />
     );
   }
@@ -674,6 +682,7 @@ export function FormField({
         label={label}
         onValue={onValue}
         actions={actions}
+        onSubmitEditing={onSubmitEditing}
       />
     );
   }
@@ -725,12 +734,14 @@ export function LeafFormField({
   onValue,
   schema,
   actions,
+  onSubmitEditing,
 }: {
   label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
   schema: LeafSchema;
   actions: ActionButtonDef[];
+  onSubmitEditing?: () => void;
 }) {
   const description = schema.description ? (
     <Paragraph>{schema.description}</Paragraph>
@@ -778,6 +789,8 @@ export function LeafFormField({
           onValue={onValue}
           placeholder={schema.placeholder}
           autoCapitalize={autoCapitalize}
+          returnKeyType="done"
+          onSubmitEditing={onSubmitEditing}
         />
         {description}
       </>
@@ -798,6 +811,7 @@ export function LeafFormField({
           placeholder={String(defaultNumber)}
           keyboardType={schema.type === "integer" ? "number-pad" : "numeric"}
           value={value == null ? "" : String(value)}
+          onSubmitEditing={onSubmitEditing}
           onValue={
             onValue ? (valueString) => onValue(Number(valueString)) : undefined
           }
@@ -862,12 +876,14 @@ export function JSONSchemaForm({
   schema,
   label,
   schemaStore,
+  onSubmitEditing,
 }: {
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   label?: string | ReactNode;
   schemaStore: SchemaStore;
+  onSubmitEditing?: () => void;
 }) {
   const expandedSchema = useMemo(
     () => expandSchema(schema, schemaStore),
@@ -917,6 +933,7 @@ export function JSONSchemaForm({
         onValue={onValue}
         schema={expandedSchema}
         schemaStore={schemaStore}
+        onSubmitEditing={onSubmitEditing}
       />
     );
   }
@@ -927,6 +944,7 @@ export function JSONSchemaForm({
         onValue={onValue}
         schema={expandedSchema}
         schemaStore={schemaStore}
+        onSubmitEditing={onSubmitEditing}
       />
     );
   }
@@ -937,6 +955,7 @@ export function JSONSchemaForm({
         value={value}
         onValue={onValue}
         schema={expandedSchema}
+        onSubmitEditing={onSubmitEditing}
       />
     );
   }

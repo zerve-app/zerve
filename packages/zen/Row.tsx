@@ -55,17 +55,23 @@ export function InfoRow({
 
 export function LinkRow({
   onPress,
+  onLongPress,
   title,
   icon,
+  disabled,
 }: {
   onPress: () => void;
+  onLongPress?: () => void;
   title: string;
+  disabled?: boolean;
   icon?: ComponentProps<typeof Icon>["name"];
 }) {
   return (
     <Button
       textAlign="left"
       onPress={onPress}
+      onLongPress={onLongPress}
+      disabled={disabled}
       title={title}
       left={icon ? (p) => <Icon {...p} name={icon} /> : null}
     />

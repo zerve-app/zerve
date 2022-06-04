@@ -37,7 +37,12 @@ import { JSONSchemaForm } from "./JSONSchemaForm";
 import { Icon } from "@zerve/zen/Icon";
 import { getZIcon } from "../app/ZIcon";
 import { storeHistoryEvent } from "../app/History";
-import { displayStoreFileName, EmptySchemaStore } from "@zerve/core";
+import {
+  displayStoreFileName,
+  EmptySchemaStore,
+  JSONSchema,
+  ZSchema,
+} from "@zerve/core";
 import { View } from "react-native";
 import { JSONSchemaEditor } from "./JSONSchemaEditor";
 import { showToast } from "../app/Toast";
@@ -211,7 +216,7 @@ export function ZStoreNode({
   if (!connection) return <Paragraph danger>Connection unavailable.</Paragraph>;
 
   return (
-    <>
+    <VStack padded>
       <StoreChildList list={list} connection={connection} storePath={path} />
       <HStack>
         <NewFileButton path={path} />
@@ -236,7 +241,7 @@ export function ZStoreNode({
           },
         ]}
       />
-    </>
+    </VStack>
   );
 }
 
@@ -366,12 +371,16 @@ function LoginStrategyForm({
     </>
   );
 }
-const UsernamePasswordSchema = {
+const UsernamePasswordSchema: ZSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
     username: { type: "string" },
     password: { type: "string" },
+  },
+  propertyTitles: {
+    username: "Username",
+    password: "Password",
   },
   requiredProperties: ["username", "password"],
 } as const;
@@ -395,7 +404,7 @@ function UsernamePasswordLoginForm({
     <>
       <JSONSchemaEditor
         schema={UsernamePasswordSchema}
-        saveLabel="Log in"
+        saveLabel="Log In"
         value={InitialLoginFormValue}
         onSubmit={async (formValues) => {
           const session = await postZAction(
@@ -432,7 +441,7 @@ function LoginForm({ path, authMeta }: { path: string[]; authMeta: any }) {
     null | typeof LoginStrategies[number]["key"]
   >(null);
   return (
-    <VStack>
+    <VStack padded>
       {!selectedStrategy &&
         LoginStrategies.map((l) => (
           <Button
@@ -532,7 +541,43 @@ function ChangeUsernameButton({
       onPress={() => {
         promptNewUserName();
       }}
-      title="Change Username"
+      title="Set Username"
+    />
+  );
+}
+
+function ChangePasswordButton({
+  connection,
+  session,
+}: {
+  connection: Connection;
+  session: SavedSession;
+}) {
+  const promptNewPassword = useTextInputFormModal<void>(() => {
+    return {
+      inputLabel: "New Password",
+      defaultValue: "",
+      onValue: (password) => {
+        postZAction(connection, [...session.authPath, "user", "setPassword"], {
+          newPassword: password,
+        })
+          .then(() => {
+            setSessionUserId(connection.key, password);
+          })
+          .catch((e) => {
+            console.log("catch failed Password change");
+            throw e;
+          });
+      },
+    };
+  });
+
+  return (
+    <Button
+      onPress={() => {
+        promptNewPassword();
+      }}
+      title="Set Password"
     />
   );
 }
@@ -553,10 +598,15 @@ export function LoggedInAuthNode({
   return (
     <>
       <Paragraph>Welcome, {session.userLabel}.</Paragraph>
-      <ZLoadedNode path={[...path, "user"]} />
+      <ZLoadedNode
+        path={[...path, "user"]}
+        map={(z) => {
+          // filter out setUsername, setPassword
+        }}
+      />
       <LogoutButton connection={connection} session={session} />
       <ChangeUsernameButton connection={connection} session={session} />
-      {/* <AsyncButton onPress={async () => {}} title="Log Out ALL sessions" /> */}
+      <ChangePasswordButton connection={connection} session={session} />
     </>
   );
 }

@@ -8,7 +8,7 @@ export function useActionsSheet(
   getActions: () => ActionButtonDef[]
 ): readonly [null | ReactNode, () => void] {
   const onOpen = useBottomSheet<void>(({ onClose }) => (
-    <VStack>
+    <VStack padded>
       {getActions().map((action) => (
         <ActionButton
           key={action.key}

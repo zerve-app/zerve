@@ -10,6 +10,7 @@ import {
   useConnectionNavigation,
   useGlobalNavigation,
 } from "../app/useNavigation";
+import { OptionsButton } from "../components/OptionsButton";
 
 export function ZFeature({
   path,
@@ -23,13 +24,7 @@ export function ZFeature({
   const { closeZ } = useConnectionNavigation();
 
   const [sheetContent, onOptions] = useActionsSheet(
-    (handlePress) => (
-      <IconButton
-        altTitle="Options"
-        onPress={handlePress}
-        icon={(p) => <FontAwesome {...p} name="ellipsis-h" />}
-      />
-    ),
+    (handlePress) => <OptionsButton onOptions={handlePress} />,
     () => [
       {
         key: "refresh",

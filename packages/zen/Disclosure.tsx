@@ -26,12 +26,14 @@ export function DisclosureSection({
   isLoading,
   right,
   defaultIsOpen = true,
+  onOpenChange,
 }: {
   children: ReactNode;
   header: ReactNode;
   isLoading?: boolean;
   right?: ReactNode;
   defaultIsOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 }) {
   const [isOpen, setIsOpen] = useState(defaultIsOpen);
   const childrenHeight = useSharedValue(1);
@@ -42,8 +44,9 @@ export function DisclosureSection({
   });
   const toggleDisclosure = useCallback(() => {
     doMeasure();
-    setIsOpen((isOpen) => !isOpen);
-  }, []);
+    setIsOpen(!isOpen);
+    onOpenChange?.(!isOpen);
+  }, [isOpen, onOpenChange]);
   const openValue = useSharedValue(defaultIsOpen ? 1 : 0);
   const childrenContainerOuterStyle = useAnimatedStyle(() => ({
     display: "flex",

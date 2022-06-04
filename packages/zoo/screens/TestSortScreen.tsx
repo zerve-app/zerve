@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import DraggableFlatList, {
   ScaleDecorator,
   ShadowDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
+import { TouchableOpacity } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { useSafeArea } from "../provider/SafeArea/useSafeArea";
+import { showToast } from "@zerve/zen";
 
 const NUM_ITEMS = 10;
 function getColor(i: number) {
@@ -47,16 +49,29 @@ function TestSortPage() {
           <TouchableOpacity
             onLongPress={drag}
             disabled={isActive}
+            onPress={() => {
+              showToast("row pressed");
+            }}
             style={[
               styles.rowItem,
               {
                 backgroundColor: item.backgroundColor,
-                // backgroundColor: isActive ? "red" : item.backgroundColor,
                 height: item.height,
               },
             ]}
           >
             <Text style={styles.text}>{item.label}</Text>
+            <TouchableOpacity
+              onLongPress={() => {
+                showToast("long pressed");
+              }}
+              style={[]}
+              onPress={() => {
+                showToast("pressed");
+              }}
+            >
+              <Text>Long Press me</Text>
+            </TouchableOpacity>
           </TouchableOpacity>
         </ScaleDecorator>
       </ShadowDecorator>
@@ -71,7 +86,11 @@ function TestSortPage() {
         contentInset={safeAreaInsets}
         data={data}
         activationDistance={10}
-        onDragEnd={({ data }) => setData(data)}
+        onDragEnd={(e) => {
+          if (e.from !== e.to) {
+            setData(e.data);
+          }
+        }}
         keyExtractor={(item) => item.key}
         renderItem={renderItem}
       />

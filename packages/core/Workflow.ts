@@ -48,7 +48,7 @@ function zWorkflowInstance(
   parentCalls: ZCallsCollection
 ) {
   const calls = zWorkflowCallsCollection(parentCalls);
-  return { start, calls };
+  return { calls };
 }
 
 export function zWorkflowEnvironment(

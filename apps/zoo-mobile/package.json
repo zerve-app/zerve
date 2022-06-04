@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "yarn start",
     "start": "expo start --dev-client",
+    "prebuild": "expo prebuild",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },

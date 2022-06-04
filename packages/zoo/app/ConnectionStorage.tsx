@@ -41,6 +41,25 @@ const connectionsNode = connectionStorage.getStorageNode(
   DefaultConnections
 );
 
+export function useConnectionDisclosedState(connectionKey: string) {
+  const node = connectionStorage.getStorageNode(
+    `disclosed-${connectionKey}`,
+    true
+  );
+  return connectionStorage.useNodeState(node);
+}
+
+export function setConnectionDisclosed(
+  connectionKey: string,
+  isDisclosed: boolean
+) {
+  const node = connectionStorage.getStorageNode(
+    `disclosed-${connectionKey}`,
+    true
+  );
+  node.set(isDisclosed);
+}
+
 export function useSavedConnections() {
   return connectionStorage.useNodeState(connectionsNode);
 }
@@ -59,7 +78,6 @@ export function useSavedConnection(connectionKey: string | null) {
 export const WEB_PRIMARY_CONN = __DEV__ ? "dev" : "main";
 
 export function useWebConnection(config: SiteConfig) {
-
   const savedConn = useSavedConnection(WEB_PRIMARY_CONN);
   const conn = useMemo(() => {
     return (
@@ -102,6 +120,15 @@ export function resetConnection(key: string, url: string) {
     } else {
       return [...connections, { key, name: key, url, session: null }];
     }
+  });
+}
+
+export function reorderConnection(fromIndex: number, toIndex: number) {
+  mutateConnections((connections) => {
+    const reordered = [...connections];
+    const [item] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, item);
+    return reordered;
   });
 }
 

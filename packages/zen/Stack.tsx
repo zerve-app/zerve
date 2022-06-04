@@ -14,12 +14,23 @@ export function HStack({ children }: { children: ReactNode }) {
 export function VStack({
   children,
   style,
+  padded,
 }: {
   children: ReactNode;
   style?: ViewStyle;
+  padded?: boolean;
 }) {
   return (
-    <View style={[{ flexDirection: "column", paddingVertical: 6 }, style]}>
+    <View
+      style={[
+        {
+          flexDirection: "column",
+          paddingVertical: 6,
+          paddingHorizontal: padded ? 12 : 0,
+        },
+        style,
+      ]}
+    >
       {Children.map(children, (el) =>
         el === null ? null : (
           <View

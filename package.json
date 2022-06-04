@@ -9,10 +9,13 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "concurrently \"yarn workspace zoo-server-standalone dev\" \"yarn workspace zoo-web dev\"",
+    "dev:zebra": "concurrently \"yarn workspace zebra-server dev\" \"yarn workspace zebra-web dev\"",
+    "dev:aardvark": "cross-env Z_ORIGIN=\"http://localhost:3988\" concurrently \"yarn workspace aardvark-server dev\" \"yarn workspace zoo-web dev\"",
     "dev:server": "concurrently \"yarn workspace zoo-server-standalone dev\"",
     "dev:web": "concurrently \"yarn workspace zoo-web dev\"",
     "dev:mobile": "watchman watch-del-all && yarn workspace zoo-mobile start",
-    "dev:ios": "yarn workspace zoo-mobile prebuild && open apps/zoo-mobile/ios/Zerve.xcworkspace",
+    "dev:ios": "yarn workspace zoo-mobile expo run:ios",
+    "dev:ios:xcode": "yarn workspace zoo-mobile prebuild && open apps/zoo-mobile/ios/Zerve.xcworkspace",
     "build:ios": "yarn workspace zoo-mobile eas build --platform=ios --profile=production",
     "build:ios:internal": "yarn workspace zoo-mobile eas build --platform=ios --profile=internal",
     "build:android:internal": "yarn workspace zoo-mobile eas build --platform=android --profile=internal",
@@ -27,6 +30,7 @@
     "react-native": "0.68.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "prettier": "^2.6.2",
     "turbo": "latest"
   },

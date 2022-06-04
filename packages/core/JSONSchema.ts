@@ -156,10 +156,21 @@ export const ObjectSchemaSchema = {
       additionalProperties: LeafSchemaSchema,
     },
     additionalProperties: {
-      title: "Additional Properties",
       oneOf: [FalseSchema, ...LeafSchemaSchema.oneOf],
     } as const,
+    propertyTitles: {
+      description:
+        "The keys match the Properties, and the values act as override titles",
+      type: "object",
+      additionalProperties: { type: "string" },
+    } as const,
     required: { type: "array", items: { type: "string" } },
+  },
+  propertyTitles: {
+    properties: "Properties",
+    required: "Required",
+    propertyTitles: "Property Titles",
+    additionalProperties: "Additional Properties",
   },
   required: [
     "type",

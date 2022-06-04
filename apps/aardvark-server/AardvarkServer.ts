@@ -27,7 +27,7 @@ import {
   zWorkflowEnvironment,
   zWorkflowCallStep,
 } from "@zerve/core/Workflow";
-const port = process.env.PORT ? Number(process.env.PORT) : 3888;
+const port = process.env.PORT ? Number(process.env.PORT) : 3988;
 
 const homeDir = process.env.HOME;
 const defaultZDataDir = `${homeDir}/.zerve`;
@@ -56,6 +56,7 @@ export async function startApp() {
   const SystemCommands = createSystemCommands();
   const SystemFiles = createSystemFiles("/");
   const DataDirFiles = createSystemFiles(dataDir);
+  const Data = await createCoreData(dataDir);
 
   const secrets = await SystemFiles.z.ReadJSON.call({
     path: secretsFile,
@@ -82,8 +83,15 @@ export async function startApp() {
 
   const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
+  const Store = await createGeneralStore(
+    Data,
+    createSystemFiles(join(dataDir, "ZerveStoreCache")),
+    "ZerveStore"
+  );
+
   const zRoot = createZContainer({
     Info: createZStatic("Aardvark"),
+    Zerve: Store.z.State,
     Auth: await createAuth({
       strategies: {
         Email: await createEmailAuthStrategy(Email, {
@@ -126,6 +134,7 @@ export async function startApp() {
               }),
             }
           ),
+          ZerveStore: Store,
           deployZebra: createZAction(NullSchema, NullSchema, async () => {
             console.log("Zebra deploy behavior?! You must be Eric");
             return null;

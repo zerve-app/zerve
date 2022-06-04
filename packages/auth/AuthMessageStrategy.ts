@@ -71,6 +71,7 @@ export function createGenericMessageAuthStrategy<
       payload: AuthorizePayload,
       strategyFiles: SystemFilesModule
     ) => {
+      console.log("hi", payload);
       const { address } = payload;
       const validateAddress = configInput?.validateAddress;
       if (validateAddress && !validateAddress(address)) {
@@ -81,6 +82,8 @@ export function createGenericMessageAuthStrategy<
         .digest()
         .toString("hex");
       const addressFileSubpath = `${addressKey}.json`;
+      console.log("yooo");
+
       const addressFile: AddressFileData = (await strategyFiles.z.ReadJSON.call(
         {
           path: addressFileSubpath,
@@ -90,6 +93,7 @@ export function createGenericMessageAuthStrategy<
         addressKey,
       };
       let authRequest: AddressFileData["authRequest"] = addressFile.authRequest;
+      console.log(authRequest);
       if (authRequest) {
         const { requestTime, token } = authRequest;
         const now = Date.now();
@@ -112,6 +116,8 @@ export function createGenericMessageAuthStrategy<
               authRequest: null,
             } as AddressFileData,
           });
+          console.log("ok");
+
           return { strategyKey: addressKey, authTime: Date.now(), address };
         } else {
           if (now - config.authResetMs < requestTime) {
@@ -142,6 +148,8 @@ export function createGenericMessageAuthStrategy<
           token,
           requestTime: Date.now(),
         };
+        console.log("sending");
+
         await handleMessageSend(token, payload.address);
       }
       // saving the strategy address file

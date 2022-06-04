@@ -1,5 +1,5 @@
 import React from "react";
-import { AsyncButton, Button } from "@zerve/zen";
+import { AsyncButton, Button, Form } from "@zerve/zen";
 import { useEffect, useRef, useState } from "react";
 import { JSONSchemaForm } from "./JSONSchemaForm";
 import {
@@ -37,31 +37,42 @@ export function JSONSchemaEditor({
   }, [value]);
   return (
     <>
-      <JSONSchemaForm
-        value={valueState}
-        onValue={setValueState}
-        schema={schema}
-        schemaStore={schemaStore || EmptySchemaStore}
-      />
-      {(valueState !== value || onSubmit) && (
-        <AsyncButton
-          title={saveLabel || "Save"}
-          primary
-          onPress={async () => {
+      <Form
+        onSubmit={async () => {
+          await onValue?.(valueState);
+          await onSubmit?.(valueState);
+        }}
+      >
+        <JSONSchemaForm
+          value={valueState}
+          onValue={setValueState}
+          schema={schema}
+          onSubmitEditing={async () => {
             await onValue?.(valueState);
             await onSubmit?.(valueState);
           }}
+          schemaStore={schemaStore || EmptySchemaStore}
         />
-      )}
-      {(valueState !== value || !!onCancel) && (
-        <Button
-          onPress={() => {
-            setValueState(value);
-            onCancel?.();
-          }}
-          title="Cancel"
-        />
-      )}
+        {(valueState !== value || onSubmit) && (
+          <AsyncButton
+            title={saveLabel || "Save"}
+            primary
+            onPress={async () => {
+              await onValue?.(valueState);
+              await onSubmit?.(valueState);
+            }}
+          />
+        )}
+        {(valueState !== value || !!onCancel) && (
+          <Button
+            onPress={() => {
+              setValueState(value);
+              onCancel?.();
+            }}
+            title="Cancel"
+          />
+        )}
+      </Form>
     </>
   );
 }

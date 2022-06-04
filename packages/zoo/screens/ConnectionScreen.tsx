@@ -123,7 +123,7 @@ export function ConnectionPage({
   return (
     <>
       <ScreenHeader title={`Connection: ${conn.name}`} corner={optionsButton} />
-      <VStack>
+      <VStack padded>
         <ConnectionStatusRow />
         <ZLoadedNode path={[]} />
       </VStack>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   DisclosureSection,
   IconButton,
@@ -14,7 +14,11 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useSavedConnections } from "../app/ConnectionStorage";
+import {
+  useSavedConnections,
+  useConnectionDisclosedState,
+  setConnectionDisclosed,
+} from "../app/ConnectionStorage";
 import { ZerveLogo } from "../components/ZerveLogo";
 import {
   SavedConnection,
@@ -69,8 +73,14 @@ function ConnectionSection({ connection }: { connection: SavedConnection }) {
       },
     ]
   );
+  const isConnectionDisclosed = useConnectionDisclosedState(connection.key);
   return (
     <DisclosureSection
+      defaultIsOpen={isConnectionDisclosed}
+      onOpenChange={useMemo(
+        () => (isOpen) => setConnectionDisclosed(connection.key, isOpen),
+        [connection.key]
+      )}
       header={<Label>{connection.name}</Label>}
       right={
         <>
@@ -79,7 +89,7 @@ function ConnectionSection({ connection }: { connection: SavedConnection }) {
         </>
       }
     >
-      <VStack>
+      <VStack padded>
         <ZLoadedNode path={[]} onActions={setActions} />
       </VStack>
     </DisclosureSection>
@@ -103,8 +113,8 @@ export default function HomeScreen({
           </SavedConnectionProvider>
         );
       })}
-      {/* <LocalDocsSection /> */}
-      <VStack>
+
+      <VStack padded>
         <LinkRowGroup
           links={[
             {

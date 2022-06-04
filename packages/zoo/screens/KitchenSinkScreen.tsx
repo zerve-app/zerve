@@ -11,7 +11,7 @@ export default function KitchenSinkScreen({
   return (
     <ScreenContainer scroll>
       <ScreenHeader title="Kitchen Sink" />
-      <VStack>
+      <VStack padded>
         <LinkRowGroup
           links={[
             {
