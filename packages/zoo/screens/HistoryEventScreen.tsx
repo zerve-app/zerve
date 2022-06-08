@@ -7,7 +7,7 @@ import { HomeStackScreenProps } from "../app/Links";
 import { useHistoryEvent } from "../app/History";
 import { format } from "date-fns";
 import NotFoundScreen from "./NotFoundScreen";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
+import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 
 export default function HistoryEventScreen({
   navigation,
@@ -20,7 +20,7 @@ export default function HistoryEventScreen({
     <ScreenContainer scroll>
       <ScreenHeader title={event.title} />
       <ThemedText>{format(new Date(event.time), "p P")}</ThemedText>
-      <JSONSchemaForm value={event.body} schema={{}} />
+      <JSONSchemaEditor value={event.body} schema={{}} />
     </ScreenContainer>
   );
 }

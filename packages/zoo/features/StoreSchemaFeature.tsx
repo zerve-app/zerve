@@ -9,7 +9,7 @@ import {
   useStoreSchemaNavigation,
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
-import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
+import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { displayStoreFileName } from "@zerve/core";
 import { showToast } from "@zerve/zen/Toast";
 
@@ -67,7 +67,7 @@ export function StoreSchemaFeature({
         onLongPress={openOptions}
         onBack={leave}
       />
-      <JSONSchemaEditor
+      <JSONSchemaForm
         onValue={async (v) => {
           await saveSchema.mutateAsync({ schemaName: schema, schema: v });
           showToast("Schema has been updated.");

@@ -33,7 +33,7 @@ import {
   useStoreNavigation,
 } from "../app/useNavigation";
 import { FontAwesome } from "@expo/vector-icons";
-import { JSONSchemaForm } from "./JSONSchemaForm";
+import { JSONSchemaEditor } from "./JSONSchemaEditor";
 import { Icon } from "@zerve/zen/Icon";
 import { getZIcon } from "../app/ZIcon";
 import { storeHistoryEvent } from "../app/History";
@@ -44,7 +44,7 @@ import {
   ZSchema,
 } from "@zerve/core";
 import { View } from "react-native";
-import { JSONSchemaEditor } from "./JSONSchemaEditor";
+import { JSONSchemaForm } from "./JSONSchemaForm";
 import { showToast } from "../app/Toast";
 import { ZLoadedNode } from "./ZLoadedNode";
 import { useTextInputFormModal } from "./TextInputFormModal";
@@ -113,7 +113,7 @@ export function ZStateNode({
   );
   if (isLoading) return <Spinner />;
   return (
-    <JSONSchemaForm
+    <JSONSchemaEditor
       value={node?.node}
       schema={node?.type?.value}
       onValue={(value) => {
@@ -306,7 +306,7 @@ function LoginStrategyForm({
     return (
       <>
         <InfoRow label={strat.label} value={address} />
-        <JSONSchemaEditor
+        <JSONSchemaForm
           schema={CodeSchema}
           saveLabel="Log In"
           onCancel={() => {
@@ -350,7 +350,7 @@ function LoginStrategyForm({
 
   return (
     <>
-      <JSONSchemaEditor
+      <JSONSchemaForm
         schema={schema}
         saveLabel="Send me a Code"
         value={address}
@@ -402,7 +402,7 @@ function UsernamePasswordLoginForm({
 
   return (
     <>
-      <JSONSchemaEditor
+      <JSONSchemaForm
         schema={UsernamePasswordSchema}
         saveLabel="Log In"
         value={InitialLoginFormValue}
@@ -702,7 +702,7 @@ export function ZActionNode({
 
   return (
     <>
-      <JSONSchemaForm
+      <JSONSchemaEditor
         value={actionValue}
         onValue={setActionValue}
         schema={type.payload}
@@ -741,7 +741,7 @@ export function ZGettableNode({
   if (type[".t"] !== "Gettable")
     throw new Error("Unexpected z type for ZGettableNode");
   return (
-    <JSONSchemaForm
+    <JSONSchemaEditor
       value={value}
       schema={type.value}
       schemaStore={EmptySchemaStore}
@@ -763,7 +763,7 @@ export function ZObservableNode({
   if (type[".t"] !== "Observable")
     throw new Error("Unexpected z type for ZObservableNode");
   return (
-    <JSONSchemaForm
+    <JSONSchemaEditor
       value={value}
       schema={type.value}
       schemaStore={EmptySchemaStore}
@@ -798,7 +798,7 @@ export function ZStaticNode({
             );
           }
           return (
-            <JSONSchemaForm
+            <JSONSchemaEditor
               key={childIndex}
               value={childValue}
               schema={{}}
@@ -810,7 +810,11 @@ export function ZStaticNode({
     );
   }
   return (
-    <JSONSchemaForm value={value} schema={{}} schemaStore={EmptySchemaStore} />
+    <JSONSchemaEditor
+      value={value}
+      schema={{}}
+      schemaStore={EmptySchemaStore}
+    />
   );
 }
 

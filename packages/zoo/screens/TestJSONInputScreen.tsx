@@ -8,7 +8,7 @@ import {
   PageTitle,
   Paragraph,
 } from "@zerve/zen";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
+import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import { JSONSchema } from "@zerve/core";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "../components/ScreenContainer";
@@ -179,32 +179,32 @@ export default function TestJSONInputScreen({
         header={<Label>Read-Only JSON Schema</Label>}
       >
         {/* <JSONSchemaForm value={null} schema={{}} /> */}
-        <JSONSchemaForm value={null} schema={{ type: "null" }} />
-        <JSONSchemaForm
+        <JSONSchemaEditor value={null} schema={{ type: "null" }} />
+        <JSONSchemaEditor
           value={12.1}
           schema={{
             type: "number",
           }}
         />
-        <JSONSchemaForm
+        <JSONSchemaEditor
           value={12}
           schema={{
             type: "integer",
           }}
         />
-        <JSONSchemaForm
+        <JSONSchemaEditor
           value={"woah"}
           schema={{
             type: "string",
           }}
         />
-        <JSONSchemaForm
+        <JSONSchemaEditor
           value={true}
           schema={{
             type: "boolean",
           }}
         />
-        <JSONSchemaForm
+        <JSONSchemaEditor
           value={["list", "of", "strings"]}
           schema={{
             type: "array",

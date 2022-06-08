@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { RootStackScreenProps } from "../app/Links";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
+import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import ScreenContainer from "../components/ScreenContainer";
 
 export default function JSONInputScreen({
@@ -12,7 +12,7 @@ export default function JSONInputScreen({
   const { onValue } = route.params;
   return (
     <ScreenContainer scroll>
-      <JSONSchemaForm
+      <JSONSchemaEditor
         value={value}
         schema={route.params.schema}
         onValue={

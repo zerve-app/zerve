@@ -7,7 +7,7 @@ import {
 } from "@zerve/client/Query";
 import { useNavigation } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
-import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
+import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { displayStoreFileName } from "@zerve/core";
 import { showToast } from "@zerve/zen/Toast";
 import { useMemo } from "react";
@@ -61,7 +61,7 @@ export function StoreFileSchemaFeature({
         onBack={backTo}
       />
       {data && !isLoading && (
-        <JSONSchemaEditor
+        <JSONSchemaForm
           saveLabel="Save Schema"
           value={data?.schema}
           onValue={async (schema) => {

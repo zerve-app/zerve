@@ -14,7 +14,7 @@ import {
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
 import { showToast } from "@zerve/zen/Toast";
-import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
+import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
 import { useActionsSheet } from "@zerve/zen";
 import { useTextInputFormModal } from "../components/TextInputFormModal";
@@ -118,7 +118,7 @@ export function FileFeature({
         onBack={leave}
       />
       {data && (
-        <JSONSchemaEditor
+        <JSONSchemaForm
           onValue={async (value) => {
             await saveFile.mutateAsync({ name, value });
             showToast("File has been updated.");
