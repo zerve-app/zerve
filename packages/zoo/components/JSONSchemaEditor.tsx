@@ -145,12 +145,14 @@ function expandSchema(
 export function JSONSchemaObjectForm({
   value,
   onValue,
+  id,
   schema,
   schemaStore,
   onSubmitEditing,
 }: {
   value: any;
   onValue?: (v: any) => void;
+  id: string;
   schema: JSONSchema;
   schemaStore: SchemaStore;
   onSubmitEditing?: () => void;
@@ -251,6 +253,7 @@ export function JSONSchemaObjectForm({
         const isLastKey = propertyIndex === allKeys.length - 1;
         return (
           <FormField
+            id={`${id}-${propertyName}`}
             key={propertyName}
             value={value?.[propertyName]}
             schema={expandedPropertiesSchema[propertyName]}
@@ -274,6 +277,7 @@ export function JSONSchemaObjectForm({
       })}
       {otherKeys.map((itemName) => (
         <FormField
+          id={`${id}-${itemName}`}
           key={itemName}
           value={value?.[itemName]}
           schema={expandedAdditionalPropertiesSchema}
@@ -325,12 +329,14 @@ export function JSONSchemaArrayForm({
   value,
   onValue,
   schema,
+  id,
   schemaStore,
   onSubmitEditing,
 }: {
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  id: string;
   schemaStore: SchemaStore;
   onSubmitEditing?: () => void;
 }) {
@@ -368,6 +374,7 @@ export function JSONSchemaArrayForm({
             key={childValueIndex}
           >
             <FormField
+              id={`${id}_${childValueIndex}`}
               label={`#${childValueIndex}`}
               value={childValue}
               schema={expandedItemsSchema}
@@ -407,10 +414,12 @@ function ObjectFormField({
   onValue,
   schema,
   actions,
+  id,
 }: {
   label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
+  id: string;
   schema: JSONSchema;
   actions?: ActionButtonDef[];
 }) {
@@ -418,6 +427,7 @@ function ObjectFormField({
   return (
     <>
       <FormFieldHeader
+        id={id}
         label={label || "?"}
         typeLabel={schema.title || schema.type || "object"}
         value={value}
@@ -438,12 +448,14 @@ function ObjectFormField({
   );
 }
 function ArrayFormField({
+  id,
   label,
   value,
   onValue,
   schema,
   actions,
 }: {
+  id: string;
   label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
@@ -454,6 +466,7 @@ function ArrayFormField({
   return (
     <>
       <FormFieldHeader
+        id={id}
         label={label || "?"}
         typeLabel={schema.title || schema.type || "array"}
         value={value}
@@ -475,12 +488,14 @@ function ArrayFormField({
 }
 
 function EnumFormField({
+  id,
   label,
   value,
   onValue,
   schema,
   actions,
 }: {
+  id: string;
   label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
@@ -493,12 +508,14 @@ function EnumFormField({
   return (
     <>
       <FormFieldHeader
+        id={id}
         label={label || "?"}
         typeLabel={schema.title || "option"}
         value={value}
         actions={actions}
       />
       <Dropdown
+        id={id}
         value={value}
         unselectedLabel={`Choose: ${schema.enum.slice(0, 5).join(",")}`}
         onOptionSelect={onValue}
@@ -513,12 +530,14 @@ function EnumFormField({
 }
 
 function FormFieldHeader({
+  id,
   label,
   typeLabel,
   value,
   schema,
   actions,
 }: {
+  id: string;
   label: string | ReactNode;
   typeLabel?: string;
   value?: any;
@@ -571,6 +590,7 @@ function FormFieldHeader({
 }
 
 export function OneOfFormField({
+  id,
   label,
   value,
   onValue,
@@ -578,6 +598,7 @@ export function OneOfFormField({
   actions,
   onSubmitEditing,
 }: {
+  id: string;
   label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
@@ -607,6 +628,7 @@ export function OneOfFormField({
       {matchedSchema == null ? (
         <>
           <FormFieldHeader
+            id={id}
             value={value}
             label={label || "?"}
             actions={fieldActions}
@@ -614,6 +636,7 @@ export function OneOfFormField({
 
           {onValue && (
             <Dropdown
+              id={id}
               options={unionOptions.options}
               unselectedLabel={`Select Type`}
               value={matched}
@@ -627,6 +650,7 @@ export function OneOfFormField({
         </>
       ) : (
         <FormField
+          id={id}
           value={value}
           onValue={onValue}
           schema={matchedSchema}
@@ -646,6 +670,7 @@ export function FormField({
   label,
   value,
   onValue,
+  id,
   schema,
   typeLabel,
   actions,
@@ -654,6 +679,7 @@ export function FormField({
   label: string | ReactNode;
   value: any;
   onValue?: (v: any) => void;
+  id: string;
   schema: JSONSchema;
   typeLabel?: string;
   actions?: ActionButtonDef[];
@@ -669,6 +695,7 @@ export function FormField({
   if (isLeafType(expandedSchema.type) || expandedSchema.const != null) {
     return (
       <LeafFormField
+        id={id}
         value={value}
         schema={expandedSchema}
         label={label}
@@ -683,6 +710,7 @@ export function FormField({
   if (expandedSchema.oneOf) {
     return (
       <OneOfFormField
+        id={id}
         value={value}
         schema={expandedSchema}
         label={label}
@@ -695,6 +723,7 @@ export function FormField({
   if (expandedSchema.enum) {
     return (
       <EnumFormField
+        id={id}
         value={value}
         schema={expandedSchema}
         label={label}
@@ -706,6 +735,7 @@ export function FormField({
   if (expandedSchema.type === "object") {
     return (
       <ObjectFormField
+        id={id}
         value={value}
         schema={expandedSchema}
         label={label}
@@ -718,6 +748,7 @@ export function FormField({
   if (expandedSchema.type === "array") {
     return (
       <ArrayFormField
+        id={id}
         value={value}
         schema={expandedSchema}
         label={label}
@@ -741,9 +772,11 @@ export function LeafFormField({
   schema,
   actions,
   onSubmitEditing,
+  id,
 }: {
   label: string | ReactNode;
   value: any;
+  id: string;
   onValue?: (v: any) => void;
   schema: LeafSchema;
   actions: ActionButtonDef[];
@@ -784,6 +817,7 @@ export function LeafFormField({
     return (
       <>
         <FormFieldHeader
+          id={id}
           label={label}
           typeLabel={schema.title || schema.type}
           value={value}
@@ -883,6 +917,7 @@ export function JSONSchemaEditor({
   schema,
   label,
   schemaStore,
+  id,
   onSubmitEditing,
 }: {
   value: any;
@@ -891,6 +926,7 @@ export function JSONSchemaEditor({
   label?: string | ReactNode;
   schemaStore: SchemaStore;
   onSubmitEditing?: () => void;
+  id: string;
 }) {
   const expandedSchema = useMemo(
     () => expandSchema(schema, schemaStore),
@@ -908,6 +944,7 @@ export function JSONSchemaEditor({
       <>
         {onValue && (
           <Dropdown
+            id={`${id}`}
             options={unionOptions.options}
             value={matched}
             unselectedLabel={`Select Type...`}
@@ -920,6 +957,7 @@ export function JSONSchemaEditor({
         )}
         {matchedSchema != null && (
           <JSONSchemaEditor
+            id={`${id}`}
             value={value}
             onValue={onValue}
             schema={matchedSchema}
@@ -936,6 +974,7 @@ export function JSONSchemaEditor({
   if (expandedSchema.type === "array") {
     return (
       <JSONSchemaArrayForm
+        id={id}
         value={value}
         onValue={onValue}
         schema={expandedSchema}
@@ -947,6 +986,7 @@ export function JSONSchemaEditor({
   if (expandedSchema.type === "object") {
     return (
       <JSONSchemaObjectForm
+        id={id}
         value={value}
         onValue={onValue}
         schema={expandedSchema}

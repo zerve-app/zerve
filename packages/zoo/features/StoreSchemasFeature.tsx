@@ -8,7 +8,10 @@ import {
 import ScreenHeader from "../components/ScreenHeader";
 import { useZNodeValue } from "@zerve/client/Query";
 import { useCreateSchema } from "@zerve/client/Mutation";
-import { useStoreNavigation } from "../app/useNavigation";
+import {
+  useConnectionNavigation,
+  useStoreNavigation,
+} from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
 import { useTextInputFormModal } from "../components/TextInputFormModal";
@@ -40,6 +43,7 @@ export function StoreSchemasFeature({ storePath }: { storePath: string[] }) {
     "$schemas",
   ]);
 
+  const { backToZ } = useConnectionNavigation();
   const { openSchema } = useStoreNavigation(storePath);
   const [optionsButton, openOptions] = useActionsSheet(
     (onOpen) => <OptionsButton onOptions={onOpen} />,
@@ -53,6 +57,9 @@ export function StoreSchemasFeature({ storePath }: { storePath: string[] }) {
         isLoading={isLoading}
         corner={optionsButton}
         onLongPress={openOptions}
+        onBack={() => {
+          backToZ(storePath);
+        }}
       />
       <LinkRowGroup
         links={Object.entries(data || {}).map(([schemaKey, schema]) => {

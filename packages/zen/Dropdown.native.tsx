@@ -12,11 +12,13 @@ export function Dropdown<OptionValues>({
   options,
   value,
   onOptionSelect,
+  id,
   unselectedLabel = "Select...",
 }: {
   options: DropdownOption[];
   value: boolean | string | number;
   onOptionSelect: (optionValue: string | number) => void;
+  id: string;
   unselectedLabel?: string;
 }) {
   const selectedOption = options.find((o) => o.value === value);

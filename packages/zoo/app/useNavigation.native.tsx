@@ -47,7 +47,7 @@ export function useConnectionNavigation() {
       openZ: (path: string[]) => {
         const connection = conn?.key;
         if (!connection) throw new Error("Connection required to navigate");
-        nav.navigate("HomeStack", {
+        nav.push("HomeStack", {
           screen: "ZNode",
           params: { connection, path },
         });

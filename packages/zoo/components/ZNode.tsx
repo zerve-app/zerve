@@ -596,18 +596,19 @@ export function LoggedInAuthNode({
   path: string[];
 }) {
   return (
-    <>
+    <VStack padded>
       <Paragraph>Welcome, {session.userLabel}.</Paragraph>
       <ZLoadedNode
         path={[...path, "user"]}
-        map={(z) => {
-          // filter out setUsername, setPassword
-        }}
+
+        // map={(z) => {
+        //   // filter out setUsername, setPassword
+        // }}
       />
       <LogoutButton connection={connection} session={session} />
       <ChangeUsernameButton connection={connection} session={session} />
       <ChangePasswordButton connection={connection} session={session} />
-    </>
+    </VStack>
   );
 }
 export function ZAuthNode({

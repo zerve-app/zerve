@@ -62,6 +62,7 @@ export function StoreFileSchemaFeature({
       />
       {data && !isLoading && (
         <JSONSchemaForm
+          id={`$fileSchema-${name}`}
           saveLabel="Save Schema"
           value={data?.schema}
           onValue={async (schema) => {

@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactElement, ReactNode, useState } from "react";
 import { Text } from "dripsy";
 import { Pressable } from "react-native";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -51,9 +51,9 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
 const ActionMenuItem = React.memo(ActionMenuItemUnmemo);
 
 export function useActionsSheet(
-  renderButton: (onOpen: () => void) => ReactNode,
+  renderButton: (onOpen: () => void) => ReactElement,
   getActions: () => ActionButtonDef[]
-): readonly [null | ReactNode, () => void] {
+): readonly [null | ReactElement, () => void] {
   const [isOpen, setIsOpen] = useState(false);
   function onOpen() {
     setIsOpen(true);

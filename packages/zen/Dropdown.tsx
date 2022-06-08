@@ -72,9 +72,11 @@ export function Dropdown<OptionValues>({
   value,
   onOptionSelect,
   unselectedLabel = "Select...",
+  id,
 }: {
   options: DropdownOption[];
   value: boolean | string | number;
+  id: string;
   onOptionSelect: (optionValue: string | number) => void;
   unselectedLabel?: string;
 }) {
@@ -83,6 +85,7 @@ export function Dropdown<OptionValues>({
   return (
     <Select.Root value={value} onValueChange={onOptionSelect}>
       <Select.Trigger
+        id={id}
         style={{
           border: "none",
           display: "flex",

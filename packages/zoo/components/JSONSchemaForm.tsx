@@ -9,6 +9,7 @@ import {
 } from "@zerve/core";
 
 export function JSONSchemaForm({
+  id,
   value,
   schema,
   saveLabel,
@@ -17,6 +18,7 @@ export function JSONSchemaForm({
   onSubmit,
   schemaStore,
 }: {
+  id: string;
   value: any;
   schema: any;
   saveLabel?: string;
@@ -44,6 +46,7 @@ export function JSONSchemaForm({
         }}
       >
         <JSONSchemaEditor
+          id={id}
           value={valueState}
           onValue={setValueState}
           schema={schema}

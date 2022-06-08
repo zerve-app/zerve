@@ -68,6 +68,7 @@ export function StoreSchemaFeature({
         onBack={leave}
       />
       <JSONSchemaForm
+        id={`$schemas/${schema}`}
         onValue={async (v) => {
           await saveSchema.mutateAsync({ schemaName: schema, schema: v });
           showToast("Schema has been updated.");
