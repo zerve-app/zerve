@@ -160,6 +160,7 @@ export const LeafSchemaSchema = {
     ...PrimitiveSchemaSchema.oneOf,
     // ConstSchemaSchema // disabled for now because the union dropdown broken when selecting object type
   ],
+  default: { type: "null" },
 } as const;
 export type LeafSchema = FromSchema<typeof LeafSchemaSchema>;
 

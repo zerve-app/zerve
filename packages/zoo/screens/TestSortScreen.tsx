@@ -9,7 +9,7 @@ import { TouchableOpacity } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { useSafeArea } from "../provider/SafeArea/useSafeArea";
-import { showToast } from "@zerve/zen";
+import { Input, showToast } from "@zerve/zen";
 
 const NUM_ITEMS = 10;
 function getColor(i: number) {

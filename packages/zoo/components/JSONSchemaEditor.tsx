@@ -6,6 +6,7 @@ import {
   JSONSchema,
   JSONSchemaPluck,
   LeafSchema,
+  SchemaStore,
 } from "@zerve/core";
 import {
   Button,
@@ -554,7 +555,7 @@ function FormFieldHeader({
             paddingBottom: 6,
           }}
         >
-          {label && typeof label === "string" ? (
+          {typeof label === "string" ? (
             <>
               <Label>{label}</Label>
               <View style={{ width: 40 }} />
@@ -617,7 +618,9 @@ export function OneOfFormField({
         key: "ChangeType",
         title: "Change Schema Option",
         icon: "crosshairs",
-        onPress: () => {},
+        onPress: () => {
+          onValue(undefined);
+        },
       },
     ],
     [actions, () => {}]
@@ -638,10 +641,10 @@ export function OneOfFormField({
             <Dropdown
               id={id}
               options={unionOptions.options}
-              unselectedLabel={`Select Type`}
+              unselectedLabel={`Select Type!`}
               value={matched}
               onOptionSelect={(optionValue) => {
-                const converter = unionOptions.converters[optionValue];
+                const converter = unionOptions.converters[Number(optionValue)];
                 const convertedValue = converter(value);
                 onValue(convertedValue);
               }}
@@ -785,12 +788,12 @@ export function LeafFormField({
   const description = schema.description ? (
     <Paragraph>{schema.description}</Paragraph>
   ) : null;
-
   if (schema.const != null) {
     if (value === schema.const) {
       return (
         <>
           <FormFieldHeader
+            id={id}
             label={`${label || ""}: ${schema.title || schema.const}`}
             typeLabel={``}
             value={value}
@@ -803,6 +806,7 @@ export function LeafFormField({
     return (
       <>
         <FormFieldHeader
+          id={id}
           label={`${label || ""}: ${JSON.stringify(value)} `}
           typeLabel={`${schema.title || schema.const}`}
           value={value}
@@ -837,11 +841,13 @@ export function LeafFormField({
       </>
     );
   }
+
   if (schema.type === "number" || schema.type === "integer") {
     const defaultNumber = schema.default || 0;
     return (
       <>
         <FormFieldHeader
+          id={id}
           label={label}
           typeLabel={schema.title || schema.type}
           value={value}
@@ -865,6 +871,7 @@ export function LeafFormField({
     return (
       <>
         <FormFieldHeader
+          id={id}
           label={label}
           typeLabel={schema.title || schema.type}
           value={value}
@@ -879,6 +886,7 @@ export function LeafFormField({
     return (
       <>
         <FormFieldHeader
+          id={id}
           label={label}
           typeLabel={schema.title || "Empty"}
           value={value}
@@ -935,6 +943,8 @@ export function JSONSchemaEditor({
   if (!expandedSchema) {
     return <ThemedText>Value not allowed.</ThemedText>;
   }
+  if (typeof expandedSchema !== "object")
+    throw new Error("Schema was not properly expanded");
 
   if (expandedSchema.oneOf) {
     const unionOptions = exploreUnionSchema(expandedSchema);
@@ -944,11 +954,12 @@ export function JSONSchemaEditor({
       <>
         {onValue && (
           <Dropdown
-            id={`${id}`}
+            id={`${id}-oneof-select`}
             options={unionOptions.options}
-            value={matched}
+            value={String(matched)}
             unselectedLabel={`Select Type...`}
             onOptionSelect={(optionValue) => {
+              debugger;
               const converter = unionOptions.converters[optionValue];
               const convertedValue = converter(value);
               onValue(convertedValue);

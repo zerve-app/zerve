@@ -9,7 +9,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Icon } from "./Icon";
 
 export type DropdownOption = {
-  value: boolean | string | number;
+  value: string;
   icon?: any;
   title: string;
 };
@@ -54,7 +54,7 @@ function DropdownItem({
         </Select.ItemText>
 
         {active && (
-          <FontAwesome
+          <Icon
             name="check"
             color={focused ? inverted.text : colors.text}
             size={24}
@@ -75,15 +75,15 @@ export function Dropdown<OptionValues>({
   id,
 }: {
   options: DropdownOption[];
-  value: boolean | string | number;
+  value: string;
   id: string;
-  onOptionSelect: (optionValue: string | number) => void;
+  onOptionSelect: (optionValue: string) => void;
   unselectedLabel?: string;
 }) {
   const selectedOption = options.find((opt) => opt.value === value);
   const { background } = useColors();
   return (
-    <Select.Root value={value} onValueChange={onOptionSelect}>
+    <Select.Root value={value || "__nomatchkey"} onValueChange={onOptionSelect}>
       <Select.Trigger
         id={id}
         style={{

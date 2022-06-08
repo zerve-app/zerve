@@ -51,7 +51,7 @@ export function StoreSchemasFeature({ storePath }: { storePath: string[] }) {
   );
 
   return (
-    <VStack>
+    <>
       <ScreenHeader
         title={"Schemas"}
         isLoading={isLoading}
@@ -61,19 +61,21 @@ export function StoreSchemasFeature({ storePath }: { storePath: string[] }) {
           backToZ(storePath);
         }}
       />
-      <LinkRowGroup
-        links={Object.entries(data || {}).map(([schemaKey, schema]) => {
-          return {
-            key: schemaKey,
-            icon: "crosshairs",
-            title: displayStoreFileName(schemaKey),
-            onPress: () => {
-              openSchema(schemaKey);
-            },
-          };
-        })}
-      />
-      <CreateSchemaButton storePath={storePath} />
-    </VStack>
+      <VStack padded>
+        <LinkRowGroup
+          links={Object.entries(data || {}).map(([schemaKey, schema]) => {
+            return {
+              key: schemaKey,
+              icon: "crosshairs",
+              title: displayStoreFileName(schemaKey),
+              onPress: () => {
+                openSchema(schemaKey);
+              },
+            };
+          })}
+        />
+        <CreateSchemaButton storePath={storePath} />
+      </VStack>
+    </>
   );
 }

@@ -1,21 +1,73 @@
-function getTypeOf(v) {
-  if (v === null) return "null";
-  if (Array.isArray(v)) return "array";
-  return typeof v;
+import { JSONSchema } from "json-schema-to-ts";
+import { JSONSchema7 } from "json-schema-to-ts/lib/definitions";
+
+export const AllJSONSchemaTypes = [
+  "string",
+  "number",
+  "integer",
+  "boolean",
+  "object",
+  "array",
+  "null",
+] as const;
+export type AllJSONSchemaType =
+  typeof AllJSONSchemaTypes[keyof typeof AllJSONSchemaTypes];
+
+function getTypeOf(jsonValue: any): AllJSONSchemaType {
+  if (jsonValue === null) return "null";
+  if (Array.isArray(jsonValue)) return "array";
+  const typeofJsonValue = typeof jsonValue;
+  if (typeofJsonValue === "object") return "object";
+  if (typeofJsonValue === "string") return "string";
+  if (typeofJsonValue === "number") return "number";
+  if (typeofJsonValue === "boolean") return "boolean";
+  throw new Error("Cannot get JSON type of: " + jsonValue);
 }
 
-export function exploreUnionSchema(schema) {
+function getDefaultValueOfSchema(schema: JSONSchema) {
+  if (typeof schema !== "object")
+    throw new Error("cannot get default of non-object schema");
+  if (schema.default) return schema.default;
+  if (schema.const !== undefined) return schema.const;
+  if (schema.type === "null") return null;
+  if (schema.type === "string") return schema.default || "";
+  if (schema.type === "number") return schema.default || 0;
+  if (schema.type === "integer") return schema.default || 0;
+  if (schema.type === "boolean") return schema.default || false;
+  if (schema.type === "array") return []; // fix to handle array schemas such as tuples that require default values?
+  if (schema.type === "object") {
+    // todo provide defaults that are specified here in the schema
+    const objDefaults = {};
+    Object.entries(schema.properties).forEach(
+      ([propertyName, propertySchema]) => {
+        objDefaults[propertyName] = getDefaultValueOfSchema(propertySchema);
+      }
+    );
+    return objDefaults;
+  }
+}
+
+type CalculatedUnionOption = {
+  title: string;
+  value: string;
+};
+
+export function exploreUnionSchema(schema: JSONSchema): {
+  match: (v: any) => string | null;
+  options: CalculatedUnionOption[];
+  converters: ((v: any) => any)[];
+} {
+  if (typeof schema !== "object" || !schema.oneOf)
+    throw new Error("Cannot exploreUnionSchema without schema .oneOf");
   // schema has oneOf and we need to understand how children are differentiated
   const optionSchemas = schema.oneOf;
-  const aggregateTypeOptions = new Set([]);
-  const distinctTypeOptions = new Set([]);
-  optionSchemas.forEach((optionSchema, index) => {
-    if (!optionSchema) {
-      // console.error("Woah, optionSchema missing!", index, optionSchema);
-      // usually this means there is at least {oneOf: [undefined]}, but theoreticaly that situation would be ignored
+  const aggregateTypeOptions = new Set<AllJSONSchemaType>([]);
+  const distinctTypeOptions = new Set<AllJSONSchemaType>([]);
+  optionSchemas.forEach((optionSchema: JSONSchema, index: number) => {
+    if (!optionSchema || typeof optionSchema !== "object") {
       return;
     }
-    let type = optionSchema?.type;
+    let type: AllJSONSchemaType = optionSchema?.type;
     if (!type && optionSchema?.const !== undefined) {
       type = typeof optionSchema?.const;
     }
@@ -33,20 +85,24 @@ export function exploreUnionSchema(schema) {
   });
 
   const unionKeys: string[] = [];
-  const unionKeyMap = {};
-  const unionConstMap = new Map();
+  const unionConstMap = new Map<any, string>();
 
   const unionConstProperties = optionSchemas.map(
-    (optionSchema, optionSchemaIndex) => {
-      if (!optionSchema) return {};
+    (optionSchema: JSONSchema, optionSchemaIndex: number) => {
+      if (!optionSchema || typeof optionSchema !== "object") return {};
       if (optionSchema.const != null) {
-        unionConstMap.set(optionSchema.const, optionSchemaIndex);
+        unionConstMap.set(optionSchema.const, String(optionSchemaIndex));
         return null;
       }
       const constProperties = {};
+      if (optionSchema.type !== "object") return {};
+
       Object.entries(optionSchema.properties || {}).forEach(
         ([childPropName, childPropSchema]) => {
-          if (childPropSchema.const !== undefined) {
+          if (
+            typeof childPropSchema === "object" &&
+            childPropSchema.const !== undefined
+          ) {
             constProperties[childPropName] = childPropSchema.const;
           }
         }
@@ -57,24 +113,29 @@ export function exploreUnionSchema(schema) {
       return constProperties;
     }
   );
-  unionConstProperties.forEach((constProperties, optionSchemaIndex) => {
-    let walkKeyMap = unionKeyMap;
-    unionKeys.forEach((unionKey, unionKeyIndex) => {
-      const isLastUnionKey = unionKeyIndex === unionKeys.length - 1;
-      const constValue = constProperties?.[unionKey];
-      const newNodeValue = isLastUnionKey ? optionSchemaIndex : {};
-      const thisKeyMap =
-        walkKeyMap[constValue] || (walkKeyMap[constValue] = newNodeValue);
-      walkKeyMap = thisKeyMap;
-    });
-  });
+
+  const unionKeyMap = {};
+  unionConstProperties.forEach(
+    (constProperties: null | {}, optionSchemaIndex) => {
+      let walkKeyMap = unionKeyMap;
+      unionKeys.forEach((unionKey, unionKeyIndex) => {
+        const isLastUnionKey = unionKeyIndex === unionKeys.length - 1;
+        const constValue = constProperties?.[unionKey];
+        const newNodeValue = isLastUnionKey ? optionSchemaIndex : {};
+        const thisKeyMap =
+          walkKeyMap[constValue] || (walkKeyMap[constValue] = newNodeValue);
+        walkKeyMap = thisKeyMap;
+      });
+    }
+  );
 
   const isAlwaysObject =
     aggregateTypeOptions.size === 1 &&
     distinctTypeOptions.size === 0 &&
     aggregateTypeOptions.values().next().value === "object";
 
-  function getTitle(optionSchema, optionSchemaIndex) {
+  function getTitle(optionSchema: JSONSchema, optionSchemaIndex: nmber) {
+    if (typeof optionSchema !== "object") return "?";
     if (optionSchema.const !== undefined) {
       return `${optionSchema.const}`;
     }
@@ -95,44 +156,39 @@ export function exploreUnionSchema(schema) {
     if (isAlwaysObject) return constsValue;
     return `${optionSchema.type} ${constsValue}`;
   }
-  const options = optionSchemas.map((optionSchema, optionSchemaIndex) => {
-    return {
-      title: optionSchema
-        ? optionSchema.title || getTitle(optionSchema, optionSchemaIndex)
-        : "?",
-      value: optionSchemaIndex,
-    };
-  });
+  const options = optionSchemas.map(
+    (optionSchema, optionSchemaIndex: number) => {
+      return {
+        title:
+          typeof optionSchema === "object"
+            ? optionSchema.title || getTitle(optionSchema, optionSchemaIndex)
+            : "?",
+        value: String(optionSchemaIndex),
+      };
+    }
+  );
   return {
     options,
     converters: optionSchemas.map((optionSchema, optionSchemaIndex) => {
       return (v: any) => {
         if (!optionSchema) return null;
-        if (optionSchema.const !== undefined) return optionSchema.const;
-        if (optionSchema.type === "null") return null;
-        if (optionSchema.type === "string") return optionSchema.default || "";
-        if (optionSchema.type === "number") return optionSchema.default || 0;
-        if (optionSchema.type === "integer") return optionSchema.default || 0;
-        if (optionSchema.type === "boolean")
-          return optionSchema.default || false;
-        if (optionSchema.type === "array") return []; // fix to handle array schemas such as tuples that require default values?
-        if (optionSchema.type === "object") {
-          // todo provide defaults that are specified here in the schema
-          return { ...unionConstProperties[optionSchemaIndex] };
-        }
+        return getDefaultValueOfSchema(optionSchema);
       };
     }),
-    match: (value: any) => {
-      if (unionConstMap.has(value)) return unionConstMap.get(value);
+    match: (value: any): null | string => {
+      if (value === undefined) return null;
+      const constValueMatch = unionConstMap.get(value);
+      if (constValueMatch) return constValueMatch;
       const observedValueType = getTypeOf(value);
       if (distinctTypeOptions.has(observedValueType)) {
         // this means that we can use the type to find a specific schema.
         const matchedIndex = optionSchemas.findIndex(
-          (schema) => schema.type === observedValueType
+          (schema) =>
+            typeof schema === "object" && schema.type === observedValueType
         );
         if (matchedIndex === -1)
           throw new Error("Failed to match oneOf schema via distinct type");
-        return matchedIndex;
+        return String(matchedIndex);
       }
       if (value === null) return null;
       if (typeof value === "object") {
@@ -147,7 +203,10 @@ export function exploreUnionSchema(schema) {
 
           walkingKeyMap = nextWalk;
         });
-        return walkingKeyMap;
+        if (typeof walkingKeyMap === "number") {
+          return String(walkingKeyMap);
+        }
+        throw new Error("const key map contains unexpected value");
       }
       return null;
     },
