@@ -45,6 +45,7 @@ export type ZGettable<GetSchema extends JSONSchema, GetOptions> = {
   zType: "Gettable";
   valueSchema: GetSchema;
   get: (options: GetOptions) => Promise<FromSchema<GetSchema>>;
+  getChild: (key: K) => Promise<FromSchema<GetSchema>[K] | undefined>;
 };
 
 export type ZStatic<Value> = {

@@ -380,6 +380,45 @@ export async function startZedServer(port: number, zed: AnyZed) {
       return await handleZNodeTypeRequest(zed, headers);
     }
 
+    if (zed.zType === "Gettable") {
+      if (method !== "GET") {
+        throw new WrongMethodError("WrongMethod", "Method not available", {});
+      }
+      const nodeValue = await zed.get(query);
+      const resultingSubPath: string[] = [];
+      let resultingValue = nodeValue;
+      for (let pathTermIndex in path) {
+        const pathTerm = path[pathTermIndex];
+        let v = undefined;
+        if (Array.isArray(resultingValue)) {
+          if (isFinite(Number(pathTerm))) {
+            throw new NotFoundError(
+              "NotFound",
+              `Can not look up "${pathTerm}" because it is not a numeric index to the ${contextPath.join(
+                "/"
+              )}/${resultingSubPath.join("/")} array.`,
+              { subPath: resultingSubPath, path, pathTerm }
+            );
+          }
+          v = resultingValue[Number(pathTerm)];
+        } else if (resultingValue && typeof resultingValue === "object") {
+          v = resultingValue[pathTerm];
+        }
+        if (v === undefined) {
+          throw new NotFoundError(
+            "NotFound",
+            `Can not look up "${pathTerm}" in /.z/${contextPath.join(
+              "/"
+            )}/${resultingSubPath.join("/")}`,
+            { subPath: resultingSubPath, path, pathTerm }
+          );
+        }
+        resultingValue = v;
+        resultingSubPath.push(pathTerm);
+      }
+      return resultingValue;
+    }
+
     if (zed.zType === "Container") {
       const [pathTerm, ...restPathTerms] = path;
 

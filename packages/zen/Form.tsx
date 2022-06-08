@@ -7,5 +7,12 @@ export function Form({
   children: ReactNode;
   onSubmit: () => void;
 }) {
-  return <form onSubmit={onSubmit}>{children}</form>;
+  return (
+    <form
+      style={{ display: "flex", flexDirection: "column" }}
+      onSubmit={onSubmit}
+    >
+      {children}
+    </form>
+  );
 }

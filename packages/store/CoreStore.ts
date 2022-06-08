@@ -107,7 +107,9 @@ function validateNode(
 
 const GenericCalculator = createZChainStateCalculator(
   StateTreeSchema,
-  {},
+  {
+    $schemas: {},
+  },
   {
     WriteValue: {
       schema: WriteValueActionSchema,
@@ -230,10 +232,10 @@ export async function createGeneralStore(
   async function validateWriteValue(
     input: FromSchema<typeof WriteValueActionSchema>
   ): Promise<void> {
-    const schemasNode = await genStore.z.State.getChild("$schemas");
-    const storeNode = await genStore.z.State.getChild(input.name);
-    const storeNodeValue = await storeNode.get();
-    const schemaStore = await schemasNode.get();
+    const storeState = await genStore.z.State.get();
+    const storeNodeValue = storeState[input.name];
+    const schemaStore = storeState["$schemas"];
+
     if (storeNodeValue.schema != null) {
       const valid = validateWithSchemaStore(
         storeNodeValue.schema,
@@ -246,8 +248,8 @@ export async function createGeneralStore(
   async function validateWriteSchemaValue(
     input: FromSchema<typeof WriteSchemaValueActionSchema>
   ): Promise<void> {
-    const schemasNode = await genStore.z.State.getChild("$schemas");
-    const schemaStore = (await schemasNode.get()) || EmptySchemaStore;
+    const schemasNode = await genStore.z.State.get();
+    const schemaStore = schemasNode?.["$schemas"] || EmptySchemaStore;
 
     if (input.value === undefined) {
       const storeNode = await genStore.z.State.getChild(input.name);

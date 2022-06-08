@@ -177,6 +177,7 @@ export async function serverGet<Response>(
   );
   try {
     const value = await res.json();
+
     if (res.status !== 200) {
       console.error("Request Error", value);
       if (res.status === 401) {
@@ -191,6 +192,7 @@ export async function serverGet<Response>(
     }
     return value;
   } catch (e) {
+    console.error(e);
     if (e.code) throw e;
     else throw new Error("Network Error");
   }
