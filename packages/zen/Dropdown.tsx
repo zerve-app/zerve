@@ -83,7 +83,7 @@ export function Dropdown<OptionValues>({
   const selectedOption = options.find((opt) => opt.value === value);
   const { background } = useColors();
   return (
-    <Select.Root value={value || "__nomatchkey"} onValueChange={onOptionSelect}>
+    <Select.Root value={value || undefined} onValueChange={onOptionSelect}>
       <Select.Trigger
         id={id}
         style={{
