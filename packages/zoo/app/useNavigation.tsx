@@ -1,37 +1,55 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { useConnection } from "@zerve/client/Connection";
 import { WEB_PRIMARY_CONN } from "./ConnectionStorage";
+import { Title, useModal } from "@zerve/zen";
+import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
+import { EmptySchemaStore, SchemaStore } from "@zerve/core";
 
-// const { push, back } = useRouter();
-//     navigate: (routeName: string, params: {}) => {
-//       if (routeName === "File") {
-//         const path = `/${params.storePath.join("/")}/$files/${params.name}`;
-//         push(path);
-//       } else if (routeName === "NewFile") {
-//         push(`/${params.storePath.join("/")}/$new-file`);
-//       } else if (routeName === "StoreHistory") {
-//         push(`/${params.storePath.join("/")}/$history`);
-//       } else if (routeName === "StoreSchemas") {
-//         push(`/${params.storePath.join("/")}/$schemas`);
-//       } else if (routeName === "StoreSchema") {
-//         push(`/${params.storePath.join("/")}/$schemas/${params.schema}`);
-//       } else {
-//         console.error("Navigate not implemented here!", routeName, params);
-//       }
-//     },
-//     dispatch: (action) => {
-//       const { payload, type } = action;
-//       if (type === "PUSH" && payload.name === "ZNode") {
-//         const path = `/${payload.params.path.join("/")}`;
-//         push(path);
-//       } else if (type === "BACK") {
-//         back();
-//       } else {
-//         console.error("Dispatch not implemented here!", action);
-//       }
+function JSONInputModal({
+  title,
+  schema,
+  value,
+  schemaStore,
+  onValue,
+}: {
+  title: string;
+  schema: any;
+  value: any;
+  schemaStore: SchemaStore;
+  onValue?: undefined | ((value: any) => void);
+}) {
+  const [v, setValue] = useState(value);
+
+  return (
+    <>
+      <Title title={title} />
+      <JSONSchemaEditor
+        id={"uh"}
+        schemaStore={schemaStore}
+        value={v}
+        schema={schema}
+        onValue={
+          onValue
+            ? (v) => {
+                setValue(v);
+                onValue(v);
+              }
+            : undefined
+        }
+      />
+    </>
+  );
+}
 
 export function useGlobalNavigation() {
+  const openInputModal = useModal<{
+    title: string;
+    schema: any;
+    value: any;
+    onValue?: undefined | ((value: any) => void);
+    schemaStore: SchemaStore;
+  }>(({ onClose, options }) => <JSONInputModal {...options} />);
   return useMemo(
     () => ({
       openRawJSON: (title: string, data: any) => {},
@@ -39,8 +57,17 @@ export function useGlobalNavigation() {
         title: string,
         schema: any,
         value: any,
-        onValue?: undefined | ((value: any) => void)
-      ) => {},
+        onValue?: undefined | ((value: any) => void),
+        schemaStore?: SchemaStore
+      ) => {
+        openInputModal({
+          title,
+          schema,
+          value,
+          onValue,
+          schemaStore: schemaStore || EmptySchemaStore,
+        });
+      },
       openHistory: () => {},
       openHistoryEvent: (eventId: string) => {},
       openError: (e: Error) => {},

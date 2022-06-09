@@ -203,6 +203,9 @@ export const ObjectSchemaSchema = {
   default: {
     // uhh this implies the need of a more powerful generic/recursion o_O
     type: "object",
+    properties: {},
+    required: [],
+    additionalProperties: false,
   },
 } as const;
 

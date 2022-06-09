@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "docs"
   ],
   "scripts": {
     "build": "turbo run build",
@@ -24,7 +25,8 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "gambit": "concurrently \"yarn workspace gambit-server dev\" \"yarn workspace gambit-web dev\"",
-    "aardvark": "ssh root@aardvark.zerve.dev -i ~/aardvark/ServerKey /root/aardvark-update.sh"
+    "aardvark": "ssh root@aardvark.zerve.dev -i ~/aardvark/ServerKey /root/aardvark-update.sh",
+    "docs": "yarn workspace @zerve/docs start"
   },
   "dependencies": {
     "react-native": "0.68.2"

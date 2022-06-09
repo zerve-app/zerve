@@ -25,24 +25,27 @@ function getTypeOf(jsonValue: any): AllJSONSchemaType {
 }
 
 function getDefaultValueOfSchema(schema: JSONSchema) {
+  console.log("getDefaultV", schema);
   if (typeof schema !== "object")
     throw new Error("cannot get default of non-object schema");
   if (schema.default) return schema.default;
   if (schema.const !== undefined) return schema.const;
   if (schema.type === "null") return null;
-  if (schema.type === "string") return schema.default || "";
-  if (schema.type === "number") return schema.default || 0;
-  if (schema.type === "integer") return schema.default || 0;
-  if (schema.type === "boolean") return schema.default || false;
+  if (schema.type === "string") return "";
+  if (schema.type === "number") return 0;
+  if (schema.type === "integer") return 0;
+  if (schema.type === "boolean") return false;
   if (schema.type === "array") return []; // fix to handle array schemas such as tuples that require default values?
   if (schema.type === "object") {
-    // todo provide defaults that are specified here in the schema
     const objDefaults = {};
-    Object.entries(schema.properties).forEach(
-      ([propertyName, propertySchema]) => {
-        objDefaults[propertyName] = getDefaultValueOfSchema(propertySchema);
-      }
-    );
+    if (schema.properties) {
+      Object.entries(schema.properties).forEach(
+        ([propertyName, propertySchema]) => {
+          objDefaults[propertyName] = getDefaultValueOfSchema(propertySchema);
+        }
+      );
+    }
+    console.log("see!", schema, objDefaults);
     return objDefaults;
   }
 }

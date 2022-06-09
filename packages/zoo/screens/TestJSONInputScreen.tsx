@@ -9,7 +9,7 @@ import {
   Paragraph,
 } from "@zerve/zen";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
-import { JSONSchema } from "@zerve/core";
+import { EmptySchemaStore, JSONSchema } from "@zerve/core";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
@@ -179,32 +179,46 @@ export default function TestJSONInputScreen({
         header={<Label>Read-Only JSON Schema</Label>}
       >
         {/* <JSONSchemaForm value={null} schema={{}} /> */}
-        <JSONSchemaEditor value={null} schema={{ type: "null" }} />
         <JSONSchemaEditor
+          id="null-readonly"
+          value={null}
+          schema={{ type: "null" }}
+          schemaStore={EmptySchemaStore}
+        />
+        <JSONSchemaEditor
+          id="number-readonly"
           value={12.1}
           schema={{
             type: "number",
           }}
+          schemaStore={EmptySchemaStore}
         />
         <JSONSchemaEditor
+          id="int-readonly"
           value={12}
           schema={{
             type: "integer",
           }}
+          schemaStore={EmptySchemaStore}
         />
         <JSONSchemaEditor
+          id="string-readonly"
           value={"woah"}
           schema={{
             type: "string",
           }}
+          schemaStore={EmptySchemaStore}
         />
         <JSONSchemaEditor
+          id="string-readonly"
           value={true}
           schema={{
             type: "boolean",
           }}
+          schemaStore={EmptySchemaStore}
         />
         <JSONSchemaEditor
+          id="list-readonly"
           value={["list", "of", "strings"]}
           schema={{
             type: "array",
@@ -212,6 +226,7 @@ export default function TestJSONInputScreen({
               type: "string",
             },
           }}
+          schemaStore={EmptySchemaStore}
         />
       </DisclosureSection>
       {/* <DisclosureSection header={<Label>Deep Read-Only JSON</Label>}>

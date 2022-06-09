@@ -641,7 +641,7 @@ export function OneOfFormField({
             <Dropdown
               id={id}
               options={unionOptions.options}
-              unselectedLabel={`Select Type!`}
+              unselectedLabel={`Select Type`}
               value={matched}
               onOptionSelect={(optionValue) => {
                 const converter = unionOptions.converters[Number(optionValue)];
@@ -941,6 +941,7 @@ export function JSONSchemaEditor({
     [schema, schemaStore]
   );
   if (!expandedSchema) {
+    debugger;
     return <ThemedText>Value not allowed.</ThemedText>;
   }
   if (typeof expandedSchema !== "object")
@@ -959,7 +960,6 @@ export function JSONSchemaEditor({
             value={String(matched)}
             unselectedLabel={`Select Type...`}
             onOptionSelect={(optionValue) => {
-              debugger;
               const converter = unionOptions.converters[optionValue];
               const convertedValue = converter(value);
               onValue(convertedValue);

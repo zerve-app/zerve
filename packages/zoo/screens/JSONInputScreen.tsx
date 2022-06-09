@@ -13,6 +13,7 @@ export default function JSONInputScreen({
   return (
     <ScreenContainer scroll>
       <JSONSchemaEditor
+        id={`${route.key}-jsoninput`}
         value={value}
         schema={route.params.schema}
         onValue={
