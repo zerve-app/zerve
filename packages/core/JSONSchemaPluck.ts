@@ -23,7 +23,6 @@ export function JSONSchemaPluck<Schema extends JSONSchema>(
     if (!matched) return schema1["default"];
   }
 
-  console.log("JSONSchemaPluck", { schema, value });
   if (schema === true) return value;
   if (schema === false)
     throw new Error("Cannot pluck JSON value for false schema");
