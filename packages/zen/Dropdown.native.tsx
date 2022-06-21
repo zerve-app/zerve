@@ -1,6 +1,7 @@
 import React from "react";
 import { useBottomSheet } from "./BottomSheet";
 import { Button, VStack, Icon } from "@zerve/zen";
+import { useColors } from "./useColors";
 
 export type DropdownOption = {
   value: boolean | string | number;
@@ -21,6 +22,7 @@ export function Dropdown<OptionValues>({
   id: string;
   unselectedLabel?: string;
 }) {
+  const colors = useColors();
   const selectedOption = options.find((o) => o.value === value);
   const onOpen = useBottomSheet(({ onClose }) => (
     <VStack>
@@ -35,7 +37,11 @@ export function Dropdown<OptionValues>({
               onOptionSelect(option.value);
             }}
             primary={isActive}
-            right={(p) => (isActive ? <Icon {...p} name="check" /> : null)}
+            right={(p) =>
+              isActive ? (
+                <Icon {...p} name="check" color={colors.secondaryText} />
+              ) : null
+            }
           />
         );
       })}
@@ -45,7 +51,9 @@ export function Dropdown<OptionValues>({
     <Button
       title={selectedOption?.title || unselectedLabel}
       onPress={onOpen}
-      right={(p) => <Icon name="chevron-down" {...p} />}
+      right={(p) => (
+        <Icon name="chevron-down" {...p} color={colors.secondaryText} />
+      )}
     />
   );
 }

@@ -563,9 +563,8 @@ function FormFieldHeader({
           ) : (
             label
           )}
-          <Label style={{ flex: 1, textAlign: "right" }} secondary>
-            {typeLabel}
-          </Label>
+          <View style={{ flex: 1 }} />
+          <Label tint>{typeLabel}</Label>
         </View>
       </TouchableOpacity>
     ),

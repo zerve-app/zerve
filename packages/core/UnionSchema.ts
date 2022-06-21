@@ -25,7 +25,6 @@ function getTypeOf(jsonValue: any): AllJSONSchemaType {
 }
 
 function getDefaultValueOfSchema(schema: JSONSchema) {
-  console.log("getDefaultV", schema);
   if (typeof schema !== "object")
     throw new Error("cannot get default of non-object schema");
   if (schema.default) return schema.default;

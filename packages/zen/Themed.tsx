@@ -33,11 +33,14 @@ export function ThemedText(
     secondary?: boolean;
     danger?: boolean;
     oneLine?: boolean;
+    tint?: boolean;
   } & TextProps
 ) {
   const colors = useColors();
   const { sx, lightColor, darkColor, ...otherProps } = props;
-  const color = props.danger
+  const color = props.tint
+    ? colors.tint
+    : props.danger
     ? colors.dangerText
     : props.secondary
     ? colors.secondaryText

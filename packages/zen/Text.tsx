@@ -44,16 +44,19 @@ export function Label({
   children,
   sx,
   minor,
+  tint,
   secondary,
 }: {
   children: ReactNode;
   secondary?: boolean;
   minor?: boolean;
+  tint?: boolean;
   sx?: StyleProp<TextStyle>;
 }) {
   return (
     <ThemedText
       secondary={secondary}
+      tint={tint}
       sx={{ fontWeight: "bold", fontSize: minor ? 14 : 16, ...(sx || {}) }}
     >
       {children}
