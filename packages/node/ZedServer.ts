@@ -67,6 +67,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
       "Access-Control-Allow-Headers",
       "X-Requested-With, Content-Type, Authorization"
     );
+    res.header("Cache-Control", "no-cache, no-store, must-revalidate");
     if (req.method === "OPTIONS") {
       res.send();
       return;

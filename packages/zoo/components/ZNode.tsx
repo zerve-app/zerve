@@ -216,7 +216,7 @@ export function ZStoreNode({
   if (!connection) return <Paragraph danger>Connection unavailable.</Paragraph>;
 
   return (
-    <VStack padded>
+    <VStack>
       <StoreChildList list={list} connection={connection} storePath={path} />
       <HStack>
         <NewFileButton path={path} />
@@ -441,7 +441,7 @@ function LoginForm({ path, authMeta }: { path: string[]; authMeta: any }) {
     null | typeof LoginStrategies[number]["key"]
   >(null);
   return (
-    <VStack padded>
+    <VStack>
       {!selectedStrategy &&
         LoginStrategies.map((l) => (
           <Button
@@ -596,7 +596,7 @@ export function LoggedInAuthNode({
   path: string[];
 }) {
   return (
-    <VStack padded>
+    <VStack>
       <Paragraph>Welcome, {session.userLabel}.</Paragraph>
       <ZLoadedNode
         path={[...path, "user"]}

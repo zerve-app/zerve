@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 
-import { IconButton, useActionsSheet } from "@zerve/zen";
+import { IconButton, useActionsSheet, VStack } from "@zerve/zen";
 import { useZNode } from "@zerve/client/Query";
 import { UnauthorizedSymbol } from "@zerve/client/Connection";
 import { FontAwesome } from "@expo/vector-icons";
@@ -70,12 +70,14 @@ export function ZFeature({
         corner={sheetContent}
         onBack={!!path.length ? () => closeZ(path) : undefined}
       ></ScreenHeader>
-      <ZNode
-        path={path}
-        connection={connection}
-        type={data?.type}
-        value={data?.node}
-      />
+      <VStack padded>
+        <ZNode
+          path={path}
+          connection={connection}
+          type={data?.type}
+          value={data?.node}
+        />
+      </VStack>
     </>
   );
 }

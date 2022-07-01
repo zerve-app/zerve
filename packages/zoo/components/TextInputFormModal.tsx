@@ -12,7 +12,7 @@ export function useTextInputFormModal<A>(
   return useModal<A>(({ onClose, options }) => {
     const { inputLabel, defaultValue, onValue } = onGetInput(options);
     return (
-      <VStack>
+      <VStack padded>
         <TextInputForm
           inputLabel={inputLabel}
           defaultValue={defaultValue}
