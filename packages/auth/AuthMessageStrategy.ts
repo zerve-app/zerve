@@ -39,7 +39,7 @@ export function createGenericMessageAuthStrategy<
   configInput?: {
     authTimeoutMs?: number;
     authResetMs?: number;
-    validateAddress?: (address: FromSchema<AddressSchema>) => boolean;
+    validateAddress?: (address: FromSchema<AddressSchema>) => void;
   }
 ) {
   type Address = FromSchema<AddressSchema>;
@@ -73,9 +73,7 @@ export function createGenericMessageAuthStrategy<
     ) => {
       const { address } = payload;
       const validateAddress = configInput?.validateAddress;
-      if (validateAddress && !validateAddress(address)) {
-        throw new Error("Invalid address!");
-      }
+      if (validateAddress) validateAddress(address);
       const addressKey = createHash("sha256")
         .update(stringify(address), "utf8")
         .digest()

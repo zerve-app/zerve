@@ -15,7 +15,7 @@ export function createJSONHandler(
           JSON.stringify({
             message: e.message,
             code: e.code,
-            params: e.params,
+            details: e.details,
           })
         );
       });

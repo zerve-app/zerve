@@ -19,7 +19,7 @@ export default function ErrorScreen({
         }
       />
       <Paragraph>{route.params.error.message}</Paragraph>
-      <Paragraph>{JSON.stringify(route.params.error.params)}</Paragraph>
+      <Paragraph>{JSON.stringify(route.params.error.details)}</Paragraph>
     </ScreenContainer>
   );
 }

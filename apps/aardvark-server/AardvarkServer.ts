@@ -51,7 +51,8 @@ const BuildPayloadSchema = {
 } as const;
 
 export async function startApp() {
-  console.log("Starting AardvarkServer. DataDir: " + dataDir);
+  console.log("Starting AardvarkServer.");
+  console.log("- DataDir: " + dataDir);
 
   const SystemCommands = createSystemCommands();
   const SystemFiles = createSystemFiles("/");
@@ -61,6 +62,8 @@ export async function startApp() {
   const secrets = await SystemFiles.z.ReadJSON.call({
     path: secretsFile,
   });
+  console.log("- SecretsFile: " + secretsFile);
+
   function requireSecret(secretKey: string): string {
     const secret = secrets[secretKey];
     if (typeof secret === "string") return secret;
@@ -95,7 +98,7 @@ export async function startApp() {
     Auth: await createAuth({
       strategies: {
         Email: await createEmailAuthStrategy(Email, {
-          domainAllowlist: ["zerve.app"],
+          domainAllowList: ["zerve.app"],
         }),
         // Phone: await createSMSAuthStrategy(SMS),
       },

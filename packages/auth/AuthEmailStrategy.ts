@@ -1,6 +1,7 @@
 import { AuthStrategy } from "./AuthStrategy";
 import { ZMessageEmail } from "@zerve/message-email-sendgrid";
 import { createGenericMessageAuthStrategy } from "./AuthMessageStrategy";
+import { ServerError, RequestError } from "@zerve/core";
 
 const EmailSchema = {
   title: "Email Address",
@@ -9,14 +10,14 @@ const EmailSchema = {
 } as const;
 
 type EmailAuthOptions = {
-  emailAllowlist?: null | string[];
-  domainAllowlist?: null | string[];
+  emailAllowList?: null | string[];
+  domainAllowList?: null | string[];
 };
 
 export async function createEmailAuthStrategy(
   email: ZMessageEmail,
   options?: EmailAuthOptions
-): Promise<AuthStrategy> {
+) {
   return createGenericMessageAuthStrategy(
     EmailSchema,
     async (code: string, address: string) => {
@@ -28,18 +29,34 @@ export async function createEmailAuthStrategy(
     },
     {
       validateAddress: (email) => {
-        if (!options) return true;
-        const { emailAllowList, domainAllowlist } = options;
+        if (!options)
+          throw new ServerError(
+            "EmailAuthStrategyOptionsNotProvided",
+            "EmailAuthStrategy not configured"
+          );
+        const { emailAllowList, domainAllowList } = options;
         if (emailAllowList) {
           const isFoundInAllowList = emailAllowList.indexOf(email) !== -1;
-          return isFoundInAllowList;
+          if (!isFoundInAllowList)
+            throw new RequestError(
+              "EmailDisallowed",
+              `"${email}" is not allowed.`
+            );
         }
-        if (domainAllowlist) {
-          const emailDomain: null | string = email.match(/@(.*)$/)?.[1];
-          if (!emailDomain) return false;
+        if (domainAllowList) {
+          const emailDomain: null | string = email.match(/@(.*)$/)?.[1] || null;
+          if (!emailDomain)
+            throw new RequestError(
+              "EmailDisallowed",
+              `"${email}" is not allowed.`
+            );
           const isFoundInAllowList =
-            domainAllowlist.indexOf(emailDomain) !== -1;
-          return isFoundInAllowList;
+            domainAllowList.indexOf(emailDomain) !== -1;
+          if (!isFoundInAllowList)
+            throw new RequestError(
+              "EmailDomainDisallowed",
+              `"${emailDomain}" is not an allowed domain.`
+            );
         }
         return true;
       },

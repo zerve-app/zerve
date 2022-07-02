@@ -3,6 +3,7 @@ import {
   ZBooleanSchema,
   ZObservable,
   NotFoundError,
+  GenericError,
 } from "@zerve/core";
 import { createContext, useContext, useEffect, useMemo } from "react";
 import ReconnectingWebsocket from "reconnecting-websocket";
@@ -213,18 +214,21 @@ export async function serverPost<Request, Response>(
     method: "post",
     body: JSON.stringify(body),
   });
+  let value = undefined;
   try {
-    const value = await res.json();
-    if (res.status !== 200) {
-      console.log("Server Error", value);
-      console.log(body);
-      throw new Error("Network Error");
-    }
-    return value;
+    value = await res.json();
   } catch (e) {
-    console.error(e);
-    throw new Error("Network request failed");
+    throw new ServerError(e.message);
   }
+  if (res.status !== 200) {
+    throw new GenericError({
+      httpStatus: res.status,
+      code: value?.code || "NetworkError",
+      message: value?.message || "Network Error",
+      details: value?.details,
+    });
+  }
+  return value;
 }
 
 const isOnClient = !!global.window;
