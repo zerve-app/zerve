@@ -1,13 +1,6 @@
-import { AuthStrategy } from "./AuthStrategy";
 import { ZMessageEmail } from "@zerve/message-email-sendgrid";
 import { createGenericMessageAuthStrategy } from "./AuthMessageStrategy";
-import { ServerError, RequestError } from "@zerve/core";
-
-const EmailSchema = {
-  title: "Email Address",
-  type: "string",
-  format: "email",
-} as const;
+import { ServerError, RequestError, EmailSchema } from "@zerve/core";
 
 type EmailAuthOptions = {
   emailAllowList?: null | string[];

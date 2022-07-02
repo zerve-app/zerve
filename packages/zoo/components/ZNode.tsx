@@ -39,8 +39,10 @@ import { getZIcon } from "../app/ZIcon";
 import { storeHistoryEvent } from "../app/History";
 import {
   displayStoreFileName,
+  EmailSchema,
   EmptySchemaStore,
   JSONSchema,
+  PhoneSchema,
   ZSchema,
 } from "@zerve/core";
 import { View } from "react-native";
@@ -250,21 +252,13 @@ const LoginStrategies = [
     icon: "mobile-phone",
     label: "Phone",
     key: "Phone",
-    schema: {
-      title: "Phone Number",
-      placeholder: "12223334444",
-      type: "string",
-    },
+    schema: PhoneSchema,
   },
   {
     icon: "envelope",
     label: "Email",
     key: "Email",
-    schema: {
-      title: "Email Address",
-      type: "string",
-      format: "email",
-    },
+    schema: EmailSchema,
   },
   {
     icon: "user",

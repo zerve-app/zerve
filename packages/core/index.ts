@@ -1,5 +1,6 @@
 export * from "./DisplayState";
 export * from "./Observable";
+export * from "./CommonSchema";
 export * from "./Errors";
 export * from "./Blocks";
 export * from "./Data";
