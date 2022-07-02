@@ -1,6 +1,7 @@
-import React from "react";
 import { useBottomSheet } from "./BottomSheet";
-import { Button, VStack, Icon } from "@zerve/zen";
+import { Icon } from "./Icon";
+import { VStack } from "./Stack";
+import { Button } from "./Button";
 import { useColors } from "./useColors";
 
 export type DropdownOption = {

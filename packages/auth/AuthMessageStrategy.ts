@@ -71,7 +71,6 @@ export function createGenericMessageAuthStrategy<
       payload: AuthorizePayload,
       strategyFiles: SystemFilesModule
     ) => {
-      console.log("hi", payload);
       const { address } = payload;
       const validateAddress = configInput?.validateAddress;
       if (validateAddress && !validateAddress(address)) {
@@ -145,8 +144,6 @@ export function createGenericMessageAuthStrategy<
           token,
           requestTime: Date.now(),
         };
-        console.log("sending");
-
         await handleMessageSend(token, payload.address);
       }
       // saving the strategy address file

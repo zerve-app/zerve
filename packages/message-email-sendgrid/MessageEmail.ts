@@ -61,7 +61,10 @@ export function createZMessageEmail(config: {
               message: "Email is invalid",
             },
           ]);
-        } else throw new Error("EmailSend Error");
+        } else {
+          console.error(sgError?.message || (e as any)?.response?.body);
+          throw new Error("EmailSend Error");
+        }
       }
       return {};
     }
