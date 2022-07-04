@@ -59,7 +59,7 @@
     "@babel/core": "^7.12.9",
     "@types/react": "~17.0.21",
     "@types/react-native": "~0.67.7",
-    "eas-cli": "^0.52.0",
+    "eas-cli": "^0.54.1",
     "tsconfig": "*",
     "typescript": "~4.6.4"
   }

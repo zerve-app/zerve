@@ -4,6 +4,7 @@
   },
   "build": {
     "development": {
+      "node": "16.15.0",
       "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleDebug"
@@ -13,6 +14,7 @@
       }
     },
     "internal": {
+      "node": "16.15.0",
       "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleRelease"
@@ -22,6 +24,7 @@
       }
     },
     "simulator": {
+      "node": "16.15.0",
       "distribution": "internal",
       "ios": {
         "simulator": true,
