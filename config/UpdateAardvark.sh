@@ -19,6 +19,8 @@ echo "==================="
 yarn
 
 rm -rf yarn-package-cache ./.git
+git init
+git branch -m detached-main
 
 yarn workspace zoo-web build
 yarn workspace aardvark-server build
