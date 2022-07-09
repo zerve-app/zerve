@@ -23,8 +23,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "app.zerve.main"
+      }
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
