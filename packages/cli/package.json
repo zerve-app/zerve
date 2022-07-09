@@ -1,0 +1,16 @@
+{
+  "name": "@zerve/cli",
+  "version": "0.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "scripts": {
+    "build": "esbuild ./ZerveSync --bundle --platform=node --outdir=dist && chmod +x ./dist/ZerveSync.js"
+  },
+  "bin": {
+    "zerve-sync": "./dist/ZerveSync.js"
+  },
+  "dependencies": {
+    "fs-extra": "^10.1.0",
+    "@zerve/client": "*"
+  }
+}
