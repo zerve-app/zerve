@@ -7,6 +7,7 @@ import {
   createZContainer,
   createZGettableGroup,
   createZStatic,
+  ZGettableGroup,
 } from "./Zed";
 
 const CallActionStepSchema = {
@@ -34,7 +35,10 @@ export type CallOptions = {
   after?: string[];
 };
 
-type ZWorkflowDefinition = {};
+export type ZWorkflowDefinition = {};
+export type ZCallHahaha = {};
+
+export type ZCallsCollection = ZGettableGroup<ZCallHahaha>;
 
 const RunKeySchema = { type: "string", title: "Run ID" } as const;
 

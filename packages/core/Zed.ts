@@ -166,10 +166,16 @@ export const ChildrenListOptionsSchema = {
 } as const;
 export type ChildrenListOptions = FromSchema<typeof ChildrenListOptionsSchema>;
 
+export type ZGettableGroup<ChildZType extends AnyZed> = ZGroup<
+  ChildZType,
+  ChildrenListOptions,
+  typeof ChildrenListSchema
+>;
+
 export function createZGettableGroup<ChildZType extends AnyZed>(
   getChild: (key: string) => Promise<ChildZType | undefined>,
   get: (getOptions: ChildrenListOptions) => Promise<ChildrenList>
-): ZGroup<ChildZType, ChildrenListOptions, typeof ChildrenListSchema> {
+): ZGettableGroup<ChildZType> {
   return {
     zType: "Group",
     valueSchema: ChildrenListSchema,
