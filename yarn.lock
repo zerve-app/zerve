@@ -15208,11 +15208,6 @@ sockjs@^0.3.24:
     uuid "^8.3.2"
     websocket-driver "^0.7.4"
 
-solito@latest:
-  version "0.0.26"
-  resolved "https://registry.yarnpkg.com/solito/-/solito-0.0.26.tgz#739102ad8ea4fd1dc0f4b002ff1a2a2c158d71a6"
-  integrity sha512-Imxy26m4DTkeQXkh7XXmS3bH0JQl8L0y2R4R95heyft2l3yh0yYwLy+Qf7DA6SRCvAoQpQRxYOOjTjVrCsm0/A==
-
 sort-css-media-queries@2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/sort-css-media-queries/-/sort-css-media-queries-2.0.4.tgz#b2badfa519cb4a938acbc6d3aaa913d4949dc908"

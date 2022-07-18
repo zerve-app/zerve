@@ -1,10 +1,10 @@
 import { Provider } from "@zerve/zoo/provider";
 import Head from "next/head";
 import React from "react";
-import type { SolitoAppProps } from "solito";
 import "raf/polyfill";
+import { AppProps } from "next/app";
 
-function MyApp({ Component, pageProps }: SolitoAppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>

@@ -12,8 +12,7 @@
     "@zerve/client": "*",
     "@zerve/client-storage": "*",
     "@zerve/react": "*",
-    "@zerve/zen": "*",
-    "solito": "latest"
+    "@zerve/zen": "*"
   },
   "devDependencies": {
     "tsconfig": "*"
