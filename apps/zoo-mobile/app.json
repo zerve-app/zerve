@@ -5,7 +5,6 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-
     "scheme": "zerve",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -13,9 +12,13 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "infoPlist": { "UIViewControllerBasedStatusBarAppearance": true },
+      "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true
+      },
       "supportsTablet": true,
       "bundleIdentifier": "app.zerve.main"
     },
@@ -23,7 +26,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "app.zerve.main"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
