@@ -140,6 +140,7 @@ export default function HomeScreen({
               title: "App Settings",
               icon: "gear",
               onPress: () => {
+                console.log("settings");
                 navigation.navigate("SettingsStack", {
                   screen: "Settings",
                 });

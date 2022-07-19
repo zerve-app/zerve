@@ -12,9 +12,7 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true
@@ -24,8 +22,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/AndroidAdaptiveFg.png",
+        "backgroundImage": "./assets/images/AndroidAdaptiveBg.png"
+      },
+      "splash": {
+        "resizeMode": "cover"
       },
       "package": "app.zerve.main"
     },

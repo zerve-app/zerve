@@ -8,15 +8,15 @@ An API endpoint that asynchronously fetches some JSON. The schema specifies the 
 
 `createZGettable(schema, getter)`
 
-```
-  const zGetString = createZGettable(
-    {
-      type: "string",
-    } as const,
-    async (params: null) => {
-      return "Hello";
-    }
-  );
+```tsx
+const zGetString = createZGettable(
+  {
+    type: "string",
+  } as const,
+  async (params: null) => {
+    return "Hello";
+  }
+);
 ```
 
 ## ZContainer
