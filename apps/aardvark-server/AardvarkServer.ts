@@ -116,27 +116,27 @@ export async function startApp() {
       },
       getUserZeds: async (user, { userId }) => {
         return {
-          Workflows: zWorkflowEnvironment(
-            {
-              SystemCommands,
-              SystemFiles,
-            },
-            {
-              Uptime: zWorkflow({
-                startPayloadSchema: NullSchema,
-                steps: [
-                  zWorkflowCallStep(
-                    "SystemCommands/command",
-                    {
-                      command: "uptime",
-                      args: [],
-                    },
-                    { as: "uptimeResult" }
-                  ),
-                ],
-              }),
-            }
-          ),
+          // Workflows: zWorkflowEnvironment(
+          //   {
+          //     SystemCommands,
+          //     SystemFiles,
+          //   },
+          //   {
+          //     Uptime: zWorkflow({
+          //       startPayloadSchema: NullSchema,
+          //       steps: [
+          //         zWorkflowCallStep(
+          //           "SystemCommands/command",
+          //           {
+          //             command: "uptime",
+          //             args: [],
+          //           },
+          //           { as: "uptimeResult" }
+          //         ),
+          //       ],
+          //     }),
+          //   }
+          // ),
           ZerveStore: Store,
           Data,
           deployZebra: createZAction(NullSchema, NullSchema, async () => {

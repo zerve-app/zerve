@@ -12,9 +12,11 @@ cd aardvark-build
 
 '
 
-echo "==================="
-echo "==UPDATE AARDVARK=="
-echo "==================="
+echo "====================="
+echo "== UPDATE AARDVARK =="
+echo "====================="
+
+# We are in /root/aardvark-build
 
 yarn
 
@@ -24,7 +26,6 @@ git branch -m detached-main
 
 yarn workspace zoo-web build
 yarn workspace aardvark-server build
-
 
 systemctl stop AardvarkWeb.service
 systemctl stop AardvarkServer.service

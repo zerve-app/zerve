@@ -4,7 +4,6 @@
     "slug": "zerve",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "zerve",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -14,6 +13,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "icon": "./assets/images/icon.png",
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true
       },
