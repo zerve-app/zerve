@@ -26,6 +26,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "gambit": "concurrently \"yarn workspace gambit-server dev\" \"yarn workspace gambit-web dev\"",
     "aardvark:update": "ssh aardvark /root/aardvark-script.sh UpdateAardvark",
+    "aardvark:build": "yarn workspace aardvark-server build && yarn workspace zoo-web build",
+    "aardvark:start": "cross-env Z_ORIGIN=\"http://localhost:3988\" concurrently \"yarn workspace aardvark-server start\" \"yarn workspace zoo-web start\"",
     "docs": "yarn workspace @zerve/docs start"
   },
   "dependencies": {

@@ -6,6 +6,7 @@ Steps to run this script:
 cd /root/zerve.git
 git fetch
 cd /root
+rm -rf aardvark-build
 git clone zerve.git aardvark-build
 cd aardvark-build
 ./config/UpdateAardvark.sh
@@ -30,6 +31,7 @@ yarn workspace aardvark-server build
 systemctl stop AardvarkWeb.service
 systemctl stop AardvarkServer.service
 
+rm -rf aardvark-old
 mv /root/aardvark /root/aardvark-old
 mv /root/aardvark-build /root/aardvark
 cp /root/secrets.json /root/aardvark/secrets.json

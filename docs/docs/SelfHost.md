@@ -124,11 +124,11 @@ git clone --bare git@github.com:zerve-app/zerve.git
 
 # BUILD PROCESS START
 
-# first fetch from our servers main headless repo
+# first fetch from our server's main headless repo
 
-cd /home/eric/zerve.git
+cd /root/zerve.git
 git fetch
-cd /home/eric
+cd /root/
 
 # in theory you can build a different thing from the default clone, which is the latest main branch
 
