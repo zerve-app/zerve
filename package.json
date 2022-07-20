@@ -25,7 +25,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "gambit": "concurrently \"yarn workspace gambit-server dev\" \"yarn workspace gambit-web dev\"",
-    "aardvark:deploy": "ssh root@aardvark.zerve.dev -i ~/aardvark/ServerKey /root/aardvark-update.sh",
+    "aardvark:update": "ssh aardvark /root/aardvark-script.sh UpdateAardvark",
     "docs": "yarn workspace @zerve/docs start"
   },
   "dependencies": {
