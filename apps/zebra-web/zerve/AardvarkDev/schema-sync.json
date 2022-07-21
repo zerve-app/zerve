@@ -1,0 +1,26 @@
+{
+  "schemas": {
+    "ayo": {
+      "type": "array",
+      "$id": "https://type.zerve.link/ayo"
+    }
+  },
+  "files": {
+    "test": {
+      "type": "null"
+    },
+    "newfilename": {
+      "type": "array"
+    },
+    "t": {
+      "$ref": "https://type.zerve.link/ayo",
+      "title": "ayo"
+    },
+    "AllowNewUsers": {
+      "default": false,
+      "description": "",
+      "title": "",
+      "type": "boolean"
+    }
+  }
+}

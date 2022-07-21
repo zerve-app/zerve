@@ -16,6 +16,7 @@
     "@zerve/zoo": "*",
     "dripsy": "^3.6.0",
     "next": "12.1.6",
+    "node-fetch": "^3.2.9",
     "raf": "^3.4.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
@@ -32,8 +33,7 @@
   },
   "zerve": {
     "dynamicSync": {
-      "AardvarkDev": "http://localhost:3888/Zerve",
-      "Aardvark": "https://aardvark.zerve.dev/Zerve"
+      "AardvarkDev": "http://localhost:3988/Zerve"
     }
   }
 }

@@ -10,7 +10,8 @@
     "zerve-sync": "./dist/ZerveSync.js"
   },
   "dependencies": {
+    "@zerve/client": "*",
     "fs-extra": "^10.1.0",
-    "@zerve/client": "*"
+    "json-schema-to-typescript": "^11.0.1"
   }
 }

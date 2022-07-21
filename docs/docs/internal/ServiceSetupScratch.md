@@ -1,3 +1,5 @@
+# Service Setup Scratch /Notes/Junk
+
 // Hades Dev Setup / Log
 
 // $10/mo DO server w/ Debian 11
