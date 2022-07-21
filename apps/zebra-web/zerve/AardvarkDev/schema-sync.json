@@ -1,8 +1,16 @@
 {
   "schemas": {
     "ayo": {
-      "type": "array",
-      "$id": "https://type.zerve.link/ayo"
+      "$id": "https://type.zerve.link/ayo",
+      "additionalProperties": {
+        "default": 0,
+        "description": "",
+        "title": "",
+        "type": "number"
+      },
+      "properties": {},
+      "required": [],
+      "type": "object"
     }
   },
   "files": {
@@ -13,8 +21,14 @@
       "type": "array"
     },
     "t": {
-      "$ref": "https://type.zerve.link/ayo",
-      "title": "ayo"
+      "default": [],
+      "description": "",
+      "items": {
+        "$ref": "https://type.zerve.link/ayo",
+        "title": "ayo"
+      },
+      "title": "",
+      "type": "array"
     },
     "AllowNewUsers": {
       "default": false,
