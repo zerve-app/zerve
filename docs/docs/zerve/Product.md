@@ -35,17 +35,17 @@ The other primary shortcoming is the nature of a 'headless' CMS, where your deve
 
 ### Our Solution, Zerve: A Headful Content Management System
 
-Zerve is a Content Management System which aims to address the common shortfalls of the Headless CMS. The following workflow details the way you can use Zerve to define a schema for your config db, so your non-technical team can manage app data according to your specification. Then the Zerve client can give you a type-safe interface using TypeScript.
+Zerve is a Content Management System which aims to address the common shortfalls of the Headless CMS. The following workflow details the way you can use Zerve to define a schema for your Store, so your non-technical team can manage app data according to your specification. Then the Zerve client can give you a type-safe interface using TypeScript.
 
 # The Zerve Workflow
 
 This workflow encourages you to maintain a 3rd "source-of-truth" for your company's data, in addition to your codebase (in git), and your user data (in your database). Your team will maintain a new configuration database in the Zerve service, or you can self-host it.
 
-Most likely, your organization will only need one config db, which will be shared across development, staging, and production. If you need different behavior across these environments, your code may access different values within the config db.
+Most likely, your organization will only need one Store, which will be shared across development, staging, and production. If you need different behavior across these environments, your code may access different values within the Store. It is reccomended to use one Store for your project, so the schemas may be shared across environments.
 
 ## Set up a Zerve Server + Store
 
-You will need a host for your config db, and you can use the Zerve service directly to create your own Store, or you may choose to self-host Zerve on your own server.
+You will need a host for your Store, and you can use the Zerve service directly to create your own Store, or you may choose to self-host Zerve on your own server.
 
 ## Add Initial Data and Schema
 
