@@ -20,7 +20,7 @@ export function createZStoreClient(
       return resp.value;
     }
     function use(
-      queryOptions?: UseQueryOptions<unknown, unknown, unknown, any>
+      queryOptions?: UseQueryOptions<unknown, unknown, FileType, any>
     ) {
       return useQuery([".zerve-store", zStorePath, name], get, queryOptions);
     }

@@ -81,23 +81,23 @@ You may also want to include `"prepare": "zerve-sync"` within your `package.json
 ### 4. Now your application may query for the data.
 
 ```tsx
-import { AllowNewUsers } from "../zerve/my-zerve-store";
+import { useAllowNewUsers } from "../zerve/my-zerve-store";
 
 export default function MyComponent() {
   // uses react-query under the hood, and you can configure it as such.
-  const { data: allowSignUp } = AllowNewUsers.use();
+  const { data: allowSignUp } = useAllowNewUsers();
   return <>
     {allowSignUp && <SignUpButton />}
 ```
 
 Because the CLI syncronized our schemas, TypeScript knows that `allowSignUp` is a boolean.
 
-Or you can manually "get" the value from your database:
+Or you can manually "get" the value from your database with the async function:
 
 ```tsx
-import { AllowNewUsers } from "../zerve/my-zerve-store";
+import { getAllowNewUsers } from "../zerve/my-zerve-store";
 
-const isAllowed = await AllowNewUsers.get();
+const isAllowed = await getAllowNewUsers();
 ```
 
 ## Deploy your Application
