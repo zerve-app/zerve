@@ -6,11 +6,11 @@
     "apply": "esbuild ./ApplyFleet.ts --bundle --platform=node --outfile=build/ApplyFleet.js && node ./build/ApplyFleet.js"
   },
   "dependencies": {
+    "@apexearth/egrep": "^1.0.9",
     "@zerve/core": "*",
     "@zerve/system-caddy": "*",
-    "@zerve/system-files": "*",
     "@zerve/system-commands": "*",
-    "@apexearth/egrep": "^1.0.9",
+    "@zerve/system-files": "*",
     "axios": "^0.26.0",
     "fs-extra": "^10.0.0"
   },

@@ -5,14 +5,16 @@
   "dependencies": {
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.0",
+    "@zerve/client": "*",
+    "@zerve/client-storage": "*",
+    "@zerve/core": "*",
+    "@zerve/react": "*",
+    "@zerve/tamagui-config": "*",
+    "@zerve/zen": "*",
     "dripsy": "^3.6.0",
     "expo-linking": "^3.0.0",
     "moti": "canary",
-    "@zerve/core": "*",
-    "@zerve/client": "*",
-    "@zerve/client-storage": "*",
-    "@zerve/react": "*",
-    "@zerve/zen": "*"
+    "solito": "^0.0.26"
   },
   "devDependencies": {
     "tsconfig": "*"

@@ -5,9 +5,9 @@
   "main": "./CoreStore.ts",
   "types": "./CoreStore.ts",
   "dependencies": {
-    "@zerve/core": "*",
     "@zerve/chain": "*",
-    "@zerve/system-files": "*",
-    "@zerve/data": "*"
+    "@zerve/core": "*",
+    "@zerve/data": "*",
+    "@zerve/system-files": "*"
   }
 }

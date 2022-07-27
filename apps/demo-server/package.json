@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@zerve/core": "*",
-    "@zerve/node": "*",
-    "@zerve/data": "*"
+    "@zerve/data": "*",
+    "@zerve/node": "*"
   },
   "devDependencies": {
     "concurrently": "^7.2.0",

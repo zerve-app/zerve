@@ -3,6 +3,5 @@
   "version": "0.0.0",
   "private": true,
   "main": "./SystemCommands.ts",
-  "types": "./SystemCommands.ts",
-  "dependencies": {}
+  "types": "./SystemCommands.ts"
 }

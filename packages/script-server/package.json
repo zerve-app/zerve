@@ -6,8 +6,8 @@
     "setup": "esbuild ./SetupServer.ts --bundle --platform=node --outfile=build/SetupServer.js && node ./build/SetupServer.js"
   },
   "dependencies": {
-    "@zerve/core": "*",
     "@apexearth/egrep": "^1.0.9",
+    "@zerve/core": "*",
     "axios": "^0.26.0",
     "fs-extra": "^10.0.0"
   },

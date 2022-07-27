@@ -7,8 +7,8 @@
   "dependencies": {
     "@zerve/core": "*",
     "@zerve/crypto": "*",
-    "@zerve/system-files": "*",
     "@zerve/data": "*",
+    "@zerve/system-files": "*",
     "fs-extra": "*"
   }
 }

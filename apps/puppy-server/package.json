@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@zerve/core": "*",
-    "@zerve/node": "*",
     "@zerve/data": "*",
-    "@zerve/infra-digitalocean": "*"
+    "@zerve/infra-digitalocean": "*",
+    "@zerve/node": "*"
   },
   "devDependencies": {
     "concurrently": "^7.2.0",

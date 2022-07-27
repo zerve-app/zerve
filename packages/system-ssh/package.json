@@ -5,10 +5,10 @@
   "main": "./SystemSSH.ts",
   "types": "./SystemSSH.ts",
   "dependencies": {
+    "@expo/spawn-async": "^1.6.0",
     "@zerve/core": "*",
     "@zerve/system-commands": "*",
-    "@expo/spawn-async": "^1.6.0",
-    "ssh-config": "*",
-    "fs-extra": "*"
+    "fs-extra": "*",
+    "ssh-config": "*"
   }
 }

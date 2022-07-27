@@ -6,8 +6,8 @@
   "types": "./CoreChain.ts",
   "dependencies": {
     "@zerve/core": "*",
-    "@zerve/data": "*",
     "@zerve/crypto": "*",
+    "@zerve/data": "*",
     "@zerve/system-files": "*"
   }
 }

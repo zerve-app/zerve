@@ -1,3 +1,3 @@
-import { HomeScreen } from 'app/features/home/screen'
+import { ZFeature } from "@zerve/zoo/features/ZFeature";
 
-export default HomeScreen
+export default ZFeature;

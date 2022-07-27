@@ -1,0 +1,12 @@
+{
+  "version": "0.0.0",
+  "name": "@zerve/tamagui-config",
+  "main": "tamagui.config.ts",
+  "dependencies": {
+    "@tamagui/animations-reanimated": "1.0.1-beta.115",
+    "@tamagui/font-inter": "1.0.1-beta.115",
+    "@tamagui/shorthands": "1.0.1-beta.115",
+    "@tamagui/theme-base": "1.0.1-beta.115"
+  },
+  "sideEffects": false
+}
