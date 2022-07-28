@@ -1,8 +1,16 @@
 {
   "name": "@zerve/cli",
-  "version": "0.0.0",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0",
   "main": "./index.tsx",
   "types": "./index.tsx",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "esbuild ./ZerveSync --bundle --platform=node --outdir=dist && chmod +x ./dist/ZerveSync.js"
   },

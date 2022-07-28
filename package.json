@@ -8,6 +8,7 @@
     "docs"
   ],
   "scripts": {
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/.next ./yarn.lock",
     "build": "turbo run build",
     "dev": "concurrently \"yarn workspace zoo-server-standalone dev\" \"yarn workspace zoo-web dev\"",
     "dev:zebra": "concurrently \"yarn workspace zebra-server dev\" \"yarn workspace zebra-web dev\"",
