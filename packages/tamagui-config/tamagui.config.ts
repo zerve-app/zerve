@@ -1,4 +1,4 @@
-import { createTamagui } from "@zerve/zen";
+import { Tamagui } from "@zerve/zen";
 import { createInterFont } from "@tamagui/font-inter";
 import { shorthands } from "@tamagui/shorthands";
 import { themes, tokens } from "@tamagui/theme-base";
@@ -42,7 +42,7 @@ const bodyFont = createInterFont(
   }
 );
 
-export const config = createTamagui({
+export const config = Tamagui.createTamagui({
   animations,
   defaultTheme: "light",
   shouldAddPrefersColorThemes: true,

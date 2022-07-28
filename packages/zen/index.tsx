@@ -1,3 +1,5 @@
+export * as Tamagui from "tamagui";
+
 export * from "./Button";
 export * from "./Link";
 export * from "./Text";
@@ -21,4 +23,4 @@ export * from "./Dropdown";
 export * from "./ActionButtonSheet";
 export * from "./Modal";
 export * from "./BottomSheet";
-export * from "./Form";
+// export * from "./Form";
