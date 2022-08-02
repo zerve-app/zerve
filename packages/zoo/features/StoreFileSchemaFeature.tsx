@@ -1,10 +1,10 @@
 import ScreenHeader from "../components/ScreenHeader";
-import { useSaveFileSchema } from "@zerve/client/Mutation";
+import { useSaveFileSchema } from "@zerve/client/src/Mutation";
 import {
   connectionSchemasToZSchema,
   useZStoreSchemas,
   useZNodeValue,
-} from "@zerve/client/Query";
+} from "@zerve/client/src/Query";
 import { useNavigation } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";

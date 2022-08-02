@@ -23,7 +23,7 @@ import { ZerveLogo } from "../components/ZerveLogo";
 import {
   SavedConnection,
   SavedConnectionProvider,
-} from "@zerve/client/Connection";
+} from "@zerve/client/src/Connection";
 import { Icon } from "@zerve/zen/Icon";
 import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen";

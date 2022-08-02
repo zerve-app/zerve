@@ -1,4 +1,4 @@
-import { SavedConnectionProvider } from "@zerve/client/Connection";
+import { SavedConnectionProvider } from "@zerve/client/src/Connection";
 import { FileFeature } from "../features/StoreFileFeature";
 import { PageLayout } from "../components/PageLayout";
 import { ZFeature } from "../features/ZFeature";

@@ -70,9 +70,12 @@ export async function getTypedZ(connection: Connection, path: string[]) {
     getZ(connection, path),
     getZ(connection, [...path, ".type"]),
   ]);
-  const type =
+
+  const type: unknown =
+    // @ts-ignore
     serverZType?.[".t"] === "AuthContainer" && serverZType.authType
-      ? serverZType.authType
+      ? // @ts-ignore
+        serverZType.authType
       : serverZType;
   return { node, type };
 }

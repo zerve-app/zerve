@@ -160,7 +160,7 @@ export function useRenameFile(storePath: string[]) {
       }
     },
     {
-      onSuccess: (something, { name }) => {
+      onSuccess: () => {
         queryClient.invalidateQueries([
           conn?.key,
           "z",

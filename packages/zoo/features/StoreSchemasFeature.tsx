@@ -6,8 +6,8 @@ import {
   useActionsSheet,
 } from "@zerve/zen";
 import ScreenHeader from "../components/ScreenHeader";
-import { useZNodeValue } from "@zerve/client/Query";
-import { useCreateSchema } from "@zerve/client/Mutation";
+import { useZNodeValue } from "@zerve/client/src/Query";
+import { useCreateSchema } from "@zerve/client/src/Mutation";
 import {
   useConnectionNavigation,
   useStoreNavigation,

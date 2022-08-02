@@ -1,12 +1,12 @@
 import { defineKeySource } from "@zerve/core";
 import { createStorage } from "@zerve/client-storage/Storage";
-import { postZAction } from "@zerve/client/ServerCalls";
+import { postZAction } from "@zerve/client/src/ServerCalls";
 import {
   Connection,
   SavedConnection,
   SavedConnectionProvider,
   SavedSession,
-} from "@zerve/client/Connection";
+} from "@zerve/client/src/Connection";
 import { Platform } from "react-native";
 import { SiteConfig } from "./SiteConfig";
 import { useEffect, useMemo } from "react";

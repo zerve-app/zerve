@@ -1,18 +1,18 @@
 import { Text, View } from "dripsy";
 import React, { useState } from "react";
 import { AbsoluteFill, AsyncButton, Button, Spinner } from "@zerve/zen";
-import { postZAction } from "@zerve/client/ServerCalls";
+import { postZAction } from "@zerve/client/src/ServerCalls";
 import { createStorage } from "@zerve/client-storage/Storage";
 import {
   SavedConnectionProvider,
   useConnection,
-} from "@zerve/client/Connection";
+} from "@zerve/client/src/Connection";
 import {
   useWebConnection,
   WEB_PRIMARY_CONN,
 } from "@zerve/zoo/app/ConnectionStorage";
 import { WebPathRootServerProps } from "@zerve/zoo/web/ZooWebServer";
-import { useZNodeValue } from "@zerve/client/Query";
+import { useZNodeValue } from "@zerve/client/src/Query";
 const LocalGambitStorage = createStorage({ id: "GambitStore" });
 
 type LocalState = {

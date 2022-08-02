@@ -12,15 +12,15 @@ import {
   VStack,
 } from "@zerve/zen";
 
-import { pathStartsWith, postZAction } from "@zerve/client/ServerCalls";
-import { useZNode, useConnectionProjects } from "@zerve/client/Query";
-import { useZNodeStateWrite } from "@zerve/client/Mutation";
+import { pathStartsWith, postZAction } from "@zerve/client/src/ServerCalls";
+import { useZNode, useConnectionProjects } from "@zerve/client/src/Query";
+import { useZNodeStateWrite } from "@zerve/client/src/Mutation";
 import {
   useConnection,
   SavedSession,
   Connection,
   serverPost,
-} from "@zerve/client/Connection";
+} from "@zerve/client/src/Connection";
 import {
   forceLocalLogout,
   logout,

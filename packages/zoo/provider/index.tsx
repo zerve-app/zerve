@@ -1,4 +1,4 @@
-import { ClientProvider } from "@zerve/client/Provider";
+import { ClientProvider } from "@zerve/client/src/Provider";
 import { ZenProvider } from "@zerve/zen/Provider";
 import { NavigationProvider } from "./navigation";
 import { SafeArea } from "./SafeArea";

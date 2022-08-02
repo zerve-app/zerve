@@ -5,7 +5,7 @@
   "main": "./CoreData.ts",
   "types": "./CoreData.ts",
   "dependencies": {
-    "@zerve/core": "*",
+    "@zerve/core": "0.1.0-alpha.1",
     "@zerve/crypto": "*",
     "@zerve/system-files": "*",
     "@zerve/data": "*",

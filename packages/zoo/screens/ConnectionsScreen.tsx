@@ -21,7 +21,7 @@ import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import { useSafeArea } from "../provider/SafeArea/useSafeArea";
-import { SavedConnection } from "@zerve/client/Connection";
+import { SavedConnection } from "@zerve/client/src/Connection";
 
 function ConnectionsScreenHeader() {
   return <ScreenHeader title="Connections" />;

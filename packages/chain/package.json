@@ -5,7 +5,7 @@
   "main": "./CoreChain.ts",
   "types": "./CoreChain.ts",
   "dependencies": {
-    "@zerve/core": "*",
+    "@zerve/core": "0.1.0-alpha.1",
     "@zerve/data": "*",
     "@zerve/crypto": "*",
     "@zerve/system-files": "*"

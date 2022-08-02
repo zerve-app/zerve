@@ -1,15 +1,39 @@
 {
   "name": "@zerve/core",
-  "version": "0.0.0",
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "version": "0.1.0-alpha.1",
+  "main": "lib/commonjs/index.js",
+  "react-native": "src/index.tsx",
+  "source": "src/index.tsx",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
+  "scripts": {
+    "prepare": "bob build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "config": "*",
+    "react-native-builder-bob": "^0.18.3",
     "tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "dependencies": {
     "immer": "^9.0.12",
     "json-schema-to-ts": "^2.1.1"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
   }
 }

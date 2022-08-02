@@ -15,7 +15,7 @@
     "lint:fix": "yarn lint:fix"
   },
   "dependencies": {
-    "@zerve/core": "*",
+    "@zerve/core": "0.1.0-alpha.1",
     "@zerve/node": "*",
     "@zerve/data": "*",
     "@zerve/obs": "*"

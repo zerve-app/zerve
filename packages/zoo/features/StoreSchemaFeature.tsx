@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 
 import { useActionsSheet, VStack } from "@zerve/zen";
 import ScreenHeader from "../components/ScreenHeader";
-import { useDeleteSchema, useSaveSchema } from "@zerve/client/Mutation";
-import { useZNodeValue, useZStoreJSONSchema } from "@zerve/client/Query";
+import { useDeleteSchema, useSaveSchema } from "@zerve/client/src/Mutation";
+import { useZNodeValue, useZStoreJSONSchema } from "@zerve/client/src/Query";
 import {
   useGlobalNavigation,
   useStoreSchemaNavigation,

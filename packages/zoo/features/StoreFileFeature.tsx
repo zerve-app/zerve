@@ -6,8 +6,8 @@ import {
   useDeleteFile,
   useRenameFile,
   useSaveFile,
-} from "@zerve/client/Mutation";
-import { useZStoreSchemas, useZNodeValue } from "@zerve/client/Query";
+} from "@zerve/client/src/Mutation";
+import { useZStoreSchemas, useZNodeValue } from "@zerve/client/src/Query";
 import {
   useGlobalNavigation,
   useStoreFileNavigation,

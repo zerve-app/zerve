@@ -8,8 +8,8 @@
     "dripsy": "^3.6.0",
     "expo-linking": "^3.0.0",
     "moti": "canary",
-    "@zerve/core": "*",
-    "@zerve/client": "*",
+    "@zerve/core": "0.1.0-alpha.1",
+    "@zerve/client": "0.1.0-alpha.1",
     "@zerve/client-storage": "*",
     "@zerve/react": "*",
     "@zerve/zen": "*"

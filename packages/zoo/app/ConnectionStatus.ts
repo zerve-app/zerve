@@ -1,4 +1,4 @@
-import { useConnection } from "@zerve/client/Connection";
+import { useConnection } from "@zerve/client/src/Connection";
 import { useZObservableMaybe } from "@zerve/react";
 
 export function useConnectionStatus() {

@@ -23,7 +23,7 @@ import { useActionsSheet } from "@zerve/zen";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ZLoadedNode } from "../components/ZLoadedNode";
-import { useConnectionProjects } from "@zerve/client/Query";
+import { useConnectionProjects } from "@zerve/client/src/Query";
 
 export function ConnectionProjects({
   onActions,

@@ -43,8 +43,10 @@ function startConnection(
   const [httpProtocol, hostPort] = savedConn.url.split("://");
   const wsProtocol = httpProtocol === "https" ? "wss" : "ws";
   const wsUrl = `${wsProtocol}://${hostPort}`;
+  // @ts-ignore
   if (!window) throw new Error("Cannot start live connection on server side.");
   const ws = new ReconnectingWebsocket(wsUrl, undefined, {
+    // @ts-ignore
     constructor: window.WebSocket,
   });
   const clientId = createZState({ type: ["null", "string"] } as const, null);
@@ -77,7 +79,9 @@ function startConnection(
 
       queryClient.setQueryData(
         [savedConn?.key, "z", ...message.path, ".node"],
+        // @ts-ignore
         (node) => {
+          // @ts-ignore
           return { ...node, node: message.value };
         }
       );
@@ -101,6 +105,7 @@ function startConnection(
     clientId: clientId.z.state,
     isConnected: isConnected.z.state,
   };
+  // @ts-ignore
   return [connection, close];
 }
 
@@ -182,6 +187,7 @@ export async function serverGet<Response>(
     if (res.status !== 200) {
       console.error("Request Error", value);
       if (res.status === 401) {
+        // @ts-ignore
         return UnauthorizedSymbol;
       } else if (res.status === 404) {
         throw new NotFoundError(
@@ -194,6 +200,7 @@ export async function serverGet<Response>(
     return value;
   } catch (e) {
     console.error(e);
+    // @ts-ignore
     if (e.code) throw e;
     else throw new Error("Network Error");
   }
@@ -218,6 +225,7 @@ export async function serverPost<Request, Response>(
   try {
     value = await res.json();
   } catch (e) {
+    // @ts-ignore
     throw new ServerError(e.message);
   }
   if (res.status !== 200) {
@@ -231,6 +239,7 @@ export async function serverPost<Request, Response>(
   return value;
 }
 
+// @ts-ignore
 const isOnClient = !!global.window;
 
 export function useConnectionLease(savedConn: SavedConnection | null) {
@@ -240,9 +249,11 @@ export function useConnectionLease(savedConn: SavedConnection | null) {
   }, [savedConn]);
   useEffect(() => {
     return () => {
+      // @ts-ignore
       connectionLease?.release();
     };
   }, [connectionLease]);
+  // @ts-ignore
   return connectionLease?.connection || null;
 }
 

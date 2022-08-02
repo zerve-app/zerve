@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@zerve/auth": "*",
-    "@zerve/core": "*",
+    "@zerve/core": "0.1.0-alpha.1",
     "@zerve/data": "*",
     "@zerve/ledger": "*",
     "@zerve/message-email-sendgrid": "*",

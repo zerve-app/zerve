@@ -1,4 +1,4 @@
-import { getZ } from "@zerve/client/ServerCalls";
+import { getZ } from "@zerve/client/src/ServerCalls";
 
 export async function getFromStore(fileKey: string) {
   return await getZ({ url: "http://localhost:3888", key: "" }, [

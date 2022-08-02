@@ -1,7 +1,7 @@
 {
   "name": "@zerve/cli",
   "version": "0.1.0-alpha.1",
-  "private": true,
+  "private": false,
   "publishConfig": {
     "access": "public"
   },
@@ -12,13 +12,14 @@
     "dist"
   ],
   "scripts": {
+    "prepare": "yarn build",
     "build": "esbuild ./ZerveSync --bundle --platform=node --outdir=dist && chmod +x ./dist/ZerveSync.js"
   },
   "bin": {
     "zerve-sync": "./dist/ZerveSync.js"
   },
   "dependencies": {
-    "@zerve/client": "*",
+    "@zerve/client": "0.1.0-alpha.1",
     "fs-extra": "^10.1.0",
     "json-schema-to-typescript": "^11.0.1"
   },

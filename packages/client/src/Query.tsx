@@ -35,17 +35,18 @@ function useConnectionQuery<Result>(
   conn: Connection | null,
   path: string[],
   getQuery: () => Promise<Result>,
-  options?: Omit<
+  options?: { onError: (e: GenericError<any, any>) => void } & Omit<
     UseQueryOptions<Result, void, Result, QueryKey>,
-    "queryKey" | "queryFn"
+    "queryKey" | "queryFn" | "onError"
   >
 ) {
-  const queryResult = useQuery<Result, void, Result, string[]>(
+  const queryResult = useQuery<Result, void, Result, QueryKey>(
     path,
-    async (ctx: QueryFunctionContext<string[], any>) => {
+    async (ctx: QueryFunctionContext<QueryKey, any>) => {
       const result = await getQuery();
       return result;
     },
+    // @ts-ignore
     options
   );
   useEffect(() => {
@@ -72,7 +73,7 @@ export function useZNode(path: string[], options?: QueryOptions) {
     },
     {
       cacheTime: 10000,
-      onError: options?.onError,
+      onError: (e: any) => options?.onError?.(e as GenericError<any, any>),
     }
   );
 }
@@ -90,7 +91,7 @@ export function useZNodeValue(path: string[], options?: QueryOptions) {
     },
     {
       cacheTime: 10000,
-      onError: options?.onError,
+      onError: (e: any) => options?.onError?.(e as GenericError<any, any>),
     }
   );
 }
@@ -107,7 +108,7 @@ export function useZChildren(path: string[], options?: QueryOptions) {
       return results;
     },
     {
-      onError: options?.onError,
+      onError: (e: any) => options?.onError?.(e as GenericError<any, any>),
     }
   );
 }
@@ -118,13 +119,14 @@ export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
   return useConnectionQuery<Record<string, ZSchema>>(
     conn,
     [conn.key, "z", ...storePath, "State", "$schemas"],
+    // @ts-ignore
     async () => {
       if (!conn || options?.skipLoading) return undefined;
       const schemas = await getZ(conn, [...storePath, "State", "$schemas"]);
       return schemas as Record<string, ZSchema>;
     },
     {
-      onError: options?.onError,
+      onError: (e: any) => options?.onError?.(e as GenericError<any, any>),
     }
   );
 }
@@ -198,6 +200,7 @@ export function useZStoreJSONSchema(
   return useMemo(() => {
     return {
       ...schemas,
+      // @ts-ignore
       data: connectionSchemasToZSchema(schemas.data),
     };
   }, [schemas, schemas.data]);

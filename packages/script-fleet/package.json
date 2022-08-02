@@ -6,7 +6,7 @@
     "apply": "esbuild ./ApplyFleet.ts --bundle --platform=node --outfile=build/ApplyFleet.js && node ./build/ApplyFleet.js"
   },
   "dependencies": {
-    "@zerve/core": "*",
+    "@zerve/core": "0.1.0-alpha.1",
     "@zerve/system-caddy": "*",
     "@zerve/system-files": "*",
     "@zerve/system-commands": "*",
