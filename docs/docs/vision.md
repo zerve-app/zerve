@@ -25,9 +25,9 @@ For now, the Zerve monorepo is fragile and highly-coupled with itself, but it is
 - [Zen](./internal/zen): A modular UI layer that works across mobile and web, and eases platform distinctions
 - [Zoo](./internal/zoo): The 'glue' that keeps the project together, with simple deployment tools for running on your server
 
-We aim to document and de-couple these components. Of course this helps internal contributors, but the goal is to educate and empower any engineer to build and deploy a full-stack application using this tech stack.
+We aim to document and de-couple these components. Of course this helps internal contributors, but the goal is to educate any aspiring software engineer to build and deploy a full-stack application using this tech stack.
 
-Front-end engineers should have an easy-to-use backend that 'just works' for most use-cases. And back-end engineers should be able to build a custom server using the Zed framework, and get a 'free' front-end app for every platform that queries the API to present
+Front-end engineers should have an easy-to-use backend that 'just works' for most use-cases. And back-end engineers should be able to build a custom server using the Zed framework, and get a 'free' front-end app for every platform that queries the API to present an appropriate UI.
 
 ### Phase III - Zerve Auto-Apps
 
