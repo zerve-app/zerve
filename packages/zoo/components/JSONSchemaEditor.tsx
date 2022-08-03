@@ -29,15 +29,6 @@ import {
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
 import { setStringAsync } from "expo-clipboard";
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  FadeOut,
-  FadeOutDown,
-  FadeOutUp,
-  Layout,
-} from "react-native-reanimated";
 import { useTextInputFormModal } from "./TextInputFormModal";
 
 function extractTypeSchema(type, schemaObj) {
@@ -369,39 +360,33 @@ export function JSONSchemaArrayForm({
       {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
       {value.map((childValue, childValueIndex) => {
         return (
-          <Animated.View
-            entering={FadeInUp}
-            exiting={FadeOutDown}
-            key={childValueIndex}
-          >
-            <FormField
-              id={`${id}_${childValueIndex}`}
-              label={`#${childValueIndex}`}
-              value={childValue}
-              schema={expandedItemsSchema}
-              actions={[
-                {
-                  key: "Delete",
-                  title: "Delete",
-                  icon: "trash",
-                  onPress: () => {
-                    const newValue = [...value];
-                    newValue.splice(childValueIndex, 1);
-                    onValue(newValue);
-                  },
+          <FormField
+            id={`${id}_${childValueIndex}`}
+            label={`#${childValueIndex}`}
+            value={childValue}
+            schema={expandedItemsSchema}
+            actions={[
+              {
+                key: "Delete",
+                title: "Delete",
+                icon: "trash",
+                onPress: () => {
+                  const newValue = [...value];
+                  newValue.splice(childValueIndex, 1);
+                  onValue(newValue);
                 },
-              ]}
-              onValue={
-                onValue
-                  ? (childV) => {
-                      const newValue = [...value];
-                      newValue[childValueIndex] = childV;
-                      onValue(newValue);
-                    }
-                  : undefined
-              }
-            />
-          </Animated.View>
+              },
+            ]}
+            onValue={
+              onValue
+                ? (childV) => {
+                    const newValue = [...value];
+                    newValue[childValueIndex] = childV;
+                    onValue(newValue);
+                  }
+                : undefined
+            }
+          />
         );
       })}
       {!!onValue && addButton}
