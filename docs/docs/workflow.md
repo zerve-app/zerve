@@ -1,0 +1,83 @@
+---
+title: Developer Workflow
+sidebar_position: 2
+---
+
+Zerve is a Content Management System which aims to address the common shortfalls of the Headless CMS. The following workflow details the way you can use Zerve to define a schema for your Store, so your non-technical team can manage app data according to your specification. Then the Zerve client can give you a type-safe interface using TypeScript.
+
+# The Zerve Workflow
+
+Your organization probably has at least two "sources of truth" for your data: the codebase (in git), and your user data (in your database).
+
+This workflow encourages you to maintain a 3rd "source-of-truth" for your company's data. Your team will maintain a new configuration database in the Zerve service, or you can self-host it.
+
+Most likely, your organization will only need one Store, which will be shared across development, staging, and production. If you need different behavior across these environments, your code may access different values within the Store. It is reccomended to use one Store for your project, so the schemas may be shared across environments.
+
+## Set up a Zerve Server + Store
+
+You will need a host for your Store, and you can use the Zerve service directly to create your own Store, or you may choose to self-host Zerve on your own server.
+
+## Add Initial Data and Schema
+
+You can use the Zerve app to create a new File within your store, and set the Schema for the file. The Schema can be any JSON-Schema. The app also allows you to add custom re-usable Schemas within your Store.
+
+For this example, we can create an `AllowNewUsers` file in our store, with the schema of `{"type": "boolean"}`.
+
+## Connect the Store to your Codebase
+
+### 1. Add Zerve Dependencies
+
+- Install the client with `yarn add @zerve/client`
+- Install the dev tools with `yarn add -D @zerve/cli`
+
+### 2. Set Up your App's package.json:
+
+```json
+  "zerve": {
+    "dynamicSync": {
+      "my-zerve-store": "https://zerve.app/my-user/my-store"
+    }
+  }
+```
+
+You may replace `https://zerve.app/my-user/my-store` with the host and path of your Zerve server and store path. You can rename `my-zerve-store` to anything– your code will refer to this value.
+
+### 3. Run `yarn zerve-sync`
+
+The `zerve-sync` command, provided by `@zerve/cli`, will copy the schema and initial values from your configured store into `./zerve/my-zerve-store`. This directory should be included in the git repo and your deployment.
+
+You may also want to include `"prepare": "zerve-sync"` within your `package.json` `"scripts":`, so that the sync automatically happens when you run `yarn`.
+
+### 4. Your App can Query from the Store
+
+```tsx
+import { AllowNewUsers } from "../zerve/my-zerve-store";
+
+export default function MyComponent() {
+  // uses react-query under the hood, and you can configure it as such.
+  const { data: allowSignUp } = AllowNewUsers.use();
+  return <>
+    {allowSignUp && <SignUpButton />}
+```
+
+Because the CLI syncronized our schemas, TypeScript knows that `allowSignUp` is a boolean.
+
+Or you can manually "get" the value from your database:
+
+```tsx
+import { AllowNewUsers } from "../zerve/my-zerve-store";
+
+const isAllowed = await AllowNewUsers.get();
+```
+
+### 4. Your App can Present Content from the Store
+
+## Deploy your App
+
+Build and deploy the app with your normal deployment workflow. This should include the new `zerve` directory that has been added to your codebase, which contains schema metadata and the initial/current values from your Zerve Store.
+
+## Problem solved! (Mostly!)
+
+Now your non-technical team can log into the Zerve app and modify the 'AllowNewUsers' value in your store, to allow or disallow new sign-ups without waiting for the technical team or waiting for a deployment.
+
+Soon we will add the capability of locking the schema in your Zerve store, to prevent breaking changes in your data.

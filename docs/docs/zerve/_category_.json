@@ -1,8 +1,8 @@
 {
-  "label": "Zerve Cloud",
-  "position": 2,
+  "label": "Zerve CMS",
+  "position": 3,
   "link": {
     "type": "generated-index",
-    "description": "5 minutes to learn the most important Docusaurus concepts."
+    "description": "About the Flagship Zerve product."
   }
 }
