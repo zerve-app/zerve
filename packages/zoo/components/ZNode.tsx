@@ -44,6 +44,7 @@ import {
   JSONSchema,
   PhoneSchema,
   ZSchema,
+  GenericError,
 } from "@zerve/core";
 import { View } from "react-native";
 import { JSONSchemaForm } from "./JSONSchemaForm";
@@ -664,6 +665,7 @@ export function ZGroupNode({
 
   return (
     <VStack>
+      {childNames.length === 0 ? <Paragraph>Nothing here</Paragraph> : null}
       {/* <JSONSchemaForm value={value} schema={type.value} /> */}
       {childNames.map((childName: string) => (
         <Button
@@ -690,6 +692,7 @@ export function ZActionNode({
   path: string[];
 }) {
   const [actionValue, setActionValue] = useState(null);
+  const [error, setError] = useState<null | GenericError>(null);
   const conn = useConnection();
 
   const { openHistoryEvent } = useGlobalNavigation();
@@ -697,6 +700,7 @@ export function ZActionNode({
 
   return (
     <>
+      {error && <Paragraph>{error.message}</Paragraph>}
       <JSONSchemaEditor
         value={actionValue}
         onValue={setActionValue}
@@ -706,8 +710,12 @@ export function ZActionNode({
       <AsyncButton
         title={type.payload?.submitLabel || "Submit"}
         primary
+        onCatch={(e) => {
+          setError(e);
+        }}
         right={(p) => <Icon name="play" {...p} />}
         onPress={async () => {
+          setError(null);
           const response = await postZAction(conn, path, actionValue);
           const eventId = await storeHistoryEvent("ServerAction", {
             action: actionValue,

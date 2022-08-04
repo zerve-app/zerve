@@ -1,18 +1,12 @@
+import { WebPathRoot } from "@zerve/zoo/app/WebPathRoot";
+import {
+  getWebRootServerProps,
+  WebPathRootServerProps,
+} from "@zerve/zoo/web/ZooWebServer";
 import React from "react";
-import { AllowNewUsers } from "../zerve/AardvarkDev";
 
-export default function HomeScreen() {
-  const { data: isAllowed } = AllowNewUsers.use();
-  return (
-    <div>
-      <h1>Zebra Web</h1>
-      {isAllowed && <p>You are allowed to create new users</p>}
-    </div>
-  );
+export default function HomeScreen(props: WebPathRootServerProps) {
+  return <WebPathRoot path={[]} {...props} />;
 }
 
-export const getServerSideProps = async () => {
-  const isAllowed = await AllowNewUsers.get();
-  console.log({ isAllowed });
-  return { props: {} };
-};
+export const getServerSideProps = getWebRootServerProps;

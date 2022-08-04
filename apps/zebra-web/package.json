@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "prepare": "zerve-sync"
+    "lint": "next lint"
   },
   "dependencies": {
     "@expo/next-adapter": "^3.1.21",
@@ -30,10 +29,5 @@
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^9.0.0",
     "tsconfig": "*"
-  },
-  "zerve": {
-    "dynamicSync": {
-      "AardvarkDev": "http://localhost:3988/Zerve"
-    }
   }
 }

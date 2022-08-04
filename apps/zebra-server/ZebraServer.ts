@@ -6,9 +6,18 @@ import {
   createZContainer,
   createZGettable,
   createZGroup,
+  createZStatic,
   NullSchema,
   NumberSchema,
+  AnyZed,
+  StringSchema,
+  createZGettableGroup,
+  GenericError,
+  RequestError,
+  NotFoundError,
+  ChildrenListOptions,
 } from "@zerve/core";
+import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
   createAuth,
   createEmailAuthStrategy,
@@ -38,7 +47,6 @@ const secretsFile =
 
 export async function startApp() {
   console.log("Starting Data Dir", dataDir);
-  const Data = await createCoreData(dataDir);
 
   const InternalRootFiles = createSystemFiles("/");
   const DataDirFiles = createSystemFiles(dataDir);
@@ -68,28 +76,91 @@ export async function startApp() {
 
   const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
-  const stores: Record<string, GeneralStoreModule> = {};
-
-  async function getUserStore(id: string): Promise<GeneralStoreModule> {
-    if (stores[id]) return stores[id];
-    stores[id] = await createGeneralStore(
-      Data,
-      createSystemFiles(join(dataDir, "userData", id, `StoreCache`)),
-      `User_${id}_Store`
+  const memoryStores: Record<string, Record<string, GeneralStoreModule>> = {};
+  async function getMemoryStore(
+    userId: string,
+    storeId: string
+  ): Promise<GeneralStoreModule> {
+    const alreadyInMemoryStore = memoryStores[userId]?.[storeId];
+    if (alreadyInMemoryStore) return alreadyInMemoryStore;
+    if (!(await doesUserStoreExist(userId, storeId)))
+      throw new NotFoundError(
+        "NotFound",
+        `The ${userId}/${storeId} store does not exist`,
+        { userId, storeId }
+      );
+    const StoreData = await createCoreData(
+      join(getMemoryStoreDir(userId, storeId), `Data`)
     );
-    return stores[id];
+    const userMemoryStores =
+      memoryStores[userId] || (memoryStores[userId] = {});
+    const newMemoryStore = await createGeneralStore(
+      StoreData,
+      createSystemFiles(join(getMemoryStoreDir(userId, storeId), `StoreCache`)),
+      `Store`
+    );
+    userMemoryStores[storeId] = newMemoryStore;
+    return newMemoryStore;
+  }
+
+  function getUserDir(userId: string): string {
+    return join(dataDir, "userData", userId);
+  }
+
+  function getMemoryStoreDir(userId: string, storeId: string): string {
+    return join(getUserDir(userId), "stores", storeId);
+  }
+
+  async function getUserZeds(user, { userId }): Record<string, AnyZed> {
+    const CreateStore = createZAction(
+      StringSchema,
+      NullSchema,
+      async (storeId: string) => {
+        if (await doesUserStoreExist(userId, storeId))
+          throw new RequestError(
+            "AlreadyExists",
+            `The "${storeId}" store already exists.`,
+            { storeId }
+          );
+        const newStorePath = getMemoryStoreDir(userId, storeId);
+        await mkdirp(newStorePath);
+        return null;
+      }
+    );
+    const Stores = createZGettableGroup(
+      async (storeId: string) => {
+        return await getMemoryStore(userId, storeId);
+      },
+      async (getOptions: ChildrenListOptions) => {
+        const userStorePath = join(getUserDir(userId), "stores");
+        let children = [];
+        try {
+          children = await readdir(userStorePath);
+          children = children.filter((v) => v !== ".DS_Store");
+        } catch (e) {
+          if (e.code !== "ENOENT") throw e;
+        }
+        return { children, more: false, cursor: "" };
+      }
+    );
+
+    return {
+      ...user,
+      CreateStore,
+      Stores,
+    };
+  }
+  async function doesUserStoreExist(userId: string, storeId: string) {
+    const newStorePath = getMemoryStoreDir(userId, storeId);
+    return await pathExists(newStorePath);
   }
 
   const zRoot = createZContainer({
-    CustomStore: await createGeneralStore(
-      Data,
-      createSystemFiles(join(dataDir, `CustomStore_StoreCache`)),
-      `CustomStore_Store`
-    ),
-
-    StoreState: createZGroup(async (userId) => {
-      const store = await getUserStore(userId);
-      return store.z.State;
+    Store: createZGroup(async (userId: string) => {
+      return createZGroup(async (storeId: string) => {
+        const store = await getMemoryStore(userId, storeId);
+        return store.z.State;
+      });
     }),
 
     Auth: await createAuth({
@@ -109,22 +180,13 @@ export async function startApp() {
           if (e.code === "ENOENT") return;
           throw e;
         }
-        try {
-          await Data.z.Actions.z.MoveDoc.call({
-            from: `User_${prevUserId}_Store`,
-            to: `User_${userId}_Store`,
-          });
-        } catch (e) {
-          if (e.code === "ENOENT") return;
-          throw e;
+        if (memoryStores[prevUserId]) {
+          const userMemoryStores = memoryStores[prevUserId];
+          delete memoryStores[prevUserId];
+          memoryStores[userId] = userMemoryStores;
         }
       },
-      getUserZeds: async (user, { userId }) => {
-        return {
-          ...user,
-          Store: await getUserStore(userId),
-        };
-      },
+      getUserZeds,
     }),
   });
 

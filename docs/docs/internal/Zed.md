@@ -35,3 +35,13 @@ Group together an arbitrary set of Zed functionality with names. Basically this 
 Define an async action on the server, and provide a schema that informs the client what schema of data should be sent and returned by the action.
 
 `createZAction(payloadSchema, responseSchema, actionHandler)`
+
+## ZGroup
+
+## ZGettableGroup
+
+## ZStatic
+
+## ZAuthContainer
+
+this one is confusing!

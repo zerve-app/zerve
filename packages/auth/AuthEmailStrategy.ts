@@ -22,12 +22,7 @@ export async function createEmailAuthStrategy(
     },
     {
       validateAddress: (email) => {
-        if (!options)
-          throw new ServerError(
-            "EmailAuthStrategyOptionsNotProvided",
-            "EmailAuthStrategy not configured"
-          );
-        const { emailAllowList, domainAllowList } = options;
+        const { emailAllowList, domainAllowList } = options || {};
         if (emailAllowList) {
           const isFoundInAllowList = emailAllowList.indexOf(email) !== -1;
           if (!isFoundInAllowList)
