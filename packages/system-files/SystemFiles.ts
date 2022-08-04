@@ -3,6 +3,8 @@ import {
   createZContainer,
   createZStatic,
   RequestError,
+  StringSchema,
+  BooleanSchema,
 } from "@zerve/core";
 import {
   writeFile,
@@ -12,6 +14,7 @@ import {
   mkdirp,
   move,
   unlink,
+  pathExists,
 } from "fs-extra";
 import { join } from "path";
 
@@ -192,6 +195,16 @@ export function createSystemFiles<FilesRoot extends string>(
     }
   );
 
+  const Exists = createZAction(
+    StringSchema,
+    BooleanSchema,
+    async (path: string) => {
+      ensureNoPathEscape(path);
+      const fullPath = join(filesRoot, path);
+      return await pathExists(fullPath);
+    }
+  );
+
   const DeleteFile = createZAction(
     {
       type: "object",
@@ -221,6 +234,7 @@ export function createSystemFiles<FilesRoot extends string>(
     MakeDir,
     WriteJSON,
     ReadJSON,
+    Exists,
     Move,
     Path: createZStatic(filesRoot),
   });

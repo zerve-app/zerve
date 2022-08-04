@@ -76,27 +76,73 @@ export async function startApp() {
 
   const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
 
+  const [zAuth, { createEntity, getEntity, writeEntity }] = await createAuth({
+    strategies: {
+      Email: await createEmailAuthStrategy(Email),
+      Phone: await createSMSAuthStrategy(SMS),
+    },
+    files: AuthFiles,
+    handleUserIdChange: async (
+      prevUserId: string,
+      userId: string,
+      entityData: any
+    ) => {
+      console.log("handleUserIdChange", entityData);
+      try {
+        await DataDirFiles.z.Move.call({
+          from: join("userData", prevUserId),
+          to: join("userData", userId),
+        });
+      } catch (e) {
+        if (e.code === "ENOENT") return;
+        throw e;
+      }
+      await Promise.all(
+        (entityData?.affiliatedOrgs || []).map(
+          async (affiliatedOrgId: string) => {
+            const entityData = await getEntity(affiliatedOrgId);
+            const newEntity = {
+              ...entityData,
+            };
+            if (entityData.ownerUserId === prevUserId) {
+              newEntity.ownerUserId = userId;
+            }
+            await writeEntity(affiliatedOrgId, newEntity);
+          }
+        )
+      );
+      if (memoryStores[prevUserId]) {
+        const userMemoryStores = memoryStores[prevUserId];
+        delete memoryStores[prevUserId];
+        memoryStores[userId] = userMemoryStores;
+      }
+    },
+    getUserZeds,
+  });
+
   const memoryStores: Record<string, Record<string, GeneralStoreModule>> = {};
   async function getMemoryStore(
-    userId: string,
+    entityId: string,
     storeId: string
   ): Promise<GeneralStoreModule> {
-    const alreadyInMemoryStore = memoryStores[userId]?.[storeId];
+    const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
     if (alreadyInMemoryStore) return alreadyInMemoryStore;
-    if (!(await doesUserStoreExist(userId, storeId)))
+    if (!(await doesUserStoreExist(entityId, storeId)))
       throw new NotFoundError(
         "NotFound",
-        `The ${userId}/${storeId} store does not exist`,
-        { userId, storeId }
+        `The ${entityId}/${storeId} store does not exist`,
+        { entityId, storeId }
       );
     const StoreData = await createCoreData(
-      join(getMemoryStoreDir(userId, storeId), `Data`)
+      join(getEntityStoreDir(entityId, storeId), `Data`)
     );
     const userMemoryStores =
-      memoryStores[userId] || (memoryStores[userId] = {});
+      memoryStores[entityId] || (memoryStores[entityId] = {});
     const newMemoryStore = await createGeneralStore(
       StoreData,
-      createSystemFiles(join(getMemoryStoreDir(userId, storeId), `StoreCache`)),
+      createSystemFiles(
+        join(getEntityStoreDir(entityId, storeId), `StoreCache`)
+      ),
       `Store`
     );
     userMemoryStores[storeId] = newMemoryStore;
@@ -107,7 +153,7 @@ export async function startApp() {
     return join(dataDir, "userData", userId);
   }
 
-  function getMemoryStoreDir(userId: string, storeId: string): string {
+  function getEntityStoreDir(userId: string, storeId: string): string {
     return join(getUserDir(userId), "stores", storeId);
   }
 
@@ -122,7 +168,7 @@ export async function startApp() {
             `The "${storeId}" store already exists.`,
             { storeId }
           );
-        const newStorePath = getMemoryStoreDir(userId, storeId);
+        const newStorePath = getEntityStoreDir(userId, storeId);
         await mkdirp(newStorePath);
         return null;
       }
@@ -143,15 +189,31 @@ export async function startApp() {
         return { children, more: false, cursor: "" };
       }
     );
+    const CreateOrg = createZAction(
+      StringSchema,
+      NullSchema,
+      async (orgId: string) => {
+        const userEntityData = await getEntity(userId);
+        await createEntity(orgId, {
+          ownerUserId: userId,
+        });
+        await writeEntity(userId, {
+          ...userEntityData,
+          affiliatedOrgs: [...(userEntityData.affiliatedOrgs || []), orgId],
+        });
 
+        return null;
+      }
+    );
     return {
       ...user,
       CreateStore,
+      CreateOrg,
       Stores,
     };
   }
   async function doesUserStoreExist(userId: string, storeId: string) {
-    const newStorePath = getMemoryStoreDir(userId, storeId);
+    const newStorePath = getEntityStoreDir(userId, storeId);
     return await pathExists(newStorePath);
   }
 
@@ -163,31 +225,7 @@ export async function startApp() {
       });
     }),
 
-    Auth: await createAuth({
-      strategies: {
-        Email: await createEmailAuthStrategy(Email),
-        Phone: await createSMSAuthStrategy(SMS),
-      },
-      files: AuthFiles,
-      handleUserIdChange: async (prevUserId: string, userId: string) => {
-        console.log("handleUserIdChange", prevUserId, userId);
-        try {
-          await DataDirFiles.z.Move.call({
-            from: join("userData", prevUserId),
-            to: join("userData", userId),
-          });
-        } catch (e) {
-          if (e.code === "ENOENT") return;
-          throw e;
-        }
-        if (memoryStores[prevUserId]) {
-          const userMemoryStores = memoryStores[prevUserId];
-          delete memoryStores[prevUserId];
-          memoryStores[userId] = userMemoryStores;
-        }
-      },
-      getUserZeds,
-    }),
+    Auth: zAuth,
   });
 
   await startZedServer(port, zRoot);

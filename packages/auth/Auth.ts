@@ -8,6 +8,7 @@ import {
   UnauthorizedError,
   createZMetaContainer,
   validateWithSchema,
+  RequestError,
 } from "@zerve/core";
 import { join } from "path";
 import { randomBytes, createHash } from "crypto";
@@ -163,7 +164,11 @@ function getSetUsernameAction(
   usersFiles: SystemFilesModule,
   authenticationFiles: SystemFilesModule,
   userId: string,
-  handleUserIdChange?: (prevUserId: string, userId: string) => Promise<void>
+  handleUserIdChange?: (
+    prevUserId: string,
+    userId: string,
+    entityData: any
+  ) => Promise<void>
 ) {
   return createZAction(
     UsernameSchema,
@@ -171,10 +176,10 @@ function getSetUsernameAction(
     async (newUserId: Username) => {
       if (newUserId === userId) return null;
 
-      const userData: UserData = await usersFiles.z.ReadJSON.call({
-        path: join(userId, "user.json"),
+      const entityData: UserData = await usersFiles.z.ReadJSON.call({
+        path: join(userId, "entity.json"),
       });
-      const { authenticatorIds } = userData;
+      const { authenticatorIds } = entityData;
 
       await Promise.all(
         authenticatorIds.map(async (authenticatorId) => {
@@ -205,7 +210,8 @@ function getSetUsernameAction(
         })
       );
 
-      if (handleUserIdChange) await handleUserIdChange(userId, newUserId);
+      if (handleUserIdChange)
+        await handleUserIdChange(userId, newUserId, entityData);
       return null;
     }
   );
@@ -229,7 +235,7 @@ function getSetPasswordAction(
     SetPasswordSchema,
     NullSchema,
     async ({ newPassword, previousPassword }) => {
-      const userDataPath = join(userId, "user.json");
+      const userDataPath = join(userId, "entity.json");
 
       const userData: UserData = await usersFiles.z.ReadJSON.call({
         path: userDataPath,
@@ -304,7 +310,7 @@ export async function createAuth<
     join(files.z.Path.value, "authentications")
   );
 
-  const usersFiles = createSystemFiles(join(files.z.Path.value, "users"));
+  const usersFiles = createSystemFiles(join(files.z.Path.value, "entities"));
   await usersFiles.z.MakeDir.call({
     path: "",
   });
@@ -368,7 +374,7 @@ export async function createAuth<
       userId &&
       sessionId &&
       (await files.z.ReadJSON.call({
-        path: join("users", userId, "sessions", `session-${sessionId}.json`),
+        path: join("entities", userId, "sessions", `session-${sessionId}.json`),
       }));
     if (!sessionData)
       throw new UnauthorizedError(
@@ -387,7 +393,7 @@ export async function createAuth<
     return session;
   }
 
-  return createZMetaContainer(
+  const zAuth = createZMetaContainer(
     {
       // anybody can call this action! all they need is the sessionId to log out.
       logout: createZAction(
@@ -399,7 +405,7 @@ export async function createAuth<
           const sessionIdOnly = sessionId.split(".")[0];
           await files.z.DeleteFile.call({
             path: join(
-              "users",
+              "entities",
               userId,
               "sessions",
               `session-${sessionIdOnly}.json`
@@ -421,7 +427,7 @@ export async function createAuth<
           );
           const sessionFiles = (
             await files.z.ReadDir.call({
-              path: join("users", userId, "sessions"),
+              path: join("entities", userId, "sessions"),
             })
           ).filter(
             (fileName: string) => !!fileName.match(/^session-(.*)\.json$/)
@@ -429,7 +435,7 @@ export async function createAuth<
           await Promise.all(
             sessionFiles.map(async (fileName: string) => {
               await files.z.DeleteFile.call({
-                path: join("users", userId, "sessions", fileName),
+                path: join("entities", userId, "sessions", fileName),
               });
             })
           );
@@ -441,7 +447,7 @@ export async function createAuth<
         LoginWithPasswordSchema,
         MaybeSessionSchema,
         async ({ userId, password }) => {
-          const userDataPath = join(userId, "user.json");
+          const userDataPath = join(userId, "entity.json");
 
           const userData: UserData = await usersFiles.z.ReadJSON.call({
             path: userDataPath,
@@ -524,7 +530,7 @@ export async function createAuth<
             }
             console.log("CREATING SESSION authenticator", authentication);
             const { userId } = authentication;
-            const userDataPath = join(userId, "user.json");
+            const userDataPath = join(userId, "entity.json");
 
             const prevUserData: UserData | undefined =
               await authenticationFiles.z.ReadJSON.call({
@@ -571,4 +577,35 @@ export async function createAuth<
     },
     AuthContainerContractMeta
   );
+
+  async function createEntity(
+    entityId: string,
+    entityData: any
+  ): Promise<void> {
+    if (await usersFiles.z.Exists.call(entityId)) {
+      throw new RequestError(
+        "AlreadyExists",
+        `An entity named "${entityId}" already exists!`,
+        { entityId }
+      );
+    }
+    await usersFiles.z.MakeDir.call({ path: entityId });
+    await usersFiles.z.WriteJSON.call({
+      path: join(entityId, "entity.json"),
+      value: entityData,
+    });
+  }
+  async function getEntity(entityId: string): Promise<any> {
+    const entityValue = await usersFiles.z.ReadJSON.call({
+      path: join(entityId, "entity.json"),
+    });
+    return entityValue;
+  }
+  async function writeEntity(entityId: string, entityData: any): Promise<void> {
+    await usersFiles.z.WriteJSON.call({
+      path: join(entityId, "entity.json"),
+      value: entityData,
+    });
+  }
+  return [zAuth, { createEntity, getEntity, writeEntity }];
 }

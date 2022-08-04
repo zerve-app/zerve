@@ -92,61 +92,63 @@ export async function startApp() {
     "ZerveStore"
   );
 
+  const [zAuth] = await createAuth({
+    strategies: {
+      Email: await createEmailAuthStrategy(Email, {
+        domainAllowList: ["zerve.app"],
+      }),
+      // Phone: await createSMSAuthStrategy(SMS),
+    },
+    files: AuthFiles,
+    handleUserIdChange: async (prevUserId: string, userId: string) => {
+      try {
+        await DataDirFiles.z.Move.call({
+          from: join("userData", prevUserId),
+          to: join("userData", userId),
+        });
+      } catch (e) {
+        if (e.code === "ENOENT") return;
+        throw e;
+      }
+    },
+    getUserZeds: async (user, { userId }) => {
+      return {
+        // Workflows: zWorkflowEnvironment(
+        //   {
+        //     SystemCommands,
+        //     SystemFiles,
+        //   },
+        //   {
+        //     Uptime: zWorkflow({
+        //       startPayloadSchema: NullSchema,
+        //       steps: [
+        //         zWorkflowCallStep(
+        //           "SystemCommands/command",
+        //           {
+        //             command: "uptime",
+        //             args: [],
+        //           },
+        //           { as: "uptimeResult" }
+        //         ),
+        //       ],
+        //     }),
+        //   }
+        // ),
+        ZerveStore: Store,
+        Data,
+        deployZebra: createZAction(NullSchema, NullSchema, async () => {
+          console.log("Zebra deploy behavior?! You must be Eric");
+          return null;
+        }),
+        ...user,
+      };
+    },
+  });
+
   const zRoot = createZContainer({
     Info: createZStatic("Aardvark"),
     Zerve: Store.z.State,
-    Auth: await createAuth({
-      strategies: {
-        Email: await createEmailAuthStrategy(Email, {
-          domainAllowList: ["zerve.app"],
-        }),
-        // Phone: await createSMSAuthStrategy(SMS),
-      },
-      files: AuthFiles,
-      handleUserIdChange: async (prevUserId: string, userId: string) => {
-        try {
-          await DataDirFiles.z.Move.call({
-            from: join("userData", prevUserId),
-            to: join("userData", userId),
-          });
-        } catch (e) {
-          if (e.code === "ENOENT") return;
-          throw e;
-        }
-      },
-      getUserZeds: async (user, { userId }) => {
-        return {
-          // Workflows: zWorkflowEnvironment(
-          //   {
-          //     SystemCommands,
-          //     SystemFiles,
-          //   },
-          //   {
-          //     Uptime: zWorkflow({
-          //       startPayloadSchema: NullSchema,
-          //       steps: [
-          //         zWorkflowCallStep(
-          //           "SystemCommands/command",
-          //           {
-          //             command: "uptime",
-          //             args: [],
-          //           },
-          //           { as: "uptimeResult" }
-          //         ),
-          //       ],
-          //     }),
-          //   }
-          // ),
-          ZerveStore: Store,
-          Data,
-          deployZebra: createZAction(NullSchema, NullSchema, async () => {
-            console.log("Zebra deploy behavior?! You must be Eric");
-            return null;
-          }),
-          ...user,
-        };
-      },
-    }),
+    Auth: zAuth,
   });
 
   await startZedServer(port, zRoot);
