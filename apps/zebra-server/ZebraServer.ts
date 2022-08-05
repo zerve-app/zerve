@@ -13,9 +13,11 @@ import {
   StringSchema,
   createZGettableGroup,
   GenericError,
+  ForbiddenError,
   RequestError,
   NotFoundError,
   ChildrenListOptions,
+  BooleanSchema,
 } from "@zerve/core";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
@@ -157,28 +159,13 @@ export async function startApp() {
     return join(getUserDir(userId), "stores", storeId);
   }
 
-  async function getUserZeds(user, { userId }): Record<string, AnyZed> {
-    const CreateStore = createZAction(
-      StringSchema,
-      NullSchema,
+  function getStoreGroup(entityId: string) {
+    return createZGettableGroup(
       async (storeId: string) => {
-        if (await doesUserStoreExist(userId, storeId))
-          throw new RequestError(
-            "AlreadyExists",
-            `The "${storeId}" store already exists.`,
-            { storeId }
-          );
-        const newStorePath = getEntityStoreDir(userId, storeId);
-        await mkdirp(newStorePath);
-        return null;
-      }
-    );
-    const Stores = createZGettableGroup(
-      async (storeId: string) => {
-        return await getMemoryStore(userId, storeId);
+        return await getMemoryStore(entityId, storeId);
       },
       async (getOptions: ChildrenListOptions) => {
-        const userStorePath = join(getUserDir(userId), "stores");
+        const userStorePath = join(getUserDir(entityId), "stores");
         let children = [];
         try {
           children = await readdir(userStorePath);
@@ -189,6 +176,32 @@ export async function startApp() {
         return { children, more: false, cursor: "" };
       }
     );
+  }
+
+  function getStoreCreatorAction(entityId: string) {
+    return createZAction(StringSchema, NullSchema, async (storeId: string) => {
+      if (await doesUserStoreExist(entityId, storeId))
+        throw new RequestError(
+          "AlreadyExists",
+          `The "${storeId}" store already exists.`,
+          { storeId }
+        );
+      const newStorePath = getEntityStoreDir(entityId, storeId);
+      await mkdirp(newStorePath);
+      return null;
+    });
+  }
+
+  function getOrgOwnerAbilities(userId: string, ownerId: string) {
+    return {
+      role: createZStatic("owner"),
+      inviteMember: createZAction(() => {}),
+    };
+  }
+
+  async function getUserZeds(user, { userId }): Record<string, AnyZed> {
+    const CreateStore = getStoreCreatorAction(userId);
+    const Stores = getStoreGroup(userId);
     const CreateOrg = createZAction(
       StringSchema,
       NullSchema,
@@ -205,10 +218,77 @@ export async function startApp() {
         return null;
       }
     );
+
+    const Orgs = createZGettableGroup(
+      async (orgId: string) => {
+        const orgEntity = await getEntity(orgId);
+        const isUserOwner = orgEntity.ownerUserId === userId;
+        if (!isUserOwner)
+          throw new ForbiddenError(
+            "NotInOrg",
+            `You do not have access to the "${orgId}" org.`,
+            { orgId, userId }
+          );
+        console.log(userId, orgEntity, orgId);
+        return createZContainer({
+          orgId: createZStatic(orgId),
+          createStore: getStoreCreatorAction(orgId),
+          Stores: getStoreGroup(orgId),
+          Members: createZGettableGroup(
+            async (memberId: string) => {
+              return createZStatic({});
+            },
+            async (getOptions: ChildrenListOptions) => {
+              return {
+                children: orgEntity.members || [],
+                cursor: "",
+                more: false,
+              };
+            }
+          ),
+          role: createZStatic("member"),
+          ...(isUserOwner ? getOrgOwnerAbilities(userId, orgId) : {}),
+        });
+      },
+      async (getOptions: ChildrenListOptions) => {
+        const userEntity = await getEntity(userId);
+        const { affiliatedOrgs } = userEntity;
+        return {
+          children: affiliatedOrgs,
+          more: false,
+          cursor: "",
+        };
+      }
+    );
+
+    const OrgInvites = createZGettableGroup(
+      async (orgId: string) => {
+        return createZContainer({
+          orgId: createZStatic(orgId),
+          respond: createZAction(
+            BooleanSchema,
+            NullSchema,
+            async (doesAccept: boolean) => {
+              // ok respond to org invite ok
+              return null;
+            }
+          ),
+        });
+      },
+      async (getOptions: ChildrenListOptions) => {
+        return {
+          children: [],
+          more: false,
+          cursor: "",
+        };
+      }
+    );
     return {
       ...user,
       CreateStore,
       CreateOrg,
+      Orgs,
+      OrgInvites,
       Stores,
     };
   }
