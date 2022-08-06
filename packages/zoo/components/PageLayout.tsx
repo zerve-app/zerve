@@ -1,16 +1,16 @@
 import { ReactNode } from "react";
-import { View } from "dripsy";
+import { View } from "react-native";
 
 export function PageLayout({ children }: { children: ReactNode }) {
   return (
     <View
-      sx={{
+      style={{
         alignSelf: "center",
         minHeight: "100%",
       }}
     >
       <View
-        sx={{
+        style={{
           minHeight: "100%",
           padding: 20,
           paddingTop: 80,

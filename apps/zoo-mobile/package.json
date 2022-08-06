@@ -12,15 +12,15 @@
     "clean": "rimraf node_modules .expo"
   },
   "dependencies": {
-    "@zerve/core": "*",
-    "@zerve/client": "*",
-    "@zerve/zen": "*",
-    "@zerve/zoo": "*",
     "@expo/vector-icons": "^13.0.0",
     "@gorhom/bottom-sheet": "^4.4.2",
     "@react-navigation/bottom-tabs": "^6.3.2",
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
+    "@zerve/client": "*",
+    "@zerve/core": "*",
+    "@zerve/zen": "*",
+    "@zerve/zoo": "*",
     "date-fns": "^2.28.0",
     "expo": "^45.0.5",
     "expo-app-loading": "^2.0.0",
@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "@types/react": "^17.0.21",
+    "@types/react": "~17.0.21",
     "@types/react-native": "^0.67.6",
     "eas-cli": "^0.54.1",
     "tsconfig": "*",

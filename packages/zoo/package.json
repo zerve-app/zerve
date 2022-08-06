@@ -13,10 +13,8 @@
     "@zerve/core": "*",
     "@zerve/react": "*",
     "@zerve/zen": "*",
-    "dripsy": "^3.6.0",
     "expo-linear-gradient": "^11.4.0",
     "expo-linking": "^3.0.0",
-    "moti": "canary",
     "react-responsive": "^9.0.0-beta.10"
   },
   "devDependencies": {

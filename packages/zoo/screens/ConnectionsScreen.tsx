@@ -12,9 +12,7 @@ import {
   useSavedConnections,
 } from "../app/ConnectionStorage";
 import { FontAwesome } from "@expo/vector-icons";
-import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import { View } from "dripsy";
 import DraggableFlatList, {
   ScaleDecorator,
   ShadowDecorator,

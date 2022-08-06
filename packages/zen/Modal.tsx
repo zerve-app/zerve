@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { A, View } from "dripsy";
+import { View } from "react-native";
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
 
@@ -52,7 +52,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         {children}
         <Dialog.Overlay>
           <View
-            sx={{
+            style={{
               ...AbsoluteFill,
               backgroundColor: "#ccc5",
             }}
@@ -61,14 +61,14 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         <Dialog.DialogContent>
           <View
             pointerEvents="box-none"
-            sx={{
+            style={{
               ...AbsoluteFill,
               justifyContent: "center",
               alignItems: "center",
             }}
           >
             <View
-              sx={{
+              style={{
                 padding: 30,
                 backgroundColor: "white",
                 borderRadius: 10,

@@ -1,4 +1,4 @@
-import { Text, View } from "dripsy";
+import { Text, View } from "react-native";
 import * as Select from "@radix-ui/react-select";
 import { bigShadow, smallShadow } from "./Style";
 import Layout from "./Layout";
@@ -48,7 +48,9 @@ function DropdownItem({
         onPress={onSelect}
       >
         <Select.ItemText asChild>
-          <Text sx={{ flex: 1, color: focused ? inverted.text : colors.text }}>
+          <Text
+            style={{ flex: 1, color: focused ? inverted.text : colors.text }}
+          >
             {title}
           </Text>
         </Select.ItemText>
@@ -99,7 +101,7 @@ export function Dropdown<OptionValues>({
         }}
       >
         <Select.Value asChild>
-          <Text sx={{ paddingHorizontal: 12, flex: 1, textAlign: "left" }}>
+          <Text style={{ paddingHorizontal: 12, flex: 1, textAlign: "left" }}>
             {selectedOption ? selectedOption.title : unselectedLabel}
           </Text>
         </Select.Value>
@@ -110,7 +112,7 @@ export function Dropdown<OptionValues>({
         <Select.ScrollUpButton />
         <Select.Viewport asChild>
           <View
-            sx={{
+            style={{
               backgroundColor: background,
               borderRadius: Layout.borderRadius,
               ...bigShadow,

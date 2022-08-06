@@ -14,7 +14,6 @@
     "@expo/vector-icons": "^13.0.0",
     "@zerve/cli": "*",
     "@zerve/zoo": "*",
-    "dripsy": "^3.6.0",
     "next": "12.1.6",
     "node-fetch": "^3.2.9",
     "raf": "^3.4.1",

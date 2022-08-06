@@ -1,6 +1,5 @@
 import React, { ReactElement, ReactNode, useState } from "react";
-import { Text } from "dripsy";
-import { Pressable } from "react-native";
+import { Pressable, Text } from "react-native";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 import { ActionButtonDef } from "./ActionButton";
@@ -38,7 +37,7 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
         }}
       >
         <Text
-          sx={{
+          style={{
             color: isFocused ? colors.inverted.text : colors.active.text,
           }}
         >

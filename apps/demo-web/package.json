@@ -26,7 +26,7 @@
     "react-native-web": "^0.17.7"
   },
   "devDependencies": {
-    "@types/react": "^17.0.21",
+    "@types/react": "~17.0.21",
     "@types/react-native": "^0.67.6",
     "config": "*",
     "cross-env": "^7.0.3",

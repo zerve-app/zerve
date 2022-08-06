@@ -1,7 +1,7 @@
 import React, { ComponentProps } from "react";
 import { View as DefaultView } from "react-native";
 import { useColorScheme } from "./useColorScheme";
-import { Text } from "dripsy";
+import { Text } from "react-native";
 
 import Colors from "./Colors";
 import { useColors } from "./useColors";
@@ -37,7 +37,7 @@ export function ThemedText(
   } & TextProps
 ) {
   const colors = useColors();
-  const { sx, lightColor, darkColor, ...otherProps } = props;
+  const { lightColor, darkColor, ...otherProps } = props;
   const color = props.tint
     ? colors.tint
     : props.danger
@@ -49,7 +49,7 @@ export function ThemedText(
     <Text
       numberOfLines={props.oneLine ? 1 : undefined}
       ellipsizeMode="tail"
-      sx={{ color, ...sx }}
+      style={{ color }}
       {...otherProps}
     />
   );

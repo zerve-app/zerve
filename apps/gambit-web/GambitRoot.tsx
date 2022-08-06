@@ -1,4 +1,4 @@
-import { Text, View } from "dripsy";
+import { Text, View } from "react-native";
 import React, { useState } from "react";
 import { AbsoluteFill, AsyncButton, Button, Spinner } from "@zerve/zen";
 import { postZAction } from "@zerve/client/ServerCalls";
@@ -55,7 +55,7 @@ function GambitLobby({
     return <Spinner />;
   }
   return (
-    <View sx={{}}>
+    <View style={{}}>
       <Text>You are in the lobby</Text>
       <Text>{lobby.data?.playerCount} players in the lobby</Text>
       <Text>{lobby.data?.readyCount} players ready.</Text>
@@ -91,7 +91,7 @@ function getBgColor(cell: CellState) {
 function GameCell({ cell }: { cell: CellState }) {
   return (
     <View
-      sx={{
+      style={{
         width: 28,
         height: 28,
         backgroundColor: getBgColor(cell),
@@ -102,7 +102,7 @@ function GameCell({ cell }: { cell: CellState }) {
       {cell[0] === "m" && <Text>🗻</Text>}
       {cell[0] === "c" && <Text>🏰</Text>}
       {typeof cell[0] === "number" && <Text>👑</Text>}
-      <View sx={{ ...AbsoluteFill }}>
+      <View style={{ ...AbsoluteFill }}>
         {cell[2] !== 0 && <Text>{cell[2]}</Text>}
       </View>
     </View>
@@ -129,12 +129,12 @@ function GambitGame({
     },
   });
   return (
-    <View sx={{}}>
+    <View style={{}}>
       <Text>Game step: {game.data?.step}</Text>
 
-      <View sx={{}}>
+      <View style={{}}>
         {game.data?.state.map((row) => (
-          <View sx={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row" }}>
             {row.map((cell) => (
               <GameCell cell={cell} />
             ))}
@@ -178,7 +178,7 @@ function GambitApp() {
 function GambitJoin() {
   const conn = useConnection();
   return (
-    <View sx={{}}>
+    <View style={{}}>
       <AsyncButton
         title="Join Game"
         onPress={async () => {

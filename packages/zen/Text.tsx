@@ -6,7 +6,7 @@ import { ThemedText } from "./Themed";
 export function Title({ title, sx }: { title: string; sx?: TextStyle }) {
   return (
     <ThemedText
-      sx={{
+      style={{
         fontWeight: "bold",
         fontSize: 24,
         ...(sx || {}),
@@ -21,7 +21,7 @@ export function PageTitle({ title }: { title: string }) {
   return (
     <View>
       <Title
-        sx={{
+        style={{
           fontSize: 30,
           margin: 12,
           marginBottom: 24,
@@ -34,7 +34,7 @@ export function PageTitle({ title }: { title: string }) {
 
 export function SmallSectionTitle({ children }: { children: ReactNode }) {
   return (
-    <ThemedText sx={{ fontWeight: "bold", fontSize: 14 }}>
+    <ThemedText style={{ fontWeight: "bold", fontSize: 14 }}>
       {children}
     </ThemedText>
   );
@@ -57,7 +57,7 @@ export function Label({
     <ThemedText
       secondary={secondary}
       tint={tint}
-      sx={{ fontWeight: "bold", fontSize: minor ? 14 : 16, ...(sx || {}) }}
+      style={{ fontWeight: "bold", fontSize: minor ? 14 : 16, ...(sx || {}) }}
     >
       {children}
     </ThemedText>
