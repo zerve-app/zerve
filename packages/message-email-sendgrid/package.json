@@ -4,6 +4,9 @@
   "private": true,
   "main": "./MessageEmail.ts",
   "types": "./MessageEmail.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {
     "@sendgrid/mail": "*"
   }

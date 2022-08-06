@@ -2,6 +2,8 @@ import { ZMessageEmail } from "@zerve/message-email-sendgrid";
 import { createGenericMessageAuthStrategy } from "./AuthMessageStrategy";
 import { ServerError, RequestError, EmailSchema } from "@zerve/core";
 
+const DEV = process.env.NODE_ENV === "dev";
+
 type EmailAuthOptions = {
   emailAllowList?: null | string[];
   domainAllowList?: null | string[];
@@ -14,11 +16,19 @@ export async function createEmailAuthStrategy(
   return createGenericMessageAuthStrategy(
     EmailSchema,
     async (code: string, address: string) => {
-      await email.call({
-        message: `Your code is ${code}`,
-        subject: "Zerve Auth",
-        toEmail: address,
-      });
+      DEV && console.log(`Sending AUTH EMAIL to ${address} with code ${code}`);
+      try {
+        await email.call({
+          message: `Your code is ${code}`,
+          subject: "Zerve Auth",
+          toEmail: address,
+        });
+      } catch (e) {
+        // allow email send failure in dev mode because console.log prints the code for the developer
+        if (!DEV) throw e;
+        console.error("Failed to acutally send verification email:");
+        console.error(e);
+      }
     },
     {
       validateAddress: (email) => {

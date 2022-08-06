@@ -3,7 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "setup": "esbuild ./SetupServer.ts --bundle --platform=node --outfile=build/SetupServer.js && node ./build/SetupServer.js"
+    "setup": "esbuild ./SetupServer.ts --bundle --platform=node --outfile=build/SetupServer.js && node ./build/SetupServer.js",
+    "clean": "rimraf node_modules"
   },
   "dependencies": {
     "@zerve/core": "*",

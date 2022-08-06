@@ -2,9 +2,9 @@ import { defineKeySource } from "@zerve/core";
 import { createStorage } from "@zerve/client-storage/Storage";
 import { postZAction } from "@zerve/client/ServerCalls";
 import {
+  LiveConnection,
   Connection,
-  SavedConnection,
-  SavedConnectionProvider,
+  ConnectionProvider,
   SavedSession,
 } from "@zerve/client/Connection";
 import { Platform } from "react-native";
@@ -15,7 +15,7 @@ const connectionStorage = createStorage({
   id: "ConnectionStorage",
 });
 
-const NativeDefaultConnections: SavedConnection[] = [
+const NativeDefaultConnections: Connection[] = [
   ...(__DEV__
     ? [
         {
@@ -98,7 +98,7 @@ export function useWebConnection(config: SiteConfig) {
 }
 
 export function mutateConnections(
-  mutator: (connections: SavedConnection[]) => SavedConnection[]
+  mutator: (connections: Connection[]) => Connection[]
 ) {
   connectionStorage.mutateStorage("Connections", DefaultConnections, mutator);
 }
@@ -159,7 +159,10 @@ function clearSession(connectionKey: string) {
   setSession(connectionKey, null);
 }
 
-export async function logout(connection: Connection, session: SavedSession) {
+export async function logout(
+  connection: LiveConnection,
+  session: SavedSession
+) {
   clearSessionToken(connection.key);
   await postZAction(connection, [...session.authPath, "logout"], {
     userId: session.userId,
@@ -168,7 +171,7 @@ export async function logout(connection: Connection, session: SavedSession) {
   clearSession(connection.key);
 }
 
-export async function forceLocalLogout(connection: Connection) {
+export async function forceLocalLogout(connection: LiveConnection) {
   clearSession(connection.key);
 }
 
@@ -213,8 +216,6 @@ export function ConnectionKeyProvider({
 }) {
   const savedConnection = useSavedConnection(value);
   return (
-    <SavedConnectionProvider value={savedConnection}>
-      {children}
-    </SavedConnectionProvider>
+    <ConnectionProvider value={savedConnection}>{children}</ConnectionProvider>
   );
 }

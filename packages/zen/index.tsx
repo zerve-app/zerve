@@ -14,6 +14,7 @@ export * from "./ActionButton";
 export * from "./Row";
 export * from "./Card";
 export * from "./Icon";
+export * from "./NavBar";
 export * from "./Style";
 export * from "./Page";
 export * from "./Toast";

@@ -9,10 +9,11 @@
     "start:dev": "cross-env NODE_ENV=dev nodemon ./build/ZooServerStandalone.js",
     "build": "esbuild ./ZooServerStandalone.ts --bundle --platform=node --outfile=build/ZooServerStandalone.js",
     "build:dev": "yarn build --watch",
-    "dev": "concurrently \"yarn start:dev\" \"yarn build:dev\"",
+    "dev": "yarn build && concurrently \"yarn start:dev\" \"yarn build:dev\"",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:fix": "yarn lint:fix"
+    "lint:fix": "yarn lint:fix",
+    "clean": "rimraf node_modules .turbo build"
   },
   "dependencies": {
     "@zerve/auth": "*",

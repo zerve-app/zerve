@@ -279,6 +279,10 @@ export async function createAuth<
   getUserZeds: (user: UserAdminZeds, userInfo: { userId: string }) => UserZeds;
   handleUserIdChange?: (prevUserId: string, userId: string) => Promise<void>;
 }) {
+  const zContainerMeta = {
+    ...AuthContainerContractMeta,
+    strategies: Object.keys(strategies),
+  };
   await files.z.MakeDir.call({ path: "" });
 
   const createSessionPayloadSchema = {
@@ -575,7 +579,7 @@ export async function createAuth<
         }
       ),
     },
-    AuthContainerContractMeta
+    zContainerMeta
   );
 
   async function createEntity(

@@ -31,3 +31,9 @@ export function PageSection({
     </View>
   );
 }
+
+export function PageContainer({ children }: { children: ReactNode }) {
+  return (
+    <View style={{ backgroundColor: "#ebebeb", flex: 1 }}>{children}</View>
+  );
+}

@@ -4,6 +4,9 @@
   "private": true,
   "main": "./CoreStore.ts",
   "types": "./CoreStore.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {
     "@zerve/core": "*",
     "@zerve/chain": "*",

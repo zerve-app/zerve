@@ -4,6 +4,9 @@
   "private": true,
   "main": "./SystemSSH.ts",
   "types": "./SystemSSH.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {
     "@zerve/core": "*",
     "@zerve/system-commands": "*",

@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "main": "./index.tsx",
   "types": "./index.tsx",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/fs-extra": "^9.0.13",

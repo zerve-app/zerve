@@ -8,7 +8,8 @@
     "start": "expo start --dev-client",
     "prebuild": "expo prebuild",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "clean": "rimraf node_modules .expo"
   },
   "dependencies": {
     "@zerve/core": "*",
@@ -57,8 +58,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "@types/react": "~17.0.21",
-    "@types/react-native": "~0.67.7",
+    "@types/react": "^17.0.21",
+    "@types/react-native": "^0.67.6",
     "eas-cli": "^0.54.1",
     "tsconfig": "*",
     "typescript": "~4.6.4"

@@ -20,25 +20,6 @@ import { InfoRow } from "@zerve/zen/Row";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";
-import { useConnectionStatus } from "../app/ConnectionStatus";
-
-export function ConnectionStatusRow({}: {}) {
-  const { isConnected } = useConnectionStatus();
-  return (
-    <InfoRow
-      label="Status"
-      value={
-        isConnected
-          ? "🟢 Connected"
-          : // : isReachable
-            // ? "🟠 Reachable"
-            "🔴 Not Connected"
-      }
-    >
-      {/* {isLoading && <Spinner />} */}
-    </InfoRow>
-  );
-}
 
 export default function ConnectionInfoScreen({
   navigation,
@@ -53,7 +34,6 @@ export default function ConnectionInfoScreen({
     <ScreenContainer scroll>
       <ScreenHeader title={`Connection: ${conn?.name}`} />
       <VStack padded>
-        <ConnectionStatusRow />
         <InfoRow label="URL" value={conn?.url} />
       </VStack>
       {session && (

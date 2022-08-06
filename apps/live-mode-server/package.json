@@ -12,7 +12,8 @@
     "dev": "yarn build && concurrently \"yarn build:watch\" \"yarn start:watch\"",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:fix": "yarn lint:fix"
+    "lint:fix": "yarn lint:fix",
+    "clean": "rimraf node_modules build"
   },
   "dependencies": {
     "@zerve/core": "*",

@@ -4,6 +4,9 @@
   "private": true,
   "main": "./InfraDigitalOcean.ts",
   "types": "./InfraDigitalOcean.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {
     "digitalocean-js": "^1.5.11"
   }

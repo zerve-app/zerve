@@ -3,7 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "apply": "esbuild ./ApplyFleet.ts --bundle --platform=node --outfile=build/ApplyFleet.js && node ./build/ApplyFleet.js"
+    "apply": "esbuild ./ApplyFleet.ts --bundle --platform=node --outfile=build/ApplyFleet.js && node ./build/ApplyFleet.js",
+    "clean": "rimraf node_modules"
   },
   "dependencies": {
     "@zerve/core": "*",

@@ -1,18 +1,11 @@
-import {
-  createZState,
-  ZBooleanSchema,
-  ZObservable,
-  NotFoundError,
-  GenericError,
-} from "@zerve/core";
-import { createContext, useContext, useEffect, useMemo } from "react";
-import ReconnectingWebsocket from "reconnecting-websocket";
-import { useQueryClient, QueryClient } from "react-query";
+import { NotFoundError, GenericError } from "@zerve/core";
+import { createContext, ReactNode, useContext } from "react";
+import { QueryClientProvider, QueryClient } from "react-query";
 import { Buffer } from "buffer";
 
 export type ServerMessage = {};
 
-export type SavedConnection = {
+export type Connection = {
   key: string;
   name: string;
   url: string;
@@ -27,121 +20,23 @@ export type SavedSession = {
   authPath: string[];
 };
 
-const ClientIdSchema = { type: ["null", "string"] } as const;
-
-export type Connection = SavedConnection & {
-  isConnected: ZObservable<ZBooleanSchema>;
-  clientId: ZObservable<typeof ClientIdSchema>;
-};
-
-const liveConnectionStore = new Map<string, [Connection, number, () => void]>();
-
-function startConnection(
-  savedConn: SavedConnection,
-  queryClient: QueryClient
-): [Connection, () => void] {
-  const [httpProtocol, hostPort] = savedConn.url.split("://");
-  const wsProtocol = httpProtocol === "https" ? "wss" : "ws";
-  const wsUrl = `${wsProtocol}://${hostPort}`;
-  if (!window) throw new Error("Cannot start live connection on server side.");
-  const ws = new ReconnectingWebsocket(wsUrl, undefined, {
-    constructor: window.WebSocket,
-  });
-  const clientId = createZState({ type: ["null", "string"] } as const, null);
-  const isConnected = createZState({ type: "boolean" } as const, false);
-
-  // const cache = queryClient.getQueryCache();
-  // const closeCacheSubscription = cache.subscribe((event) => {
-  //   if (event?.type === "queryRemoved") {
-  //     // console.log("QUERY REMOVING: ", event.query.queryHash
-  //   }
-  // });
-
-  ws.onopen = (conn) => {
-    // really we wait to receive our clientId with the hello message before we consider ourselves connected
-  };
-  ws.onclose = (huh) => {
-    isConnected.z.set.call(false);
-    clientId.z.set.call(null);
-  };
-  ws.onmessage = (msg) => {
-    const message = JSON.parse(msg.data);
-    if (message.t === "Hello") {
-      isConnected.z.set.call(true);
-      clientId.z.set.call(message.id);
-    } else if (message.t === "Update") {
-      queryClient.setQueryData(
-        [savedConn?.key, "z", ...message.path, ".node", "value"],
-        message.value
-      );
-
-      queryClient.setQueryData(
-        [savedConn?.key, "z", ...message.path, ".node"],
-        (node) => {
-          return { ...node, node: message.value };
-        }
-      );
-    } else {
-      console.log("Unrecognized Connection Message", message);
-    }
-  };
-  function send(message: ServerMessage) {
-    ws.send(JSON.stringify(message));
-  }
-  ws.onerror = (e) => {
-    isConnected.z.set.call(false);
-    clientId.z.set.call(null);
-  };
-  function close() {
-    ws.close();
-    // closeCacheSubscription();
-  }
-  const connection = {
-    ...savedConn,
-    clientId: clientId.z.state,
-    isConnected: isConnected.z.state,
-  };
-  return [connection, close];
-}
-
-function leaseConnection(
-  savedConn: SavedConnection,
-  queryClient: QueryClient
-): {
-  connection: Connection;
-  release: () => void;
-} {
-  const connectionKey = savedConn.key;
-  const stored = liveConnectionStore.get(connectionKey);
-  function release() {
-    if (!stored) return;
-    stored[1] -= 1;
-    if (stored[1] <= 0) {
-      // nobody is leasing this connection right now. close this connection:
-      stored[2]();
-      liveConnectionStore.delete(connectionKey);
-    }
-  }
-  if (stored) {
-    stored[1] += 1;
-    let [connection] = stored;
-    if (connection.session !== savedConn.session) {
-      stored[0] = {
-        ...connection,
-        session: savedConn.session || null,
-      };
-      connection = stored[0];
-    }
-    return { connection, release };
-  }
-  const [connection, closeConnection] = startConnection(savedConn, queryClient);
-  liveConnectionStore.set(connectionKey, [connection, 1, closeConnection]);
-  return { connection, release };
-}
-
 const ConnectionContext = createContext<Connection | null>(null);
 
-export const ConnectionProvider = ConnectionContext.Provider;
+const queryClient = new QueryClient();
+
+export function ConnectionProvider({
+  value,
+  children,
+}: {
+  value: Connection | null;
+  children: ReactNode;
+}) {
+  return (
+    <ConnectionContext.Provider value={value}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </ConnectionContext.Provider>
+  );
+}
 
 export function useConnection(): Connection | null {
   return useContext(ConnectionContext);
@@ -158,7 +53,7 @@ function _authHeader(auth: [string, string]) {
 export const UnauthorizedSymbol = Symbol("Unauthorized");
 
 export async function serverGet<Response>(
-  context: SavedConnection,
+  context: Connection,
   path: string,
   query?: Record<string, string> | null,
   auth?: [string, string] | null
@@ -200,7 +95,7 @@ export async function serverGet<Response>(
 }
 
 export async function serverPost<Request, Response>(
-  conn: SavedConnection,
+  conn: Connection,
   path: string,
   body: Request,
   auth?: [string, string] | null
@@ -229,30 +124,4 @@ export async function serverPost<Request, Response>(
     });
   }
   return value;
-}
-
-const isOnClient = !!global.window;
-
-export function useConnectionLease(savedConn: SavedConnection | null) {
-  const queryClient = useQueryClient();
-  const connectionLease = useMemo(() => {
-    return savedConn && isOnClient && leaseConnection(savedConn, queryClient);
-  }, [savedConn]);
-  useEffect(() => {
-    return () => {
-      connectionLease?.release();
-    };
-  }, [connectionLease]);
-  return connectionLease?.connection || null;
-}
-
-export function SavedConnectionProvider({
-  children,
-  value,
-}: {
-  children: React.ReactNode;
-  value: null | SavedConnection;
-}) {
-  const connection = useConnectionLease(value);
-  return <ConnectionProvider value={connection}>{children}</ConnectionProvider>;
 }

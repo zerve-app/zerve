@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from "react-query";
-import { SavedConnection, serverGet } from "./Connection";
+import { Connection, serverGet } from "./Connection";
 
 export function createZStoreClient(
   zStoreProtocol: string,
@@ -8,7 +8,7 @@ export function createZStoreClient(
   zStoreSchema: any,
   zStoreData: any
 ) {
-  const connection: SavedConnection = {
+  const connection: Connection = {
     key: "StaticClient",
     name: "StoreClient",
     url: `${zStoreProtocol}${zStoreOrigin}`,

@@ -4,6 +4,9 @@
   "private": true,
   "main": "./index.ts",
   "types": "./index.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {
     "@zerve/core": "*",
     "@zerve/message-email-sendgrid": "*",

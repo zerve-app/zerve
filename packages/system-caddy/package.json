@@ -4,5 +4,8 @@
   "private": true,
   "main": "./SystemCaddy.ts",
   "types": "./SystemCaddy.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {}
 }

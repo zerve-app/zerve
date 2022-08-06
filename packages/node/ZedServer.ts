@@ -25,6 +25,12 @@ import { WebSocketServer } from "ws";
 import { createHash } from "crypto";
 import { createServer } from "http";
 
+const DEV = process.env.NODE_ENV === "dev";
+
+function stringify(json: any) {
+  return JSON.stringify(json, null, DEV ? 2 : 0);
+}
+
 type ZConnectionHelloMessage = {
   t: "Hello";
   id: string;
@@ -78,7 +84,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
   app.get(
     "/",
     createJSONHandler(async () => ({
-      response: "Coming Soon.",
+      response: "This is the Zerve API server. The API root is at /.z/",
     }))
   );
 
@@ -212,13 +218,13 @@ export async function startZedServer(port: number, zed: AnyZed) {
   async function handleJSONPromise(res: Response, promisedValue: Promise<any>) {
     await promisedValue
       .then((response) => {
-        const responseValue = JSON.stringify(response);
+        const responseValue = stringify(response);
         res.status(200).send(responseValue);
       })
       .catch((e) => {
         console.error(e);
         res.status(e.httpStatus || 500).send(
-          JSON.stringify({
+          stringify({
             message: e.message,
             code: e.code,
             details: e.details,
@@ -547,7 +553,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     const wsServer = new WebSocketServer({ server: httpServer });
     wsServer.on("connection", (socket) => {
       function send(message: ZConnectionMessage) {
-        socket.send(JSON.stringify(message));
+        socket.send(stringify(message));
       }
       const client: Client = { send };
       const clientId = getClientId();

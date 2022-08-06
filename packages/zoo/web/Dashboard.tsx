@@ -1,41 +1,14 @@
-import React, { ReactNode, useState } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import Svg, { Path } from "react-native-svg";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { ComponentProps, ReactNode, useState } from "react";
+import { View, Text, Pressable } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { A } from "dripsy";
-import { ConnectionProvider } from "@zerve/client/Connection";
 import { useZNodeValue } from "@zerve/client/Query";
-import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
 import { SchemaStore } from "@zerve/core";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { useSaveFile } from "@zerve/client/Mutation";
 import { useMediaQuery } from "react-responsive";
-
-function ZerveLogo() {
-  return (
-    <View style={{ height: 50, width: 50, backgroundColor: "green" }}>
-      <LinearGradient
-        colors={["#6144b8", "#9f4ab5"]}
-        style={StyleSheet.absoluteFill}
-      />
-      <Svg
-        width={40}
-        height={40}
-        fill="none"
-        style={{ position: "absolute", width: 40, height: 40, top: 0, left: 0 }}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <Path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="m408.277 0-68.64 105.697H0v-.145L68.546 0h339.731ZM310.47 151.652l-68.64 105.697H115.8l68.641-105.697H310.47ZM408.515 303.305l-68.64 105.697H16.582l68.64-105.697h323.293Z"
-          fill="#fff"
-        />
-      </Svg>
-    </View>
-  );
-}
+import { NavBar, NavBarSpacer, NavBarZLogo, PageContainer } from "@zerve/zen";
+import { AuthHeader } from "../components/AuthHeader";
+import { ZerveLogo } from "../components/ZerveLogo";
 
 function ProjectHeader({ name }: { name: string }) {
   return (
@@ -62,20 +35,6 @@ function ProjectHeader({ name }: { name: string }) {
   );
 }
 
-function UserProfileIcon() {
-  return (
-    <View
-      style={{
-        height: 36,
-        width: 36,
-        backgroundColor: "#222",
-        borderRadius: 18,
-        margin: 7,
-      }}
-    />
-  );
-}
-
 function NavigationBar() {
   return (
     <View
@@ -84,14 +43,8 @@ function NavigationBar() {
       <ZerveLogo />
       <ProjectHeader name="Example Store" />
       <View style={{ flex: 1 }} />
-      <UserProfileIcon />
+      <AuthHeader />
     </View>
-  );
-}
-
-function DashContainer({ children }: { children: ReactNode }) {
-  return (
-    <View style={{ backgroundColor: "#ebebeb", flex: 1 }}>{children}</View>
   );
 }
 
@@ -112,7 +65,7 @@ function NavLink({
   active,
 }: {
   title: string;
-  icon?: string;
+  icon?: ComponentProps<typeof FontAwesome>["name"];
   active?: boolean;
   onPress: () => void;
 }) {
@@ -153,7 +106,7 @@ function NavLinkSection({
 }: {
   title: string;
   children?: ReactNode;
-  icon?: string;
+  icon?: ComponentProps<typeof FontAwesome>["name"];
   active?: boolean;
   onPress: () => void;
 }) {
@@ -229,6 +182,7 @@ function FilesFeaturePane({
   const { data, isLoading } = useZNodeValue([...storePath, "State"]);
   if (isLoading) return null;
   const filesList = data && Object.keys(data).filter((f) => f !== "$schemas");
+  if (!filesList) return null;
   return (
     <FeaturePane title="Files List">
       {filesList.map((file) => (
@@ -328,13 +282,18 @@ export default function Dashboard() {
     path: [],
   });
   return (
-    <DashContainer>
-      <NavigationBar />
+    <PageContainer>
+      <NavBar>
+        <NavBarZLogo />
+        <ProjectHeader name="Example Store" />
+        <NavBarSpacer />
+        <AuthHeader />
+      </NavBar>
       <MainContent
         navState={navState}
         onNavState={setNavState}
         storePath={["PublicStore"]}
       />
-    </DashContainer>
+    </PageContainer>
   );
 }

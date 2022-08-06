@@ -4,6 +4,9 @@
   "private": true,
   "main": "./OBS.ts",
   "types": "./OBS.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {
     "obs-websocket-js": "^4.0.3"
   }

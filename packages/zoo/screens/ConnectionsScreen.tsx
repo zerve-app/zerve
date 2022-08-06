@@ -21,7 +21,7 @@ import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import { useSafeArea } from "../provider/SafeArea/useSafeArea";
-import { SavedConnection } from "@zerve/client/Connection";
+import { Connection } from "@zerve/client/Connection";
 
 function ConnectionsScreenHeader() {
   return <ScreenHeader title="Connections" />;
@@ -100,7 +100,7 @@ export default function ConnectionsScreen() {
 
   const connections = useSavedConnections();
   return (
-    <OrderScreenContainer<SavedConnection>
+    <OrderScreenContainer<Connection>
       data={connections}
       renderItem={({ item, drag, isActive }) => (
         <Padding>

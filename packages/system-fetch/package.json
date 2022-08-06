@@ -4,5 +4,8 @@
   "private": true,
   "main": "./SystemFetch.ts",
   "types": "./SystemFetch.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {}
 }

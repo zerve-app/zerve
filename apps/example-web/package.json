@@ -1,0 +1,28 @@
+{
+  "name": "example-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "clean": "rimraf node_modules .next .expo"
+  },
+  "dependencies": {
+    "@expo/next-adapter": "^3.1.21",
+    "@zerve/cli": "*",
+    "next": "12.1.6",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-native-web": "^0.17.7"
+  },
+  "devDependencies": {
+    "@types/node": "18.0.6",
+    "cross-env": "^7.0.3",
+    "eslint-config-next": "^12.1.6",
+    "next-compose-plugins": "^2.2.1",
+    "next-transpile-modules": "^9.0.0",
+    "tsconfig": "*"
+  }
+}

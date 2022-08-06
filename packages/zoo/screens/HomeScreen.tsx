@@ -20,15 +20,11 @@ import {
   setConnectionDisclosed,
 } from "../app/ConnectionStorage";
 import { ZerveLogo } from "../components/ZerveLogo";
-import {
-  SavedConnection,
-  SavedConnectionProvider,
-} from "@zerve/client/Connection";
+import { Connection, ConnectionProvider } from "@zerve/client/Connection";
 import { Icon } from "@zerve/zen/Icon";
 import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen";
 import { ZLoadedNode } from "../components/ZLoadedNode";
-import { useConnectionStatus } from "../app/ConnectionStatus";
 import { useGlobalNavigation } from "../app/useNavigation";
 
 type NavigationProp = CompositeNavigationProp<
@@ -36,10 +32,9 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "Home">
 >;
 
-function ConnectionSection({ connection }: { connection: SavedConnection }) {
+function ConnectionSection({ connection }: { connection: Connection }) {
   const [actions, setActions] = useState<ActionButtonDef[]>([]);
   const navigation = useNavigation<NavigationProp>();
-  const { isConnected } = useConnectionStatus();
   const [optionsButton] = useActionsSheet(
     (onOpen) => (
       <IconButton
@@ -82,12 +77,7 @@ function ConnectionSection({ connection }: { connection: SavedConnection }) {
         [connection.key]
       )}
       header={<Label>{connection.name}</Label>}
-      right={
-        <>
-          {optionsButton}
-          <ThemedText>{isConnected ? "🟢" : "🔴"}</ThemedText>
-        </>
-      }
+      right={<>{optionsButton}</>}
     >
       <VStack padded>
         <ZLoadedNode path={[]} onActions={setActions} />
@@ -108,9 +98,9 @@ export default function HomeScreen({
       <ZerveLogo />
       {connections.map((connection) => {
         return (
-          <SavedConnectionProvider key={connection.key} value={connection}>
+          <ConnectionProvider key={connection.key} value={connection}>
             <ConnectionSection connection={connection} />
-          </SavedConnectionProvider>
+          </ConnectionProvider>
         );
       })}
 

@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "main": "./index.tsx",
   "types": "./index.tsx",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "devDependencies": {
     "@types/json-stable-stringify": "^1.0.33",
     "config": "*",

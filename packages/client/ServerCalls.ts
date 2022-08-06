@@ -1,16 +1,16 @@
 import {
   serverGet,
   serverPost,
-  SavedConnection,
-  SavedSession,
   Connection,
+  SavedSession,
+  LiveConnection,
 } from "./Connection";
 
-export async function listDocs(context: SavedConnection) {
+export async function listDocs(context: Connection) {
   return await serverGet(context, `.z`);
 }
 
-export async function getDoc(context: SavedConnection, name: string) {
+export async function getDoc(context: Connection, name: string) {
   return await serverGet(context, `.z/${name}`);
 }
 
@@ -33,19 +33,19 @@ function extractSessionAuth(path: string[], session?: null | SavedSession) {
   return auth;
 }
 
-export async function getZ(connection: Connection, path: string[]) {
-  const query: Record<string, string> = {};
-  const connectedClientId = connection?.clientId.get();
-  if (connectedClientId) {
-    query.zClientSubscribe = connectedClientId;
-  }
+export async function getZ(connection: LiveConnection, path: string[]) {
   const auth = extractSessionAuth(path, connection?.session);
-  const resp = await serverGet(connection, `.z/${path.join("/")}`, query, auth);
+  const resp = await serverGet(
+    connection,
+    `.z/${path.join("/")}`,
+    undefined,
+    auth
+  );
   return resp;
 }
 
 export async function postZAction(
-  connection: Connection,
+  connection: LiveConnection,
   path: string[],
   body: any
 ) {
@@ -65,7 +65,7 @@ export async function postZAction(
   return await serverPost(connection, serverPath, finalBody, auth);
 }
 
-export async function getTypedZ(connection: Connection, path: string[]) {
+export async function getTypedZ(connection: LiveConnection, path: string[]) {
   const [node, serverZType] = await Promise.all([
     getZ(connection, path),
     getZ(connection, [...path, ".type"]),

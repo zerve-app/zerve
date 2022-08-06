@@ -1,4 +1,3 @@
-import { Provider } from "@zerve/zoo/provider";
 import Head from "next/head";
 import React from "react";
 import "raf/polyfill";
@@ -37,9 +36,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="msapplication-TileColor" content="#8c42b4" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
-      <Provider>
-        <Component {...pageProps} />
-      </Provider>
+      <Component {...pageProps} />
     </>
   );
 }

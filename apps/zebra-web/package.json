@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "cross-env Z_ORIGIN=\"http://localhost:4888\" next dev --port=4000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rimraf node_modules .next .expo"
   },
   "dependencies": {
     "@expo/next-adapter": "^3.1.21",

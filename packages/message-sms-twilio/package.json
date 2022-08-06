@@ -4,6 +4,9 @@
   "private": true,
   "main": "./MessageSMS.ts",
   "types": "./MessageSMS.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {
     "axios": "*"
   }

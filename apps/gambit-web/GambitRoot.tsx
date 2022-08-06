@@ -3,10 +3,7 @@ import React, { useState } from "react";
 import { AbsoluteFill, AsyncButton, Button, Spinner } from "@zerve/zen";
 import { postZAction } from "@zerve/client/ServerCalls";
 import { createStorage } from "@zerve/client-storage/Storage";
-import {
-  SavedConnectionProvider,
-  useConnection,
-} from "@zerve/client/Connection";
+import { ConnectionProvider, useConnection } from "@zerve/client/Connection";
 import {
   useWebConnection,
   WEB_PRIMARY_CONN,
@@ -202,8 +199,8 @@ function GambitJoin() {
 export default function GambitRoot(props: WebPathRootServerProps) {
   const conn = useWebConnection(props.config);
   return (
-    <SavedConnectionProvider value={conn}>
+    <ConnectionProvider value={conn}>
       <GambitApp />
-    </SavedConnectionProvider>
+    </ConnectionProvider>
   );
 }

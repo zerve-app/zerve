@@ -4,6 +4,9 @@
   "private": true,
   "main": "./CoreData.ts",
   "types": "./CoreData.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {
     "@zerve/core": "*",
     "@zerve/crypto": "*",

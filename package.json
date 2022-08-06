@@ -10,7 +10,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "concurrently \"yarn workspace zoo-server-standalone dev\" \"yarn workspace zoo-web dev\"",
-    "dev:zebra": "cross-env Z_ORIGIN=\"http://localhost:3888\" concurrently \"yarn workspace zebra-server dev\" \"yarn workspace zebra-web dev\"",
+    "dev:zebra": "concurrently \"yarn workspace zebra-server dev\" \"yarn workspace zebra-web dev\"",
     "dev:aardvark": "cross-env Z_ORIGIN=\"http://localhost:3988\" concurrently \"yarn workspace aardvark-server dev\" \"yarn workspace zoo-web dev\"",
     "dev:server": "concurrently \"yarn workspace zoo-server-standalone dev\"",
     "dev:web": "concurrently \"yarn workspace zoo-web dev\"",
@@ -23,6 +23,7 @@
     "build:android:dev": "yarn workspace zoo-mobile eas build --platform=android --profile=development",
     "build:android": "yarn workspace zoo-mobile eas build --platform=android --profile=production",
     "lint": "turbo run lint",
+    "clean": "yarn workspaces run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "gambit": "concurrently \"yarn workspace gambit-server dev\" \"yarn workspace gambit-web dev\"",
     "aardvark:update": "ssh aardvark /root/aardvark-script.sh UpdateAardvark",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
     "turbo": "latest"
   },
   "turbo": {

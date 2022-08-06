@@ -4,5 +4,8 @@
   "private": true,
   "main": "./SystemCommands.ts",
   "types": "./SystemCommands.ts",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
   "dependencies": {}
 }

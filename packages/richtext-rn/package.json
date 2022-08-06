@@ -4,10 +4,11 @@
   "main": "./index.tsx",
   "types": "./index.tsx",
   "scripts": {
-    "build": "esbuild EditorEmbed.ts --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 && node BundleStep.js"
+    "build": "esbuild EditorEmbed.ts --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 && node BundleStep.js",
+    "clean": "rimraf node_modules"
   },
   "devDependencies": {
-    "@types/react": "^17.0.37",
+    "@types/react": "^17.0.21",
     "config": "*",
     "tsconfig": "*",
     "typescript": "^4.7.4"

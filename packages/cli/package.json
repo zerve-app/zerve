@@ -4,7 +4,8 @@
   "main": "./index.tsx",
   "types": "./index.tsx",
   "scripts": {
-    "build": "esbuild ./ZerveSync --bundle --platform=node --outdir=dist && chmod +x ./dist/ZerveSync.js"
+    "build": "esbuild ./ZerveSync --bundle --platform=node --outdir=dist && chmod +x ./dist/ZerveSync.js",
+    "clean": "rimraf dist node_modules"
   },
   "bin": {
     "zerve-sync": "./dist/ZerveSync.js"

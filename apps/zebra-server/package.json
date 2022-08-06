@@ -6,12 +6,13 @@
   "main": "index.ts",
   "scripts": {
     "start": "node ./build/ZebraServer.js",
-    "start:dev": "cross-env NODE_ENV=dev nodemon ./build/ZebraServer.js",
+    "start:dev": "cross-env NODE_ENV=dev PORT=4888 nodemon ./build/ZebraServer.js",
     "build": "esbuild ./ZebraServer.ts --bundle --platform=node --outfile=build/ZebraServer.js",
     "build:dev": "yarn build --watch",
-    "dev": "concurrently \"yarn start:dev\" \"yarn build:dev\"",
+    "dev": "yarn build && concurrently \"yarn start:dev\" \"yarn build:dev\"",
     "typecheck": "tsc",
     "lint": "eslint .",
+    "clean": "rimraf node_modules build .turbo",
     "lint:fix": "yarn lint:fix"
   },
   "dependencies": {
