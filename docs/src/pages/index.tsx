@@ -18,13 +18,13 @@ function HomepageHeader() {
             className="button button--secondary button--lg"
             to="/docs/intro"
           >
-            Quick Start 🏃
+            Intro 🤨
           </Link>
           <Link
             className="button button--secondary button--lg"
             to="https://www.youtube.com/channel/UC2H16-XPP4IWrFl54ADOU3w"
           >
-            YouTube ▶️
+            YouTube 🤩
           </Link>
         </div>
       </div>

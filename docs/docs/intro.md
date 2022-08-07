@@ -3,11 +3,11 @@ title: Introduction
 sidebar_position: 0
 ---
 
-Zerve is a Content System that helps your team adjust content and settings in your app, _after_ it has been deployed.
+Zerve is a Content System that helps your team adjust content and settings in your app without re-deploying.
 
 # "What the CMS?"
 
-Let's start with a look at the past, present, and Zerve's future of Content Management Systems. Then go [zoom out and understand how Zerve might revolutionize the world of software development](./vision).
+Let's start with a look at the past, present, and Zerve's future of Content Management Systems. If you want the big picture, [see how Zerve might revolutionize the world of software development](./vision).
 
 ## The History: monolithic Content Management Systems
 

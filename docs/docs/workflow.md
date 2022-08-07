@@ -3,15 +3,15 @@ title: Developer Workflow
 sidebar_position: 2
 ---
 
-Zerve is a Content Management System which aims to address the common shortfalls of the Headless CMS. The following workflow details the way you can use Zerve to define a schema for your Store, so your non-technical team can manage app data according to your specification. Then the Zerve client can give you a type-safe interface using TypeScript.
+Zerve is a Content System which [aims to address the common shortfalls of the Headless CMS](intro). The following workflow details the way you can use Zerve to define a schema for your Store, so your non-technical team can manage app data according to your specification. Then the Zerve client can give you a type-safe interface using TypeScript.
 
 # The Zerve Workflow
 
 Your organization probably has at least two "sources of truth" for your data: the codebase (in git), and your user data (in your database).
 
-This workflow encourages you to maintain a 3rd "source-of-truth" for your company's data. Your team will maintain a new configuration database in the Zerve service, or you can self-host it.
+This workflow encourages you to maintain a 3rd "source-of-truth" for your company's data. Your team will own data in a Zerve Content Store.
 
-Most likely, your organization will only need one Store, which will be shared across development, staging, and production. If you need different behavior across these environments, your code may access different values within the Store. It is reccomended to use one Store for your project, so the schemas may be shared across environments.
+Most likely, your organization will only need one Store, which will be shared across development, staging, and production. If you need different behavior across these environments, your code may access different values within the Store. It is recommended to use one Store for your project, so the schemas may be shared across environments.
 
 ## Set up a Zerve Server + Store
 
@@ -60,7 +60,7 @@ export default function MyComponent() {
     {allowSignUp && <SignUpButton />}
 ```
 
-Because the CLI syncronized our schemas, TypeScript knows that `allowSignUp` is a boolean.
+Because the CLI syncronized the schemas, TypeScript knows that `allowSignUp` is a boolean.
 
 Or you can manually "get" the value from your database:
 
@@ -71,6 +71,8 @@ const isAllowed = await AllowNewUsers.get();
 ```
 
 ### 4. Your App can Present Content from the Store
+
+Coming soon.
 
 ## Deploy your App
 

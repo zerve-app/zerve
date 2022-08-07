@@ -9,7 +9,7 @@
     "start:dev": "cross-env NODE_ENV=dev nodemon ./build/AardvarkServer.js",
     "build": "esbuild ./AardvarkServer.ts --bundle --platform=node --outfile=build/AardvarkServer.js",
     "build:dev": "yarn build --watch",
-    "dev": "concurrently \"yarn start:dev\" \"yarn build:dev\"",
+    "dev": "yarn build && concurrently \"yarn start:dev\" \"yarn build:dev\"",
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:fix": "yarn lint:fix",

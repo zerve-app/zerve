@@ -6,9 +6,9 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Zerve",
-  tagline: "A Content System",
-  url: "https://your-docusaurus-test-site.com",
+  title: "Zerve Content System",
+  tagline: "DOCS PREVIEW. PLEASE, DO NOT SHARE THIS YET",
+  url: "https://docs.zerve.app/",
   baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -82,8 +82,16 @@ const config = {
             title: "Docs",
             items: [
               {
-                label: "Tutorial",
+                label: "Intro",
                 to: "/docs/intro",
+              },
+              {
+                label: "Vision",
+                to: "/docs/vision",
+              },
+              {
+                label: "Developer Workflow",
+                to: "/docs/workflow",
               },
             ],
           },
