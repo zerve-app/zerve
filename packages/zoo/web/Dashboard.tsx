@@ -197,19 +197,49 @@ function FilesFeaturePane({
   );
 }
 
-function MainContent({
+function EntityContent({
   navState,
   onNavState,
-  storePath,
+  entityId,
 }: {
   navState: NavState;
   onNavState: (n: NavState) => void;
-  storePath: Array<string>;
+  entityId: string;
 }) {
   const isWide = useMediaQuery({
     query: "(min-width: 600px)",
   });
+  return (
+    <View style={{ flex: 1, flexDirection: "row" }}>
+      {isWide && (
+        <NavSidebar>
+          <NavLinkSection
+            title="Organizations"
+            icon="folder-open"
+            active={false}
+            onPress={() => {}}
+          ></NavLinkSection>
+        </NavSidebar>
+      )}
+    </View>
+  );
+}
 
+function StoreContent({
+  navState,
+  onNavState,
+  entityId,
+  storeId,
+}: {
+  navState: NavState;
+  onNavState: (n: NavState) => void;
+  entityId: string;
+  storeId: string;
+}) {
+  const isWide = useMediaQuery({
+    query: "(min-width: 600px)",
+  });
+const storePath = ['Auth', 'User' storeId]
   const firstPathTerm = navState.path?.[0];
   return (
     <View style={{ flex: 1, flexDirection: "row" }}>
@@ -276,7 +306,28 @@ type NavState = {
   path?: string[];
 };
 
-export default function Dashboard() {
+export function EntityDashboard() {
+  const [navState, setNavState] = useState<NavState>({
+    section: "files",
+    path: [],
+  });
+  return (
+    <PageContainer>
+      <NavBar>
+        <NavBarZLogo />
+        <NavBarSpacer />
+        <AuthHeader />
+      </NavBar>
+      <EntityContent
+        entityId={"evv"}
+        navState={navState}
+        onNavState={setNavState}
+      />
+    </PageContainer>
+  );
+}
+
+export function StoreDashboard() {
   const [navState, setNavState] = useState<NavState>({
     section: "files",
     path: [],
@@ -289,10 +340,11 @@ export default function Dashboard() {
         <NavBarSpacer />
         <AuthHeader />
       </NavBar>
-      <MainContent
+      <StoreContent
         navState={navState}
         onNavState={setNavState}
-        storePath={["PublicStore"]}
+        storeId={"great"}
+        entityId={"evv"}
       />
     </PageContainer>
   );
