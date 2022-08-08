@@ -36,7 +36,6 @@
     "react-native": "0.68.2"
   },
   "devDependencies": {
-    "@types/react": "~17.0.21",
     "cross-env": "^7.0.3",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
