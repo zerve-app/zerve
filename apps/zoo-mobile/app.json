@@ -7,6 +7,7 @@
     "scheme": "zerve",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#ebebeb",
+    "primaryColor": "#8147b7",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
