@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { useRouter } from "next/router";
 
 export function Link({
   href,
@@ -7,5 +8,17 @@ export function Link({
   href: string;
   children: ReactNode;
 }) {
-  return;
+  const { push } = useRouter();
+
+  return (
+    <a
+      href={href}
+      onClick={(e) => {
+        e.preventDefault();
+        push(href);
+      }}
+    >
+      {children}
+    </a>
+  );
 }

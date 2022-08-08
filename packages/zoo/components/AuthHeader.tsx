@@ -1,19 +1,25 @@
 import { useConnection } from "@zerve/client/Connection";
-import { Button, useModal } from "@zerve/zen";
+import { Button, Link, useModal } from "@zerve/zen";
 import { Text, View } from "react-native";
 import { LoginForm } from "./Auth";
 
 function UserProfileIcon() {
+  const conn = useConnection();
+  const userId = conn?.session?.userId;
+  if (!userId) return null;
+  const url = `/${userId}`;
   return (
-    <View
-      style={{
-        height: 36,
-        width: 36,
-        backgroundColor: "#222",
-        borderRadius: 18,
-        margin: 7,
-      }}
-    />
+    <Link href={url}>
+      <View
+        style={{
+          height: 36,
+          width: 36,
+          backgroundColor: "#222",
+          borderRadius: 18,
+          margin: 7,
+        }}
+      />
+    </Link>
   );
 }
 
