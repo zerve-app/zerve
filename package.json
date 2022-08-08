@@ -24,6 +24,7 @@
     "build:android:internal": "yarn workspace zoo-mobile eas build --platform=android --profile=internal",
     "build:android:dev": "yarn workspace zoo-mobile eas build --platform=android --profile=development",
     "build:android": "yarn workspace zoo-mobile eas build --platform=android --profile=production",
+    "build:docs": "yarn workspace @zerve/docs build",
     "lint": "turbo run lint",
     "clean": "yarn workspaces run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
