@@ -18,6 +18,7 @@
     "dev:android": "yarn workspace zoo-mobile expo run:android",
     "dev:ios": "yarn workspace zoo-mobile expo run:ios",
     "dev:ios:xcode": "yarn workspace zoo-mobile prebuild && open apps/zoo-mobile/ios/Zerve.xcworkspace",
+    "build:mobile": "yarn workspace zoo-mobile rebuild",
     "build:ios": "yarn workspace zoo-mobile eas build --platform=ios --profile=production",
     "build:ios:internal": "yarn workspace zoo-mobile eas build --platform=ios --profile=internal",
     "build:android:internal": "yarn workspace zoo-mobile eas build --platform=android --profile=internal",

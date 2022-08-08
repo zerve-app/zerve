@@ -9,7 +9,8 @@
     "prebuild": "expo prebuild",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "clean": "rimraf node_modules .expo"
+    "clean": "rimraf node_modules .expo",
+    "rebuild": "rimraf ios android && expo prebuild"
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",

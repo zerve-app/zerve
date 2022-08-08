@@ -6,10 +6,11 @@
     "orientation": "portrait",
     "scheme": "zerve",
     "userInterfaceStyle": "automatic",
+    "backgroundColor": "#ebebeb",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0000ff"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
