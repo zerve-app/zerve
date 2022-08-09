@@ -1,17 +1,15 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 
-import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import {
+  ActionButtonDef,
   AsyncButton,
   Button,
   HStack,
-  InfoRow,
   LinkRowGroup,
   Paragraph,
   Spinner,
   VStack,
 } from "@zerve/zen";
-
 import { pathStartsWith, postZAction } from "@zerve/client/ServerCalls";
 import { useZNode, useConnectionProjects } from "@zerve/client/Query";
 import { useZNodeStateWrite } from "@zerve/client/Mutation";
@@ -19,14 +17,9 @@ import {
   useConnection,
   SavedSession,
   Connection,
-  serverPost,
+  UnauthorizedSymbol,
 } from "@zerve/client/Connection";
-import {
-  forceLocalLogout,
-  logout,
-  setSession,
-  setSessionUserId,
-} from "../app/ConnectionStorage";
+import { setSessionUserId } from "../app/ConnectionStorage";
 import {
   useConnectionNavigation,
   useGlobalNavigation,
@@ -39,17 +32,10 @@ import { getZIcon } from "../app/ZIcon";
 import { storeHistoryEvent } from "../app/History";
 import {
   displayStoreFileName,
-  EmailSchema,
   EmptySchemaStore,
-  JSONSchema,
-  PhoneSchema,
-  ZSchema,
   GenericError,
 } from "@zerve/core";
 import { View } from "react-native";
-import { JSONSchemaForm } from "./JSONSchemaForm";
-import { showToast } from "../app/Toast";
-import { ZLoadedNode } from "./ZLoadedNode";
 import { useTextInputFormModal } from "./TextInputFormModal";
 import { LoginForm, LogoutButton } from "./Auth";
 
@@ -680,5 +666,52 @@ export function ErrorBox({ error }: { error: any }) {
     <Paragraph danger>
       Error: {error.message || JSON.stringify(error)}
     </Paragraph>
+  );
+}
+
+export function ZLoadedNode({
+  path,
+  onActions,
+}: {
+  path: string[];
+  onActions?: (actions: ActionButtonDef[]) => void;
+}) {
+  const conn = useConnection();
+  const { isLoading, data, refetch, error, isError, isRefetching } =
+    useZNode(path);
+
+  React.useEffect(() => {
+    onActions?.([
+      {
+        title: "Refresh",
+        key: "refresh",
+        icon: "refresh",
+        onPress: () => {
+          refetch();
+        },
+      },
+    ]);
+  }, [refetch]);
+  if (!conn) return null;
+
+  return (
+    <>
+      {isLoading && <Spinner />}
+      {(data?.node === UnauthorizedSymbol ||
+        data?.type === UnauthorizedSymbol) && (
+        <ErrorBox
+          error={
+            "You are not authorized to view this. Please log out and log back in."
+          }
+        />
+      )}
+      {isError && <ErrorBox error={error} />}
+      <ZNode
+        path={path}
+        connection={conn.key}
+        type={data?.type}
+        value={data?.node}
+      />
+    </>
   );
 }

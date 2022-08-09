@@ -24,7 +24,7 @@ import { Connection, ConnectionProvider } from "@zerve/client/Connection";
 import { Icon } from "@zerve/zen/Icon";
 import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen";
-import { ZLoadedNode } from "../components/ZLoadedNode";
+import { ZLoadedNode } from "../components/ZNode";
 import { useGlobalNavigation } from "../app/useNavigation";
 
 type NavigationProp = CompositeNavigationProp<
