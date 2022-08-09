@@ -18,7 +18,7 @@ import { useZNodeStateWrite } from "@zerve/client/Mutation";
 import {
   useConnection,
   SavedSession,
-  LiveConnection,
+  Connection,
   serverPost,
 } from "@zerve/client/Connection";
 import {
@@ -51,7 +51,7 @@ import { JSONSchemaForm } from "./JSONSchemaForm";
 import { showToast } from "../app/Toast";
 import { ZLoadedNode } from "./ZLoadedNode";
 import { useTextInputFormModal } from "./TextInputFormModal";
-import { LoginForm } from "./Auth";
+import { LoginForm, LogoutButton } from "./Auth";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -249,44 +249,11 @@ export function ZStoreNode({
   );
 }
 
-function LogoutButton({
-  connection,
-  session,
-}: {
-  connection: LiveConnection;
-  session: SavedSession;
-}) {
-  const [readyForForceLogout, setReadyForForceLogout] = useState(false);
-  return (
-    <>
-      <AsyncButton
-        onPress={async () => {
-          try {
-            await logout(connection, session);
-          } catch (e) {
-            setReadyForForceLogout(true);
-            throw e;
-          }
-        }}
-        title="Log Out"
-      />
-      {readyForForceLogout && (
-        <AsyncButton
-          onPress={async () => {
-            await forceLocalLogout(connection);
-          }}
-          title="Force Log Out (delete session)"
-        />
-      )}
-    </>
-  );
-}
-
 function ChangeUsernameButton({
   connection,
   session,
 }: {
-  connection: LiveConnection;
+  connection: Connection;
   session: SavedSession;
 }) {
   const promptNewUserName = useTextInputFormModal<void>(() => {
@@ -324,7 +291,7 @@ function ChangePasswordButton({
   connection,
   session,
 }: {
-  connection: LiveConnection;
+  connection: Connection;
   session: SavedSession;
 }) {
   const promptNewPassword = useTextInputFormModal<void>(() => {
@@ -365,7 +332,7 @@ export function LoggedInAuthNode({
 }: {
   type: any;
   value: any;
-  connection: LiveConnection;
+  connection: Connection;
   session: SavedSession;
   path: string[];
 }) {

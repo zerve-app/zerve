@@ -532,7 +532,7 @@ function FormFieldHeader({
 }) {
   const [header] = useActionsSheet(
     (onOpen) => (
-      <TouchableOpacity onPress={onOpen}>
+      <View>
         <View
           style={{
             flexDirection: "row",
@@ -549,9 +549,11 @@ function FormFieldHeader({
             label
           )}
           <View style={{ flex: 1 }} />
-          <Label tint>{typeLabel}</Label>
+          <Label tint for={id}>
+            {typeLabel}
+          </Label>
         </View>
-      </TouchableOpacity>
+      </View>
     ),
     () => {
       return [

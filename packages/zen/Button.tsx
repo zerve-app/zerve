@@ -12,7 +12,7 @@ import { useColors } from "./useColors";
 import { Spinner } from "./Spinner";
 import { ThemedText } from "./Themed";
 import { showErrorToast } from "./Toast";
-import { showToast } from ".";
+import { smallShadow } from "./Style";
 
 export function IconButton({
   icon,
@@ -101,6 +101,7 @@ export function Button({
     minHeight: small ? 30 : 50,
     flexDirection: "row",
     alignItems: "center",
+    elevation: 3,
     shadowRadius: 3,
     shadowOffset: { width: 0, height: 3 },
     shadowColor: "#111",

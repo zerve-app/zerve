@@ -10,21 +10,16 @@ import {
 import { reportHistoryEvent, useHistory } from "../app/History";
 import ScreenContainer from "../components/ScreenContainer";
 import { useNavigation } from "@react-navigation/native";
-import { FlatList } from "react-native-gesture-handler";
 
 function HistoryList() {
   const a = useHistory(10);
   return <ThemedText>{JSON.stringify(a)}</ThemedText>;
-  //   return <FlatList
-  // data={a}
-
-  //   />
 }
 
 export function TestHistoryScreen() {
   const { navigate } = useNavigation();
   return (
-    <ScreenContainer scroll>
+    <ScreenContainer scroll safe>
       <DisclosureSection header={<Label>History Events</Label>}>
         <VStack>
           <Button

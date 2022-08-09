@@ -32,6 +32,10 @@
       },
       "package": "app.zerve.main"
     },
+    "androidStatusBar": {
+      "backgroundColor": "#8147b7ff",
+      "translucent": true
+    },
     "web": {
       "favicon": "./assets/images/favicon.png"
     },

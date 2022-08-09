@@ -3,13 +3,12 @@ import { StyleProp, StyleSheet, TextStyle, View } from "react-native";
 import { useColors } from "./useColors";
 import { ThemedText } from "./Themed";
 
-export function Title({ title, sx }: { title: string; sx?: TextStyle }) {
+export function Title({ title }: { title: string }) {
   return (
     <ThemedText
       style={{
         fontWeight: "bold",
         fontSize: 24,
-        ...(sx || {}),
       }}
     >
       {title}
@@ -40,38 +39,12 @@ export function SmallSectionTitle({ children }: { children: ReactNode }) {
   );
 }
 
-export function Label({
-  children,
-  sx,
-  minor,
-  tint,
-  secondary,
-}: {
-  children: ReactNode;
-  secondary?: boolean;
-  minor?: boolean;
-  tint?: boolean;
-  sx?: StyleProp<TextStyle>;
-}) {
-  return (
-    <ThemedText
-      secondary={secondary}
-      tint={tint}
-      style={{ fontWeight: "bold", fontSize: minor ? 14 : 16, ...(sx || {}) }}
-    >
-      {children}
-    </ThemedText>
-  );
-}
-
 export function Paragraph({
   children,
-  sx,
   danger,
   secondary,
 }: {
   children: ReactNode;
-  sx?: StyleProp<TextStyle>;
   danger?: boolean;
   secondary?: boolean;
 }) {
@@ -80,7 +53,6 @@ export function Paragraph({
       style={{
         fontSize: 14,
         margin: 12,
-        ...(sx || {}),
       }}
       danger={danger}
       secondary={secondary}

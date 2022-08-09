@@ -18,6 +18,10 @@ export const bigShadow = {
   ...Platform.select({
     android: {
       elevation: 6,
+      // shadowRadius: 6,
+      // shadowOffset: { width: 0, height: 4 },
+      // shadowOpacity: 0.25,
+      // shadowColor: "#111",
     },
     default: {
       shadowRadius: 6,

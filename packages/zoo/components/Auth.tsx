@@ -1,4 +1,4 @@
-import { useConnection } from "@zerve/client/Connection";
+import { SavedSession, useConnection } from "@zerve/client/Connection";
 import { postZAction } from "@zerve/client/ServerCalls";
 import {
   EmailSchema,
@@ -6,9 +6,16 @@ import {
   PhoneSchema,
   ZSchema,
 } from "@zerve/core";
-import { Button, Icon, InfoRow, showToast, VStack } from "@zerve/zen";
+import {
+  AsyncButton,
+  Button,
+  Icon,
+  InfoRow,
+  showToast,
+  VStack,
+} from "@zerve/zen";
 import { useState } from "react";
-import { setSession } from "../app/ConnectionStorage";
+import { forceLocalLogout, logout, setSession } from "../app/ConnectionStorage";
 import { JSONSchemaForm } from "./JSONSchemaForm";
 
 const LoginStrategies = [
@@ -244,5 +251,38 @@ export function LoginForm({
         )
       )}
     </VStack>
+  );
+}
+
+export function LogoutButton({
+  connection,
+  session,
+}: {
+  connection: LiveConnection;
+  session: SavedSession;
+}) {
+  const [readyForForceLogout, setReadyForForceLogout] = useState(false);
+  return (
+    <>
+      <AsyncButton
+        onPress={async () => {
+          try {
+            await logout(connection, session);
+          } catch (e) {
+            setReadyForForceLogout(true);
+            throw e;
+          }
+        }}
+        title="Log Out"
+      />
+      {readyForForceLogout && (
+        <AsyncButton
+          onPress={async () => {
+            await forceLocalLogout(connection);
+          }}
+          title="Force Log Out (delete session)"
+        />
+      )}
+    </>
   );
 }

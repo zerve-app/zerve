@@ -1,6 +1,4 @@
-import { Card, LinkRow, ThemedText } from "@zerve/zen";
-import React, { useState } from "react";
-import { FlatList } from "react-native-gesture-handler";
+import { ThemedText } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { HomeStackScreenProps } from "../app/Links";
@@ -8,6 +6,7 @@ import { useHistoryEvent } from "../app/History";
 import { format } from "date-fns";
 import NotFoundScreen from "./NotFoundScreen";
 import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
+import { EmptySchemaStore } from "@zerve/core";
 
 export default function HistoryEventScreen({
   navigation,
@@ -17,10 +16,15 @@ export default function HistoryEventScreen({
   const event = useHistoryEvent(eventId);
   if (!event) return <NotFoundScreen />;
   return (
-    <ScreenContainer scroll>
+    <ScreenContainer scroll safe>
       <ScreenHeader title={event.title} />
       <ThemedText>{format(new Date(event.time), "p P")}</ThemedText>
-      <JSONSchemaEditor value={event.body} schema={{}} />
+      <JSONSchemaEditor
+        value={event.body}
+        schema={{}}
+        id="events"
+        schemaStore={EmptySchemaStore}
+      />
     </ScreenContainer>
   );
 }

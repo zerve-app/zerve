@@ -11,7 +11,7 @@ export default function JSONInputScreen({
   const [value, setValue] = useState(route.params.value);
   const { onValue } = route.params;
   return (
-    <ScreenContainer scroll>
+    <ScreenContainer scroll safe>
       <JSONSchemaEditor
         id={`${route.key}-jsoninput`}
         value={value}

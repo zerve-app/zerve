@@ -6,9 +6,17 @@ import { SchemaStore } from "@zerve/core";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { useSaveFile } from "@zerve/client/Mutation";
 import { useMediaQuery } from "react-responsive";
-import { NavBar, NavBarSpacer, NavBarZLogo, PageContainer } from "@zerve/zen";
+import {
+  Button,
+  NavBar,
+  NavBarSpacer,
+  NavBarZLogo,
+  PageContainer,
+} from "@zerve/zen";
 import { AuthHeader } from "../components/AuthHeader";
 import { ZerveLogo } from "../components/ZerveLogo";
+import { LogoutButton } from "../components/Auth";
+import { useConnection } from "@zerve/client/Connection";
 
 function ProjectHeader({ name }: { name: string }) {
   return (
@@ -209,6 +217,8 @@ function EntityContent({
   const isWide = useMediaQuery({
     query: "(min-width: 600px)",
   });
+  const conn = useConnection();
+  const session = conn?.session;
   return (
     <View style={{ flex: 1, flexDirection: "row" }}>
       {isWide && (
@@ -219,6 +229,7 @@ function EntityContent({
             active={false}
             onPress={() => {}}
           ></NavLinkSection>
+          {session && <LogoutButton connection={conn} session={session} />}
         </NavSidebar>
       )}
     </View>
@@ -239,7 +250,7 @@ function StoreContent({
   const isWide = useMediaQuery({
     query: "(min-width: 600px)",
   });
-const storePath = ['Auth', 'User' storeId]
+  const storePath = ["Auth", "User", storeId];
   const firstPathTerm = navState.path?.[0];
   return (
     <View style={{ flex: 1, flexDirection: "row" }}>

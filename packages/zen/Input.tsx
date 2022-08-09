@@ -83,9 +83,7 @@ export function SwitchInput({
 }) {
   return (
     <View style={{}}>
-      {label != null && (
-        <Label style={[marginHInset, marginVInset]}>{label}</Label>
-      )}
+      {label != null && <Label>{label}</Label>}
       <Switch onValueChange={onValue} value={value} disabled={disabled} />
     </View>
   );

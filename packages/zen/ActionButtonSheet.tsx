@@ -60,7 +60,9 @@ export function useActionsSheet(
   const colors = useColors();
   return [
     <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenu.Trigger style={{ border: "none" }}>
+      <DropdownMenu.Trigger
+        style={{ border: "none", backgroundColor: "transparent" }}
+      >
         {renderButton(onOpen)}
       </DropdownMenu.Trigger>
       <DropdownMenu.Content

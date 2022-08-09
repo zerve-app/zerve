@@ -22,7 +22,7 @@ import Animated, {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColors } from "./useColors";
-import { AbsoluteFill, bigShadow } from "./Style";
+import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
 
 export type BottomSheetContext = {
   open: <O>(
@@ -99,7 +99,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
         <Animated.View style={layerStyles} pointerEvents="none" />
         {sheetConfig && (
           <BottomSheet
-            style={[bigShadow, {}]}
+            style={[bigShadow, { elevation: 12 }]}
             key={sheetConfig.key}
             enablePanDownToClose
             ref={bottomSheetRef}
@@ -108,7 +108,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
               backgroundColor: colors.backgroundDim,
             }}
             backgroundStyle={{
-              backgroundColor: colors.backgroundDim,
+              backgroundColor: "transparent",
             }}
             snapPoints={animatedSnapPoints}
             handleHeight={animatedHandleHeight}
@@ -118,7 +118,12 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
           >
             <View
               onLayout={handleContentLayout}
-              style={{ backgroundColor: colors.backgroundDim }}
+              style={{
+                backgroundColor: colors.backgroundDim,
+                marginTop: 10,
+                backgroundColor: colors.backgroundDim,
+                ...smallShadow,
+              }}
             >
               <SafeAreaView edges={["right", "bottom", "left"]}>
                 {sheetConfig.children}

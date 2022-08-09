@@ -4,6 +4,7 @@
     <item name="android:editTextStyle">@style/ResetEditText</item>
     <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="android:windowTranslucentStatus">true</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="android:windowBackground">@color/activityBackground</item>
   </style>
