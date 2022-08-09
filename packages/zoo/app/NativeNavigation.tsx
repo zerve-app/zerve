@@ -29,7 +29,6 @@ import StoreHistoryScreen from "../screens/StoreHistoryScreen";
 import StoreSchemasScreen from "../screens/StoreSchemasScreen";
 import HistoryEventScreen from "../screens/HistoryEventScreen";
 import StoreSchemaScreen from "../screens/StoreSchemaScreen";
-import TestRichTextScreen from "../screens/TestRichTextScreen";
 import { LogBox } from "react-native";
 
 LogBox.ignoreLogs([
@@ -139,11 +138,6 @@ function SettingsNavigator() {
       <SettingsStack.Screen
         name="TestJSONInput"
         component={TestJSONInputScreen}
-        options={DefaultScreenOptions}
-      />
-      <SettingsStack.Screen
-        name="TestRichText"
-        component={TestRichTextScreen}
         options={DefaultScreenOptions}
       />
       <SettingsStack.Screen

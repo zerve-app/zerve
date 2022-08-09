@@ -23,7 +23,6 @@ export type SettingsStackParamList = {
   TestUI: undefined;
   TestHistory: undefined;
   TestJSONInput: undefined;
-  TestRichText: undefined;
 };
 
 export type HomeStackParamList = {
