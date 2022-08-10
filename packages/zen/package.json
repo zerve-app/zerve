@@ -26,7 +26,10 @@
     "@radix-ui/react-dialog": "^0.1.7",
     "@radix-ui/react-dropdown-menu": "^0.1.6",
     "@radix-ui/react-select": "^0.1.1",
+    "@tamagui/shorthands": "^1.0.1-beta.140",
+    "@tamagui/theme-base": "^1.0.1-beta.140",
+    "react-native-safe-area-context": "^4.3.1",
     "react-native-svg": "12.3.0",
-    "react-native-safe-area-context": "^4.3.1"
+    "tamagui": "^1.0.1-beta.140"
   }
 }
