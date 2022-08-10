@@ -2097,20 +2097,20 @@
     tmp "^0.0.33"
     tslib "^1.10.0"
 
-"@expo/eas-build-job@0.2.77":
-  version "0.2.77"
-  resolved "https://registry.yarnpkg.com/@expo/eas-build-job/-/eas-build-job-0.2.77.tgz#2ebdb3e6706c4020812e2e8e3d2e7da26e3c7eb1"
-  integrity sha512-CFS/Uixa3XqV39vdoDnQP93kgd2EGf3gaOqLYl+9gnMCP9h2+Q9fIbfPw5DnFu2LEIyU+Xw5DtpkyTQEBjTLyA==
+"@expo/eas-build-job@0.2.85":
+  version "0.2.85"
+  resolved "https://registry.yarnpkg.com/@expo/eas-build-job/-/eas-build-job-0.2.85.tgz#b5dd12a23943b67139dc47322428b9e1958f6804"
+  integrity sha512-iPvj8ntlevBwaHw00Qj+36L1MDZk6GygjPcV8QldaWeDVjdypu9ZcX+UqYoFmQFiLZYEfwm2s89MDEwQJvNn+A==
   dependencies:
     joi "^17.4.2"
     semver "^7.3.5"
 
-"@expo/eas-json@0.54.0":
-  version "0.54.0"
-  resolved "https://registry.yarnpkg.com/@expo/eas-json/-/eas-json-0.54.0.tgz#6b5dacdc3c373c53ff31a011f6e6f45852ea2a3d"
-  integrity sha512-zHWSJpra7EonGSt3xAwpgPlFd3EIqrDmwK9gCg2tokNHDq6sEiGFdDmTBJ57rEFdBKlWz7rJsTY8owKCETIg5g==
+"@expo/eas-json@0.58.0":
+  version "0.58.0"
+  resolved "https://registry.yarnpkg.com/@expo/eas-json/-/eas-json-0.58.0.tgz#682b421592bb0bff95a635d164abd77e35814ab8"
+  integrity sha512-wBK90mWHw10LJE5/GaKQH1qQdheYlPV8vCYiX6tQJUAkT3VRidaxfpVmSqau3qAw1arup2aKHjgKGkxSikaIZA==
   dependencies:
-    "@expo/eas-build-job" "0.2.77"
+    "@expo/eas-build-job" "0.2.85"
     "@expo/json-file" "8.2.36"
     chalk "4.1.2"
     env-string "1.0.1"
@@ -7318,18 +7318,18 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
 
-eas-cli@^0.54.1:
-  version "0.54.1"
-  resolved "https://registry.yarnpkg.com/eas-cli/-/eas-cli-0.54.1.tgz#a4d5b57aef996cc2866f443c5ab1e5c2d78143ec"
-  integrity sha512-zSjERyWuklZCNEN990NCU7j67eXhKhT5Yquy6DU4spFDB1HnIUFLIdMolW/GmrHnLx19PZG6xKgO14yroztx9Q==
+eas-cli@^0.58.0:
+  version "0.58.0"
+  resolved "https://registry.yarnpkg.com/eas-cli/-/eas-cli-0.58.0.tgz#7c349708d778c98a150d74a07fd88f3afea30dfa"
+  integrity sha512-7qX0Z11mnzdaVcZt7F/7vYXI5RVDZ19Cnilabu40hHPl2MF22WpxIU/phqY4qvqyXMtCbJuZcVvfS30MEog/Qw==
   dependencies:
     "@expo/apple-utils" "0.0.0-alpha.33"
     "@expo/code-signing-certificates" "0.0.2"
     "@expo/config" "6.0.23"
     "@expo/config-plugins" "4.1.4"
     "@expo/config-types" "45.0.0"
-    "@expo/eas-build-job" "0.2.77"
-    "@expo/eas-json" "0.54.0"
+    "@expo/eas-build-job" "0.2.85"
+    "@expo/eas-json" "0.58.0"
     "@expo/json-file" "8.2.36"
     "@expo/multipart-body-parser" "1.1.0"
     "@expo/pkcs12" "0.0.8"

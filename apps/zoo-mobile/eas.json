@@ -1,10 +1,10 @@
 {
   "cli": {
-    "version": ">= 0.47.0"
+    "version": ">= 0.58.0"
   },
   "build": {
     "development": {
-      "node": "16.15.0",
+      "node": "16.16.0",
       "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleDebug"
@@ -14,7 +14,7 @@
       }
     },
     "internal": {
-      "node": "16.15.0",
+      "node": "16.16.0",
       "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleRelease"
@@ -24,7 +24,7 @@
       }
     },
     "simulator": {
-      "node": "16.15.0",
+      "node": "16.16.0",
       "distribution": "internal",
       "ios": {
         "simulator": true,
