@@ -1,13 +1,8 @@
 {
   "expo": {
     "name": "@zerve/monorepo",
-    "slug": "@zervemonorepo",
+    "slug": "zerve-monorepo",
     "version": "0.0.0",
-    "sdkVersion": "44.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ]
+    "platforms": ["ios", "android", "web"]
   }
 }

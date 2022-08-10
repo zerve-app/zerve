@@ -10,7 +10,7 @@
     "clean": "rimraf node_modules .next .expo"
   },
   "dependencies": {
-    "@expo/next-adapter": "^3.1.21",
+    "@expo/next-adapter": "^4.0.10",
     "@expo/vector-icons": "^13.0.0",
     "@testing-library/react-native": "^9.1.0",
     "@zerve/client": "*",
@@ -20,10 +20,10 @@
     "@zerve/zen": "*",
     "next": "12.1.6",
     "next-compose-plugins": "^2.2.1",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-native-gesture-handler": "^2.4.2",
-    "react-native-web": "^0.17.7"
+    "react": "18.0.0",
+    "react-dom": "18.0.0",
+    "react-native-gesture-handler": "^2.5.0",
+    "react-native-web": "~0.18.7"
   },
   "devDependencies": {
     "@types/react": "~17.0.21",

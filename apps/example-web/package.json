@@ -10,12 +10,12 @@
     "clean": "rimraf node_modules .next .expo"
   },
   "dependencies": {
-    "@expo/next-adapter": "^3.1.21",
+    "@expo/next-adapter": "^4.0.10",
     "@zerve/cli": "*",
     "next": "12.1.6",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-native-web": "^0.17.7"
+    "react": "18.0.0",
+    "react-dom": "18.0.0",
+    "react-native-web": "~0.18.7"
   },
   "devDependencies": {
     "@types/node": "18.0.6",

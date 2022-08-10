@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "scheme": "zerve",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#ebebeb",
+    "backgroundColor": "#806896",
     "primaryColor": "#8147b7",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -33,7 +33,6 @@
       "package": "app.zerve.main"
     },
     "androidStatusBar": {
-      "backgroundColor": "#8147b7ff",
       "translucent": true
     },
     "web": {

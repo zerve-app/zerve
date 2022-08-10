@@ -6,7 +6,7 @@ To contribute larger feature work, please get in touch with Eric on Twitter or D
 
 ## First Steps
 
-You will need GitHub ssh setup, yarn 1.x, and NodeJS 16-18.
+You will need GitHub ssh setup, yarn 1.x, and NodeJS 16 LTS.
 
 1. Check out the repo: `git clone --depth=1 git@github.com:zerve-app/zerve.git`
 2. Install dependencies: `yarn`

@@ -1,6 +1,6 @@
 <resources>
   <color name="iconBackground">#FFFFFF</color>
   <color name="colorPrimary">#8147b7</color>
-  <color name="colorPrimaryDark">#8147b7ff</color>
-  <color name="activityBackground">#ebebeb</color>
+  <color name="colorPrimaryDark">#ffffff</color>
+  <color name="activityBackground">#806896</color>
 </resources>
