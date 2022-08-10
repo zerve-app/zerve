@@ -40,3 +40,5 @@ yarn-error.log*
 secrets.json
 
 dev-data
+
+.xcode.env.local
