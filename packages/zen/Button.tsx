@@ -63,9 +63,9 @@ export type ButtonProps = {
   onPress: null | (() => void);
   onLongPress?: () => void;
   style?: StyleProp<ViewStyle>;
-  border?: number;
   small?: boolean;
   disabled?: boolean;
+  chromeless?: boolean;
   textAlign?: "right" | "left" | "center";
 };
 export function Button({
@@ -77,9 +77,9 @@ export function Button({
   style,
   onPress,
   onLongPress,
-  border,
   small,
   disabled,
+  chromeless,
   textAlign = "center",
 }: ButtonProps) {
   const colors = useColors();
@@ -90,22 +90,20 @@ export function Button({
     : primary
     ? colors.tint
     : colors.text;
-  const borderWidth = border !== undefined ? border : primary || danger ? 4 : 0;
   const containerStyle = useAnimatedStyle(() => ({
-    backgroundColor: colors.background,
-    borderWidth,
-    borderColor: `${color}88`,
+    backgroundColor: chromeless ? "transparent" : `${colors.background}88`,
+    borderWidth: chromeless ? 0 : danger || primary ? 4 : 1,
+    borderColor: danger
+      ? colors.dangerText
+      : primary
+      ? colors.tint
+      : `${colors.secondaryText}33`,
     borderRadius: Layout.borderRadius,
     padding: small ? 8 : 12,
     paddingHorizontal: small ? 12 : 18,
     minHeight: small ? 30 : 50,
     flexDirection: "row",
     alignItems: "center",
-    elevation: 3,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 3 },
-    shadowColor: "#111",
-    shadowOpacity: pressHeight.value * 0.25,
     transform: [{ translateY: -pressHeight.value * 3 }],
   }));
   const pressBounceTimeout = useRef<null | ReturnType<typeof setTimeout>>(null);
@@ -144,7 +142,7 @@ export function Button({
             paddingHorizontal: 12,
             fontSize: 16,
             fontWeight: primary ? "bold" : "normal",
-            flex: small ? undefined : 1,
+            flex: 1,
             textAlign,
           }}
         >

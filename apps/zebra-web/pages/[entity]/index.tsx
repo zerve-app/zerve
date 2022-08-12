@@ -3,10 +3,11 @@ import { EntityDashboard } from "@zerve/zoo/web/Dashboard";
 import { ConnectionProvider } from "@zerve/client/Connection";
 import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import {
-  getWebRootServerProps,
+  getSiteConfig,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
 import { Provider } from "@zerve/zoo/provider";
+import { GetServerSideProps } from "next";
 
 export default function EntityPage(props: WebPathRootServerProps) {
   const conn = useWebConnection(props.config);
@@ -20,4 +21,10 @@ export default function EntityPage(props: WebPathRootServerProps) {
   );
 }
 
-export const getServerSideProps = getWebRootServerProps;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return {
+    props: {
+      config: await getSiteConfig(context),
+    },
+  };
+};

@@ -1,5 +1,12 @@
 import React from "react";
-import { AsyncButton, Button, Form } from "@zerve/zen";
+import {
+  AsyncButton,
+  Button,
+  Form,
+  Paragraph,
+  Spinner,
+  VStack,
+} from "@zerve/zen";
 import { useEffect, useRef, useState } from "react";
 import { JSONSchemaEditor } from "./JSONSchemaEditor";
 import {
@@ -8,6 +15,25 @@ import {
   SchemaStore,
 } from "@zerve/core";
 
+function useAsyncHandler<V, E>(
+  handler: (v: V) => Promise<void>
+): { error: null | E; isLoading: boolean; handle: (value: V) => void } {
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  function handle(value: V) {
+    setIsLoading(true);
+    setError(null);
+    handler(value)
+      .then(() => {})
+      .catch((e) => {
+        setError(e);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+  return { error, isLoading, handle };
+}
 export function JSONSchemaForm({
   id,
   value,
@@ -30,6 +56,10 @@ export function JSONSchemaForm({
   const [valueState, setValueState] = useState(
     value === undefined ? getDefaultSchemaValue(schema) : value
   );
+  const { error, isLoading, handle } = useAsyncHandler(async (value) => {
+    await onValue?.(value);
+    await onSubmit?.(value);
+  });
   const seenValueState = useRef(value);
   useEffect(() => {
     if (seenValueState.current !== value) {
@@ -45,36 +75,41 @@ export function JSONSchemaForm({
           await onSubmit?.(valueState);
         }}
       >
-        <JSONSchemaEditor
-          id={id}
-          value={valueState}
-          onValue={setValueState}
-          schema={schema}
-          onSubmitEditing={async () => {
-            await onValue?.(valueState);
-            await onSubmit?.(valueState);
-          }}
-          schemaStore={schemaStore || EmptySchemaStore}
-        />
-        {(valueState !== value || onSubmit) && (
-          <AsyncButton
-            title={saveLabel || "Save"}
-            primary
-            onPress={async () => {
+        <VStack>
+          {isLoading && <Spinner />}
+          {error && <Paragraph danger>{error.message}</Paragraph>}
+          <JSONSchemaEditor
+            id={id}
+            value={valueState}
+            onValue={setValueState}
+            schema={schema}
+            onSubmitEditing={async () => {
               await onValue?.(valueState);
               await onSubmit?.(valueState);
             }}
+            schemaStore={schemaStore || EmptySchemaStore}
           />
-        )}
-        {(valueState !== value || !!onCancel) && (
-          <Button
-            onPress={() => {
-              setValueState(value);
-              onCancel?.();
-            }}
-            title="Cancel"
-          />
-        )}
+          {(valueState !== value || onSubmit) && (
+            <Button
+              title={saveLabel || "Save"}
+              primary
+              onPress={() => {
+                handle(valueState);
+              }}
+            />
+          )}
+          {(valueState !== value || !!onCancel) && (
+            <Button
+              onPress={() => {
+                setValueState(value);
+                onCancel?.();
+              }}
+              small
+              title="Cancel"
+              chromeless
+            />
+          )}
+        </VStack>
       </Form>
     </>
   );

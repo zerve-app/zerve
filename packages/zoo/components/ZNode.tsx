@@ -104,6 +104,7 @@ export function ZStateNode({
   if (isLoading) return <Spinner />;
   return (
     <JSONSchemaEditor
+      id={path.join("/")}
       value={node?.node}
       schema={node?.type?.value}
       onValue={(value) => {

@@ -84,6 +84,7 @@ export function DisclosureSection({
           alignSelf: "stretch",
           minHeight: 52,
           backgroundColor: colors.background,
+          paddingHorizontal: 6,
         }}
       >
         <TouchableOpacity

@@ -5,7 +5,7 @@ import {
   UseQueryOptions,
 } from "react-query";
 import { getZ } from "./ServerCalls";
-import { useConnection, LiveConnection } from "./Connection";
+import { useConnection, Connection } from "./Connection";
 import { getTypedZ } from "./ServerCalls";
 import { useEffect, useMemo } from "react";
 import {
@@ -32,7 +32,7 @@ export function useConnectionProjects(
 }
 
 function useConnectionQuery<Result>(
-  conn: LiveConnection | null,
+  conn: Connection | null,
   path: string[],
   getQuery: () => Promise<Result>,
   options?: Omit<

@@ -1,5 +1,5 @@
 import { useConnection } from "@zerve/client/Connection";
-import { Button, Link, useModal } from "@zerve/zen";
+import { Button, HStack, Link, useModal } from "@zerve/zen";
 import { Text, View } from "react-native";
 import { LoginForm } from "./Auth";
 
@@ -37,11 +37,14 @@ export function AuthHeader() {
     );
   }
   return (
-    <Button
-      title="Log In / Register"
-      onPress={() => {
-        openLogin();
-      }}
-    />
+    <HStack>
+      <Button
+        title="Log In / Register"
+        small
+        onPress={() => {
+          openLogin();
+        }}
+      />
+    </HStack>
   );
 }

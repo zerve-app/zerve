@@ -43,19 +43,6 @@ function ProjectHeader({ name }: { name: string }) {
   );
 }
 
-function NavigationBar() {
-  return (
-    <View
-      style={{ backgroundColor: "#decdec", height: 50, flexDirection: "row" }}
-    >
-      <ZerveLogo />
-      <ProjectHeader name="Example Store" />
-      <View style={{ flex: 1 }} />
-      <AuthHeader />
-    </View>
-  );
-}
-
 function NavSidebar({ children }: { children: ReactNode }) {
   return (
     <View style={{ backgroundColor: "#f9d9fb", width: 300 }}>{children}</View>
@@ -214,9 +201,10 @@ function EntityContent({
   onNavState: (n: NavState) => void;
   entityId: string;
 }) {
-  const isWide = useMediaQuery({
-    query: "(min-width: 600px)",
-  });
+  // const isWide = useMediaQuery({
+  //   query: "(min-width: 600px)",
+  // });
+  const isWide = true;
   const conn = useConnection();
   const session = conn?.session;
   return (
@@ -338,7 +326,13 @@ export function EntityDashboard() {
   );
 }
 
-export function StoreDashboard() {
+export function StoreDashboard({
+  storeId,
+  entityId,
+}: {
+  storeId: string;
+  entityId: string;
+}) {
   const [navState, setNavState] = useState<NavState>({
     section: "files",
     path: [],
@@ -347,7 +341,7 @@ export function StoreDashboard() {
     <PageContainer>
       <NavBar>
         <NavBarZLogo />
-        <ProjectHeader name="Example Store" />
+        <ProjectHeader name={storeId} />
         <NavBarSpacer />
         <AuthHeader />
       </NavBar>

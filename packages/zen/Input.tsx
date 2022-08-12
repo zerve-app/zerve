@@ -1,8 +1,8 @@
 import React, { ComponentProps } from "react";
 import { Switch, TextInput, View } from "react-native";
 import { useColors } from "./useColors";
-import { Label } from "./Text";
-import { marginHInset, marginVInset, RowStyles } from "./Row";
+import { Label } from "./Label";
+import { getRowStyles, marginHInset, marginVInset } from "./Row";
 import { ZTextInputType } from "@zerve/core";
 
 export function Input({
@@ -47,9 +47,8 @@ export function Input({
         placeholderTextColor={colors.secondaryText}
         autoFocus={autoFocus}
         style={{
-          ...RowStyles,
+          ...getRowStyles(colors),
           color: colors.text,
-          borderColor: colors.text,
           backgroundColor: colors.background,
         }}
         focusable={!disabled}

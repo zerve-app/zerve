@@ -4,16 +4,19 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
 import Layout from "./Layout";
-import { smallShadow } from "./Style";
 import { Label } from "./Label";
 import { ThemedText } from "./Themed";
 import { useColors } from "./useColors";
+import { ColorTheme } from "./Colors";
 
-export const RowStyles = {
-  ...smallShadow,
-  borderRadius: Layout.borderRadius,
-  padding: 12,
-};
+export function getRowStyles(colors: ColorTheme) {
+  return {
+    borderRadius: Layout.borderRadius,
+    borderWidth: 1,
+    borderColor: `${colors.secondaryText}33`,
+    padding: 12,
+  };
+}
 
 export const marginHInset = {
   marginLeft: Layout.paddingHorizontal,
@@ -37,9 +40,8 @@ export function InfoRow({
   return (
     <View
       style={{
+        ...getRowStyles(colors),
         overflow: "hidden",
-        // ...RowStyles,
-        // backgroundColor: colors.background,
         flexDirection: "row",
         justifyContent: "space-between",
       }}
@@ -96,7 +98,8 @@ export function LinkRowGroup({
       style={{
         borderRadius: Layout.borderRadius,
         backgroundColor: colors.background,
-        ...smallShadow,
+        borderWidth: 1,
+        borderColor: `${colors.secondaryText}33`,
       }}
     >
       {links.map((link, linkIndex) => {

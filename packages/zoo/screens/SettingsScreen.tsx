@@ -19,6 +19,7 @@ import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { clearLocalHistoryStorage } from "../app/History";
 import { showToast } from "@zerve/zen";
+import { connectionStorage } from "../app/ConnectionStorage";
 
 function AppUpdater() {
   const [update, setUpdate] = useState<null | UpdateCheckResult>(null);
@@ -110,11 +111,10 @@ export default function SettingsScreen({
               <FontAwesome name="trash" color={color} size={24} />
             )}
             danger
-            onPress={() => {
-              // dangerouslyClearAllStorage();
-              // reloadAsync().then(() => {
-              showToast("data reset not working right now.");
-              // });
+            onPress={async () => {
+              await connectionStorage.dangerouslyClearAllStorage();
+              await clearLocalHistoryStorage();
+              reloadAsync().then(() => {});
             }}
           />
         </VStack>

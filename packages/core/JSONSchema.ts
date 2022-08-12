@@ -186,7 +186,7 @@ export const ObjectSchemaSchema = {
       type: "object",
       additionalProperties: { type: "string" },
     } as const,
-    required: { type: "array", items: { type: "string" }, readOnly: true },
+    required: { type: "array", items: { type: "string" } },
   },
   propertyTitles: {
     properties: "Properties",

@@ -1,4 +1,8 @@
-import { SavedSession, useConnection } from "@zerve/client/Connection";
+import {
+  Connection,
+  SavedSession,
+  useConnection,
+} from "@zerve/client/Connection";
 import { postZAction } from "@zerve/client/ServerCalls";
 import {
   EmailSchema,
@@ -12,6 +16,7 @@ import {
   Icon,
   InfoRow,
   showToast,
+  Title,
   VStack,
 } from "@zerve/zen";
 import { useState } from "react";
@@ -24,22 +29,25 @@ const LoginStrategies = [
     label: "Phone",
     key: "Phone",
     schema: PhoneSchema,
+    title: "Log In / Register with SMS code",
   },
   {
     icon: "envelope",
     label: "Email",
     key: "Email",
     schema: EmailSchema,
+    title: "Log In / Register with Email",
   },
   {
     icon: "user",
-    label: "Username + Password",
+    label: "User + Password",
     key: "Username",
     schema: {
       title: "Password",
       type: "string",
       minLength: 6,
     },
+    title: "Log In with Username + Password",
   },
 ] as const;
 
@@ -72,8 +80,10 @@ function LoginStrategyForm({
   if (address) {
     return (
       <>
-        <InfoRow label={strat.label} value={address} />
+        <Title title={`Enter the code we sent to ${address}`} />
         <JSONSchemaForm
+          id="auth-login-code"
+          key="auth-login-code"
           schema={CodeSchema}
           saveLabel="Log In"
           onCancel={() => {
@@ -118,6 +128,7 @@ function LoginStrategyForm({
 
   return (
     <>
+      <Title title={strat.title} />
       <JSONSchemaForm
         id="authCode"
         schema={schema}
@@ -206,6 +217,28 @@ function UsernamePasswordLoginForm({
   );
 }
 
+function StrategySelectForm({
+  onSelectedStrategy,
+}: {
+  onSelectedStrategy: (strat: typeof LoginStrategies[number]["key"]) => void;
+}) {
+  return (
+    <VStack>
+      <Title title="Log In / Register with:" />
+      {LoginStrategies.map((l) => (
+        <Button
+          key={l.key}
+          title={l.label}
+          left={(p) => (l.icon ? <Icon {...p} name={l.icon} /> : null)}
+          onPress={() => {
+            onSelectedStrategy(l.key);
+          }}
+        />
+      ))}
+    </VStack>
+  );
+}
+
 export function LoginForm({
   path,
   authMeta,
@@ -213,24 +246,16 @@ export function LoginForm({
 }: {
   path: string[];
   authMeta: any;
-  onComplete: () => void;
+  onComplete?: () => void;
 }) {
   const [selectedStrategy, setSelectedStrategy] = useState<
     null | typeof LoginStrategies[number]["key"]
   >(null);
   return (
-    <VStack>
-      {!selectedStrategy &&
-        LoginStrategies.map((l) => (
-          <Button
-            key={l.key}
-            title={l.label}
-            left={(p) => (l.icon ? <Icon {...p} name={l.icon} /> : null)}
-            onPress={() => {
-              setSelectedStrategy(l.key);
-            }}
-          />
-        ))}
+    <>
+      {!selectedStrategy && (
+        <StrategySelectForm onSelectedStrategy={setSelectedStrategy} />
+      )}
       {selectedStrategy === "Username" ? (
         <UsernamePasswordLoginForm
           path={path}
@@ -250,7 +275,7 @@ export function LoginForm({
           />
         )
       )}
-    </VStack>
+    </>
   );
 }
 
@@ -258,7 +283,7 @@ export function LogoutButton({
   connection,
   session,
 }: {
-  connection: LiveConnection;
+  connection: Connection;
   session: SavedSession;
 }) {
   const [readyForForceLogout, setReadyForForceLogout] = useState(false);

@@ -1,10 +1,4 @@
-import {
-  serverGet,
-  serverPost,
-  Connection,
-  SavedSession,
-  LiveConnection,
-} from "./Connection";
+import { serverGet, serverPost, Connection, SavedSession } from "./Connection";
 
 export async function listDocs(context: Connection) {
   return await serverGet(context, `.z`);
@@ -33,7 +27,7 @@ function extractSessionAuth(path: string[], session?: null | SavedSession) {
   return auth;
 }
 
-export async function getZ(connection: LiveConnection, path: string[]) {
+export async function getZ(connection: Connection, path: string[]) {
   const auth = extractSessionAuth(path, connection?.session);
   const resp = await serverGet(
     connection,
@@ -45,7 +39,7 @@ export async function getZ(connection: LiveConnection, path: string[]) {
 }
 
 export async function postZAction(
-  connection: LiveConnection,
+  connection: Connection,
   path: string[],
   body: any
 ) {
@@ -65,7 +59,7 @@ export async function postZAction(
   return await serverPost(connection, serverPath, finalBody, auth);
 }
 
-export async function getTypedZ(connection: LiveConnection, path: string[]) {
+export async function getTypedZ(connection: Connection, path: string[]) {
   const [node, serverZType] = await Promise.all([
     getZ(connection, path),
     getZ(connection, [...path, ".type"]),

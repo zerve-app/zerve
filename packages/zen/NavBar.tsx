@@ -7,7 +7,7 @@ import { Link } from "./Link";
 export function NavBar({ children }: { children: ReactNode }) {
   return (
     <View
-      style={{ backgroundColor: "#decdec", height: 50, flexDirection: "row" }}
+      style={{ backgroundColor: "#decdec", height: 60, flexDirection: "row" }}
     >
       {children}
     </View>
@@ -21,7 +21,7 @@ export function NavBarSpacer() {
 export function NavBarZLogo() {
   return (
     <Link href="/">
-      <View style={{ height: 50, width: 50, backgroundColor: "green" }}>
+      <View style={{ height: 60, width: 60, backgroundColor: "green" }}>
         <LinearGradient
           colors={["#6144b8", "#9f4ab5"]}
           style={StyleSheet.absoluteFill}
@@ -30,9 +30,9 @@ export function NavBarZLogo() {
           fill="none"
           viewBox="0 0 409 409"
           style={{
-            width: 30,
-            height: 30,
-            margin: 10,
+            width: 36,
+            height: 36,
+            margin: 12,
             position: "absolute",
           }}
         >
