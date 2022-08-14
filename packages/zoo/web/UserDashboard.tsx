@@ -1,7 +1,9 @@
-import { Paragraph, Title } from "@zerve/zen";
-import { ComponentProps, createContext } from "react";
+import { useConnection } from "@zerve/client/Connection";
+import { Title, VStack } from "@zerve/zen";
+import { ComponentProps, createContext, memo } from "react";
+import { LogoutButton } from "../components/Auth";
 import { DashboardPage, FeaturePane, NavLink } from "./Dashboard";
-import { FragmentContext, FragmentLink } from "./Fragment";
+import { FragmentContext } from "./Fragment";
 
 export type UserNavigationState =
   | "stores"
@@ -11,22 +13,6 @@ export type UserNavigationState =
       child?: "profile" | "auth";
     };
 
-function UserStoresFeature({ entityId }: { entityId: string }) {
-  return (
-    <FeaturePane title="Stores">
-      <Title title={entityId} />
-    </FeaturePane>
-  );
-}
-
-function UserOrganizationsFeature({ entityId }: { entityId: string }) {
-  return (
-    <FeaturePane title="Organizations">
-      <Title title={entityId} />
-    </FeaturePane>
-  );
-}
-
 function UserFeatureLink(
   props: Omit<ComponentProps<typeof NavLink<UserNavigationState>>, "Context">
 ) {
@@ -34,11 +20,43 @@ function UserFeatureLink(
     <NavLink<UserNavigationState> Context={UserDashboardContext} {...props} />
   );
 }
-
-function UserSettingsFeature({ entityId }: { entityId: string }) {
+function UserStoresFeature({
+  entityId,
+  title,
+}: {
+  entityId: string;
+  title: string;
+}) {
   return (
-    <FeaturePane title="Settings">
-      <UserFeatureLink title="Organizations" to="organizations" />
+    <FeaturePane title={title}>
+      <Title title={entityId} />
+    </FeaturePane>
+  );
+}
+
+function UserOrganizationsFeature({
+  entityId,
+  title,
+}: {
+  entityId: string;
+  title: string;
+}) {
+  return (
+    <FeaturePane title={title}>
+      <Title title={entityId} />
+    </FeaturePane>
+  );
+}
+
+function UserSettingsFeatureUnpure({
+  entityId,
+  title,
+}: {
+  entityId: string;
+  title: string;
+}) {
+  return (
+    <FeaturePane title={title}>
       <UserFeatureLink
         title="Profile"
         to={{ key: "settings", child: "profile" }}
@@ -47,18 +65,31 @@ function UserSettingsFeature({ entityId }: { entityId: string }) {
     </FeaturePane>
   );
 }
+const UserSettingsFeature = memo(UserSettingsFeatureUnpure);
 
-function UserProfileSettingsFeature({ entityId }: { entityId: string }) {
+function UserProfileSettingsFeature({
+  entityId,
+  title,
+}: {
+  entityId: string;
+  title: string;
+}) {
   return (
-    <FeaturePane title="Profile Settings">
+    <FeaturePane title={title}>
       <Title title={entityId} />
     </FeaturePane>
   );
 }
 
-function UserAuthSettingsFeature({ entityId }: { entityId: string }) {
+function UserAuthSettingsFeature({
+  entityId,
+  title,
+}: {
+  entityId: string;
+  title: string;
+}) {
   return (
-    <FeaturePane title="Auth Settings">
+    <FeaturePane title={title}>
       <Title title={entityId} />
     </FeaturePane>
   );
@@ -68,26 +99,71 @@ const UserDashboardContext =
   createContext<null | FragmentContext<UserNavigationState>>(null);
 
 export function UserDashboard({ entityId }: { entityId: string }) {
+  const conn = useConnection();
+  const session = conn?.session;
   return (
     <DashboardPage<UserNavigationState>
       Context={UserDashboardContext}
-      navigation={[
-        { title: "Stores", state: "stores" },
-        { title: "Organizations", state: "organizations" },
-        { title: "Settings", state: { key: "settings" } },
-      ]}
+      navigation={["stores", "organizations", { key: "settings" }]}
+      navigationFooter={
+        <VStack padded>
+          {session && <LogoutButton connection={conn} session={session} />}
+        </VStack>
+      }
+      getFeatureTitle={(feature) => {
+        if (feature === "stores") return "Stores";
+        if (feature === "organizations") return "Organizations";
+        if (feature?.key === "settings") {
+          const settingsFeature = feature?.child;
+          if (settingsFeature === "profile") return "User Profile";
+          if (settingsFeature === "auth") return "Auth Settings";
+          return "Settings";
+        }
+        return "?";
+      }}
+      getFeatureIcon={(feature) => {
+        if (feature === "stores") return "folder-open";
+        if (feature === "organizations") return "building";
+        if (feature?.key === "settings") {
+          const settingsFeature = feature?.child;
+          if (settingsFeature === "profile") return "user";
+          if (settingsFeature === "auth") return "lock";
+          return "gear";
+        }
+        return null;
+      }}
       renderFeature={({ feature, key, ...props }) => {
         if (feature === "organizations")
-          return <UserOrganizationsFeature key={key} entityId={entityId} />;
+          return (
+            <UserOrganizationsFeature
+              key={key}
+              entityId={entityId}
+              {...props}
+            />
+          );
         if (feature === "stores")
-          return <UserStoresFeature key={key} entityId={entityId} />;
+          return <UserStoresFeature key={key} entityId={entityId} {...props} />;
         if (feature?.key === "settings") {
           const settingsFeature = feature?.child;
           if (settingsFeature === "profile")
-            return <UserProfileSettingsFeature key={key} entityId={entityId} />;
+            return (
+              <UserProfileSettingsFeature
+                key={key}
+                entityId={entityId}
+                {...props}
+              />
+            );
           if (settingsFeature === "auth")
-            return <UserAuthSettingsFeature key={key} entityId={entityId} />;
-          return <UserSettingsFeature key={key} entityId={entityId} />;
+            return (
+              <UserAuthSettingsFeature
+                key={key}
+                entityId={entityId}
+                {...props}
+              />
+            );
+          return (
+            <UserSettingsFeature key={key} entityId={entityId} {...props} />
+          );
         }
         return null;
       }}

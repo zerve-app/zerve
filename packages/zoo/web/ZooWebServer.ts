@@ -1,14 +1,30 @@
-import { SavedSession } from "@zerve/client/Connection";
+import { SavedSession, serverGet } from "@zerve/client/Connection";
+import { extractSessionAuth } from "@zerve/client/ServerCalls";
+import { UnauthorizedError } from "@zerve/core";
 import { SiteConfig } from "../app/SiteConfig";
 
 export type WebPathRootServerProps = {
   config: SiteConfig;
 };
 
+async function validateSession(origin: string, session: SavedSession | null) {
+  if (!session) return null;
+  const userNode = await serverGet(
+    origin,
+    ".z/Auth/user",
+    undefined,
+    extractSessionAuth(["Auth"], session)
+  );
+  if (userNode && userNode !== UnauthorizedError) return session;
+  return null;
+}
+
 export async function getSiteConfig(context) {
-  const session = getCookieSession(context.req.headers.cookie);
+  const sessionUntrusted = getCookieSession(context.req.headers.cookie);
+  const origin = process.env.Z_ORIGIN || `http://localhost:3888`;
+  const session = await validateSession(origin, sessionUntrusted);
   const config: SiteConfig = {
-    origin: process.env.Z_ORIGIN || `http://localhost:3888`,
+    origin,
     session,
   };
   return config;

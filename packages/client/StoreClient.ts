@@ -16,7 +16,7 @@ export function createZStoreClient(
 
   function createAccessor<FileType>(name: string) {
     async function get(): Promise<FileType> {
-      const resp = await serverGet(connection, `.z/${zStorePath}/${name}`);
+      const resp = await serverGet(connection.url, `.z/${zStorePath}/${name}`);
       return resp.value;
     }
     function use(

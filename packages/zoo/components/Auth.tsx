@@ -290,6 +290,7 @@ export function LogoutButton({
   return (
     <>
       <AsyncButton
+        left={<Icon name="sign-out" />}
         onPress={async () => {
           try {
             await logout(connection, session);

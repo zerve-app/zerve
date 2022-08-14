@@ -8,27 +8,6 @@ import { useSaveFile } from "@zerve/client/Mutation";
 import { LogoutButton } from "../components/Auth";
 import { useConnection } from "@zerve/client/Connection";
 
-export function NavLinkSection({
-  title,
-  children,
-  icon,
-  active,
-  onPress,
-}: {
-  title: string;
-  children?: ReactNode;
-  icon?: ComponentProps<typeof FontAwesome>["name"];
-  active?: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <>
-      <NavLink onPress={onPress} icon={icon} title={title} active={active} />
-      {children}
-    </>
-  );
-}
-
 function FileFeaturePane({
   storePath,
   onNavState,
@@ -88,38 +67,6 @@ function FilesFeaturePane({
         />
       ))}
     </FeaturePane>
-  );
-}
-
-function EntityContent({
-  navState,
-  onNavState,
-  entityId,
-}: {
-  navState: NavState;
-  onNavState: (n: NavState) => void;
-  entityId: string;
-}) {
-  // const isWide = useMediaQuery({
-  //   query: "(min-width: 600px)",
-  // });
-  const isWide = true;
-  const conn = useConnection();
-  const session = conn?.session;
-  return (
-    <View style={{ flex: 1, flexDirection: "row" }}>
-      {isWide && (
-        <NavSidebar>
-          <NavLinkSection
-            title="Organizations"
-            icon="folder-open"
-            active={false}
-            onPress={() => {}}
-          ></NavLinkSection>
-          {session && <LogoutButton connection={conn} session={session} />}
-        </NavSidebar>
-      )}
-    </View>
   );
 }
 

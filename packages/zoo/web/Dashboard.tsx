@@ -1,7 +1,6 @@
 import React, {
   ComponentProps,
   Context,
-  createContext,
   ReactNode,
   useContext,
   useMemo,
@@ -9,7 +8,6 @@ import React, {
 import { View, Text } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import {
-  Link,
   NavBar,
   NavBarSpacer,
   NavBarZLogo,
@@ -22,7 +20,6 @@ import {
   FragmentLink,
   useFragmentNavigationController,
 } from "./Fragment";
-import { useSafeArea } from "../provider/SafeArea/useSafeArea";
 
 export function ProjectHeader({ name }: { name: string }) {
   return (
@@ -74,9 +71,25 @@ export function OrgHeader({ name }: { name: string }) {
   );
 }
 
-export function NavSidebar({ children }: { children: ReactNode }) {
+export function NavSidebar({
+  children,
+  footer,
+}: {
+  children: ReactNode;
+  footer?: ReactNode | null;
+}) {
   return (
-    <View style={{ backgroundColor: "#f9d9fb", width: 300 }}>{children}</View>
+    <View
+      style={{
+        backgroundColor: "#f9d9fb",
+        width: 300,
+        borderRightWidth: 1,
+        borderColor: "#ccc",
+      }}
+    >
+      <View style={{ flex: 1 }}>{children}</View>
+      {footer}
+    </View>
   );
 }
 
@@ -85,17 +98,19 @@ export function NavLink<FeatureState>({
   icon,
   to,
   Context,
+  inset,
 }: {
   title: string;
-  icon?: ComponentProps<typeof FontAwesome>["name"];
+  icon?: ComponentProps<typeof FontAwesome>["name"] | null;
   to: FeatureState;
   Context: Context<null | FragmentContext<FeatureState>>;
+  inset?: boolean;
 }) {
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
     throw new Error("Cannot render NavLink outside of a FragmentContext");
-
-  const isActive = false;
+  const isActive =
+    fragmentContext.fragmentString === fragmentContext.stringifyFragment(to);
   return (
     <FragmentLink<FeatureState> to={to} Context={Context}>
       <View
@@ -104,6 +119,7 @@ export function NavLink<FeatureState>({
           paddingHorizontal: 12,
           flexDirection: "row",
           backgroundColor: isActive ? "#FFC8FC" : "transparent",
+          ...(inset ? { paddingLeft: 36 } : {}),
         }}
       >
         {icon && (
@@ -125,6 +141,27 @@ export function NavLink<FeatureState>({
   );
 }
 
+export function NavLinkSection<FeatureState>({
+  title,
+  children,
+  icon,
+  to,
+  Context,
+}: {
+  title: string;
+  children?: ReactNode;
+  icon?: ComponentProps<typeof FontAwesome>["name"] | null;
+  to: FeatureState;
+  Context: Context<null | FragmentContext<FeatureState>>;
+}) {
+  return (
+    <>
+      <NavLink Context={Context} to={to} icon={icon} title={title} />
+      {children}
+    </>
+  );
+}
+
 export function FeaturePane({
   title,
   children,
@@ -142,33 +179,62 @@ export function FeaturePane({
   );
 }
 
-type NavLinkSpec<FeatureState> = {
-  title: string;
-  state: FeatureState;
-};
-
 function NavigationSidebar<FeatureState>({
   navigation,
   Context,
+  getFeatureIcon,
+  getFeatureTitle,
+  footer,
+  activeFeatures,
 }: {
-  navigation: Array<NavLinkSpec<FeatureState>>;
+  navigation: Array<FeatureState>;
   Context: Context<null | FragmentContext<FeatureState>>;
+  getFeatureTitle: (feature: FeatureState) => string;
+  getFeatureIcon: (
+    feature: FeatureState
+  ) => ComponentProps<typeof FontAwesome>["name"] | null;
+  footer?: ReactNode;
+  activeFeatures: Array<FeatureState>;
 }) {
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
     throw new Error(
       "Cannot render NavigationSidebar outside of a FragmentContext"
     );
+  const topParent = activeFeatures[0];
+  const topParentKey =
+    topParent && fragmentContext.stringifyFragment(topParent);
   return (
-    <NavSidebar>
-      {navigation.map((nav) => (
-        <NavLink
-          Context={Context}
-          title={nav.title}
-          to={nav.state}
-          key={fragmentContext.stringifyFragment(nav.state)}
-        />
-      ))}
+    <NavSidebar footer={footer}>
+      {navigation.map((nav) => {
+        const fragmentKey = fragmentContext.stringifyFragment(nav);
+        return (
+          <NavLinkSection
+            Context={Context}
+            title={getFeatureTitle(nav)}
+            icon={getFeatureIcon(nav)}
+            to={nav}
+            key={fragmentKey}
+          >
+            {topParentKey === fragmentKey &&
+              activeFeatures.map((feature) => {
+                const childFragmentKey =
+                  fragmentContext.stringifyFragment(feature);
+                if (childFragmentKey === fragmentKey) return null;
+                return (
+                  <NavLink
+                    inset
+                    Context={Context}
+                    key={childFragmentKey}
+                    to={feature}
+                    title={getFeatureTitle(feature)}
+                    icon={getFeatureIcon(feature)}
+                  />
+                );
+              })}
+          </NavLinkSection>
+        );
+      })}
     </NavSidebar>
   );
 }
@@ -177,9 +243,12 @@ export function DashboardPage<Feature>({
   Context,
   renderFeature,
   navigation,
+  getFeatureTitle,
+  getFeatureIcon,
   getParentFeatures,
   stringifyFeatureFragment,
   parseFeatureFragment,
+  navigationFooter,
 }: {
   Context: Context<null | FragmentContext<Feature>>;
   renderFeature: (props: {
@@ -187,9 +256,16 @@ export function DashboardPage<Feature>({
     fragmentContext: FragmentContext<Feature>;
     isActive: boolean;
     key: string;
+    title: string;
+    icon: ComponentProps<typeof FontAwesome>["name"] | null;
   }) => ReactNode;
-  navigation: Array<NavLinkSpec<Feature>>;
-  getParentFeatures?: (navState: Feature) => Array<Feature>;
+  navigation: Array<Feature>;
+  getFeatureTitle: (feature: Feature) => string;
+  navigationFooter?: ReactNode;
+  getFeatureIcon: (
+    feature: Feature
+  ) => ComponentProps<typeof FontAwesome>["name"] | null;
+  getParentFeatures?: (feature: Feature) => Array<Feature>;
   stringifyFeatureFragment: (feature: Feature) => string;
   parseFeatureFragment: (fragment: string) => Feature | null;
 }) {
@@ -205,6 +281,8 @@ export function DashboardPage<Feature>({
   const { width } = useWindowDimensions();
   const wideEnoughForNavigation = width >= 700;
   const displayNavSidebar = wideEnoughForNavigation || !feature;
+  let activeFeatures: Feature[] = [...parentFeatures];
+  if (feature) activeFeatures.push(feature);
   return (
     <PageContainer>
       <NavBar>
@@ -215,23 +293,25 @@ export function DashboardPage<Feature>({
       <View style={{ flex: 1, flexDirection: "row" }}>
         <Context.Provider value={fragmentContext}>
           {displayNavSidebar ? (
-            <NavigationSidebar Context={Context} navigation={navigation} />
+            <NavigationSidebar
+              Context={Context}
+              navigation={navigation}
+              getFeatureIcon={getFeatureIcon}
+              getFeatureTitle={getFeatureTitle}
+              footer={navigationFooter}
+              activeFeatures={activeFeatures}
+            />
           ) : null}
-          {parentFeatures.map((feature) =>
+          {activeFeatures.map((displayFeature) =>
             renderFeature({
-              feature,
-              isActive: false,
+              feature: displayFeature,
+              isActive: displayFeature === feature,
               fragmentContext,
-              key: fragmentContext.stringifyFragment(feature),
+              key: fragmentContext.stringifyFragment(displayFeature),
+              title: getFeatureTitle(displayFeature),
+              icon: getFeatureIcon(displayFeature),
             })
           )}
-          {feature &&
-            renderFeature({
-              feature,
-              isActive: true,
-              fragmentContext,
-              key: fragmentContext.stringifyFragment(feature),
-            })}
         </Context.Provider>
       </View>
     </PageContainer>

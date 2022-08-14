@@ -12,6 +12,8 @@ export type FragmentContext<FragmentState> = {
   stringifyFragment: (feature: FragmentState) => string;
   parseFragment: (fragment: string) => FragmentState | null;
   navigateFragment: (fragmentState: FragmentState) => void;
+  fragment: FragmentState | null;
+  fragmentString: string;
 };
 
 export function FragmentLink<FragmentState>({
@@ -46,15 +48,11 @@ export function useFragmentNavigationController<FragmentState>(
   parseFragment: (fragment: string) => FragmentState | null
 ): readonly [FragmentState | null, string, FragmentContext<FragmentState>] {
   const { push, pathname, query } = useRouter();
-  const fragment = query._ === undefined ? "" : String(query._);
-  const fragmentState = useMemo(
-    () => parseFragment(fragment),
-    [parseFragment, fragment]
+  const fragmentString = query._ === undefined ? "" : String(query._);
+  const fragment = useMemo(
+    () => parseFragment(fragmentString),
+    [parseFragment, fragmentString]
   );
-  const fragmentValueRef = useRef(fragment);
-  useEffect(() => {
-    fragmentValueRef.current = fragment;
-  }, [fragment]);
   const fragmentContext = useMemo(
     () => ({
       parseFragment,
@@ -65,9 +63,10 @@ export function useFragmentNavigationController<FragmentState>(
           query: { ...query, _: stringifyFragment(to) },
         });
       },
-      getFragment: () => fragmentValueRef.current,
+      fragment,
+      fragmentString,
     }),
-    [parseFragment, stringifyFragment]
+    [parseFragment, fragment, stringifyFragment]
   );
-  return [fragmentState, fragment, fragmentContext] as const;
+  return [fragment, fragmentString, fragmentContext] as const;
 }

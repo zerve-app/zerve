@@ -53,15 +53,15 @@ function _authHeader(auth: [string, string]) {
 export const UnauthorizedSymbol = Symbol("Unauthorized");
 
 export async function serverGet<Response>(
-  context: Connection,
+  origin: string,
   path: string,
   query?: Record<string, string> | null,
   auth?: [string, string] | null
-): Promise<Response> {
+): Promise<Response | typeof UnauthorizedSymbol> {
   const searchParams = query && new URLSearchParams(query);
   const searchString = searchParams?.toString();
   const res = await fetch(
-    `${context.url}/${path}${
+    `${origin}/${path}${
       searchString && searchString.length ? `?${searchString}` : ""
     }`,
     {

@@ -1,11 +1,11 @@
 import { serverGet, serverPost, Connection, SavedSession } from "./Connection";
 
 export async function listDocs(context: Connection) {
-  return await serverGet(context, `.z`);
+  return await serverGet(context.url, `.z`);
 }
 
 export async function getDoc(context: Connection, name: string) {
-  return await serverGet(context, `.z/${name}`);
+  return await serverGet(context.url, `.z/${name}`);
 }
 
 export function pathStartsWith(wholePath: string[], maybePrefixPath: string[]) {
@@ -16,7 +16,10 @@ export function pathStartsWith(wholePath: string[], maybePrefixPath: string[]) {
   return true;
 }
 
-function extractSessionAuth(path: string[], session?: null | SavedSession) {
+export function extractSessionAuth(
+  path: string[],
+  session?: null | SavedSession
+) {
   let auth: null | [string, string] = null;
   if (session && pathStartsWith(path, session.authPath)) {
     const { sessionToken, sessionId, userId } = session;
