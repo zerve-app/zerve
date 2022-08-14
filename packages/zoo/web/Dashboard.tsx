@@ -12,6 +12,7 @@ import {
   NavBarSpacer,
   NavBarZLogo,
   PageContainer,
+  Spinner,
   useWindowDimensions,
 } from "@zerve/zen";
 import { AuthHeader } from "../components/AuthHeader";
@@ -85,10 +86,50 @@ export function NavSidebar({
         width: 300,
         borderRightWidth: 1,
         borderColor: "#ccc",
+        paddingTop: 80,
       }}
     >
       <View style={{ flex: 1 }}>{children}</View>
       {footer}
+    </View>
+  );
+}
+
+export function NavLinkContent({
+  title,
+  icon,
+  inset,
+  isActive,
+}: {
+  title: string;
+  icon?: ComponentProps<typeof FontAwesome>["name"] | null;
+  inset?: boolean;
+  isActive?: boolean;
+}) {
+  return (
+    <View
+      style={{
+        padding: 10,
+        paddingHorizontal: 12,
+        flexDirection: "row",
+        backgroundColor: isActive ? "#FFC8FC" : "transparent",
+        ...(inset ? { paddingLeft: 36 } : {}),
+      }}
+    >
+      {icon && (
+        <FontAwesome name={icon} color="#464646" style={{ marginTop: 2 }} />
+      )}
+      <Text
+        style={{
+          color: "#464646",
+          fontWeight: "bold",
+          fontSize: 14,
+          marginLeft: 12,
+          textDecorationLine: "none",
+        }}
+      >
+        {title}
+      </Text>
     </View>
   );
 }
@@ -113,30 +154,12 @@ export function NavLink<FeatureState>({
     fragmentContext.fragmentString === fragmentContext.stringifyFragment(to);
   return (
     <FragmentLink<FeatureState> to={to} Context={Context}>
-      <View
-        style={{
-          padding: 10,
-          paddingHorizontal: 12,
-          flexDirection: "row",
-          backgroundColor: isActive ? "#FFC8FC" : "transparent",
-          ...(inset ? { paddingLeft: 36 } : {}),
-        }}
-      >
-        {icon && (
-          <FontAwesome name={icon} color="#464646" style={{ marginTop: 2 }} />
-        )}
-        <Text
-          style={{
-            color: "#464646",
-            fontWeight: "bold",
-            fontSize: 14,
-            marginLeft: 12,
-            textDecorationLine: "none",
-          }}
-        >
-          {title}
-        </Text>
-      </View>
+      <NavLinkContent
+        title={title}
+        icon={icon}
+        isActive={isActive}
+        inset={inset}
+      />
     </FragmentLink>
   );
 }
@@ -165,14 +188,19 @@ export function NavLinkSection<FeatureState>({
 export function FeaturePane({
   title,
   children,
+  spinner,
 }: {
   title: string;
   children: ReactNode;
+  spinner?: boolean;
 }) {
   return (
     <View style={{ borderRightWidth: 1, borderColor: "#00000033", width: 300 }}>
       <View style={{ minHeight: 80, padding: 16 }}>
         <Text style={{ fontSize: 28, color: "#464646" }}>{title}</Text>
+        {spinner && (
+          <Spinner style={{ position: "absolute", right: 10, bottom: 10 }} />
+        )}
       </View>
       <View style={{ backgroundColor: "#fafafa", flex: 1 }}>{children}</View>
     </View>

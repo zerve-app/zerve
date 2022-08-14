@@ -1,102 +1,18 @@
 import { useConnection } from "@zerve/client/Connection";
-import { Title, VStack } from "@zerve/zen";
-import { ComponentProps, createContext, memo } from "react";
+import { VStack } from "@zerve/zen";
 import { LogoutButton } from "../components/Auth";
-import { DashboardPage, FeaturePane, NavLink } from "./Dashboard";
-import { FragmentContext } from "./Fragment";
-
-export type UserNavigationState =
-  | "stores"
-  | "organizations"
-  | {
-      key: "settings";
-      child?: "profile" | "auth";
-    };
-
-function UserFeatureLink(
-  props: Omit<ComponentProps<typeof NavLink<UserNavigationState>>, "Context">
-) {
-  return (
-    <NavLink<UserNavigationState> Context={UserDashboardContext} {...props} />
-  );
-}
-function UserStoresFeature({
-  entityId,
-  title,
-}: {
-  entityId: string;
-  title: string;
-}) {
-  return (
-    <FeaturePane title={title}>
-      <Title title={entityId} />
-    </FeaturePane>
-  );
-}
-
-function UserOrganizationsFeature({
-  entityId,
-  title,
-}: {
-  entityId: string;
-  title: string;
-}) {
-  return (
-    <FeaturePane title={title}>
-      <Title title={entityId} />
-    </FeaturePane>
-  );
-}
-
-function UserSettingsFeatureUnpure({
-  entityId,
-  title,
-}: {
-  entityId: string;
-  title: string;
-}) {
-  return (
-    <FeaturePane title={title}>
-      <UserFeatureLink
-        title="Profile"
-        to={{ key: "settings", child: "profile" }}
-      />
-      <UserFeatureLink title="Auth" to={{ key: "settings", child: "auth" }} />
-    </FeaturePane>
-  );
-}
-const UserSettingsFeature = memo(UserSettingsFeatureUnpure);
-
-function UserProfileSettingsFeature({
-  entityId,
-  title,
-}: {
-  entityId: string;
-  title: string;
-}) {
-  return (
-    <FeaturePane title={title}>
-      <Title title={entityId} />
-    </FeaturePane>
-  );
-}
-
-function UserAuthSettingsFeature({
-  entityId,
-  title,
-}: {
-  entityId: string;
-  title: string;
-}) {
-  return (
-    <FeaturePane title={title}>
-      <Title title={entityId} />
-    </FeaturePane>
-  );
-}
-
-const UserDashboardContext =
-  createContext<null | FragmentContext<UserNavigationState>>(null);
+import {
+  UserDashboardContext,
+  UserNavigationState,
+} from "../context/UserDashboardContext";
+import { UserOrganizationsCreateFeature } from "../features/UserOrganizationsCreateFeature";
+import { UserOrganizationsFeature } from "../features/UserOrganizationsFeature";
+import { UserSettingsAuthFeature } from "../features/UserSettingsAuthFeature";
+import { UserSettingsFeature } from "../features/UserSettingsFeature";
+import { UserSettingsProfileFeature } from "../features/UserSettingsProfileFeature";
+import { UserStoresCreateFeature } from "../features/UserStoresCreateFeature";
+import { UserStoresFeature } from "../features/UserStoresFeature";
+import { DashboardPage, FeaturePane } from "./Dashboard";
 
 export function UserDashboard({ entityId }: { entityId: string }) {
   const conn = useConnection();
@@ -104,15 +20,25 @@ export function UserDashboard({ entityId }: { entityId: string }) {
   return (
     <DashboardPage<UserNavigationState>
       Context={UserDashboardContext}
-      navigation={["stores", "organizations", { key: "settings" }]}
+      navigation={[
+        { key: "stores" },
+        { key: "organizations" },
+        { key: "settings" },
+      ]}
       navigationFooter={
         <VStack padded>
           {session && <LogoutButton connection={conn} session={session} />}
         </VStack>
       }
       getFeatureTitle={(feature) => {
-        if (feature === "stores") return "Stores";
-        if (feature === "organizations") return "Organizations";
+        if (feature?.key === "organizations") {
+          if (feature?.child === "create") return "Create Organization";
+          return "Organizations";
+        }
+        if (feature?.key === "stores") {
+          if (feature?.child === "create") return "Create Store";
+          return "Your Stores";
+        }
         if (feature?.key === "settings") {
           const settingsFeature = feature?.child;
           if (settingsFeature === "profile") return "User Profile";
@@ -122,8 +48,14 @@ export function UserDashboard({ entityId }: { entityId: string }) {
         return "?";
       }}
       getFeatureIcon={(feature) => {
-        if (feature === "stores") return "folder-open";
-        if (feature === "organizations") return "building";
+        if (feature?.key === "organizations") {
+          if (feature?.child === "create") return "plus-circle";
+          return "building";
+        }
+        if (feature?.key === "stores") {
+          if (feature?.child === "create") return "plus-circle";
+          return "folder-open";
+        }
         if (feature?.key === "settings") {
           const settingsFeature = feature?.child;
           if (settingsFeature === "profile") return "user";
@@ -133,68 +65,65 @@ export function UserDashboard({ entityId }: { entityId: string }) {
         return null;
       }}
       renderFeature={({ feature, key, ...props }) => {
-        if (feature === "organizations")
-          return (
-            <UserOrganizationsFeature
-              key={key}
-              entityId={entityId}
-              {...props}
-            />
-          );
-        if (feature === "stores")
-          return <UserStoresFeature key={key} entityId={entityId} {...props} />;
+        const userFeatureProps = {
+          key,
+          entityId,
+          ...props,
+        };
+        if (feature?.key === "organizations") {
+          if (feature?.child === "create")
+            return <UserOrganizationsCreateFeature {...userFeatureProps} />;
+          return <UserOrganizationsFeature {...userFeatureProps} />;
+        }
+        if (feature?.key === "stores") {
+          if (feature?.child === "create")
+            return <UserStoresCreateFeature {...userFeatureProps} />;
+          return <UserStoresFeature {...userFeatureProps} />;
+        }
         if (feature?.key === "settings") {
           const settingsFeature = feature?.child;
           if (settingsFeature === "profile")
-            return (
-              <UserProfileSettingsFeature
-                key={key}
-                entityId={entityId}
-                {...props}
-              />
-            );
+            return <UserSettingsProfileFeature {...userFeatureProps} />;
           if (settingsFeature === "auth")
-            return (
-              <UserAuthSettingsFeature
-                key={key}
-                entityId={entityId}
-                {...props}
-              />
-            );
-          return (
-            <UserSettingsFeature key={key} entityId={entityId} {...props} />
-          );
+            return <UserSettingsAuthFeature {...userFeatureProps} />;
+          return <UserSettingsFeature {...userFeatureProps} />;
         }
         return null;
       }}
       parseFeatureFragment={(fragment: string) => {
-        if (fragment === "stores") return "stores";
-        if (fragment === "organizations") return "organizations";
+        if (fragment === "stores") return { key: "stores" };
+        if (fragment === "stores_create")
+          return { key: "stores", child: "create" };
+        if (fragment === "organizations") return { key: "organizations" };
+        if (fragment === "organizations_create")
+          return { key: "organizations", child: "create" };
         if (fragment === "settings") return { key: "settings" };
-        if (fragment === "settings/profile")
+        if (fragment === "settings_profile")
           return { key: "settings", child: "profile" };
-        if (fragment === "settings/auth")
+        if (fragment === "settings_auth")
           return { key: "settings", child: "auth" };
         return null;
       }}
       stringifyFeatureFragment={(feature: UserNavigationState) => {
-        if (feature === "stores") return "stores";
-        if (feature === "organizations") return "organizations";
+        const child = feature?.child;
+        if (feature?.key === "organizations") {
+          if (child === "create") return "organizations_create";
+          return "organizations";
+        }
+        if (feature?.key === "stores") {
+          if (child === "create") return "stores_create";
+          return "stores";
+        }
         if (feature?.key === "settings") {
-          const settingsFeature = feature?.child;
-          if (settingsFeature === "profile") return "settings/profile";
-          if (settingsFeature === "auth") return "settings/auth";
+          if (child === "profile") return "settings_profile";
+          if (child === "auth") return "settings_auth";
           return "settings";
         }
         return "";
       }}
       getParentFeatures={(feature: UserNavigationState) => {
-        if (
-          typeof feature === "object" &&
-          feature.key === "settings" &&
-          feature.child
-        ) {
-          return [{ key: "settings" }];
+        if (typeof feature === "object" && !!feature?.child) {
+          return [{ key: feature.key }];
         }
         return [];
       }}

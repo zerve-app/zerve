@@ -33,7 +33,7 @@ export function extractSessionAuth(
 export async function getZ(connection: Connection, path: string[]) {
   const auth = extractSessionAuth(path, connection?.session);
   const resp = await serverGet(
-    connection,
+    connection.url,
     `.z/${path.join("/")}`,
     undefined,
     auth
@@ -59,7 +59,7 @@ export async function postZAction(
   }
   const auth = extractSessionAuth(path, connection?.session);
   const serverPath = `.z/${path.join("/")}`;
-  return await serverPost(connection, serverPath, finalBody, auth);
+  return await serverPost(connection.url, serverPath, finalBody, auth);
 }
 
 export async function getTypedZ(connection: Connection, path: string[]) {

@@ -95,12 +95,12 @@ export async function serverGet<Response>(
 }
 
 export async function serverPost<Request, Response>(
-  conn: Connection,
+  origin: string,
   path: string,
   body: Request,
   auth?: [string, string] | null
 ): Promise<Response> {
-  const res = await fetch(`${conn.url}/${path}`, {
+  const res = await fetch(`${origin}/${path}`, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",

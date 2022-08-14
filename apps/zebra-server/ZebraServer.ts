@@ -229,7 +229,6 @@ export async function startApp() {
             `You do not have access to the "${orgId}" org.`,
             { orgId, userId }
           );
-        console.log(userId, orgEntity, orgId);
         return createZContainer({
           orgId: createZStatic(orgId),
           createStore: getStoreCreatorAction(orgId),
@@ -254,7 +253,7 @@ export async function startApp() {
         const userEntity = await getEntity(userId);
         const { affiliatedOrgs } = userEntity;
         return {
-          children: affiliatedOrgs,
+          children: affiliatedOrgs || [],
           more: false,
           cursor: "",
         };

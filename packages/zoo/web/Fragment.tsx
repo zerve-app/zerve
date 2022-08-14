@@ -1,11 +1,4 @@
-import React, {
-  Context,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import React, { Context, ReactNode, useContext, useMemo } from "react";
 import { useRouter } from "next/router";
 
 export type FragmentContext<FragmentState> = {
