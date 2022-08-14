@@ -1,39 +1,42 @@
 import { useConnection } from "@zerve/client/Connection";
-import { Button, HStack, Link, useModal } from "@zerve/zen";
+import { Button, HStack, Link, ThemedText, useModal } from "@zerve/zen";
 import { Text, View } from "react-native";
 import { LoginForm } from "./Auth";
 
 function UserProfileIcon() {
-  const conn = useConnection();
-  const userId = conn?.session?.userId;
-  if (!userId) return null;
-  const url = `/${userId}`;
   return (
-    <Link href={url}>
-      <View
-        style={{
-          height: 36,
-          width: 36,
-          backgroundColor: "#222",
-          borderRadius: 18,
-          margin: 7,
-        }}
-      />
-    </Link>
+    <View
+      style={{
+        height: 36,
+        width: 36,
+        backgroundColor: "#222",
+        borderRadius: 18,
+        margin: 12,
+      }}
+    />
   );
 }
 
 export function AuthHeader() {
-  const conn = useConnection();
   const openLogin = useModal<void>(({ onClose }) => (
     <LoginForm path={["Auth"]} authMeta={{}} onComplete={onClose} />
   ));
+  const conn = useConnection();
+  const userId = conn?.session?.userLabel;
+  if (!userId) return null;
+  const url = `/${userId}`;
   if (conn?.session) {
     return (
-      <>
-        <Text>{conn.session.userLabel}</Text>
-        <UserProfileIcon />
-      </>
+      <Link href={url}>
+        <View style={{ flexDirection: "row" }}>
+          <ThemedText
+            style={{ alignSelf: "center", fontWeight: "bold", fontSize: 16 }}
+          >
+            {conn.session.userLabel}
+          </ThemedText>
+          <UserProfileIcon />
+        </View>
+      </Link>
     );
   }
   return (

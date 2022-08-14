@@ -8,15 +8,16 @@ export function Link({
   href: string;
   children: ReactNode;
 }) {
-  const { push } = useRouter();
+  // const { push } = useRouter();
 
   return (
     <a
       href={href}
       onClick={(e) => {
         e.preventDefault();
-        push(href);
+        // push(href);
       }}
+      style={{ textDecoration: "none" }}
     >
       {children}
     </a>
