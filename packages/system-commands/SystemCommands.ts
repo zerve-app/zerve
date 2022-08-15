@@ -76,7 +76,13 @@ export function createSystemCommands() {
           action.args || [],
           {
             cwd: action.cwd,
-            env: action.env || {},
+            env: {
+              HOME: process.env.HOME,
+              USER: process.env.USER,
+              SHELL: process.env.SHELL,
+              PATH: process.env.PATH,
+              ...(action.env || {}),
+            },
           },
           (error, out, err) => {
             if (error) reject(error);
