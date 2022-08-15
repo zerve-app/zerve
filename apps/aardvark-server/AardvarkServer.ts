@@ -169,7 +169,7 @@ export async function startApp() {
 
             try {
               // clean up the previous build
-              await cmd("rm", ["rf", "/root/zebra-build"]);
+              await cmd("rm", ["-rf", "/root/zebra-build"]);
               // fetch updates to the bare repo
               await cmd("git", ["fetch"], "/root/zerve.git");
 
@@ -229,20 +229,26 @@ export async function startApp() {
               // clean up
               await cmd("rm", ["-rf", buildDir]);
             } catch (e) {
+              console.error("-----");
               console.error(
                 `Build failed. Writing logs to /root/zebra-build-details/${buildId}.json`
               );
+              console.error(e);
+              console.error("-----");
               await SystemFiles.z.WriteJSON.call({
                 path: `/root/zebra-build-details/${buildId}.json`,
-                value: results,
+                value: { error: e.toString(), results },
               });
+              throw e;
             }
             console.log(
               `Build success, saved to /root/zebra-builds/${buildId}.tar.gz - Writing logs to /root/zebra-build-details/${buildId}.json`
             );
             await SystemFiles.z.WriteJSON.call({
               path: `/root/zebra-build-details/${buildId}.json`,
-              value: results,
+              value: {
+                results,
+              },
             });
 
             return results;
