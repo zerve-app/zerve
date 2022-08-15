@@ -233,7 +233,7 @@ export async function startApp() {
               await cmd(
                 "tar",
                 [
-                  "-zcvf", // this is so confusing
+                  "-czf", // [c]create [z]compress [f]fileoutput
                   `/root/zebra-builds/${buildId}.tar.gz`,
                   `${buildId}/`, // dont remove this trailing slash!
                 ],
