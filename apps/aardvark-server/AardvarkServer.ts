@@ -4,29 +4,19 @@ import { startZedServer } from "@zerve/node";
 import {
   createZAction,
   createZContainer,
-  createZGettable,
-  createZGroup,
   createZStatic,
+  FromSchema,
   NullSchema,
   NumberSchema,
+  StringSchema,
 } from "@zerve/core";
-import {
-  createAuth,
-  createEmailAuthStrategy,
-  createSMSAuthStrategy,
-  createTestAuthStrategy,
-} from "@zerve/auth";
+import { createAuth, createEmailAuthStrategy } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore, GeneralStoreModule } from "@zerve/store";
 import { createSystemFiles } from "@zerve/system-files";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
 import { createSystemCommands } from "@zerve/system-commands";
-import {
-  zWorkflow,
-  zWorkflowEnvironment,
-  zWorkflowCallStep,
-} from "@zerve/core/Workflow";
 const port = process.env.PORT ? Number(process.env.PORT) : 3988;
 
 const homeDir = process.env.HOME;
@@ -41,13 +31,17 @@ const dataDir =
 const secretsFile =
   process.env.ZERVE_SECRETS_JSON || join(process.cwd(), "../../secrets.json");
 
-const BuildPayloadSchema = {
+const CmdResultSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
-    commitId: { type: "string" },
+    command: StringSchema,
+    args: { type: "array", items: StringSchema },
+    durationMs: NumberSchema,
+    out: StringSchema,
+    err: StringSchema,
+    cwd: StringSchema,
   },
-  required: ["commitId"],
 } as const;
 
 export async function startApp() {
@@ -113,29 +107,147 @@ export async function startApp() {
     },
     getUserZeds: async (user, { userId }) => {
       return {
-        // Workflows: zWorkflowEnvironment(
-        //   {
-        //     SystemCommands,
-        //     SystemFiles,
-        //   },
-        //   {
-        //     Uptime: zWorkflow({
-        //       startPayloadSchema: NullSchema,
-        //       steps: [
-        //         zWorkflowCallStep(
-        //           "SystemCommands/command",
-        //           {
-        //             command: "uptime",
-        //             args: [],
-        //           },
-        //           { as: "uptimeResult" }
-        //         ),
-        //       ],
-        //     }),
-        //   }
-        // ),
         ZerveStore: Store,
         Data,
+        SystemCommands,
+        SystemFiles,
+        BuildZebra: createZAction(
+          NullSchema,
+          { type: "array", items: CmdResultSchema } as const,
+          async () => {
+            const results: Array<FromSchema<typeof CmdResultSchema>> = [];
+            async function cmd(command: string, args: string[], cwd?: string) {
+              const startTime = Date.now();
+              const { out, err } = await SystemCommands.z.command.call({
+                command,
+                args,
+                cwd,
+              });
+              const endTime = Date.now();
+              const cmdResult: FromSchema<typeof CmdResultSchema> = {
+                command,
+                args,
+                out,
+                err,
+                cwd,
+                durationMs: endTime - startTime,
+              } as const;
+              results.push(cmdResult);
+              return cmdResult;
+            }
+
+            const { out: whoami } = await cmd("whoami", []);
+            const runningAsUser = whoami?.replace("\n", "");
+            if (runningAsUser !== "root") {
+              throw new Error(
+                "You are expected to run this as root on a dedicated debian machine. Sorry this is junk. glhf!"
+              );
+            }
+
+            // verify assumption about build machine
+            try {
+              await cmd("lsb_release", ["a"], "/");
+            } catch (e) {
+              if (e.message.match("ENOENT")) {
+                // dont attempt build on a mac, because the build includes native stuff that needs to work on the production debian machine
+                throw new Error(
+                  "Should not run this build on non-debian machine"
+                );
+              }
+              throw e;
+            }
+
+            // now we assume we are on a debian machine with root access
+            await cmd("mkdir", ["-p", "/root/zebra-build-details"]);
+
+            const buildTimeString = new Date()
+              .toISOString()
+              .slice(0, 19)
+              .replace("T", "-")
+              .replace(/:/g, "-");
+            let buildId = buildTimeString;
+
+            try {
+              // clean up the previous build
+              await cmd("rm", ["rf", "/root/zebra-build"]);
+              // fetch updates to the bare repo
+              await cmd("git", ["fetch"], "/root/zerve.git");
+
+              // gather a bit of info that will be included in the result log
+              const { out: commitHash } = await cmd(
+                "git",
+                ["rev-parse", "main"],
+                "/root/zerve.git"
+              );
+              if (!commitHash)
+                throw new Error("Cannot identify the current git commit hash");
+              await cmd("node", ["--version"], "/");
+              await cmd("yarn", ["--version"], "/");
+
+              const commitHashShort = commitHash.slice(0, 6);
+              buildId = `${buildTimeString}-${commitHashShort}`;
+              await cmd("echo", [`$BUILD_ID: "${buildId}"`]);
+
+              const buildDir = `/root/zebra-build-${buildId}`;
+
+              // clone the build repo
+              await cmd("git", [
+                "clone",
+                "--depth=1",
+                "/root/zerve.git",
+                buildDir,
+              ]);
+              // install dependencies
+              await cmd("yarn", ["--frozen-lockfile"], buildDir);
+              // clean up heavy stuff from
+              await cmd(
+                "rm",
+                ["-rf", "./.git", "yarn-package-cache"],
+                buildDir
+              );
+              // set up new git repo (I forget why...? maybe expo or next expect this)
+              await cmd("git", ["init"], buildDir);
+              await cmd("git", ["branch", "-m", "detached-main"], buildDir);
+              // run build commands
+              await cmd("yarn", ["workspace", "zebra-web", "build"], buildDir);
+              await cmd(
+                "yarn",
+                ["workspace", "zebra-server", "build"],
+                buildDir
+              );
+              // archive the build
+              await cmd("mkdir", ["-p", "/root/zebra-builds"]);
+              await cmd(
+                "tar",
+                [
+                  "-zcvf", // this is so confusing
+                  `/root/zebra-builds/${buildId}.tar.gz`,
+                  `zebra-build-${buildId}/`, // dont remove this trailing slash!
+                ],
+                "/root"
+              );
+              // clean up
+              await cmd("rm", ["-rf", buildDir]);
+            } catch (e) {
+              console.error(
+                `Build failed. Writing logs to /root/zebra-build-details/${buildId}.json`
+              );
+              await SystemFiles.z.WriteJSON.call({
+                path: `/root/zebra-build-details/${buildId}.json`,
+                value: results,
+              });
+            }
+            console.log(
+              `Build success, saved to /root/zebra-builds/${buildId}.tar.gz - Writing logs to /root/zebra-build-details/${buildId}.json`
+            );
+            await SystemFiles.z.WriteJSON.call({
+              path: `/root/zebra-build-details/${buildId}.json`,
+              value: results,
+            });
+
+            return results;
+          }
+        ),
         deployZebra: createZAction(NullSchema, NullSchema, async () => {
           console.log("Zebra deploy behavior?! You must be Eric");
           return null;
