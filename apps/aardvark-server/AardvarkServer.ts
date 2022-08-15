@@ -4,6 +4,8 @@ import { startZedServer } from "@zerve/node";
 import {
   createZAction,
   createZContainer,
+  createZGettable,
+  createZGettableGroup,
   createZStatic,
   FromSchema,
   NullSchema,
@@ -112,6 +114,50 @@ export async function startApp() {
         Data,
         SystemCommands,
         SystemFiles,
+        DiskUsage: createZGettable({} as const, async () => {
+          const { out: usage } = await cmd("du", ["-h", "/"]);
+
+          return { usage };
+        }),
+        Builds: createZGettableGroup(
+          (buildId: string) => {
+            return createZContainer({
+              BuildId: createZStatic(buildId),
+              DeployProduction: createZAction(
+                NullSchema,
+                NullSchema,
+                async () => {
+                  return null;
+                }
+              ),
+              Details: createZGettable({} as const, async () => {
+                const details = await SystemFiles.z.ReadJSON.call({
+                  path: `/root/zebra-build-details/${buildId}.json`,
+                });
+                return details;
+              }),
+              Destroy: createZAction(NullSchema, NullSchema, async () => {
+                await cmd("rm", [
+                  "-rf",
+                  `/root/zebra-builds/${buildId}.tar.gz`,
+                ]);
+                return null;
+              }),
+            });
+          },
+          async () => {
+            const tarballList = await SystemFiles.z.ReadDir.call({
+              path: "/root/zebra-builds",
+            });
+            return {
+              children: tarballList.map((tarballName: string) =>
+                tarballName.slice(0, -7)
+              ), // strip .tar.gz
+              cursor: null,
+              more: false,
+            };
+          }
+        ),
         BuildZebra: createZAction(
           NullSchema,
           { type: "array", items: CmdResultSchema } as const,
