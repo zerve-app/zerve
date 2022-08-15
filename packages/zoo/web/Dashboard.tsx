@@ -289,16 +289,33 @@ export function DashboardPage<Feature>({
               activeFeatures={activeFeatures}
             />
           ) : null}
-          {displayFeatures.map((displayFeature) =>
-            renderFeature({
-              feature: displayFeature,
-              isActive: displayFeature === feature,
-              fragmentContext,
-              key: fragmentContext.stringifyFragment(displayFeature),
-              title: getFeatureTitle(displayFeature),
-              icon: getFeatureIcon(displayFeature),
-            })
-          )}
+          <View
+            style={{
+              alignSelf: "stretch",
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                borderLeftWidth: 1,
+                borderColor: "#ccc",
+              }}
+            >
+              {displayFeatures.map((displayFeature) =>
+                renderFeature({
+                  feature: displayFeature,
+                  isActive: displayFeature === feature,
+                  fragmentContext,
+                  key: fragmentContext.stringifyFragment(displayFeature),
+                  title: getFeatureTitle(displayFeature),
+                  icon: getFeatureIcon(displayFeature),
+                })
+              )}
+            </View>
+          </View>
         </Context.Provider>
       </View>
     </PageContainer>
