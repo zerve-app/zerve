@@ -146,7 +146,7 @@ export async function startApp() {
 
             // verify assumption about build machine
             try {
-              await cmd("lsb_release", ["a"], "/");
+              await cmd("lsb_release", ["-a"], "/");
             } catch (e) {
               if (e.message.match("ENOENT")) {
                 // dont attempt build on a mac, because the build includes native stuff that needs to work on the production debian machine
