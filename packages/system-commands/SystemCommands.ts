@@ -1,4 +1,9 @@
-import { createZAction, createZContainer, createZGroup } from "@zerve/core";
+import {
+  createZAction,
+  createZContainer,
+  createZGroup,
+  StringSchema,
+} from "@zerve/core";
 import { execFile } from "child_process";
 
 export type SystemCommandsModule = ReturnType<typeof createSystemCommands>;
@@ -52,22 +57,30 @@ export function createSystemCommands() {
             type: "string",
           },
         },
+        cwd: StringSchema,
       },
       required: ["command", "args"],
       additionalProperties: false,
     } as const,
     {
       type: "object",
-      properties: { out: {}, err: {} },
+      properties: { out: StringSchema, err: StringSchema },
       required: ["out"],
       additionalProperties: false,
     } as const,
     async (action) => {
       return await new Promise((resolve, reject) => {
-        execFile(action.command, action.args || [], {}, (error, out, err) => {
-          if (error) reject(error);
-          else resolve({ out, err });
-        });
+        execFile(
+          action.command,
+          action.args || [],
+          {
+            cwd: action.cwd,
+          },
+          (error, out, err) => {
+            if (error) reject(error);
+            else resolve({ out, err });
+          }
+        );
       });
     }
   );
