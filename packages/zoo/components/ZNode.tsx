@@ -131,7 +131,7 @@ export function NewFileButton({ path }: { path: string[] }) {
           openNewFile();
         }}
         small
-        title="New File"
+        title="New Entry"
         left={({ color }) => (
           <FontAwesome name="plus-circle" color={color} size={24} />
         )}

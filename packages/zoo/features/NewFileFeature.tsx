@@ -23,7 +23,7 @@ export function NewFileFeature({ storePath }: { storePath: string[] }) {
   }, [name]);
   return (
     <>
-      <ScreenHeader title="New File" onBack={() => backToZ(storePath)} />
+      <ScreenHeader title="New Entry" onBack={() => backToZ(storePath)} />
       <Form onSubmit={handleSubmit}>
         <VStack padded>
           <Input

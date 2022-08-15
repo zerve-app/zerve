@@ -10,7 +10,7 @@ import { NewFileFeature } from "../features/NewFileFeature";
 import { StoreFileSchemaFeature } from "../features/StoreFileSchemaFeature";
 
 function getPathFeature(path: string[]): () => JSX.Element | null {
-  const filesPathIndex = path.indexOf("$files");
+  const filesPathIndex = path.indexOf("$entries");
   if (filesPathIndex !== -1) {
     const storePath = [...path].splice(0, filesPathIndex);
     const name = path[filesPathIndex + 1];

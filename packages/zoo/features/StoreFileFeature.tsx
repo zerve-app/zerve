@@ -52,7 +52,7 @@ export function FileFeature({
   const renameFile = useRenameFile(storePath);
   const renameFilePrompt = useTextInputFormModal<string>((prevName: string) => {
     return {
-      inputLabel: "New File Name",
+      inputLabel: "New Entry Name",
       defaultValue: prevName,
       onValue: (inputName: string) => {
         const formattedName = prepareStoreFileName(inputName);

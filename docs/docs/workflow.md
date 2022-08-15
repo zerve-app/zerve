@@ -19,9 +19,9 @@ You will need a host for your Store, and you can use the Zerve service directly 
 
 ## Add Initial Data and Schema
 
-You can use the Zerve app to create a new File within your store, and set the Schema for the file. The Schema can be any JSON-Schema. The app also allows you to add custom re-usable Schemas within your Store.
+You can use the Zerve app to create a new Entry within your store, and set the Schema for the entry. The Schema can be any JSON-Schema. The app also allows you to add custom re-usable Schemas within your Store.
 
-For this example, we can create an `AllowNewUsers` file in our store, with the schema of `{"type": "boolean"}`.
+For this example, we can create an `AllowNewUsers` entry in our store, with the schema of `{"type": "boolean"}`.
 
 ## Connect the Store to your Codebase
 

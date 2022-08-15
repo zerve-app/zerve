@@ -110,7 +110,7 @@ export function useStoreNavigation(storePath: string[]) {
   return useMemo(
     () => ({
       openFile: (fileName: string) => {
-        push(`${storePath.join("/")}/$files/${fileName}`);
+        push(`${storePath.join("/")}/$entries/${fileName}`);
       },
       openNewFile: () => {
         push(`${storePath.join("/")}/$new`);
@@ -123,7 +123,7 @@ export function useStoreNavigation(storePath: string[]) {
       },
       openHistory: () => {},
       replaceToFile: (fileName: string) => {
-        push(`${storePath.join("/")}/$files/${fileName}`);
+        push(`${storePath.join("/")}/$entries/${fileName}`);
       },
     }),
     []
@@ -141,13 +141,13 @@ export function useStoreFileNavigation(storePath: string[], fileName: string) {
     () => ({
       setFileName: (fileName: string) => {},
       openSchema: () => {
-        push(`${storePath.join("/")}/$files/${fileName}/$schema`);
+        push(`${storePath.join("/")}/$entries/${fileName}/$schema`);
       },
       leave: () => {
         push(`${storePath.join("/")}`);
       },
       backTo: () => {
-        push(`${storePath.join("/")}/$files/${fileName}`);
+        push(`${storePath.join("/")}/$entries/${fileName}`);
       },
     }),
     []
