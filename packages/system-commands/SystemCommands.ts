@@ -58,6 +58,7 @@ export function createSystemCommands() {
           },
         },
         cwd: StringSchema,
+        env: { type: "object", additionalProperties: StringSchema },
       },
       required: ["command", "args"],
       additionalProperties: false,
@@ -75,6 +76,7 @@ export function createSystemCommands() {
           action.args || [],
           {
             cwd: action.cwd,
+            env: action.env || {},
           },
           (error, out, err) => {
             if (error) reject(error);

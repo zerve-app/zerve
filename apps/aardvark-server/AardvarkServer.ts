@@ -41,6 +41,7 @@ const CmdResultSchema = {
     out: StringSchema,
     err: StringSchema,
     cwd: StringSchema,
+    env: { type: "object", additionalProperties: StringSchema },
   },
 } as const;
 
@@ -116,12 +117,18 @@ export async function startApp() {
           { type: "array", items: CmdResultSchema } as const,
           async () => {
             const results: Array<FromSchema<typeof CmdResultSchema>> = [];
-            async function cmd(command: string, args: string[], cwd?: string) {
+            async function cmd(
+              command: string,
+              args: string[],
+              cwd?: string,
+              env?: Record<string, string>
+            ) {
               const startTime = Date.now();
               const { out, err } = await SystemCommands.z.command.call({
                 command,
                 args,
                 cwd,
+                env,
               });
               const endTime = Date.now();
               const cmdResult: FromSchema<typeof CmdResultSchema> = {
@@ -130,6 +137,7 @@ export async function startApp() {
                 out,
                 err,
                 cwd,
+                env,
                 durationMs: endTime - startTime,
               } as const;
               results.push(cmdResult);
@@ -188,7 +196,10 @@ export async function startApp() {
               buildId = `${buildTimeString}-${commitHashShort}`;
               await cmd("echo", [`$BUILD_ID: "${buildId}"`]);
 
-              const buildDir = `/root/zebra-build-${buildId}`;
+              const buildParentDir = "/root/zebra-unfinished-builds";
+              await cmd("mkdir", ["-p", buildParentDir]);
+
+              const buildDir = `${buildParentDir}/${buildId}`;
 
               // clone the build repo
               await cmd("git", [
@@ -198,7 +209,9 @@ export async function startApp() {
                 buildDir,
               ]);
               // install dependencies
-              await cmd("yarn", ["--frozen-lockfile"], buildDir);
+              await cmd("yarn", ["--frozen-lockfile"], buildDir, {
+                NODE_ENV: "dev",
+              });
               // clean up heavy stuff from
               await cmd(
                 "rm",
@@ -222,9 +235,9 @@ export async function startApp() {
                 [
                   "-zcvf", // this is so confusing
                   `/root/zebra-builds/${buildId}.tar.gz`,
-                  `zebra-build-${buildId}/`, // dont remove this trailing slash!
+                  `${buildId}/`, // dont remove this trailing slash!
                 ],
-                "/root"
+                buildParentDir
               );
               // clean up
               await cmd("rm", ["-rf", buildDir]);
