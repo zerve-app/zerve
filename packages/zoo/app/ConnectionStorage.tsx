@@ -20,7 +20,7 @@ const NativeDefaultConnections: Connection[] = [
         {
           key: "dev-aardvark",
           name: "[TEST] Aardvark Dev",
-          url: "http://localhost:3888",
+          url: "http://localhost:3988",
         },
         {
           key: "dev-zebra",

@@ -1,4 +1,4 @@
-import { ThemedText } from "@zerve/zen";
+import { ThemedText, VStack } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { HomeStackScreenProps } from "../app/Links";
@@ -18,13 +18,15 @@ export default function HistoryEventScreen({
   return (
     <ScreenContainer scroll safe>
       <ScreenHeader title={event.title} />
-      <ThemedText>{format(new Date(event.time), "p P")}</ThemedText>
-      <JSONSchemaEditor
-        value={event.body}
-        schema={{}}
-        id="events"
-        schemaStore={EmptySchemaStore}
-      />
+      <VStack padded>
+        <ThemedText>{format(new Date(event.time), "p P")}</ThemedText>
+        <JSONSchemaEditor
+          value={event.body}
+          schema={{}}
+          id="events"
+          schemaStore={EmptySchemaStore}
+        />
+      </VStack>
     </ScreenContainer>
   );
 }
