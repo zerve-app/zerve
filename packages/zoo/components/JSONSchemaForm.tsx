@@ -5,6 +5,7 @@ import {
   Form,
   Paragraph,
   Spinner,
+  useAsyncHandler,
   VStack,
 } from "@zerve/zen";
 import { useEffect, useRef, useState } from "react";
@@ -15,25 +16,6 @@ import {
   SchemaStore,
 } from "@zerve/core";
 
-function useAsyncHandler<V, E>(
-  handler: (v: V) => Promise<void>
-): { error: null | E; isLoading: boolean; handle: (value: V) => void } {
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  function handle(value: V) {
-    setIsLoading(true);
-    setError(null);
-    handler(value)
-      .then(() => {})
-      .catch((e) => {
-        setError(e);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }
-  return { error, isLoading, handle };
-}
 export function JSONSchemaForm({
   id,
   value,
@@ -43,15 +25,17 @@ export function JSONSchemaForm({
   onCancel,
   onSubmit,
   schemaStore,
+  padded,
 }: {
   id: string;
-  value: any;
+  value?: any;
   schema: any;
   saveLabel?: string;
   onCancel?: () => void;
   onValue?: (value: any) => Promise<void>;
-  onSubmit?: (value: any) => Promise<void>;
+  onSubmit?: (value: any) => void | Promise<void>;
   schemaStore?: SchemaStore;
+  padded?: boolean;
 }) {
   const [valueState, setValueState] = useState(
     value === undefined ? getDefaultSchemaValue(schema) : value
@@ -75,7 +59,7 @@ export function JSONSchemaForm({
           await onSubmit?.(valueState);
         }}
       >
-        <VStack>
+        <VStack padded={padded}>
           {isLoading && <Spinner />}
           {error && <Paragraph danger>{error.message}</Paragraph>}
           <JSONSchemaEditor
@@ -98,7 +82,7 @@ export function JSONSchemaForm({
               }}
             />
           )}
-          {(valueState !== value || !!onCancel) && (
+          {!!onCancel && (
             <Button
               onPress={() => {
                 setValueState(value);

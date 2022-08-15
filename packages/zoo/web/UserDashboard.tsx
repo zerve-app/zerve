@@ -13,21 +13,32 @@ import { UserSettingsProfileFeature } from "../features/UserSettingsProfileFeatu
 import { UserStoresCreateFeature } from "../features/UserStoresCreateFeature";
 import { UserStoresFeature } from "../features/UserStoresFeature";
 import { DashboardPage, FeaturePane } from "./Dashboard";
+import { UserHeader } from "./DashboardHeader";
+import { useRouter } from "next/router";
 
 export function UserDashboard({ entityId }: { entityId: string }) {
   const conn = useConnection();
+  const { push } = useRouter();
   const session = conn?.session;
   return (
     <DashboardPage<UserNavigationState>
       Context={UserDashboardContext}
+      header={<UserHeader userId={entityId} />}
       navigation={[
         { key: "stores" },
         { key: "organizations" },
         { key: "settings" },
       ]}
+      defaultFeature={{ key: "stores" }}
       navigationFooter={
         <VStack padded>
-          {session && <LogoutButton connection={conn} session={session} />}
+          {session && (
+            <LogoutButton
+              connection={conn}
+              session={session}
+              onComplete={() => push("/")}
+            />
+          )}
         </VStack>
       }
       getFeatureTitle={(feature) => {

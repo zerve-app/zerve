@@ -17,7 +17,7 @@ export function Link({
         e.preventDefault();
         push(href);
       }}
-      style={{ textDecoration: "none" }}
+      style={{ textDecoration: "none", display: "flex" }}
     >
       {children}
     </a>

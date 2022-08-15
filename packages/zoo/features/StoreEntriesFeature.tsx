@@ -8,7 +8,7 @@ import {
 } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
 
-function NewSchemaButton() {
+function NewStoreButton() {
   const fragmentContext = useContext(StoreDashboardContext);
   if (!fragmentContext)
     throw new Error("Cannot render NavLink outside of a FragmentContext");
@@ -17,39 +17,41 @@ function NewSchemaButton() {
     <Button
       onPress={() => {
         fragmentContext.navigateFragment({
-          key: "schemas",
+          key: "entries",
+          path: [],
           child: "create",
         });
       }}
-      title="Create Schema"
+      title="Create Entry"
       left={<Icon name="plus-circle" />}
     />
   );
 }
 
-function StoreSchemas({ storePath, title }: StoreFeatureProps) {
+function StoreEntries({ storePath, title }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);
   const entries = useMemo(() => {
-    return data && Object.keys(data.node?.$schemas);
+    const allEntries = data ? Object.keys(data.node as string[]) : [];
+    return allEntries.filter((entry) => entry !== "$schemas");
   }, [data]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
-      {entries?.map((schemaName) => {
+      {entries.map((entryName) => {
         return (
           <StoreFeatureLink
-            key={schemaName}
+            title={entryName}
+            key={entryName}
             to={{
-              key: "schemas",
-              schema: schemaName,
+              key: "entries",
+              path: [entryName],
             }}
-            title={schemaName}
           />
         );
       })}
       <VStack padded>
-        <NewSchemaButton />
+        <NewStoreButton />
       </VStack>
     </FeaturePane>
   );
 }
-export const StoreSchemasFeature = memo(StoreSchemas);
+export const StoreEntriesFeature = memo(StoreEntries);

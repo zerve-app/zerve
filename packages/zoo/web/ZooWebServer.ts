@@ -7,6 +7,54 @@ export type WebPathRootServerProps = {
   config: SiteConfig;
 };
 
+export async function validateUserCanAccessOrg(
+  config: SiteConfig,
+  orgId: string
+) {
+  try {
+    const userRoleInOrg = await serverGet(
+      config.origin,
+      `.z/Auth/user/Orgs/${orgId}/role`,
+      undefined,
+      extractSessionAuth(["Auth"], config.session)
+    );
+    // console.log("Users role is", userRoleInOrg);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export async function verifyStoreExists(
+  config: SiteConfig,
+  entityId: string,
+  storeId: string,
+  entityIsOrg: boolean
+): Promise<boolean> {
+  if (!config.session)
+    throw new Error("No user session, cannot verifyStoreExists");
+  const userId = config.session.userId;
+  if (!entityIsOrg && userId !== entityId) {
+    throw new Error(
+      "Cannot verifyStoreExists because userId does not match requested entityId"
+    );
+  }
+  const storePath = entityIsOrg
+    ? `.z/Auth/user/Orgs/${entityId}/Stores/${storeId}`
+    : `.z/Auth/user/Stores/${storeId}`;
+  try {
+    const storeStuff = await serverGet(
+      config.origin,
+      storePath,
+      undefined,
+      extractSessionAuth(["Auth"], config.session)
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 async function validateSession(origin: string, session: SavedSession | null) {
   if (!session) return null;
   const userNode = await serverGet(

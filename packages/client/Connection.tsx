@@ -42,6 +42,12 @@ export function useConnection(): Connection | null {
   return useContext(ConnectionContext);
 }
 
+export function useRequiredConnection(): Connection {
+  const conn = useContext(ConnectionContext);
+  if (conn === null) throw new Error("Connection is required in this Context");
+  return conn;
+}
+
 function _authHeader(auth: [string, string]) {
   return {
     Authorization: `Basic ${Buffer.from(`${auth[0]}:${auth[1]}`).toString(

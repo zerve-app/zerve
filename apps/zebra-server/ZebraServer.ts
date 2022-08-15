@@ -129,7 +129,7 @@ export async function startApp() {
   ): Promise<GeneralStoreModule> {
     const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
     if (alreadyInMemoryStore) return alreadyInMemoryStore;
-    if (!(await doesUserStoreExist(entityId, storeId)))
+    if (!(await doesEntityStoreExist(entityId, storeId)))
       throw new NotFoundError(
         "NotFound",
         `The ${entityId}/${storeId} store does not exist`,
@@ -180,7 +180,7 @@ export async function startApp() {
 
   function getStoreCreatorAction(entityId: string) {
     return createZAction(StringSchema, NullSchema, async (storeId: string) => {
-      if (await doesUserStoreExist(entityId, storeId))
+      if (await doesEntityStoreExist(entityId, storeId))
         throw new RequestError(
           "AlreadyExists",
           `The "${storeId}" store already exists.`,
@@ -222,7 +222,7 @@ export async function startApp() {
     const Orgs = createZGettableGroup(
       async (orgId: string) => {
         const orgEntity = await getEntity(orgId);
-        const isUserOwner = orgEntity.ownerUserId === userId;
+        const isUserOwner = !!orgEntity && orgEntity.ownerUserId === userId;
         if (!isUserOwner)
           throw new ForbiddenError(
             "NotInOrg",
@@ -231,7 +231,7 @@ export async function startApp() {
           );
         return createZContainer({
           orgId: createZStatic(orgId),
-          createStore: getStoreCreatorAction(orgId),
+          CreateStore: getStoreCreatorAction(orgId),
           Stores: getStoreGroup(orgId),
           Members: createZGettableGroup(
             async (memberId: string) => {
@@ -291,9 +291,9 @@ export async function startApp() {
       Stores,
     };
   }
-  async function doesUserStoreExist(userId: string, storeId: string) {
-    const newStorePath = getEntityStoreDir(userId, storeId);
-    return await pathExists(newStorePath);
+  async function doesEntityStoreExist(entityId: string, storeId: string) {
+    const storePath = getEntityStoreDir(entityId, storeId);
+    return await pathExists(storePath);
   }
 
   const zRoot = createZContainer({

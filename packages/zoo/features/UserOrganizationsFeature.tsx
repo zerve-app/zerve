@@ -32,12 +32,11 @@ function UserOrganizations({ entityId, title }: UserFeatureProps) {
     "user",
     "Orgs",
   ]);
-  console.log(data);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
-      {data?.children.map((name) => (
-        <Link key={name} href={`/${entityId}/${name}`}>
-          <NavLinkContent title={name} icon="building" />
+      {data?.children.map((orgId) => (
+        <Link key={orgId} href={`/${orgId}`}>
+          <NavLinkContent title={orgId} icon="building" />
         </Link>
       ))}
       <HStack>

@@ -4,23 +4,35 @@ import { EmptySchemaStore } from "@zerve/core";
 import { Title, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
-import { UserFeatureProps } from "../context/UserDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
+import { OrgFeatureProps } from "../context/OrgDashboardContext";
 
 const StoreNameSchema = {
   type: "string",
   title: "Store Name",
 } as const;
 
-function UserStoresCreate({ entityId, title }: UserFeatureProps) {
+function OrgStoresCreate({ entityId, title }: OrgFeatureProps) {
   const conn = useRequiredConnection();
   const queryClient = useQueryClient();
   const { push } = useRouter();
   const { handle, isLoading } = useAsyncHandler(async (value) => {
-    await postZAction(conn, ["Auth", "user", "CreateStore"], value);
-    queryClient.invalidateQueries([conn.key, "z", "Auth", "user", "Stores"]);
+    await postZAction(
+      conn,
+      ["Auth", "user", "Orgs", entityId, "CreateStore"],
+      value
+    );
+    queryClient.invalidateQueries([
+      conn.key,
+      "z",
+      "Auth",
+      "user",
+      "Orgs",
+      entityId,
+      "Stores",
+    ]);
     push(`/${entityId}/${value}`);
   });
   return (
@@ -37,4 +49,4 @@ function UserStoresCreate({ entityId, title }: UserFeatureProps) {
   );
 }
 
-export const UserStoresCreateFeature = memo(UserStoresCreate);
+export const OrgStoresCreateFeature = memo(OrgStoresCreate);

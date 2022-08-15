@@ -1,4 +1,10 @@
-import React, { Context, ReactNode, useContext, useMemo } from "react";
+import React, {
+  Context,
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+} from "react";
 import { useRouter } from "next/router";
 
 export type FragmentContext<FragmentState> = {
@@ -33,6 +39,22 @@ export function FragmentLink<FragmentState>({
     >
       {children}
     </a>
+  );
+}
+
+export function useFragmentNavigate<FragmentState>(
+  Context: Context<FragmentContext<FragmentState> | null>
+) {
+  const fragmentContext = useContext(Context);
+  if (!fragmentContext)
+    throw new Error(
+      "Cannot useFragmentNavigate outside the valid FragmentContext"
+    );
+  return useCallback(
+    (feature: FragmentState) => {
+      fragmentContext.navigateFragment(feature);
+    },
+    [fragmentContext.navigateFragment]
   );
 }
 

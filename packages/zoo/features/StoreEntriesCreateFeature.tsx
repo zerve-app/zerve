@@ -4,20 +4,23 @@ import { EmptySchemaStore } from "@zerve/core";
 import { Title, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
-import { UserFeatureProps } from "../context/UserDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
+import { useCreateFile } from "@zerve/client/Mutation";
+import { StoreFeatureProps } from "../context/StoreDashboardContext";
 
-const StoreNameSchema = {
+const EntryNameSchema = {
   type: "string",
-  title: "Store Name",
+  title: "Entry Name",
 } as const;
 
-function UserStoresCreate({ entityId, title }: UserFeatureProps) {
+function StoreEntriesCreate({ entityId, title }: StoreFeatureProps) {
   const conn = useRequiredConnection();
   const queryClient = useQueryClient();
   const { push } = useRouter();
+  // useCreateFile()
+
   const { handle, isLoading } = useAsyncHandler(async (value) => {
     await postZAction(conn, ["Auth", "user", "CreateStore"], value);
     queryClient.invalidateQueries([conn.key, "z", "Auth", "user", "Stores"]);
@@ -26,15 +29,15 @@ function UserStoresCreate({ entityId, title }: UserFeatureProps) {
   return (
     <FeaturePane title={title} spinner={isLoading}>
       <JSONSchemaForm
-        id="store-create-name"
+        id="entry-create-name"
         onSubmit={handle}
-        schema={StoreNameSchema}
+        schema={EntryNameSchema}
         schemaStore={EmptySchemaStore}
-        saveLabel="Create Store"
+        saveLabel="Create Entry"
         padded
       />
     </FeaturePane>
   );
 }
 
-export const UserStoresCreateFeature = memo(UserStoresCreate);
+export const StoreEntriesCreateFeature = memo(StoreEntriesCreate);

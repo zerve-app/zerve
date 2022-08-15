@@ -66,7 +66,7 @@ function LoginStrategyForm({
   strategy: typeof LoginStrategies[number]["key"];
   path: string[];
   onCancel?: () => void;
-  onComplete?: () => void;
+  onComplete?: (userId: string) => void;
 }) {
   const conn = useConnection();
   // uh assume the strategy is a message strategy idk.
@@ -119,7 +119,7 @@ function LoginStrategyForm({
               sessionToken: session.sessionToken,
             });
             showToast(`Logged in.`);
-            onComplete?.();
+            onComplete?.(session.userId);
           }}
         />
       </>
@@ -246,7 +246,7 @@ export function LoginForm({
 }: {
   path: string[];
   authMeta: any;
-  onComplete?: () => void;
+  onComplete?: (userId: string) => void;
 }) {
   const [selectedStrategy, setSelectedStrategy] = useState<
     null | typeof LoginStrategies[number]["key"]
@@ -282,9 +282,11 @@ export function LoginForm({
 export function LogoutButton({
   connection,
   session,
+  onComplete,
 }: {
   connection: Connection;
   session: SavedSession;
+  onComplete?: () => void;
 }) {
   const [readyForForceLogout, setReadyForForceLogout] = useState(false);
   return (
@@ -294,6 +296,7 @@ export function LogoutButton({
         onPress={async () => {
           try {
             await logout(connection, session);
+            onComplete?.();
           } catch (e) {
             setReadyForForceLogout(true);
             throw e;
@@ -305,6 +308,7 @@ export function LogoutButton({
         <AsyncButton
           onPress={async () => {
             await forceLocalLogout(connection);
+            onComplete?.();
           }}
           title="Force Log Out (delete session)"
         />

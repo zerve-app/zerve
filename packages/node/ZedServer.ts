@@ -572,7 +572,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     });
     httpServer.on("request", app);
     httpServer.listen(port, () => {
-      console.log(`Server listening at http://localhost:${port}`);
+      console.log(`Server  at http://localhost:${port}`);
       resolve();
     });
   });

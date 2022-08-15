@@ -2,6 +2,7 @@ import { useConnection } from "@zerve/client/Connection";
 import { Button, HStack, Link, ThemedText, useModal } from "@zerve/zen";
 import { Text, View } from "react-native";
 import { LoginForm } from "./Auth";
+import { useRouter } from "next/router";
 
 function UserProfileIcon() {
   return (
@@ -18,21 +19,29 @@ function UserProfileIcon() {
 }
 
 export function AuthHeader() {
+  const { push } = useRouter();
   const openLogin = useModal<void>(({ onClose }) => (
-    <LoginForm path={["Auth"]} authMeta={{}} onComplete={onClose} />
+    <LoginForm
+      path={["Auth"]}
+      authMeta={{}}
+      onComplete={(userId) => {
+        onClose();
+        push(`/${userId}`);
+      }}
+    />
   ));
   const conn = useConnection();
-  const userId = conn?.session?.userLabel;
-  if (!userId) return null;
-  const url = `/${userId}`;
-  if (conn?.session) {
+  const session = conn?.session;
+  if (session) {
+    const { userLabel, userId } = session;
+    const url = `/${userId}`;
     return (
       <Link href={url}>
         <View style={{ flexDirection: "row" }}>
           <ThemedText
             style={{ alignSelf: "center", fontWeight: "bold", fontSize: 16 }}
           >
-            {conn.session.userLabel}
+            {userLabel}
           </ThemedText>
           <UserProfileIcon />
         </View>

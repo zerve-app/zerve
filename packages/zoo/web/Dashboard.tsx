@@ -21,56 +21,7 @@ import {
   FragmentLink,
   useFragmentNavigationController,
 } from "./Fragment";
-
-export function ProjectHeader({ name }: { name: string }) {
-  return (
-    <View
-      style={{
-        backgroundColor: "#ad47b1",
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 24,
-      }}
-    >
-      <FontAwesome name="briefcase" color={"white"} size={18} />
-      <Text
-        style={{
-          color: "white",
-          marginLeft: 12,
-          fontWeight: "bold",
-          fontSize: 16,
-        }}
-      >
-        {name}
-      </Text>
-    </View>
-  );
-}
-
-export function OrgHeader({ name }: { name: string }) {
-  return (
-    <View
-      style={{
-        backgroundColor: "#ad47b1",
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 24,
-      }}
-    >
-      <FontAwesome name="building" color={"white"} size={18} />
-      <Text
-        style={{
-          color: "white",
-          marginLeft: 12,
-          fontWeight: "bold",
-          fontSize: 16,
-        }}
-      >
-        {name}
-      </Text>
-    </View>
-  );
-}
+import { NavigationBarWidth, PaneWidth } from "./DashboardConstants";
 
 export function NavSidebar({
   children,
@@ -83,7 +34,7 @@ export function NavSidebar({
     <View
       style={{
         backgroundColor: "#f9d9fb",
-        width: 300,
+        width: NavigationBarWidth,
         borderRightWidth: 1,
         borderColor: "#ccc",
         paddingTop: 80,
@@ -140,17 +91,20 @@ export function NavLink<FeatureState>({
   to,
   Context,
   inset,
+  displayActive,
 }: {
   title: string;
   icon?: ComponentProps<typeof FontAwesome>["name"] | null;
   to: FeatureState;
   Context: Context<null | FragmentContext<FeatureState>>;
   inset?: boolean;
+  displayActive?: boolean;
 }) {
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
     throw new Error("Cannot render NavLink outside of a FragmentContext");
   const isActive =
+    displayActive ||
     fragmentContext.fragmentString === fragmentContext.stringifyFragment(to);
   return (
     <FragmentLink<FeatureState> to={to} Context={Context}>
@@ -164,27 +118,6 @@ export function NavLink<FeatureState>({
   );
 }
 
-export function NavLinkSection<FeatureState>({
-  title,
-  children,
-  icon,
-  to,
-  Context,
-}: {
-  title: string;
-  children?: ReactNode;
-  icon?: ComponentProps<typeof FontAwesome>["name"] | null;
-  to: FeatureState;
-  Context: Context<null | FragmentContext<FeatureState>>;
-}) {
-  return (
-    <>
-      <NavLink Context={Context} to={to} icon={icon} title={title} />
-      {children}
-    </>
-  );
-}
-
 export function FeaturePane({
   title,
   children,
@@ -195,7 +128,13 @@ export function FeaturePane({
   spinner?: boolean;
 }) {
   return (
-    <View style={{ borderRightWidth: 1, borderColor: "#00000033", width: 300 }}>
+    <View
+      style={{
+        borderRightWidth: 1,
+        borderColor: "#00000033",
+        width: PaneWidth,
+      }}
+    >
       <View style={{ minHeight: 80, padding: 16 }}>
         <Text style={{ fontSize: 28, color: "#464646" }}>{title}</Text>
         {spinner && (
@@ -214,6 +153,7 @@ function NavigationSidebar<FeatureState>({
   getFeatureTitle,
   footer,
   activeFeatures,
+  defaultFeature,
 }: {
   navigation: Array<FeatureState>;
   Context: Context<null | FragmentContext<FeatureState>>;
@@ -223,6 +163,7 @@ function NavigationSidebar<FeatureState>({
   ) => ComponentProps<typeof FontAwesome>["name"] | null;
   footer?: ReactNode;
   activeFeatures: Array<FeatureState>;
+  defaultFeature?: FeatureState;
 }) {
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
@@ -232,43 +173,48 @@ function NavigationSidebar<FeatureState>({
   const topParent = activeFeatures[0];
   const topParentKey =
     topParent && fragmentContext.stringifyFragment(topParent);
-  return (
-    <NavSidebar footer={footer}>
-      {navigation.map((nav) => {
-        const fragmentKey = fragmentContext.stringifyFragment(nav);
-        return (
-          <NavLinkSection
+  const defaultFeatureKey =
+    defaultFeature && fragmentContext.stringifyFragment(defaultFeature);
+  const displayNavItems: ReactNode[] = [];
+  navigation.forEach((nav) => {
+    const fragmentKey = fragmentContext.stringifyFragment(nav);
+    displayNavItems.push(
+      <NavLink
+        Context={Context}
+        to={nav}
+        icon={getFeatureIcon(nav)}
+        title={getFeatureTitle(nav)}
+        key={fragmentKey}
+        displayActive={
+          fragmentContext.fragmentString === "" &&
+          !!defaultFeatureKey &&
+          defaultFeatureKey === fragmentKey
+        }
+      />
+    );
+    if (topParentKey === fragmentKey) {
+      activeFeatures.forEach((feature) => {
+        const childFragmentKey = fragmentContext.stringifyFragment(feature);
+        if (childFragmentKey === fragmentKey) return;
+        displayNavItems.push(
+          <NavLink
+            inset
             Context={Context}
-            title={getFeatureTitle(nav)}
-            icon={getFeatureIcon(nav)}
-            to={nav}
-            key={fragmentKey}
-          >
-            {topParentKey === fragmentKey &&
-              activeFeatures.map((feature) => {
-                const childFragmentKey =
-                  fragmentContext.stringifyFragment(feature);
-                if (childFragmentKey === fragmentKey) return null;
-                return (
-                  <NavLink
-                    inset
-                    Context={Context}
-                    key={childFragmentKey}
-                    to={feature}
-                    title={getFeatureTitle(feature)}
-                    icon={getFeatureIcon(feature)}
-                  />
-                );
-              })}
-          </NavLinkSection>
+            key={childFragmentKey}
+            to={feature}
+            title={getFeatureTitle(feature)}
+            icon={getFeatureIcon(feature)}
+          />
         );
-      })}
-    </NavSidebar>
-  );
+      });
+    }
+  });
+  return <NavSidebar footer={footer}>{displayNavItems}</NavSidebar>;
 }
 
 export function DashboardPage<Feature>({
   Context,
+  header,
   renderFeature,
   navigation,
   getFeatureTitle,
@@ -277,8 +223,10 @@ export function DashboardPage<Feature>({
   stringifyFeatureFragment,
   parseFeatureFragment,
   navigationFooter,
+  defaultFeature,
 }: {
   Context: Context<null | FragmentContext<Feature>>;
+  header?: ReactNode | null;
   renderFeature: (props: {
     feature: null | Feature;
     fragmentContext: FragmentContext<Feature>;
@@ -296,6 +244,7 @@ export function DashboardPage<Feature>({
   getParentFeatures?: (feature: Feature) => Array<Feature>;
   stringifyFeatureFragment: (feature: Feature) => string;
   parseFeatureFragment: (fragment: string) => Feature | null;
+  defaultFeature?: Feature;
 }) {
   const [feature, fragment, fragmentContext] =
     useFragmentNavigationController<Feature>(
@@ -307,14 +256,23 @@ export function DashboardPage<Feature>({
     [getParentFeatures, feature]
   );
   const { width } = useWindowDimensions();
-  const wideEnoughForNavigation = width >= 700;
+  const wideEnoughForNavigation = width >= NavigationBarWidth + PaneWidth;
+  const paneAvailableWidth = wideEnoughForNavigation
+    ? width - NavigationBarWidth
+    : width;
+  const visiblePaneCount = Math.floor(paneAvailableWidth / PaneWidth);
   const displayNavSidebar = wideEnoughForNavigation || !feature;
   let activeFeatures: Feature[] = [...parentFeatures];
   if (feature) activeFeatures.push(feature);
+  const displayFeatures =
+    activeFeatures.length || !defaultFeature
+      ? activeFeatures.slice(-visiblePaneCount)
+      : [defaultFeature];
   return (
     <PageContainer>
       <NavBar>
         <NavBarZLogo />
+        {header}
         <NavBarSpacer />
         <AuthHeader />
       </NavBar>
@@ -327,10 +285,11 @@ export function DashboardPage<Feature>({
               getFeatureIcon={getFeatureIcon}
               getFeatureTitle={getFeatureTitle}
               footer={navigationFooter}
+              defaultFeature={defaultFeature}
               activeFeatures={activeFeatures}
             />
           ) : null}
-          {activeFeatures.map((displayFeature) =>
+          {displayFeatures.map((displayFeature) =>
             renderFeature({
               feature: displayFeature,
               isActive: displayFeature === feature,
