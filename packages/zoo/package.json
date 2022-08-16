@@ -15,6 +15,7 @@
     "@zerve/react": "*",
     "@zerve/zen": "*",
     "expo-linear-gradient": "^11.4.0",
+    "expo-clipboard": "~3.1.0",
     "expo-linking": "^3.0.0"
   },
   "devDependencies": {
