@@ -265,7 +265,7 @@ export const DeployZebraStaging = (buildId: string) =>
               execStart: `${joinPath(
                 DeploymentsPath,
                 deploymentName,
-                "node_modules/.bin/next start"
+                "node_modules/.bin/next"
               )} start`,
               env: {
                 PORT: String(deploySpec.webPort),

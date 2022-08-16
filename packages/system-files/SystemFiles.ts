@@ -12,6 +12,7 @@ import {
   readFile,
   mkdirp,
   move,
+  copy,
   unlink,
   pathExists,
 } from "fs-extra";
@@ -118,6 +119,23 @@ export const Move = createZAction(
   }
 );
 
+export const Copy = createZAction(
+  {
+    type: "object",
+    required: ["from", "to"],
+    additionalProperties: false,
+    properties: {
+      from: StringSchema,
+      to: StringSchema,
+    },
+  } as const,
+  NullSchema,
+  async ({ from, to }) => {
+    await copy(from, to);
+    return null;
+  }
+);
+
 export const Stat = createZAction(
   StringSchema,
   {
@@ -153,7 +171,7 @@ export const DeleteFile = createZAction(
 );
 
 export const DeleteRecursive = createZAction(
-  StringSchema,
+  { oneOf: [StringSchema, { type: "array", items: StringSchema }] } as const,
   NullSchema,
   async (path) => {
     await deleteAsync(path);

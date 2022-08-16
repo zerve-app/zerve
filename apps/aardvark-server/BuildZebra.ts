@@ -6,7 +6,13 @@ import {
   StringSchema,
 } from "@zerve/core";
 import { Command } from "@zerve/system-commands";
-import { WriteJSON } from "@zerve/system-files";
+import {
+  Copy,
+  DeleteRecursive,
+  joinPath,
+  ReadDir,
+  WriteJSON,
+} from "@zerve/system-files";
 
 const CmdResultSchema = {
   type: "object",
@@ -111,15 +117,33 @@ export const BuildZebra = createZAction(
 
       // clone the build repo
       await cmd("git", ["clone", "--depth=1", "/root/zerve.git", buildDir]);
+      // delete unrelated apps
+      const allApps = await ReadDir.call(joinPath(buildDir, "apps"));
+      const nonDeployedApps = allApps.filter(
+        (appName) => appName !== "zebra-web" && appName !== "zebra-server"
+      );
+      await DeleteRecursive.call(
+        nonDeployedApps.map((appName) => joinPath(buildDir, "apps", appName))
+      );
       // install dependencies
-      await cmd("yarn", ["--frozen-lockfile"], buildDir, {
-        NODE_ENV: "dev",
-      });
-      // clean up heavy stuff from
-      await cmd("rm", ["-rf", "./.git", "yarn-package-cache"], buildDir);
+      await cmd("yarn", ["--frozen-lockfile"], buildDir, {});
+
+      // clean up heavy and unused stuff from build directory
+      await DeleteRecursive.call([
+        joinPath(buildDir, ".git"),
+        joinPath(buildDir, "yarn-package-cache"),
+      ]);
+
       // set up new git repo (I forget why...? maybe expo or next expect this)
       await cmd("git", ["init"], buildDir);
       await cmd("git", ["branch", "-m", "detached-main"], buildDir);
+
+      // copy secrets file
+      await Copy.call({
+        from: "/root/secrets.json",
+        to: joinPath(buildDir, "secrets.json"),
+      });
+
       // run build commands
       await cmd("yarn", ["workspace", "zebra-web", "build"], buildDir);
       await cmd("yarn", ["workspace", "zebra-server", "build"], buildDir);
