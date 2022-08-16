@@ -33,7 +33,6 @@ export default function EntityPage(props: EntityIdProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log("hiho");
   // getSiteConfig will throw if the session is incorrect.
   const config = await getSiteConfig(context);
   if (!config.session) {
@@ -50,7 +49,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
     return { props };
   }
-  console.log("okayyyyy");
 
   if (await validateUserCanAccessOrg(config, entityId)) {
     const props: EntityIdProps = {

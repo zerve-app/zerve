@@ -17,11 +17,9 @@ export function AsyncButton<PromiseValue>({
   return (
     <Button
       onPress={() => {
-        console.log("hello");
         const p = onPress()
           .then(() => {})
           .catch((e) => {
-            debugger;
             onError(e);
             openError(e);
           });

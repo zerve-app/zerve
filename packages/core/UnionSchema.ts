@@ -44,7 +44,6 @@ function getDefaultValueOfSchema(schema: JSONSchema) {
         }
       );
     }
-    console.log("see!", schema, objDefaults);
     return objDefaults;
   }
 }

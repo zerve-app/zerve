@@ -28,7 +28,6 @@ const ApplySystemConfig = createZAction(
   { type: "object", additionalProperties: false } as const,
 
   async (spec) => {
-    console.log("LOL", spec);
     return {};
   }
 );

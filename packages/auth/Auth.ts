@@ -181,13 +181,9 @@ function getSetUsernameAction(
     async (newUserId: Username) => {
       if (newUserId === userId) return null;
 
-      console.log("READING", joinPath(usersFilesPath, userId, "entity.json"));
-
       const entityData: UserData = await ReadJSON.call(
         joinPath(usersFilesPath, userId, "entity.json")
       );
-
-      console.log("REALLYYY", entityData);
 
       const { authenticatorIds } = entityData;
 
@@ -264,7 +260,6 @@ function getSetPasswordAction(
       const userDataPath = joinPath(usersFilesPath, userId, "entity.json");
 
       const userData: UserData = await ReadJSON.call(userDataPath);
-      console.log("SETPW", userDataPath, userData);
 
       const passwordSalt = await new Promise<string>((resolve, reject) =>
         randomBytes(128, (err, randomBuffer) => {
@@ -450,7 +445,6 @@ export async function createAuth<
               `session-${sessionIdOnly}.json`
             )
           );
-          console.log("did log out");
           return null;
         }
       ),
@@ -476,7 +470,6 @@ export async function createAuth<
               );
             })
           );
-          console.log("did log out all");
           return null;
         }
       ),
@@ -562,7 +555,6 @@ export async function createAuth<
                 value: authentication,
               });
             }
-            console.log("CREATING SESSION authenticator", authentication);
             const { userId } = authentication;
             const userDataPath = joinPath(
               usersFilesPath,
@@ -582,7 +574,6 @@ export async function createAuth<
             if (userData !== prevUserData) {
               await MakeDir.call(joinPath(usersFilesPath, userId));
               await MakeDir.call(joinPath(usersFilesPath, userId, "sessions"));
-              console.log("WRITING!", userDataPath);
               await WriteJSON.call({
                 path: userDataPath,
                 value: userData,

@@ -82,7 +82,6 @@ export async function startApp() {
       userId: string,
       entityData: any
     ) => {
-      console.log("handleUserIdChange", entityData);
       try {
         await Move.call({
           from: joinPath(dataDir, "userData", prevUserId),
