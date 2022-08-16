@@ -10,12 +10,17 @@ import {
   validateWithSchema,
   RequestError,
 } from "@zerve/core";
-import { join } from "path";
 import { randomBytes, createHash } from "crypto";
 import {
-  createSystemFiles,
   ensureNoPathEscape,
-  SystemFilesModule,
+  MakeDir,
+  joinPath,
+  ReadJSON,
+  WriteJSON,
+  DeleteFile,
+  Move,
+  ReadDir,
+  Exists,
 } from "@zerve/system-files";
 import { AuthStrategy } from "./AuthStrategy";
 import { pbkdf2 } from "crypto";
@@ -161,8 +166,8 @@ const MaybeSessionSchema = {
 } as const;
 
 function getSetUsernameAction(
-  usersFiles: SystemFilesModule,
-  authenticationFiles: SystemFilesModule,
+  usersFilesPath: string,
+  authenticationFilesPath: string,
   userId: string,
   handleUserIdChange?: (
     prevUserId: string,
@@ -176,35 +181,56 @@ function getSetUsernameAction(
     async (newUserId: Username) => {
       if (newUserId === userId) return null;
 
-      const entityData: UserData = await usersFiles.z.ReadJSON.call({
-        path: join(userId, "entity.json"),
-      });
+      console.log("READING", joinPath(usersFilesPath, userId, "entity.json"));
+
+      const entityData: UserData = await ReadJSON.call(
+        joinPath(usersFilesPath, userId, "entity.json")
+      );
+
+      console.log("REALLYYY", entityData);
+
       const { authenticatorIds } = entityData;
 
       await Promise.all(
-        authenticatorIds.map(async (authenticatorId) => {
-          const authenticator = await authenticationFiles.z.ReadJSON.call({
-            path: `${authenticatorId}/authenticator.json`,
-          });
-          await authenticationFiles.z.WriteJSON.call({
-            path: `${authenticatorId}/authenticator.json`,
+        authenticatorIds.map(async (authenticatorId: string) => {
+          const authenticator = await ReadJSON.call(
+            joinPath(
+              authenticationFilesPath,
+              authenticatorId,
+              "authenticator.json"
+            )
+          );
+          await WriteJSON.call({
+            path: joinPath(
+              authenticationFilesPath,
+              authenticatorId,
+              "authenticator.json"
+            ),
             value: { ...authenticator, userId: authenticatorId },
           });
         })
       );
 
-      await usersFiles.z.Move.call({
-        from: userId,
-        to: newUserId,
+      await Move.call({
+        from: joinPath(usersFilesPath, userId),
+        to: joinPath(usersFilesPath, newUserId),
       });
 
       await Promise.all(
-        authenticatorIds.map(async (authenticatorId) => {
-          const authenticator = await authenticationFiles.z.ReadJSON.call({
-            path: `${authenticatorId}/authenticator.json`,
-          });
-          await authenticationFiles.z.WriteJSON.call({
-            path: `${authenticatorId}/authenticator.json`,
+        authenticatorIds.map(async (authenticatorId: string) => {
+          const authenticator = await ReadJSON.call(
+            joinPath(
+              authenticationFilesPath,
+              authenticatorId,
+              "authenticator.json"
+            )
+          );
+          await WriteJSON.call({
+            path: joinPath(
+              authenticationFilesPath,
+              authenticatorId,
+              "authenticator.json"
+            ),
             value: { ...authenticator, userId: newUserId },
           });
         })
@@ -227,19 +253,18 @@ async function digestPassword(pw: string, salt: string): Promise<string> {
 }
 
 function getSetPasswordAction(
-  usersFiles: SystemFilesModule,
-  authenticationFiles: SystemFilesModule,
+  usersFilesPath: string,
+  authenticationFilesPath: string,
   userId: string
 ) {
   return createZAction(
     SetPasswordSchema,
     NullSchema,
     async ({ newPassword, previousPassword }) => {
-      const userDataPath = join(userId, "entity.json");
+      const userDataPath = joinPath(usersFilesPath, userId, "entity.json");
 
-      const userData: UserData = await usersFiles.z.ReadJSON.call({
-        path: userDataPath,
-      });
+      const userData: UserData = await ReadJSON.call(userDataPath);
+      console.log("SETPW", userDataPath, userData);
 
       const passwordSalt = await new Promise<string>((resolve, reject) =>
         randomBytes(128, (err, randomBuffer) => {
@@ -250,7 +275,7 @@ function getSetPasswordAction(
 
       const passwordDigest = await digestPassword(newPassword, passwordSalt);
 
-      await usersFiles.z.WriteJSON.call({
+      await WriteJSON.call({
         path: userDataPath,
         value: {
           ...userData,
@@ -270,12 +295,12 @@ export async function createAuth<
   UserAdminZeds extends Record<string, AnyZed>
 >({
   strategies,
-  files,
+  authFilesPath,
   getUserZeds,
   handleUserIdChange,
 }: {
   strategies: Strategies;
-  files: SystemFilesModule;
+  authFilesPath: string;
   getUserZeds: (user: UserAdminZeds, userInfo: { userId: string }) => UserZeds;
   handleUserIdChange?: (prevUserId: string, userId: string) => Promise<void>;
 }) {
@@ -283,7 +308,7 @@ export async function createAuth<
     ...AuthContainerContractMeta,
     strategies: Object.keys(strategies),
   };
-  await files.z.MakeDir.call({ path: "" });
+  await MakeDir.call(authFilesPath);
 
   const createSessionPayloadSchema = {
     oneOf: Object.entries(strategies).map(([strategyKey, strategy]) => {
@@ -298,26 +323,24 @@ export async function createAuth<
       };
     }),
   };
-  const strategiesFiles = Object.fromEntries(
+  const strategiesFilesPath = Object.fromEntries(
     await Promise.all(
       Object.entries(strategies).map(async ([strategyKey, strategy]) => {
-        const strategyFiles = createSystemFiles(
-          join(files.z.Path.value, "strategies", strategyKey)
+        const strategyFilesPath = joinPath(
+          authFilesPath,
+          "strategies",
+          strategyKey
         );
-        await strategyFiles.z.MakeDir.call({ path: "" });
-        return [strategyKey, strategyFiles];
+        await MakeDir.call(strategyFilesPath);
+        return [strategyKey, strategyFilesPath];
       })
     )
   );
 
-  const authenticationFiles = createSystemFiles(
-    join(files.z.Path.value, "authentications")
-  );
+  const authenticationFilesPath = joinPath(authFilesPath, "authentications");
 
-  const usersFiles = createSystemFiles(join(files.z.Path.value, "entities"));
-  await usersFiles.z.MakeDir.call({
-    path: "",
-  });
+  const usersFilesPath = joinPath(authFilesPath, "entities");
+  await MakeDir.call(usersFilesPath);
 
   function getZLoggedInUser(
     userId: string,
@@ -325,21 +348,21 @@ export async function createAuth<
   ): UserAdminZeds {
     return {
       setUsername: getSetUsernameAction(
-        usersFiles,
-        authenticationFiles,
+        usersFilesPath,
+        authenticationFilesPath,
         userId,
         handleUserIdChange
       ),
       setPassword: getSetPasswordAction(
-        usersFiles,
-        authenticationFiles,
+        usersFilesPath,
+        authenticationFilesPath,
         userId
       ),
     };
   }
 
   async function createUserSession(
-    usersFiles: SystemFilesModule,
+    usersFilesPath: string,
     authenticatorId: string | null,
     strategyKey: string | null,
     strategyName: string,
@@ -356,8 +379,13 @@ export async function createAuth<
       strategyKey,
       strategyName,
     };
-    await usersFiles.z.WriteJSON.call({
-      path: join(userId, "sessions", `session-${sessionId}.json`),
+    await WriteJSON.call({
+      path: joinPath(
+        usersFilesPath,
+        userId,
+        "sessions",
+        `session-${sessionId}.json`
+      ),
       value: session,
     });
     return {
@@ -377,9 +405,15 @@ export async function createAuth<
     const sessionData =
       userId &&
       sessionId &&
-      (await files.z.ReadJSON.call({
-        path: join("entities", userId, "sessions", `session-${sessionId}.json`),
-      }));
+      (await ReadJSON.call(
+        joinPath(
+          authFilesPath,
+          "entities",
+          userId,
+          "sessions",
+          `session-${sessionId}.json`
+        )
+      ));
     if (!sessionData)
       throw new UnauthorizedError(
         "Unauthorized",
@@ -407,14 +441,15 @@ export async function createAuth<
           ensureNoPathEscape(userId);
           ensureNoPathEscape(sessionId);
           const sessionIdOnly = sessionId.split(".")[0];
-          await files.z.DeleteFile.call({
-            path: join(
+          await DeleteFile.call(
+            joinPath(
+              authFilesPath,
               "entities",
               userId,
               "sessions",
               `session-${sessionIdOnly}.json`
-            ),
-          });
+            )
+          );
           console.log("did log out");
           return null;
         }
@@ -430,17 +465,15 @@ export async function createAuth<
             `${sessionId}.${sessionToken}`
           );
           const sessionFiles = (
-            await files.z.ReadDir.call({
-              path: join("entities", userId, "sessions"),
-            })
+            await ReadDir.call(joinPath("entities", userId, "sessions"))
           ).filter(
             (fileName: string) => !!fileName.match(/^session-(.*)\.json$/)
           );
           await Promise.all(
             sessionFiles.map(async (fileName: string) => {
-              await files.z.DeleteFile.call({
-                path: join("entities", userId, "sessions", fileName),
-              });
+              await DeleteFile.call(
+                joinPath("entities", userId, "sessions", fileName)
+              );
             })
           );
           console.log("did log out all");
@@ -451,11 +484,9 @@ export async function createAuth<
         LoginWithPasswordSchema,
         MaybeSessionSchema,
         async ({ userId, password }) => {
-          const userDataPath = join(userId, "entity.json");
+          const userDataPath = joinPath(usersFilesPath, userId, "entity.json");
 
-          const userData: UserData = await usersFiles.z.ReadJSON.call({
-            path: userDataPath,
-          });
+          const userData: UserData = await ReadJSON.call(userDataPath);
 
           if (!userData) throw new Error("Invalid Auth Attempt");
 
@@ -473,7 +504,7 @@ export async function createAuth<
             throw new Error("Invalid Auth Attempt");
 
           return await createUserSession(
-            usersFiles,
+            usersFilesPath,
             null,
             null,
             "$password",
@@ -487,13 +518,13 @@ export async function createAuth<
         async (payload) => {
           const strategyName: string = payload.strategy;
           const strategy = strategies[strategyName];
-          const strategyFiles = strategiesFiles[strategyName];
-          if (!strategy || !strategyFiles) {
+          const strategyFilesPath = strategiesFilesPath[strategyName];
+          if (!strategy || !strategyFilesPath) {
             throw new Error(`Strategy ${strategyName} not available.`);
           }
           const strategyAuthentication = await strategy.authorize(
             payload.payload,
-            strategyFiles
+            strategyFilesPath
           );
 
           if (strategyAuthentication) {
@@ -501,14 +532,13 @@ export async function createAuth<
             const authenticatorId = sha256SumHex(
               `${strategyName}-${strategyKey}`
             );
-            const authenticatorJsonPath = join(
+            const authenticatorJsonPath = joinPath(
+              authenticationFilesPath,
               authenticatorId,
               `authenticator.json`
             );
             const prevAuthentication: AuthenticationFileData | undefined =
-              await authenticationFiles.z.ReadJSON.call({
-                path: authenticatorJsonPath,
-              });
+              await ReadJSON.call(authenticatorJsonPath);
             let authentication: AuthenticationFileData =
               prevAuthentication ||
               (() => {
@@ -524,22 +554,25 @@ export async function createAuth<
             // eventually mutate the authenticator here?
 
             if (prevAuthentication !== authentication) {
-              await authenticationFiles.z.MakeDir.call({
-                path: authenticatorId,
-              });
-              await authenticationFiles.z.WriteJSON.call({
+              await MakeDir.call(
+                joinPath(authenticationFilesPath, authenticatorId)
+              );
+              await WriteJSON.call({
                 path: authenticatorJsonPath,
                 value: authentication,
               });
             }
             console.log("CREATING SESSION authenticator", authentication);
             const { userId } = authentication;
-            const userDataPath = join(userId, "entity.json");
+            const userDataPath = joinPath(
+              usersFilesPath,
+              userId,
+              "entity.json"
+            );
 
-            const prevUserData: UserData | undefined =
-              await authenticationFiles.z.ReadJSON.call({
-                path: userDataPath,
-              });
+            const prevUserData: UserData | undefined = await ReadJSON.call(
+              userDataPath
+            );
 
             const userData =
               prevUserData ||
@@ -547,19 +580,16 @@ export async function createAuth<
                 authenticatorIds: [authenticatorId],
               }))();
             if (userData !== prevUserData) {
-              await usersFiles.z.MakeDir.call({
-                path: userId,
-              });
-              await usersFiles.z.MakeDir.call({
-                path: join(userId, "sessions"),
-              });
-              await usersFiles.z.WriteJSON.call({
+              await MakeDir.call(joinPath(usersFilesPath, userId));
+              await MakeDir.call(joinPath(usersFilesPath, userId, "sessions"));
+              console.log("WRITING!", userDataPath);
+              await WriteJSON.call({
                 path: userDataPath,
                 value: userData,
               });
             }
             return await createUserSession(
-              usersFiles,
+              usersFilesPath,
               authenticatorId,
               strategyKey,
               strategyName,
@@ -586,28 +616,28 @@ export async function createAuth<
     entityId: string,
     entityData: any
   ): Promise<void> {
-    if (await usersFiles.z.Exists.call(entityId)) {
+    if (await Exists.call(joinPath(usersFilesPath, entityId))) {
       throw new RequestError(
         "AlreadyExists",
         `An entity named "${entityId}" already exists!`,
         { entityId }
       );
     }
-    await usersFiles.z.MakeDir.call({ path: entityId });
-    await usersFiles.z.WriteJSON.call({
-      path: join(entityId, "entity.json"),
+    await MakeDir.call(joinPath(usersFilesPath, entityId));
+    await WriteJSON.call({
+      path: joinPath(usersFilesPath, entityId, "entity.json"),
       value: entityData,
     });
   }
   async function getEntity(entityId: string): Promise<any> {
-    const entityValue = await usersFiles.z.ReadJSON.call({
-      path: join(entityId, "entity.json"),
-    });
+    const entityValue = await ReadJSON.call(
+      joinPath(usersFilesPath, entityId, "entity.json")
+    );
     return entityValue;
   }
   async function writeEntity(entityId: string, entityData: any): Promise<void> {
-    await usersFiles.z.WriteJSON.call({
-      path: join(entityId, "entity.json"),
+    await WriteJSON.call({
+      path: joinPath(usersFilesPath, entityId, "entity.json"),
       value: entityData,
     });
   }

@@ -1,10 +1,9 @@
 import {
   createZAction,
-  createZContainer,
-  createZStatic,
   RequestError,
   StringSchema,
   BooleanSchema,
+  NullSchema,
 } from "@zerve/core";
 import {
   writeFile,
@@ -28,214 +27,126 @@ export function ensureNoPathEscape(path: string) {
   }
 }
 
-export type SystemFilesModule = ReturnType<typeof createSystemFiles>;
+export const joinPath = join;
 
-export function createSystemFiles<FilesRoot extends string>(
-  filesRoot: FilesRoot
-) {
-  const WriteFile = createZAction(
-    {
-      type: "object",
-      required: ["path", "value"],
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-        value: { type: "string" },
-      },
-    } as const,
-    { type: "null" } as const,
+export const WriteFile = createZAction(
+  {
+    type: "object",
+    required: ["path", "value"],
+    additionalProperties: false,
+    properties: {
+      path: { type: "string" },
+      value: { type: "string" },
+    },
+  } as const,
+  NullSchema,
+  async ({ path, value }) => {
+    await writeFile(path, value);
+    return null;
+  }
+);
 
-    async ({ path, value }) => {
-      ensureNoPathEscape(path);
-      await writeFile(join(filesRoot, path), value);
-      return null;
+export const WriteJSON = createZAction(
+  {
+    type: "object",
+    required: ["path", "value"],
+    additionalProperties: false,
+    properties: {
+      path: { type: "string" },
+      value: {},
+    },
+  } as const,
+  { type: "null" } as const,
+  async ({ path, value }) => {
+    await writeFile(path, JSON.stringify(value));
+    return null;
+  }
+);
+
+export const ReadFile = createZAction(
+  StringSchema,
+  StringSchema,
+  async (path) => {
+    return await readFile(path, { encoding: "utf8" });
+  }
+);
+
+export const ReadJSON = createZAction(
+  StringSchema,
+  {} as const,
+  async (path) => {
+    try {
+      const data = await readFile(path, { encoding: "utf8" });
+      return JSON.parse(data);
+    } catch (e: any) {
+      if (e.code === "ENOENT") {
+        return undefined;
+      } else throw e;
     }
-  );
+  }
+);
 
-  const WriteJSON = createZAction(
-    {
-      type: "object",
-      required: ["path", "value"],
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-        value: {},
-      },
-    } as const,
-    { type: "null" } as const,
-    async ({ path, value }) => {
-      ensureNoPathEscape(path);
-      const fullPath = join(filesRoot, path);
-      await writeFile(fullPath, JSON.stringify(value));
-      return null;
-    }
-  );
+export const ReadDir = createZAction(
+  StringSchema,
+  { type: "array", items: StringSchema } as const,
+  async (path) => {
+    const result = await readdir(path);
+    return result;
+  }
+);
 
-  const ReadFile = createZAction(
-    {
-      type: "object",
-      required: ["path"],
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-      },
-    } as const,
-    { type: "string" } as const,
-    async ({ path }) => {
-      ensureNoPathEscape(path);
-      const fullPath = join(filesRoot, path);
-      return await readFile(fullPath, { encoding: "utf8" });
-    }
-  );
+export const MakeDir = createZAction(StringSchema, NullSchema, async (path) => {
+  await mkdirp(path);
+  return null;
+});
 
-  const ReadJSON = createZAction(
-    {
-      type: "object",
-      required: ["path"],
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-      },
-    } as const,
-    {} as const,
-    async ({ path }) => {
-      ensureNoPathEscape(path);
-      const fullPath = join(filesRoot, path);
-      try {
-        const data = await readFile(fullPath, { encoding: "utf8" });
-        return JSON.parse(data);
-      } catch (e: any) {
-        if (e.code === "ENOENT") {
-          return undefined;
-        } else throw e;
-      }
-    }
-  );
+export const Move = createZAction(
+  {
+    type: "object",
+    required: ["from", "to"],
+    additionalProperties: false,
+    properties: {
+      from: StringSchema,
+      to: StringSchema,
+    },
+  } as const,
+  NullSchema,
+  async ({ from, to }) => {
+    await move(from, to);
+    return null;
+  }
+);
 
-  const ReadDir = createZAction(
-    {
-      type: "object",
-      required: ["path"],
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-      },
-    } as const,
-    { type: "array", items: { type: "string" } } as const,
-    async ({ path }) => {
-      ensureNoPathEscape(path);
-      const fullPath = join(filesRoot, path);
-      const result = await readdir(fullPath);
-      return result;
-    }
-  );
+export const Stat = createZAction(
+  StringSchema,
+  {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      path: StringSchema,
+      isDirectory: BooleanSchema,
+    },
+    required: ["path", "isDirectory"],
+  } as const,
+  async (path) => {
+    const stats = await stat(path);
+    return { path, isDirectory: stats.isDirectory() };
+  }
+);
 
-  const MakeDir = createZAction(
-    {
-      type: "object",
-      required: ["path"],
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-      },
-    } as const,
-    { type: "null" } as const,
-    async ({ path }) => {
-      ensureNoPathEscape(path);
-      const fullPath = join(filesRoot, path);
-      await mkdirp(fullPath);
-      return null;
-    }
-  );
+export const Exists = createZAction(
+  StringSchema,
+  BooleanSchema,
+  async (path: string) => {
+    return await pathExists(path);
+  }
+);
 
-  const Move = createZAction(
-    {
-      type: "object",
-      required: ["from", "to"],
-      additionalProperties: false,
-      properties: {
-        from: { type: "string" },
-        to: { type: "string" },
-      },
-    } as const,
-    { type: "null" } as const,
-    async ({ from, to }) => {
-      ensureNoPathEscape(from);
-      ensureNoPathEscape(to);
-      const fullFrom = join(filesRoot, from);
-      const fullTo = join(filesRoot, to);
-      await move(fullFrom, fullTo);
-      return null;
-    }
-  );
-
-  const Stat = createZAction(
-    {
-      type: "object",
-      required: ["path"],
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-      },
-    } as const,
-    {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-        isDirectory: { type: "boolean" },
-      },
-      required: ["path", "isDirectory"],
-    } as const,
-    async ({ path }) => {
-      ensureNoPathEscape(path);
-      const fullPath = join(filesRoot, path);
-      const stats = await stat(fullPath);
-      return { path, isDirectory: stats.isDirectory() };
-    }
-  );
-
-  const Exists = createZAction(
-    StringSchema,
-    BooleanSchema,
-    async (path: string) => {
-      ensureNoPathEscape(path);
-      const fullPath = join(filesRoot, path);
-      return await pathExists(fullPath);
-    }
-  );
-
-  const DeleteFile = createZAction(
-    {
-      type: "object",
-      required: ["path"],
-      additionalProperties: false,
-      properties: {
-        path: { type: "string" },
-      },
-    } as const,
-    {
-      type: "null",
-    } as const,
-    async ({ path }) => {
-      ensureNoPathEscape(path);
-      const fullPath = join(filesRoot, path);
-      await unlink(fullPath);
-      return null;
-    }
-  );
-
-  return createZContainer({
-    WriteFile,
-    ReadFile,
-    DeleteFile,
-    Stat,
-    ReadDir,
-    MakeDir,
-    WriteJSON,
-    ReadJSON,
-    Exists,
-    Move,
-    Path: createZStatic(filesRoot),
-  });
-}
+export const DeleteFile = createZAction(
+  StringSchema,
+  NullSchema,
+  async (path) => {
+    await unlink(path);
+    return null;
+  }
+);

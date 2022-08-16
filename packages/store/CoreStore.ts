@@ -9,7 +9,6 @@ import {
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
-import { SystemFilesModule } from "@zerve/system-files";
 
 const NodeSchema = {
   name: "StoreNode",
@@ -219,12 +218,12 @@ export type GeneralStoreModule = Awaited<ReturnType<typeof createGeneralStore>>;
 
 export async function createGeneralStore(
   data: CoreDataModule,
-  cacheFiles: SystemFilesModule,
+  cacheFilesPath: string,
   docName: string
 ) {
   const genStore = await CoreChain.createZChainState(
     data,
-    cacheFiles,
+    cacheFilesPath,
     docName,
     GenericCalculator
   );

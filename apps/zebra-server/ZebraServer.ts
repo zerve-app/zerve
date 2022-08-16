@@ -1,4 +1,3 @@
-import { join } from "path";
 import { startZedServer } from "@zerve/node";
 
 import {
@@ -27,11 +26,11 @@ import {
   createTestAuthStrategy,
 } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
+import { Move } from "@zerve/system-files";
 import { createGeneralStore, GeneralStoreModule } from "@zerve/store";
-import { createSystemFiles } from "@zerve/system-files";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
-import { createSystemCommands } from "@zerve/system-commands";
+import { joinPath, ReadJSON } from "@zerve/system-files";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 
@@ -41,21 +40,17 @@ const defaultZDataDir = `${homeDir}/.zerve`;
 const dataDir =
   process.env.ZERVE_DATA_DIR ||
   (process.env.NODE_ENV === "dev"
-    ? join(process.cwd(), "dev-data")
+    ? joinPath(process.cwd(), "dev-data")
     : defaultZDataDir);
 
 const secretsFile =
-  process.env.ZERVE_SECRETS_JSON || join(process.cwd(), "../../secrets.json");
+  process.env.ZERVE_SECRETS_JSON ||
+  joinPath(process.cwd(), "../../secrets.json");
 
 export async function startApp() {
   console.log("Starting Data Dir", dataDir);
 
-  const InternalRootFiles = createSystemFiles("/");
-  const DataDirFiles = createSystemFiles(dataDir);
-
-  const secrets = await InternalRootFiles.z.ReadJSON.call({
-    path: secretsFile,
-  });
+  const secrets = await ReadJSON.call(secretsFile);
   function requireSecret(secretKey: string): string {
     const secret = secrets[secretKey];
     if (typeof secret === "string") return secret;
@@ -76,14 +71,12 @@ export async function startApp() {
     fromEmail: `Zerve Admin <admin@zerve.app>`,
   });
 
-  const AuthFiles = createSystemFiles(join(dataDir, "Auth"));
-
   const [zAuth, { createEntity, getEntity, writeEntity }] = await createAuth({
     strategies: {
       Email: await createEmailAuthStrategy(Email),
       Phone: await createSMSAuthStrategy(SMS),
     },
-    files: AuthFiles,
+    authFilesPath: joinPath(dataDir, "Auth"),
     handleUserIdChange: async (
       prevUserId: string,
       userId: string,
@@ -91,9 +84,9 @@ export async function startApp() {
     ) => {
       console.log("handleUserIdChange", entityData);
       try {
-        await DataDirFiles.z.Move.call({
-          from: join("userData", prevUserId),
-          to: join("userData", userId),
+        await Move.call({
+          from: joinPath(dataDir, "userData", prevUserId),
+          to: joinPath(dataDir, "userData", userId),
         });
       } catch (e) {
         if (e.code === "ENOENT") return;
@@ -136,15 +129,13 @@ export async function startApp() {
         { entityId, storeId }
       );
     const StoreData = await createCoreData(
-      join(getEntityStoreDir(entityId, storeId), `Data`)
+      joinPath(getEntityStoreDir(entityId, storeId), `Data`)
     );
     const userMemoryStores =
       memoryStores[entityId] || (memoryStores[entityId] = {});
     const newMemoryStore = await createGeneralStore(
       StoreData,
-      createSystemFiles(
-        join(getEntityStoreDir(entityId, storeId), `StoreCache`)
-      ),
+      joinPath(getEntityStoreDir(entityId, storeId), `StoreCache`),
       `Store`
     );
     userMemoryStores[storeId] = newMemoryStore;
@@ -152,11 +143,11 @@ export async function startApp() {
   }
 
   function getUserDir(userId: string): string {
-    return join(dataDir, "userData", userId);
+    return joinPath(dataDir, "userData", userId);
   }
 
   function getEntityStoreDir(userId: string, storeId: string): string {
-    return join(getUserDir(userId), "stores", storeId);
+    return joinPath(getUserDir(userId), "stores", storeId);
   }
 
   function getStoreGroup(entityId: string) {
@@ -165,7 +156,7 @@ export async function startApp() {
         return await getMemoryStore(entityId, storeId);
       },
       async (getOptions: ChildrenListOptions) => {
-        const userStorePath = join(getUserDir(entityId), "stores");
+        const userStorePath = joinPath(getUserDir(entityId), "stores");
         let children = [];
         try {
           children = await readdir(userStorePath);

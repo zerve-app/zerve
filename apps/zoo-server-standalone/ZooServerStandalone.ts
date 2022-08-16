@@ -1,9 +1,8 @@
-import { join } from "path";
 import { startZedServer } from "@zerve/node";
 import { createZContainer } from "@zerve/core";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore } from "@zerve/store";
-import { createSystemFiles } from "@zerve/system-files";
+import { joinPath } from "@zerve/system-files";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 
@@ -13,7 +12,7 @@ const defaultZDataDir = `${homeDir}/.zerve`;
 const dataDir =
   process.env.ZERVE_DATA_DIR ||
   (process.env.NODE_ENV === "dev"
-    ? join(process.cwd(), "dev-data")
+    ? joinPath(process.cwd(), "dev-data")
     : defaultZDataDir);
 
 export async function startApp() {
@@ -23,7 +22,7 @@ export async function startApp() {
 
   const PublicStore = await createGeneralStore(
     Data,
-    createSystemFiles(join(dataDir, "PublicStoreCache")),
+    joinPath(dataDir, "PublicStoreCache"),
     "PublicStore"
   );
 

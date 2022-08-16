@@ -146,19 +146,27 @@ export function createConnection(name: string, url: string) {
 }
 
 function clearSessionToken(connectionKey: string) {
-  mutateConnections((connections) =>
-    connections.map((conn) => {
-      if (conn.key !== connectionKey) return conn;
-      if (!conn.session) return conn;
-      return {
-        ...conn,
-        session: {
-          ...conn.session,
-          sessionToken: null,
-        },
-      };
-    })
-  );
+  if (Platform.OS === "web") {
+    const prevSession = getCookieSession();
+    if (!prevSession) return;
+    const session = { ...prevSession, sessionToken: null };
+    setCookieSession(session);
+    webConnectionUpdateHandlers.forEach((h) => h(session));
+  } else {
+    mutateConnections((connections) =>
+      connections.map((conn) => {
+        if (conn.key !== connectionKey) return conn;
+        if (!conn.session) return conn;
+        return {
+          ...conn,
+          session: {
+            ...conn.session,
+            sessionToken: null,
+          },
+        };
+      })
+    );
+  }
 }
 
 function clearSession(connectionKey: string) {
@@ -231,20 +239,27 @@ export function setSession(
 }
 
 export function setSessionUserId(connectionKey: string, userId: string) {
-  mutateConnections((connections) =>
-    connections.map((conn) => {
-      if (conn.key !== connectionKey) return conn;
-      if (!conn.session) return conn;
-      return {
-        ...conn,
-        session: {
-          ...conn.session,
-          userId,
-          userLabel: userId,
-        },
-      };
-    })
-  );
+  if (Platform.OS === "web") {
+    const prevSession = getCookieSession();
+    const session = { ...prevSession, userId };
+    setCookieSession(session);
+    webConnectionUpdateHandlers.forEach((h) => h(session));
+  } else {
+    mutateConnections((connections) =>
+      connections.map((conn) => {
+        if (conn.key !== connectionKey) return conn;
+        if (!conn.session) return conn;
+        return {
+          ...conn,
+          session: {
+            ...conn.session,
+            userId,
+            userLabel: userId,
+          },
+        };
+      })
+    );
+  }
 }
 
 export function ConnectionKeyProvider({

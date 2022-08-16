@@ -289,9 +289,7 @@ function ChangePasswordButton({
         postZAction(connection, [...session.authPath, "user", "setPassword"], {
           newPassword: password,
         })
-          .then(() => {
-            setSessionUserId(connection.key, password);
-          })
+          .then(() => {})
           .catch((e) => {
             console.log("catch failed Password change");
             throw e;

@@ -1,5 +1,4 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
-import { ZObservable } from "./Observable";
 
 export type ModuleSpec = {
   module?: string;
@@ -45,7 +44,6 @@ export type ZGettable<GetSchema extends JSONSchema, GetOptions> = {
   zType: "Gettable";
   valueSchema: GetSchema;
   get: (options: GetOptions) => Promise<FromSchema<GetSchema>>;
-  getChild: (key: K) => Promise<FromSchema<GetSchema>[K] | undefined>;
 };
 
 export type ZStatic<Value> = {
@@ -61,7 +59,6 @@ export type AnyZed =
   | ZAuthContainer<any>
   | ZGroup<any, any, any>
   | ZGettable<any, any>
-  | ZObservable<any>
   | ZStatic<any>;
 
 export function createZAction<
@@ -77,7 +74,7 @@ export function createZAction<
   return { zType: "Action", payloadSchema, responseSchema, call };
 }
 
-export function createZGettable<StateSchema, GetOptions>(
+export function createZGettable<StateSchema extends JSONSchema, GetOptions>(
   valueSchema: StateSchema,
   get: (o: GetOptions) => Promise<FromSchema<StateSchema>>
 ): ZGettable<StateSchema, GetOptions> {
@@ -91,7 +88,11 @@ export function createZContainer<Zeds extends Record<string, AnyZed>>(
     zType: "Container",
     z,
     meta: undefined,
-    get: async (zedKey) => {
+    get: async (zedKey: string | number | Symbol) => {
+      if (zedKey.constructor === Symbol)
+        throw new Error("Cannot look up Symbol in ZContainer");
+      if (typeof zedKey === "number")
+        throw new Error("Cannot look up number in ZContainer");
       if (z[zedKey] === undefined)
         throw new Error(`Cannot find ${zedKey} in Zeds`);
       return z[zedKey];
@@ -115,13 +116,13 @@ export function createZMetaContainer<
     meta,
     get: async (zedKey) => {
       if (z[zedKey] === undefined)
-        throw new Error(`Cannot find ${zedKey} in Zeds`);
+        throw new Error(`Cannot find "${String(zedKey)}" in Zeds`);
       return z[zedKey];
     },
   };
 }
 
-export function createZAuthContainer<AuthZed extends AnyZed>(
+export function createZAuthContainer<AuthZed extends Record<string, AnyZed>>(
   getAuthZed: (authId: string, authKey: string) => Promise<AuthZed>
 ): ZAuthContainer<AuthZed> {
   return {

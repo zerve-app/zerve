@@ -16,7 +16,7 @@ import {
 } from "@zerve/core";
 import { createJSONBlock } from "@zerve/crypto";
 import { CoreDataModule } from "@zerve/data";
-import { SystemFilesModule } from "@zerve/system-files";
+import { joinPath, MakeDir, ReadJSON } from "@zerve/system-files";
 
 export type ZChainStateCalculator<
   State,
@@ -79,17 +79,17 @@ export async function createZChainState<
   StateSchema extends JSONSchema
 >(
   data: CoreDataModule,
-  cacheFiles: SystemFilesModule,
+  cacheFilesPath: string,
   docName: string,
   calculator: ZChainStateCalculator<State, Actions, StateSchema>
 ) {
-  await cacheFiles.z.MakeDir.call({ path: "state" });
-  await cacheFiles.z.MakeDir.call({ path: "blocks" });
+  await MakeDir.call(joinPath(cacheFilesPath, "state"));
+  await MakeDir.call(joinPath(cacheFilesPath, "blocks"));
 
   async function _getCachedResult(blockId: string) {
-    return await cacheFiles.z.ReadJSON.call({
-      path: `state/eval-${blockId}`,
-    });
+    return await ReadJSON.call(
+      joinPath(cacheFilesPath, "state", `eval-${blockId}`)
+    );
   }
 
   async function _rollupBlocksInCommitChain<V>(commitValue: Commit<V>) {
@@ -226,9 +226,9 @@ export async function createZChainState<
         return matchedBlock.value;
       }
       try {
-        const cachedBlockData = await cacheFiles.z.ReadJSON.call({
-          path: `blocks/${blockId}`,
-        });
+        const cachedBlockData = await ReadJSON.call(
+          joinPath(cacheFilesPath, "blocks", blockId)
+        );
         return cachedBlockData;
       } catch (e) {
         throw new NotFoundError("EvalNotFound", "Not Found.", {
@@ -271,8 +271,8 @@ export async function createZChainState<
           evalBlockCache,
           cachableBlocks
         );
-        await cacheFiles.z.WriteJSON.call({
-          path: `state/eval-${evalBlockId}`,
+        await WriteJSON.call({
+          path: joinPath(cacheFilesPath, "state", `eval-${evalBlockId}`),
           value: evalValue,
         });
         // await _cacheBlocks(cachableBlocks);

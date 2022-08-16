@@ -1,5 +1,5 @@
 import { FromSchema, JSONSchema } from "@zerve/core";
-import { SystemFilesModule } from "@zerve/system-files";
+import { joinPath, ReadJSON, WriteJSON } from "@zerve/system-files";
 import stringify from "json-stable-stringify";
 import { AuthStrategy } from "./AuthStrategy";
 import { createHash } from "crypto";
@@ -67,10 +67,7 @@ export function createGenericMessageAuthStrategy<
   } as const;
   return {
     authorizeSchema,
-    authorize: async (
-      payload: AuthorizePayload,
-      strategyFiles: SystemFilesModule
-    ) => {
+    authorize: async (payload: AuthorizePayload, strategyFilesPath: string) => {
       const { address } = payload;
       const validateAddress = configInput?.validateAddress;
       if (validateAddress) validateAddress(address);
@@ -80,10 +77,8 @@ export function createGenericMessageAuthStrategy<
         .toString("hex");
       const addressFileSubpath = `${addressKey}.json`;
 
-      const addressFile: AddressFileData = (await strategyFiles.z.ReadJSON.call(
-        {
-          path: addressFileSubpath,
-        }
+      const addressFile: AddressFileData = (await ReadJSON.call(
+        joinPath(strategyFilesPath, addressFileSubpath)
       )) || {
         address: payload.address,
         addressKey,
@@ -104,8 +99,8 @@ export function createGenericMessageAuthStrategy<
             console.log("Requst timeout has already been reached");
             throw new Error("Invalid Auth Attempt");
           }
-          await strategyFiles.z.WriteJSON.call({
-            path: addressFileSubpath,
+          await WriteJSON.call({
+            path: joinPath(strategyFilesPath, addressFileSubpath),
             value: {
               ...addressFile,
               authRequest: null,
@@ -145,8 +140,8 @@ export function createGenericMessageAuthStrategy<
         await handleMessageSend(token, payload.address);
       }
       // saving the strategy address file
-      await strategyFiles.z.WriteJSON.call({
-        path: addressFileSubpath,
+      await WriteJSON.call({
+        path: joinPath(strategyFilesPath, addressFileSubpath),
         value: {
           ...addressFile,
           authRequest,
@@ -155,13 +150,10 @@ export function createGenericMessageAuthStrategy<
       return null;
     },
 
-    getDetails: async (
-      strategyFiles: SystemFilesModule,
-      addressKey: string
-    ) => {
-      const details = await strategyFiles.z.ReadJSON.call({
-        path: `${addressKey}.json`,
-      });
+    getDetails: async (strategyFilesPath: string, addressKey: string) => {
+      const details = await ReadJSON.call(
+        joinPath(strategyFilesPath, `${addressKey}.json`)
+      );
       return details;
     },
   } as AuthStrategy<typeof authorizeSchema, AuthDetails, AuthenticationDetails>;

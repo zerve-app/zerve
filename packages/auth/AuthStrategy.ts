@@ -1,5 +1,4 @@
 import { FromSchema, JSONSchema } from "@zerve/core";
-import { SystemFilesModule } from "@zerve/system-files";
 
 type StrategyAuthentication<AuthenticationDetails extends Object = {}> = {
   strategyKey: string;
@@ -14,10 +13,10 @@ export type AuthStrategy<
   authorizeSchema: AuthorizePayloadSchema;
   authorize: (
     payload: FromSchema<AuthorizePayloadSchema>,
-    strategyFiles: SystemFilesModule
+    strategyFilesPath: string
   ) => Promise<null | StrategyAuthentication<AuthenticationDetails>>;
   getDetails: (
-    strategyFiles: SystemFilesModule,
+    strategyFilesPath: string,
     strategyKey: string
   ) => Promise<Details>;
 };
