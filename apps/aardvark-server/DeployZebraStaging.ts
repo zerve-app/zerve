@@ -1,22 +1,18 @@
-import {
-  createZAction,
-  FromSchema,
-  NullSchema,
-  NumberSchema,
-  StringSchema,
-  validateWithSchema,
-} from "@zerve/core";
+import { createZAction, FromSchema, NullSchema } from "@zerve/core";
 import { Command } from "@zerve/system-commands";
+import { DeleteRecursive, joinPath, MakeDir, Move } from "@zerve/system-files";
+import { applyCaddyfile } from "./Caddy";
 import {
-  DeleteRecursive,
-  Exists,
-  joinPath,
-  MakeDir,
-  Move,
-  ReadJSON,
-  WriteFile,
-  WriteJSON,
-} from "@zerve/system-files";
+  DeploymentsPath,
+  DeploymentsState,
+  readDeploymentsState,
+  writeDeploymentsState,
+} from "./Deployments";
+import {
+  applySystemdConfig,
+  systemdStartAndEnable,
+  systemdStopAndDisable,
+} from "./Systemd";
 
 const DeployRequestSchema = {
   type: "object",
@@ -32,147 +28,7 @@ const DeployRequestSchema = {
   additionalProperties: false,
 } as const;
 
-const aardvarkDeploymentsPath = joinPath(
-  process.env.HOME as string,
-  "AardvarkDeployments.json"
-);
-const DeploymentSpecSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    serverPort: NumberSchema,
-    webPort: NumberSchema,
-    deploymentPath: StringSchema,
-    dataDir: StringSchema,
-  },
-  required: ["serverPort", "webPort", "deploymentPath", "dataDir"],
-} as const;
-
-const DeploymentsStateSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    availPortIndex: NumberSchema,
-    specs: { type: "object", additionalProperties: DeploymentSpecSchema },
-  },
-  required: ["availPortIndex", "specs"],
-} as const;
-type DeploymentsState = FromSchema<typeof DeploymentsStateSchema>;
-
-const DefaultDeploymentsState: DeploymentsState = {
-  availPortIndex: 4000,
-  specs: {},
-};
-
-async function readDeploymentsState(): Promise<DeploymentsState> {
-  const rawValue = await ReadJSON.call(aardvarkDeploymentsPath);
-  if (rawValue == null) return DefaultDeploymentsState;
-  const value = validateWithSchema(DeploymentsStateSchema, rawValue);
-  return value;
-}
-
-async function writeDeploymentsState(state: DeploymentsState) {
-  const value = validateWithSchema(DeploymentsStateSchema, state);
-  await WriteJSON.call({ path: aardvarkDeploymentsPath, value });
-}
-
-const DeploymentsPath = "/home/zerve/deployments";
-const DataDirPath = joinPath(process.env.HOME as string, "deployments-data");
-
-async function writeSystemdServiceFile(params: {
-  serviceKey: string;
-  workingDir: string;
-  execStart: string;
-  env: Record<string, string>;
-}) {
-  const serviceFileValue = `[Unit]
-Description=Zerve ${params.serviceKey} Service
-After=network.target
-
-[Service]
-WorkingDirectory=${params.workingDir}
-Type=simple
-User=zerve
-ExecStart=${params.execStart}
-Restart=on-failure
-${Object.entries(params.env).map(
-  ([envName, envValue]) => `Environment=${envName}="${envValue}"`
-).join(`
-`)}
-
-[Install]
-WantedBy=multi-user.target
-`;
-  await WriteFile.call({
-    path: joinPath("/etc/systemd/system", `${params.serviceKey}.service`),
-    value: serviceFileValue,
-  });
-}
-
-async function systemdStopAndDisable(serviceKey: string) {
-  if (
-    await Exists.call(joinPath("/etc/systemd/system", `${serviceKey}.service`))
-  ) {
-    await Command.call({
-      command: "systemctl",
-      args: ["stop", serviceKey],
-    });
-    await Command.call({
-      command: "systemctl",
-      args: ["disable", serviceKey],
-    });
-  }
-}
-async function systemdReloadConfig() {
-  await Command.call({
-    command: "systemctl",
-    args: ["daemon-reload"],
-  });
-}
-
-async function systemdStartAndEnable(serviceKey: string) {
-  await Command.call({
-    command: "systemctl",
-    args: ["start", serviceKey],
-  });
-  await Command.call({
-    command: "systemctl",
-    args: ["enable", serviceKey],
-  });
-}
-
-async function applyCaddyfile(state: DeploymentsState) {
-  await WriteFile.call({
-    path: "/etc/caddy/Caddyfile",
-    value: `
-aardvark.zerve.dev {
-  route /.z* {
-    reverse_proxy http://localhost:8999
-  }
-  reverse_proxy http://localhost:8990
-}
-
-${Object.entries(state.specs).map(
-  ([deploymentKey, spec]) => `
-${deploymentKey}.zerve.dev {
-  tls {
-    dns cloudflare {env.CLOUDFLARE_AUTH_TOKEN}
-  }
-  route /.z* {
-    reverse_proxy http://localhost:${spec.serverPort}
-  }
-  reverse_proxy http://localhost:${spec.webPort}
-}
-`
-).join(`
-`)}
-`,
-  });
-  await Command.call({
-    command: "caddy",
-    args: ["reload", "--config", "/etc/caddy/Caddyfile"],
-  });
-}
+const DataDirPath = "/home/zerve/deployments-data";
 
 export const DeployZebraStaging = (buildId: string) =>
   createZAction(
@@ -231,52 +87,11 @@ export const DeployZebraStaging = (buildId: string) =>
         args: ["-R", "zerve:zerve", deploymentPath],
       });
 
-      // create systemd configs
-      await DeleteRecursive.call("/etc/systemd/system/z.*");
-      await Promise.all(
-        Object.entries(state.specs).map(
-          async ([deploymentName, deploySpec]) => {
-            await writeSystemdServiceFile({
-              serviceKey: `z.${deploymentName}.server`,
-              workingDir: joinPath(
-                DeploymentsPath,
-                deploymentName,
-                "apps/zebra-server"
-              ),
-              execStart: `/usr/bin/node ${joinPath(
-                DeploymentsPath,
-                deploymentName,
-                "apps/zebra-server/build/ZebraServer.js"
-              )}`,
-              env: {
-                PORT: String(deploySpec.serverPort),
-                NODE_ENV: "production",
-                Z_ORIGIN: `https://${deploymentName}.zerve.dev`,
-                ZERVE_DATA_DIR: dataDir,
-              },
-            });
-            await writeSystemdServiceFile({
-              serviceKey: `z.${deploymentName}.web`,
-              workingDir: joinPath(
-                DeploymentsPath,
-                deploymentName,
-                "apps/zebra-web"
-              ),
-              execStart: `${joinPath(
-                DeploymentsPath,
-                deploymentName,
-                "node_modules/.bin/next"
-              )} start`,
-              env: {
-                PORT: String(deploySpec.webPort),
-                NODE_ENV: "production",
-                Z_ORIGIN: `https://${deploymentName}.zerve.dev`,
-              },
-            });
-          }
-        )
-      );
-      await systemdReloadConfig();
+      // prepare data dir
+      await MakeDir.call(dataDir);
+
+      // apply systemd config
+      await applySystemdConfig(state);
 
       await systemdStartAndEnable(`z.${deploymentName}.server`);
       await systemdStartAndEnable(`z.${deploymentName}.web`);

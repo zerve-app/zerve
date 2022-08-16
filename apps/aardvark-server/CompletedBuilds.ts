@@ -10,24 +10,32 @@ import { Command } from "@zerve/system-commands";
 import { ReadDir, ReadJSON } from "@zerve/system-files";
 import { DeployZebraStaging } from "./DeployZebraStaging";
 
+function getBuildDetailsZ(buildId: string) {
+  return createZGettable({} as const, async () => {
+    const details = await ReadJSON.call(
+      `/root/zebra-build-details/${buildId}.json`
+    );
+    return details;
+  });
+}
+
+function getBuildDestroyZ(buildId: string) {
+  return createZAction(NullSchema, NullSchema, async () => {
+    await Command.call({
+      command: "rm",
+      args: ["-rf", `/root/zebra-builds/${buildId}.tar.gz`],
+    });
+    return null;
+  });
+}
+
 export const CompletedBuilds = createZGettableGroup(
   async (buildId: string) => {
     return createZContainer({
       BuildId: createZStatic(buildId),
       DeployStaging: DeployZebraStaging(buildId),
-      Details: createZGettable({} as const, async () => {
-        const details = await ReadJSON.call(
-          `/root/zebra-build-details/${buildId}.json`
-        );
-        return details;
-      }),
-      Destroy: createZAction(NullSchema, NullSchema, async () => {
-        await Command.call({
-          command: "rm",
-          args: ["-rf", `/root/zebra-builds/${buildId}.tar.gz`],
-        });
-        return null;
-      }),
+      Details: getBuildDetailsZ(buildId),
+      Destroy: getBuildDestroyZ(buildId),
     } as const);
   },
   async () => {
