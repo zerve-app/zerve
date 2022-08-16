@@ -16,6 +16,7 @@ import {
   pathExists,
 } from "fs-extra";
 import { join } from "path";
+import { deleteAsync } from "del";
 
 export function ensureNoPathEscape(path: string) {
   if (path.match(/^\.\./) || path.match(/\/\.\./)) {
@@ -147,6 +148,15 @@ export const DeleteFile = createZAction(
   NullSchema,
   async (path) => {
     await unlink(path);
+    return null;
+  }
+);
+
+export const DeleteRecursive = createZAction(
+  StringSchema,
+  NullSchema,
+  async (path) => {
+    await deleteAsync(path);
     return null;
   }
 );

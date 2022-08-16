@@ -39,6 +39,9 @@ cp /root/secrets.json /root/aardvark/secrets.json
 systemctl start AardvarkWeb.service
 systemctl start AardvarkServer.service
 
+systemctl enable AardvarkWeb.service
+systemctl enable AardvarkServer.service
+
 systemctl status AardvarkWeb.service
 systemctl status AardvarkServer.service
 

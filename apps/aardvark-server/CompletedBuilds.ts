@@ -14,7 +14,7 @@ export const CompletedBuilds = createZGettableGroup(
   async (buildId: string) => {
     return createZContainer({
       BuildId: createZStatic(buildId),
-      DeployStaging: DeployZebraStaging,
+      DeployStaging: DeployZebraStaging(buildId),
       Details: createZGettable({} as const, async () => {
         const details = await ReadJSON.call(
           `/root/zebra-build-details/${buildId}.json`

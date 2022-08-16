@@ -8,6 +8,7 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
+    "del": "^7.0.0",
     "fs-extra": ""
   }
 }
