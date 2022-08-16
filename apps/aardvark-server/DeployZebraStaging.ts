@@ -89,7 +89,10 @@ export const DeployZebraStaging = (buildId: string) =>
 
       // prepare data dir
       await MakeDir.call(dataDir);
-
+      await Command.call({
+        command: "chown",
+        args: ["-R", "zerve:zerve", dataDir],
+      });
       // apply systemd config
       await applySystemdConfig(state);
 
