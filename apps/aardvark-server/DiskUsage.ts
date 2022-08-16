@@ -8,7 +8,7 @@ export const DiskUsage = createZGettable(
   } as const,
   async () => {
     const { out: usage } = await Command.call({
-      command: "du",
+      command: "df",
       args: ["-h", "/"],
     });
 
