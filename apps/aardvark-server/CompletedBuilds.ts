@@ -16,9 +16,9 @@ export const CompletedBuilds = createZGettableGroup(
       BuildId: createZStatic(buildId),
       DeployStaging: DeployZebraStaging,
       Details: createZGettable({} as const, async () => {
-        const details = await ReadJSON.call({
-          path: `/root/zebra-build-details/${buildId}.json`,
-        });
+        const details = await ReadJSON.call(
+          `/root/zebra-build-details/${buildId}.json`
+        );
         return details;
       }),
       Destroy: createZAction(NullSchema, NullSchema, async () => {
@@ -31,9 +31,7 @@ export const CompletedBuilds = createZGettableGroup(
     } as const);
   },
   async () => {
-    const tarballList = await ReadDir.call({
-      path: "/root/zebra-builds",
-    });
+    const tarballList = await ReadDir.call("/root/zebra-builds");
     return {
       children: tarballList.map((tarballName: string) =>
         tarballName.slice(0, -7)
