@@ -174,7 +174,8 @@ export const DeleteRecursive = createZAction(
   { oneOf: [StringSchema, { type: "array", items: StringSchema }] } as const,
   NullSchema,
   async (path) => {
-    await deleteAsync(path);
+    // force set to true, so that we can delete any directory on the system, not just within the cwd
+    await deleteAsync(path, { force: true });
     return null;
   }
 );
