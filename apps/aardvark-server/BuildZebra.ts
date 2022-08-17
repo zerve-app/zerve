@@ -34,12 +34,11 @@ export const BuildZebra = createZAction(
   NullSchema,
   { type: "array", items: CmdResultSchema } as const,
   async () => {
-    throw new Error("build disabled. double call, why?");
-    console.log("==== Starting BuildZebra ====");
-    __is_build_in_progress_junky_check = true;
     if (__is_build_in_progress_junky_check) {
       throw new Error("a build is already in progress....");
     }
+    __is_build_in_progress_junky_check = true;
+    console.log("==== Starting BuildZebra ====");
     const results: Array<FromSchema<typeof CmdResultSchema>> = [];
     async function cmd(
       command: string,
