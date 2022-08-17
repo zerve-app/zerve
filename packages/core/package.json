@@ -13,6 +13,6 @@
   },
   "dependencies": {
     "immer": "^9.0.12",
-    "json-schema-to-ts": "^2.1.1"
+    "json-schema-to-ts": "^2.5.5"
   }
 }

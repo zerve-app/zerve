@@ -10680,7 +10680,7 @@ json-schema-deref-sync@^0.13.0:
     traverse "~0.6.6"
     valid-url "~1.0.9"
 
-json-schema-to-ts@^2.1.1:
+json-schema-to-ts@^2.5.5:
   version "2.5.5"
   resolved "https://registry.yarnpkg.com/json-schema-to-ts/-/json-schema-to-ts-2.5.5.tgz#09022355466dc07451b0d1235d4056ae67bceaa1"
   integrity sha512-GFD5t0fUnX/B0gE9xbHjxv2BwFXRJND2+OKoLoMElJ3XRJ7dOBlLT7KXpg96aETeZ0RJbAZOfqHALBf5k4aIIA==

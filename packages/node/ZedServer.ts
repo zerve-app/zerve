@@ -8,13 +8,10 @@ import {
   ZGettable,
   ZGroup,
   ZStatic,
-  Z_PROTOCOL_VERSION,
   ZObservable,
   defineKeySource,
-  getValidatorOfSchema,
   validateWithSchema,
   ZAuthContainer,
-  GenericError,
   UnauthorizedError,
 } from "@zerve/core";
 import express, { Request, Response } from "express";
@@ -135,7 +132,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new WrongMethodError("WrongMethod", "Method not available", {});
   }
 
-  async function handleActionZedRequest<Schema, Response>(
+  async function handleActionZedRequest<
+    Schema extends JSONSchema,
+    Response extends JSONSchema,
+  >(
     zed: ZAction<Schema, Response>,
     method: Request["method"],
     headers: HeaderStuffs,
