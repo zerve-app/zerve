@@ -14,7 +14,6 @@ import {
   AsyncButton,
   Button,
   Icon,
-  InfoRow,
   showToast,
   Title,
   VStack,
@@ -295,26 +294,29 @@ export function LogoutButton({
   const [readyForForceLogout, setReadyForForceLogout] = useState(false);
   return (
     <>
-      <AsyncButton
-        left={<Icon name="sign-out" />}
-        onPress={async () => {
-          try {
-            await logout(connection, session);
-            onComplete?.();
-          } catch (e) {
-            setReadyForForceLogout(true);
-            throw e;
-          }
-        }}
-        title="Log Out"
-      />
-      {readyForForceLogout && (
+      {readyForForceLogout ? (
         <AsyncButton
+          danger
+          left={(props) => <Icon {...props} name="sign-out" />}
           onPress={async () => {
             await forceLocalLogout(connection);
             onComplete?.();
           }}
           title="Force Log Out (delete session)"
+        />
+      ) : (
+        <AsyncButton
+          left={<Icon name="sign-out" />}
+          onPress={async () => {
+            try {
+              await logout(connection, session);
+              onComplete?.();
+            } catch (e) {
+              setReadyForForceLogout(true);
+              throw e;
+            }
+          }}
+          title="Log Out"
         />
       )}
     </>

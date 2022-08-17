@@ -10,9 +10,8 @@ import Layout from "./Layout";
 import { ComponentProps, ReactNode, useRef, useState } from "react";
 import { useColors } from "./useColors";
 import { Spinner } from "./Spinner";
-import { ThemedText } from "./Themed";
 import { showErrorToast } from "./Toast";
-import { smallShadow } from "./Style";
+import { Icon } from "./Icon";
 
 export function IconButton({
   icon,
@@ -164,7 +163,7 @@ export function AsyncButton({ onPress, onCatch, ...props }: AsyncButtonProps) {
   return (
     <Button
       {...props}
-      right={error ? <ThemedText>!!</ThemedText> : promise && <Spinner />}
+      right={error ? <Icon name="warning" danger /> : promise && <Spinner />}
       onPress={() => {
         const promise = onPress()
           .then(() => {})

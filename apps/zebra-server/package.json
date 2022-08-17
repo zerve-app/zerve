@@ -6,7 +6,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "node ./build/ZebraServer.js",
-    "start:dev": "cross-env NODE_ENV=dev PORT=4888 nodemon ./build/ZebraServer.js",
+    "start:dev": "cross-env NODE_ENV=dev PORT=4888 nodemon --ignore dev-data/ ./build/ZebraServer.js",
     "build": "esbuild ./ZebraServer.ts --bundle --platform=node --outfile=build/ZebraServer.js",
     "build:dev": "yarn build --watch",
     "dev": "yarn build && concurrently \"yarn start:dev\" \"yarn build:dev\"",

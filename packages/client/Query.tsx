@@ -60,6 +60,7 @@ function useConnectionQuery<Result>(
 
 export function useZNode(path: string[], options?: QueryOptions) {
   const connection = useConnection();
+  const { onUnauthorized } = useContext(ConnectionExceptionContext);
   if (!connection)
     throw new Error("Cannot useDoc outside of connection context.");
   return useConnectionQuery(
@@ -68,6 +69,7 @@ export function useZNode(path: string[], options?: QueryOptions) {
     async () => {
       if (!connection || options?.skipLoading) return undefined;
       const results = await getTypedZ(connection, path);
+      if (results === UnauthorizedSymbol) onUnauthorized?.();
       return results;
     },
     {

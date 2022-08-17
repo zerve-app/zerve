@@ -1,4 +1,10 @@
-import { serverGet, serverPost, Connection, SavedSession } from "./Connection";
+import {
+  serverGet,
+  serverPost,
+  Connection,
+  SavedSession,
+  UnauthorizedSymbol,
+} from "./Connection";
 
 export async function listDocs(context: Connection) {
   return await serverGet(context.url, `.z`);
@@ -67,6 +73,9 @@ export async function getTypedZ(connection: Connection, path: string[]) {
     getZ(connection, path),
     getZ(connection, [...path, ".type"]),
   ]);
+  if (node === UnauthorizedSymbol || serverZType === UnauthorizedSymbol) {
+    return UnauthorizedSymbol;
+  }
   const type =
     serverZType?.[".t"] === "AuthContainer" && serverZType.authType
       ? serverZType.authType

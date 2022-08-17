@@ -6,7 +6,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "node ./build/ZooServerStandalone.js",
-    "start:dev": "cross-env NODE_ENV=dev nodemon ./build/ZooServerStandalone.js",
+    "start:dev": "cross-env NODE_ENV=dev nodemon --ignore dev-data/ ./build/ZooServerStandalone.js",
     "build": "esbuild ./ZooServerStandalone.ts --bundle --platform=node --outfile=build/ZooServerStandalone.js",
     "build:dev": "yarn build --watch",
     "dev": "yarn build && concurrently \"yarn start:dev\" \"yarn build:dev\"",
