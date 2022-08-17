@@ -30,11 +30,19 @@ const DeployRequestSchema = {
 
 const DataDirPath = "/home/zerve/deployments-data";
 
+let __junky_check_disable_simultaneous_builds = false;
+
 export const DeployZebraStaging = (buildId: string) =>
   createZAction(
     DeployRequestSchema,
     NullSchema,
     async ({ deploymentName }: FromSchema<typeof DeployRequestSchema>) => {
+      if (__junky_check_disable_simultaneous_builds) {
+        throw new Error(
+          "Cannot perform simultaneous builds right now. or maybe build has failed and aardvark needs restart",
+        );
+      }
+      __junky_check_disable_simultaneous_builds = true;
       // check against deployment config file
       const prevState = await readDeploymentsState();
       if (prevState.specs[deploymentName] || deploymentName === "aardvark") {
@@ -100,6 +108,8 @@ export const DeployZebraStaging = (buildId: string) =>
       await systemdStartAndEnable(`z.${deploymentName}.web`);
 
       await applyCaddyfile(state);
+
+      __junky_check_disable_simultaneous_builds = false;
 
       return null;
     },
