@@ -31,6 +31,7 @@ function OrgStores({ entityId, title }: OrgFeatureProps) {
     entityId,
     "Stores",
   ]);
+  console.log("OrgStores", data);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
       {data?.children.map((storeName) => (

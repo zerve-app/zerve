@@ -28,10 +28,17 @@ const CmdResultSchema = {
   },
 } as const;
 
+let __is_build_in_progress_junky_check = false;
+
 export const BuildZebra = createZAction(
   NullSchema,
   { type: "array", items: CmdResultSchema } as const,
   async () => {
+    console.log("==== Starting BuildZebra ====");
+    __is_build_in_progress_junky_check = true;
+    if (__is_build_in_progress_junky_check) {
+      throw new Error("a build is already in progress....");
+    }
     const results: Array<FromSchema<typeof CmdResultSchema>> = [];
     async function cmd(
       command: string,
@@ -171,6 +178,8 @@ export const BuildZebra = createZAction(
         path: `/root/zebra-build-details/${buildId}.json`,
         value: { error: e.toString(), results },
       });
+      __is_build_in_progress_junky_check = false;
+
       throw e;
     }
     console.log(
@@ -182,6 +191,7 @@ export const BuildZebra = createZAction(
         results,
       },
     });
+    __is_build_in_progress_junky_check = false;
 
     return results;
   }

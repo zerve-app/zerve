@@ -5,9 +5,9 @@ import {
   UseQueryOptions,
 } from "react-query";
 import { getZ } from "./ServerCalls";
-import { useConnection, Connection } from "./Connection";
+import { useConnection, Connection, UnauthorizedSymbol } from "./Connection";
 import { getTypedZ } from "./ServerCalls";
-import { useEffect, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import {
   displayStoreFileName,
   GenericError,
@@ -77,8 +77,16 @@ export function useZNode(path: string[], options?: QueryOptions) {
   );
 }
 
+type ConnectionExceptionContext = {
+  onUnauthorized?: () => void;
+};
+
+export const ConnectionExceptionContext =
+  createContext<ConnectionExceptionContext>({});
+
 export function useZNodeValue(path: string[], options?: QueryOptions) {
   const conn = useConnection();
+  const { onUnauthorized } = useContext(ConnectionExceptionContext);
   if (!conn) throw new Error("Cannot useDoc outside of connection context.");
   return useConnectionQuery(
     conn,
@@ -86,6 +94,7 @@ export function useZNodeValue(path: string[], options?: QueryOptions) {
     async () => {
       if (!conn || options?.skipLoading) return undefined;
       const results = await getZ(conn, path);
+      if (results === UnauthorizedSymbol) onUnauthorized?.();
       return results;
     },
     {

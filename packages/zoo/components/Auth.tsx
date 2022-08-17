@@ -173,9 +173,11 @@ const InitialLoginFormValue = {
 function UsernamePasswordLoginForm({
   path,
   onCancel,
+  onComplete,
 }: {
   path: string[];
   onCancel?: () => void;
+  onComplete?: (userId: string) => void;
 }) {
   const conn = useConnection();
   if (!conn) throw new Error("ConnectionContext missing");
@@ -209,6 +211,7 @@ function UsernamePasswordLoginForm({
             sessionToken: session.sessionToken,
           });
           showToast(`Logged in.`);
+          onComplete?.(session.userId);
         }}
         schemaStore={EmptySchemaStore}
         onCancel={onCancel}
@@ -262,6 +265,7 @@ export function LoginForm({
           onCancel={() => {
             setSelectedStrategy(null);
           }}
+          onComplete={onComplete}
         />
       ) : (
         selectedStrategy && (

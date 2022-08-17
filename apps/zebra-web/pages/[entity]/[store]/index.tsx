@@ -10,6 +10,7 @@ import {
 } from "@zerve/zoo/web/ZooWebServer";
 import { Provider } from "@zerve/zoo/provider";
 import { GetServerSideProps } from "next";
+import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
 
 type StoreDashboardProps = WebPathRootServerProps & {
   entityId: string;
@@ -23,7 +24,9 @@ export default function StorePage(props: StoreDashboardProps) {
   return (
     <ConnectionProvider value={conn}>
       <Provider>
-        <StoreDashboard {...props} />
+        <AuthorizedArea>
+          <StoreDashboard {...props} />
+        </AuthorizedArea>
       </Provider>
     </ConnectionProvider>
   );

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { ReactNode, useState } from "react";
 import { ConnectionProvider, serverGet } from "@zerve/client/Connection";
-import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
+import { setSession, useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import { UserDashboard } from "@zerve/zoo/web/UserDashboard";
 import { OrgDashboard } from "@zerve/zoo/web/OrgDashboard";
 import {
@@ -10,8 +10,7 @@ import {
 } from "@zerve/zoo/web/ZooWebServer";
 import { Provider } from "@zerve/zoo/provider";
 import { GetServerSideProps } from "next";
-import { extractSessionAuth } from "@zerve/client/ServerCalls";
-import { SiteConfig } from "@zerve/zoo/app/SiteConfig";
+import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
 
 type EntityIdProps = WebPathRootServerProps & {
   entityId: string;
@@ -27,7 +26,9 @@ export default function EntityPage(props: EntityIdProps) {
   );
   return (
     <ConnectionProvider value={conn}>
-      <Provider>{dashboard}</Provider>
+      <Provider>
+        <AuthorizedArea>{dashboard}</AuthorizedArea>
+      </Provider>
     </ConnectionProvider>
   );
 }

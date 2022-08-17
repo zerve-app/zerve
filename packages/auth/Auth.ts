@@ -9,6 +9,9 @@ import {
   createZMetaContainer,
   validateWithSchema,
   RequestError,
+  createZGettable,
+  StringSchema,
+  BooleanSchema,
 } from "@zerve/core";
 import { randomBytes, createHash } from "crypto";
 import {
@@ -97,6 +100,28 @@ const StoredSessionSchema = {
 } as const;
 type StoredSession = FromSchema<typeof StoredSessionSchema>;
 
+export const AuthProfileSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    userId: StringSchema,
+    hasPassword: BooleanSchema,
+    addresses: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          strategyName: StringSchema,
+          address: StringSchema,
+        },
+        required: ["strategyName", "address"],
+      },
+    },
+  },
+  required: ["userId", "hasPassword"],
+} as const;
+
 export type AuthenticationFileData = FromSchema<typeof AuthenticatorDataSchema>;
 
 const UserDataSchema = {
@@ -110,6 +135,13 @@ const UserDataSchema = {
     },
     passwordDigest: { type: "string" },
     passwordSalt: { type: "string" },
+    profile: {
+      type: "object",
+      properties: {
+        displayName: StringSchema,
+      },
+      required: [],
+    },
   },
   required: ["authenticatorIds"],
   additionalProperties: false,
@@ -332,6 +364,40 @@ export async function createAuth<
     )
   );
 
+  function getProfileGetter(userId: string) {
+    return createZGettable(AuthProfileSchema, async () => {
+      const userDataPath = joinPath(usersFilesPath, userId, "entity.json");
+      const userData: UserData = await ReadJSON.call(userDataPath);
+      const addresses = await Promise.all(
+        userData.authenticatorIds.map(async (authenticatorId) => {
+          const authenticator = await ReadJSON.call(
+            joinPath(
+              authenticationFilesPath,
+              authenticatorId,
+              "authenticator.json"
+            )
+          );
+          const { strategyName } = authenticator;
+          const authStrategyRecord = await ReadJSON.call(
+            joinPath(
+              authFilesPath,
+              "strategies",
+              authenticator.strategyName,
+              `${authenticator.strategyKey}.json`
+            )
+          );
+          const { address } = authStrategyRecord;
+          return { strategyName, address };
+        })
+      );
+      return {
+        userId,
+        addresses,
+        hasPassword: !!userData.passwordDigest && !!userData.passwordSalt,
+      };
+    });
+  }
+
   const authenticationFilesPath = joinPath(authFilesPath, "authentications");
 
   const usersFilesPath = joinPath(authFilesPath, "entities");
@@ -342,6 +408,7 @@ export async function createAuth<
     session: StoredSession
   ): UserAdminZeds {
     return {
+      profile: getProfileGetter(userId),
       setUsername: getSetUsernameAction(
         usersFilesPath,
         authenticationFilesPath,

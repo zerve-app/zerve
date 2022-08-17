@@ -31,7 +31,7 @@ function UserStores({ entityId, title }: UserFeatureProps) {
   ]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
-      {data?.children.map((storeName) => (
+      {data?.children?.map((storeName) => (
         <Link key={storeName} href={`/${entityId}/${storeName}`}>
           <NavLinkContent title={storeName} icon="briefcase" />
         </Link>
