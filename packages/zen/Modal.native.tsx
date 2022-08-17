@@ -5,7 +5,7 @@ export function useModal<Options>(
   renderModal: (opts: {
     onClose: () => void;
     options: Options;
-  }) => React.ReactNode
+  }) => React.ReactNode,
 ) {
   return useBottomSheet<Options>(renderModal);
 }

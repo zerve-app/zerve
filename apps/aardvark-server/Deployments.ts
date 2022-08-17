@@ -19,7 +19,7 @@ import { applySystemdConfig, systemdStopAndDisable } from "./Systemd";
 
 export const aardvarkDeploymentsPath = joinPath(
   process.env.HOME as string,
-  "AardvarkDeployments.json"
+  "AardvarkDeployments.json",
 );
 export const DeploymentSpecSchema = {
   type: "object",
@@ -102,5 +102,5 @@ export const Deployments = createZGettableGroup(
       more: false,
       cursor: "",
     };
-  }
+  },
 );

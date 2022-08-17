@@ -58,13 +58,13 @@ function zWorkflowCallsCollection(parent?: ZCallsCollection | null) {
     },
     async ({}) => {
       return { children: ["foo", "bar"], more: false, cursor: "" };
-    }
+    },
   );
 }
 function zWorkflowInstance(
   workflow: ZWorkflowDefinition,
   zContext: Record<string, AnyZed>,
-  parentCalls: ZCallsCollection
+  parentCalls: ZCallsCollection,
 ) {
   const calls = zWorkflowCallsCollection(parentCalls);
   return { calls };
@@ -72,7 +72,7 @@ function zWorkflowInstance(
 
 export function zWorkflowEnvironment(
   zContext: Record<string, AnyZed>,
-  workflows: Record<string, AnyZed>
+  workflows: Record<string, AnyZed>,
 ) {
   const calls = zWorkflowCallsCollection();
   return createZMetaContainer(
@@ -84,13 +84,13 @@ export function zWorkflowEnvironment(
           Object.entries(workflows).map(([workflowName, workflow]) => [
             workflowName,
             zWorkflowInstance(workflow, zContext, calls),
-          ])
-        )
+          ]),
+        ),
       ),
     },
     {
       zContract: "WorkflowEnvironment",
-    }
+    },
   );
 }
 
@@ -104,7 +104,7 @@ export function zWorkflow<Payload extends JSONSchema>(definition: {
 export function zWorkflowCallStep<P>(
   path: string,
   payload: P,
-  callOptions: CallOptions
+  callOptions: CallOptions,
 ): CallActionStep {
   return { type: "CallAction", path, payload, callOptions };
 }

@@ -36,7 +36,7 @@ export function FileFeature({
   const isLoading = isSchemasLoading || isNodeLoading;
   const { setEntryName, openSchema, leave } = useStoreFileNavigation(
     storePath,
-    name
+    name,
   );
   const { openRawJSON } = useGlobalNavigation();
   const deleteFile = useDeleteEntry(
@@ -45,8 +45,8 @@ export function FileFeature({
       () => ({
         onSuccess: () => showToast(`${displayStoreFileName(name)} Deleted`),
       }),
-      [name]
-    )
+      [name],
+    ),
   );
   const saveFile = useSaveEntry(storePath);
   const renameFile = useRenameEntry(storePath);
@@ -106,7 +106,7 @@ export function FileFeature({
         },
         onHandled: leave,
       },
-    ]
+    ],
   );
   return (
     <>

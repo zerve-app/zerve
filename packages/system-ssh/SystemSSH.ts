@@ -36,13 +36,13 @@ export function createSystemSSH(commands: SystemCommandsModule) {
             hostEntry.value,
             {
               hostName: hostEntry.config.find(
-                (e: any) => e.param === "HostName" || e.param === "Hostname"
+                (e: any) => e.param === "HostName" || e.param === "Hostname",
               )?.value,
               user: hostEntry.config.find((e: any) => e.param === "User")
                 ?.value,
             },
           ];
-        })
+        }),
     );
     return { hosts };
   });

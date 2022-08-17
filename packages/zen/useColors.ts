@@ -15,6 +15,6 @@ export function useAllColors() {
       colors: Colors,
       scheme,
     }),
-    [scheme]
+    [scheme],
   );
 }

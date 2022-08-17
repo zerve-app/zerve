@@ -30,7 +30,7 @@ const historyStorage = createStorage({
 });
 const latestHistoryBlockLink = historyStorage.getStorageNode(
   "LatestBlockLink",
-  defaultHistoryBlockLink
+  defaultHistoryBlockLink,
 );
 
 export function clearLocalHistoryStorage() {
@@ -58,7 +58,7 @@ function flushHistory() {
   if (previousLink.historyBlockId) {
     const previousBlockNode = historyStorage.getStorageNode(
       previousLink.historyBlockId,
-      null as null | HistoryBlock
+      null as null | HistoryBlock,
     );
     const previousBlock = previousBlockNode.get();
 
@@ -68,7 +68,7 @@ function flushHistory() {
     const blockId = getHistoryBlockId();
     const blockNode = historyStorage.getStorageNode(
       blockId,
-      null as null | HistoryBlock
+      null as null | HistoryBlock,
     );
     blockNode.set({
       events: eventsToFlush,
@@ -85,7 +85,7 @@ function flushHistory() {
     const blockId = getHistoryBlockId();
     const blockNode = historyStorage.getStorageNode(
       blockId,
-      null as null | HistoryBlock
+      null as null | HistoryBlock,
     );
     blockNode.set({
       events: eventsToFlush,
@@ -110,7 +110,7 @@ export function appendHistory(event: InternalHistoryEvent) {
 }
 
 export async function appendHistoryAsync(
-  event: InternalHistoryEvent
+  event: InternalHistoryEvent,
 ): Promise<string> {
   appendHistory(event);
   const blockId = await new Promise<string>((resolve, reject) => {
@@ -133,7 +133,7 @@ export function reportHistoryEvent(title: string, body: string) {
 
 export async function storeHistoryEvent(
   title: string,
-  body: any
+  body: any,
 ): Promise<string> {
   return await appendHistoryAsync({
     time: Date.now(),
@@ -153,7 +153,7 @@ export function useHistoryEvent(eventId: string): null | HistoryEvent {
     .getStorageNode(blockId, null as null | HistoryBlock)
     .get();
   const event = block?.events?.find(
-    (event: InternalHistoryEvent) => event.key === eventKey
+    (event: InternalHistoryEvent) => event.key === eventKey,
   );
   if (!event) return null;
   return { id: eventId, ...event };
@@ -179,7 +179,7 @@ export function useHistory(queryCount = 50) {
       const blockId = walkBlockId;
       const blockNode = historyStorage.getStorageNode(
         blockId,
-        null as null | HistoryBlock
+        null as null | HistoryBlock,
       );
       const blockValue = blockNode.get();
       if (blockValue) {

@@ -66,7 +66,7 @@ export async function createCoreData(dataDir: string) {
     },
     async () => {
       return await _listDocs();
-    }
+    },
   );
 
   const Blocks = createZGettableGroup<
@@ -81,7 +81,7 @@ export async function createCoreData(dataDir: string) {
     },
     async () => {
       return await _listBlocks();
-    }
+    },
   );
 
   const CreateBlock = createZAction(
@@ -120,7 +120,7 @@ export async function createCoreData(dataDir: string) {
         type: "BlockLink",
         id: block.id,
       } as const;
-    }
+    },
   );
 
   const GetBlockJSON = createZAction(
@@ -144,7 +144,7 @@ export async function createCoreData(dataDir: string) {
           throw new NotFoundError("NotFound", `Block not found`, { id });
         throw e;
       }
-    }
+    },
   );
 
   const SetDoc = createZAction(
@@ -162,7 +162,7 @@ export async function createCoreData(dataDir: string) {
       const docFile = join(_docsDir, name);
       await writeFile(docFile, JSON.stringify(value));
       return {};
-    }
+    },
   );
 
   const MoveDoc = createZAction(
@@ -181,7 +181,7 @@ export async function createCoreData(dataDir: string) {
       const toDocFile = join(_docsDir, to);
       await move(fromDocFile, toDocFile);
       return null;
-    }
+    },
   );
 
   const DeleteDoc = createZAction(
@@ -199,7 +199,7 @@ export async function createCoreData(dataDir: string) {
       const trashedFile = join(_trashDir, `doc-${name}`);
       await rename(docFile, trashedFile);
       return {};
-    }
+    },
   );
 
   const DeleteBlock = createZAction(
@@ -217,7 +217,7 @@ export async function createCoreData(dataDir: string) {
       const trashedFile = join(_trashDir, `block-${id}`);
       await rename(blockFile, trashedFile);
       return {};
-    }
+    },
   );
 
   async function _listBlocks(): Promise<ChildrenList> {

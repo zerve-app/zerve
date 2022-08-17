@@ -11,7 +11,7 @@ type EmailAuthOptions = {
 
 export async function createEmailAuthStrategy(
   email: ZMessageEmail,
-  options?: EmailAuthOptions
+  options?: EmailAuthOptions,
 ) {
   return createGenericMessageAuthStrategy(
     EmailSchema,
@@ -38,7 +38,7 @@ export async function createEmailAuthStrategy(
           if (!isFoundInAllowList)
             throw new RequestError(
               "EmailDisallowed",
-              `"${email}" is not allowed.`
+              `"${email}" is not allowed.`,
             );
         }
         if (domainAllowList) {
@@ -46,18 +46,18 @@ export async function createEmailAuthStrategy(
           if (!emailDomain)
             throw new RequestError(
               "EmailDisallowed",
-              `"${email}" is not allowed.`
+              `"${email}" is not allowed.`,
             );
           const isFoundInAllowList =
             domainAllowList.indexOf(emailDomain) !== -1;
           if (!isFoundInAllowList)
             throw new RequestError(
               "EmailDomainDisallowed",
-              `"${emailDomain}" is not an allowed domain.`
+              `"${emailDomain}" is not an allowed domain.`,
             );
         }
         return true;
       },
-    }
+    },
   );
 }

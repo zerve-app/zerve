@@ -23,7 +23,7 @@ export function clearLocalHistoryStorage() {}
 export function appendHistory(event: InternalHistoryEvent) {}
 
 export async function appendHistoryAsync(
-  event: InternalHistoryEvent
+  event: InternalHistoryEvent,
 ): Promise<string> {
   return "ok...";
 }
@@ -32,7 +32,7 @@ export function reportHistoryEvent(title: string, body: string) {}
 
 export async function storeHistoryEvent(
   title: string,
-  body: any
+  body: any,
 ): Promise<string> {
   return "really?";
 }

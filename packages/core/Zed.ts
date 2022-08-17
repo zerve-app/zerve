@@ -7,13 +7,13 @@ export type ModuleSpec = {
 
 export type ZAction<
   ActionSchema extends JSONSchema,
-  ResponseSchema extends JSONSchema
+  ResponseSchema extends JSONSchema,
 > = {
   zType: "Action";
   payloadSchema: ActionSchema;
   responseSchema: ResponseSchema;
   call: (
-    payload: FromSchema<ActionSchema>
+    payload: FromSchema<ActionSchema>,
   ) => Promise<FromSchema<ResponseSchema>>;
 };
 
@@ -32,7 +32,7 @@ export type ZAuthContainer<Zeds extends Record<string, AnyZed>> = {
 export type ZGroup<
   ChildZed extends AnyZed,
   GetOptions,
-  GetSchema extends JSONSchema
+  GetSchema extends JSONSchema,
 > = {
   zType: "Group";
   getChild: (zedKey: string) => Promise<ChildZed | undefined>;
@@ -63,26 +63,26 @@ export type AnyZed =
 
 export function createZAction<
   ActionSchema extends JSONSchema,
-  ResponseSchema extends JSONSchema
+  ResponseSchema extends JSONSchema,
 >(
   payloadSchema: ActionSchema,
   responseSchema: ResponseSchema,
   call: (
-    payload: FromSchema<ActionSchema>
-  ) => Promise<FromSchema<ResponseSchema>>
+    payload: FromSchema<ActionSchema>,
+  ) => Promise<FromSchema<ResponseSchema>>,
 ): ZAction<ActionSchema, ResponseSchema> {
   return { zType: "Action", payloadSchema, responseSchema, call };
 }
 
 export function createZGettable<StateSchema extends JSONSchema, GetOptions>(
   valueSchema: StateSchema,
-  get: (o: GetOptions) => Promise<FromSchema<StateSchema>>
+  get: (o: GetOptions) => Promise<FromSchema<StateSchema>>,
 ): ZGettable<StateSchema, GetOptions> {
   return { zType: "Gettable", get, valueSchema };
 }
 
 export function createZContainer<Zeds extends Record<string, AnyZed>>(
-  z: Zeds
+  z: Zeds,
 ): ZContainer<Zeds, undefined> {
   return {
     zType: "Container",
@@ -108,7 +108,7 @@ type ContainerMeta = {
 
 export function createZMetaContainer<
   Zeds extends Record<string, AnyZed>,
-  Meta extends ContainerMeta
+  Meta extends ContainerMeta,
 >(z: Zeds, meta: Meta): ZContainer<Zeds, Meta> {
   return {
     zType: "Container",
@@ -123,7 +123,7 @@ export function createZMetaContainer<
 }
 
 export function createZAuthContainer<AuthZed extends Record<string, AnyZed>>(
-  getAuthZed: (authId: string, authKey: string) => Promise<AuthZed>
+  getAuthZed: (authId: string, authKey: string) => Promise<AuthZed>,
 ): ZAuthContainer<AuthZed> {
   return {
     zType: "AuthContainer",
@@ -133,7 +133,7 @@ export function createZAuthContainer<AuthZed extends Record<string, AnyZed>>(
 
 const NullSchema = { type: "null" } as const;
 export function createZGroup<ChildZType extends AnyZed>(
-  getChild: (key: string) => Promise<ChildZType | undefined>
+  getChild: (key: string) => Promise<ChildZType | undefined>,
 ): ZGroup<ChildZType, undefined, typeof NullSchema> {
   return {
     zType: "Group",
@@ -175,7 +175,7 @@ export type ZGettableGroup<ChildZType extends AnyZed> = ZGroup<
 
 export function createZGettableGroup<ChildZType extends AnyZed>(
   getChild: (key: string) => Promise<ChildZType | undefined>,
-  get: (getOptions: ChildrenListOptions) => Promise<ChildrenList>
+  get: (getOptions: ChildrenListOptions) => Promise<ChildrenList>,
 ): ZGettableGroup<ChildZType> {
   return {
     zType: "Group",

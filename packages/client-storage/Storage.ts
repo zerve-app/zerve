@@ -22,7 +22,7 @@ export function createStorage(config: MMKVConfiguration | undefined) {
 
   function createLocalStorageNode<ValueType>(
     key: string,
-    defaultValue: ValueType
+    defaultValue: ValueType,
   ): StorageNode<ValueType> {
     const updateHandlers = new Set<(v: ValueType) => void>();
     let isDestroyed = false;
@@ -63,7 +63,7 @@ export function createStorage(config: MMKVConfiguration | undefined) {
 
   function getStorageNode<ValueType>(
     key: string,
-    defaultValue: ValueType
+    defaultValue: ValueType,
   ): StorageNode<ValueType> {
     if (localStorageNodes[key]) return localStorageNodes[key];
     const node = createLocalStorageNode<ValueType>(key, defaultValue);
@@ -74,7 +74,7 @@ export function createStorage(config: MMKVConfiguration | undefined) {
   function mutateStorage<ValueType>(
     key: string,
     defaultValue: ValueType,
-    mutator: (value: ValueType) => ValueType
+    mutator: (value: ValueType) => ValueType,
   ) {
     const storageNode = getStorageNode<ValueType>(key, defaultValue);
     const previousValue = storageNode.get();
@@ -84,13 +84,13 @@ export function createStorage(config: MMKVConfiguration | undefined) {
 
   function useNodeState<V>(node: StorageNode<V>) {
     const [componentStorageState, setComponentStorageState] = useState<V>(
-      node.get()
+      node.get(),
     );
     const setInternal = useCallback(
       (value: V) => {
         setComponentStorageState(value);
       },
-      [node.key]
+      [node.key],
     );
     useEffect(() => {
       node.updateHandlers.add(setInternal);
@@ -110,14 +110,14 @@ export function createStorage(config: MMKVConfiguration | undefined) {
   function useStored<V>(key: string, defaultValue: V) {
     const storageNode = getStorageNode(key, defaultValue);
     const [componentStorageState, setComponentStorageState] = useState<V>(
-      storageNode.get()
+      storageNode.get(),
     );
 
     const setInternal = useCallback(
       (value: V) => {
         setComponentStorageState(value);
       },
-      [key]
+      [key],
     );
     useEffect(() => {
       storageNode.updateHandlers.add(setInternal);

@@ -67,6 +67,6 @@ export function createZMessageEmail(config: {
         }
       }
       return {};
-    }
+    },
   );
 }

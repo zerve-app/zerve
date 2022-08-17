@@ -181,7 +181,7 @@ export function StoreDashboard({
           let fragment = "entries";
           if (feature.path)
             feature.path.forEach(
-              (entryPathTerm) => (fragment += `-${entryPathTerm}`)
+              (entryPathTerm) => (fragment += `-${entryPathTerm}`),
             );
           if (feature.child === "schema") {
             fragment += "_schema";

@@ -50,7 +50,7 @@ export function useCreateEntry(storePath: string[]) {
           name,
         ]);
       },
-    }
+    },
   );
 }
 
@@ -78,13 +78,13 @@ export function useCreateSchema(storePath: string[]) {
           "$schemas",
         ]);
       },
-    }
+    },
   );
 }
 
 export function useDeleteEntry(
   storePath: string[],
-  opts?: { onSuccess?: () => void }
+  opts?: { onSuccess?: () => void },
 ) {
   const conn = useConnection();
   const queryClient = useQueryClient();
@@ -112,7 +112,7 @@ export function useDeleteEntry(
         ]);
         opts?.onSuccess?.();
       },
-    }
+    },
   );
 }
 
@@ -143,7 +143,7 @@ export function useSaveEntry(storePath: string[]) {
           "value",
         ]);
       },
-    }
+    },
   );
 }
 
@@ -170,13 +170,13 @@ export function useRenameEntry(storePath: string[]) {
           "State", // well this is aggressive..
         ]);
       },
-    }
+    },
   );
 }
 
 export function useSaveEntrySchema(
   storePath: string[],
-  schemaStore: SchemaStore
+  schemaStore: SchemaStore,
 ) {
   const conn = useConnection();
   const queryClient = useQueryClient();
@@ -205,7 +205,7 @@ export function useSaveEntrySchema(
           name,
         ]);
       },
-    }
+    },
   );
 }
 
@@ -233,7 +233,7 @@ export function useSaveSchema(storePath: string[]) {
           "$schemas",
         ]);
       },
-    }
+    },
   );
 }
 
@@ -258,7 +258,7 @@ export function useZNodeStateWrite(path: string[]) {
       onSuccess: () => {
         // queryClient.invalidateQueries()
       },
-    }
+    },
   );
 }
 
@@ -286,6 +286,6 @@ export function useDeleteSchema(storePath: string[]) {
         ]);
         // showToast(`${schemaName} Schema Deleted`);
       },
-    }
+    },
   );
 }

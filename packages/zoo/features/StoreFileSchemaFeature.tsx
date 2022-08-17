@@ -47,7 +47,7 @@ export function StoreFileSchemaFeature({
           openRawJSON(`${name} Value`, data?.schema);
         },
       },
-    ]
+    ],
   );
   return (
     <>

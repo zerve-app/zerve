@@ -51,7 +51,7 @@ export function useRequiredConnection(): Connection {
 function _authHeader(auth: [string, string]) {
   return {
     Authorization: `Basic ${Buffer.from(`${auth[0]}:${auth[1]}`).toString(
-      "base64"
+      "base64",
     )}`,
   };
 }
@@ -62,7 +62,7 @@ export async function serverGet<Response>(
   origin: string,
   path: string,
   query?: Record<string, string> | null,
-  auth?: [string, string] | null
+  auth?: [string, string] | null,
 ): Promise<Response | typeof UnauthorizedSymbol> {
   const searchParams = query && new URLSearchParams(query);
   const searchString = searchParams?.toString();
@@ -75,7 +75,7 @@ export async function serverGet<Response>(
         Accept: "application/json",
         ...(auth ? _authHeader(auth) : {}),
       },
-    }
+    },
   );
   try {
     const value = await res.json();
@@ -88,7 +88,7 @@ export async function serverGet<Response>(
         throw new NotFoundError(
           value?.code || "NotFound",
           value?.message || "Not Found.",
-          value?.details
+          value?.details,
         );
       } else throw new Error("Network Error");
     }
@@ -104,7 +104,7 @@ export async function serverPost<Request, Response>(
   origin: string,
   path: string,
   body: Request,
-  auth?: [string, string] | null
+  auth?: [string, string] | null,
 ): Promise<Response> {
   const res = await fetch(`${origin}/${path}`, {
     headers: {

@@ -19,7 +19,7 @@ export type OrgNavigationState =
     };
 
 export function OrgFeatureLink(
-  props: Omit<ComponentProps<typeof NavLink<OrgNavigationState>>, "Context">
+  props: Omit<ComponentProps<typeof NavLink<OrgNavigationState>>, "Context">,
 ) {
   return (
     <NavLink<OrgNavigationState> Context={OrgDashboardContext} {...props} />

@@ -13,7 +13,7 @@ function expandEnumSchema(s) {
 // takes an arbitrary value and grabs the subset of schema from it.
 export function JSONSchemaPluck<Schema extends JSONSchema>(
   schema: Schema,
-  value: any
+  value: any,
 ): FromSchema<Schema> {
   const schema1 = expandEnumSchema(schema);
 

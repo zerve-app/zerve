@@ -102,7 +102,7 @@ function LoginStrategyForm({
                   address,
                   token: t,
                 },
-              }
+              },
             ).catch((e) => {
               setToken("");
               throw e;
@@ -196,7 +196,7 @@ function UsernamePasswordLoginForm({
             {
               userId: formValues.username,
               password: formValues.password,
-            }
+            },
           ).catch((e) => {
             throw e;
           });

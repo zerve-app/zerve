@@ -27,7 +27,7 @@ export function TestHistoryScreen() {
             onPress={() => {
               reportHistoryEvent(
                 "Test Event",
-                `This is the text body of the test event that happened in your history.`
+                `This is the text body of the test event that happened in your history.`,
               );
             }}
           />
@@ -36,16 +36,16 @@ export function TestHistoryScreen() {
             onPress={() => {
               reportHistoryEvent(
                 "Test Event A",
-                `This is the text body of the test event that happened in your history.`
+                `This is the text body of the test event that happened in your history.`,
               );
               reportHistoryEvent(
                 "Test Event B",
-                `This is the text body of the test event that happened in your history.`
+                `This is the text body of the test event that happened in your history.`,
               );
               setTimeout(() => {
                 reportHistoryEvent(
                   "Test Event C",
-                  `This is the text body of the test event that happened in your history.`
+                  `This is the text body of the test event that happened in your history.`,
                 );
               }, 5);
             }}

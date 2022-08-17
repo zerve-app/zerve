@@ -42,8 +42,8 @@ export const Command = createZAction(
         (error, out, err) => {
           if (error) reject(error);
           else resolve({ out, err });
-        }
+        },
       );
     });
-  }
+  },
 );

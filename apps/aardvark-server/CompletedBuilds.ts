@@ -13,7 +13,7 @@ import { DeployZebraStaging } from "./DeployZebraStaging";
 function getBuildDetailsZ(buildId: string) {
   return createZGettable({} as const, async () => {
     const details = await ReadJSON.call(
-      `/root/zebra-build-details/${buildId}.json`
+      `/root/zebra-build-details/${buildId}.json`,
     );
     return details;
   });
@@ -42,10 +42,10 @@ export const CompletedBuilds = createZGettableGroup(
     const tarballList = await ReadDir.call("/root/zebra-builds");
     return {
       children: tarballList.map((tarballName: string) =>
-        tarballName.slice(0, -7)
+        tarballName.slice(0, -7),
       ), // strip .tar.gz
       cursor: "",
       more: false,
     };
-  }
+  },
 );

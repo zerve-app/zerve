@@ -18,7 +18,7 @@ export function pathStartsWith(wholePath: string[], maybePrefixPath: string[]) {
 
 export function extractSessionAuth(
   path: string[],
-  session?: null | SavedSession
+  session?: null | SavedSession,
 ) {
   let auth: null | [string, string] = null;
   if (session && pathStartsWith(path, session.authPath)) {
@@ -36,7 +36,7 @@ export async function getZ(connection: Connection, path: string[]) {
     connection.url,
     `.z/${path.join("/")}`,
     undefined,
-    auth
+    auth,
   );
   return resp;
 }
@@ -44,7 +44,7 @@ export async function getZ(connection: Connection, path: string[]) {
 export async function postZAction(
   connection: Connection,
   path: string[],
-  body: any
+  body: any,
 ) {
   let finalBody = body;
   const bodyType = typeof body;

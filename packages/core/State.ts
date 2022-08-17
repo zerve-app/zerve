@@ -6,7 +6,7 @@ const StateContainerContractMeta = { zContract: "State" } as const;
 
 export function createZState<Schema extends JSONSchema>(
   schema: Schema,
-  initialState: FromSchema<Schema>
+  initialState: FromSchema<Schema>,
 ) {
   let internalState = initialState;
   const handlers = new Set<(s: FromSchema<Schema>) => void>();
@@ -18,7 +18,7 @@ export function createZState<Schema extends JSONSchema>(
       return () => {
         handlers.delete(handler);
       };
-    }
+    },
   );
   const set = createZAction(
     schema,
@@ -26,13 +26,13 @@ export function createZState<Schema extends JSONSchema>(
     (v: FromSchema<Schema>) => {
       internalState = v;
       handlers.forEach((handler) => handler(v));
-    }
+    },
   );
   return createZMetaContainer(
     {
       state,
       set,
     },
-    StateContainerContractMeta
+    StateContainerContractMeta,
   );
 }

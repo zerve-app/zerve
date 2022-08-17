@@ -99,7 +99,7 @@ export function ZStateNode({
     throw new Error("Unexpected z type info for ZStateNode");
 
   const { data: node, isLoading } = useZNode(
-    useMemo(() => [...path, "state"], [path])
+    useMemo(() => [...path, "state"], [path]),
   );
   if (isLoading) return <Spinner />;
   return (
@@ -251,7 +251,7 @@ function ChangeUsernameButton({
         postZAction(
           connection,
           [...session.authPath, "user", "setUsername"],
-          username
+          username,
         )
           .then(() => {
             setSessionUserId(connection.key, username);

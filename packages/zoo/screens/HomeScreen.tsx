@@ -66,7 +66,7 @@ function ConnectionSection({ connection }: { connection: Connection }) {
           });
         },
       },
-    ]
+    ],
   );
   const isConnectionDisclosed = useConnectionDisclosedState(connection.key);
   return (
@@ -74,7 +74,7 @@ function ConnectionSection({ connection }: { connection: Connection }) {
       defaultIsOpen={isConnectionDisclosed}
       onOpenChange={useMemo(
         () => (isOpen) => setConnectionDisclosed(connection.key, isOpen),
-        [connection.key]
+        [connection.key],
       )}
       header={<Label>{connection.name}</Label>}
       right={<>{optionsButton}</>}

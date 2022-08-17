@@ -5,7 +5,7 @@ import stringify from "json-stable-stringify";
 
 export async function createJSONBlock(
   value: any,
-  formatKey: keyof typeof BLOCK_ID_FORMATS = "z"
+  formatKey: keyof typeof BLOCK_ID_FORMATS = "z",
 ): Promise<JSONBlock> {
   const format = formatKey || "z";
   const { encoding, algorithm } = BLOCK_ID_FORMATS[format];

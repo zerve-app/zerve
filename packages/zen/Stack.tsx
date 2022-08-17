@@ -62,7 +62,7 @@ export function VStack({
           >
             {el}
           </View>
-        )
+        ),
       )}
     </View>
   );

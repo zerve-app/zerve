@@ -4,7 +4,7 @@ import { createGenericMessageAuthStrategy } from "./AuthMessageStrategy";
 import { FromSchema, PhoneSchema } from "@zerve/core";
 
 export async function createSMSAuthStrategy(
-  sms: ZMessageSMS
+  sms: ZMessageSMS,
 ): Promise<AuthStrategy> {
   return createGenericMessageAuthStrategy(
     PhoneSchema,
@@ -13,6 +13,6 @@ export async function createSMSAuthStrategy(
         message: `Your Auth Code is: ${code}`,
         toNumber: address,
       });
-    }
+    },
   );
 }

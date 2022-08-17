@@ -58,7 +58,7 @@ export function useGlobalNavigation() {
         schema: any,
         value: any,
         onValue?: undefined | ((value: any) => void),
-        schemaStore?: SchemaStore
+        schemaStore?: SchemaStore,
       ) => {
         openInputModal({
           title,
@@ -72,7 +72,7 @@ export function useGlobalNavigation() {
       openHistoryEvent: (eventId: string) => {},
       openError: (e: Error) => {},
     }),
-    []
+    [],
   );
 }
 
@@ -96,7 +96,7 @@ export function useConnectionNavigation() {
         push(path.join("/"));
       },
     }),
-    []
+    [],
   );
 }
 
@@ -132,7 +132,7 @@ export function useStoreNavigation(location: string[]) {
         replace(`/${location.join("/")}?_=schemas-${schemaName}`);
       },
     }),
-    []
+    [],
   );
 }
 
@@ -156,13 +156,13 @@ export function useStoreFileNavigation(storePath: string[], entryName: string) {
         push(`${storePath.join("/")}/$entries/${entryName}`);
       },
     }),
-    []
+    [],
   );
 }
 
 export function useStoreSchemaNavigation(
   storePath: string[],
-  schemaName: string
+  schemaName: string,
 ) {
   const { push, pop } = useRouter();
   return useMemo(
@@ -172,6 +172,6 @@ export function useStoreSchemaNavigation(
       },
       setSchemaName: (schemaName: string) => {},
     }),
-    []
+    [],
   );
 }

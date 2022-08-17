@@ -20,7 +20,7 @@ export type StoreNavigationState =
     };
 
 export function StoreFeatureLink(
-  props: Omit<ComponentProps<typeof NavLink<StoreNavigationState>>, "Context">
+  props: Omit<ComponentProps<typeof NavLink<StoreNavigationState>>, "Context">,
 ) {
   return (
     <NavLink<StoreNavigationState> Context={StoreDashboardContext} {...props} />
@@ -31,7 +31,7 @@ export function StoreFeatureLinkButton(
   props: Omit<
     ComponentProps<typeof NavLinkButton<StoreNavigationState>>,
     "Context"
-  >
+  >,
 ) {
   return (
     <NavLinkButton<StoreNavigationState>

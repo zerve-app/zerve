@@ -45,7 +45,7 @@ export const BuildZebra = createZAction(
       command: string,
       args: string[],
       cwd?: string,
-      env?: Record<string, string>
+      env?: Record<string, string>,
     ) {
       const startTime = Date.now();
       const { out, err } = await Command.call({
@@ -72,7 +72,7 @@ export const BuildZebra = createZAction(
     const runningAsUser = whoami?.replace("\n", "");
     if (runningAsUser !== "root") {
       throw new Error(
-        "You are expected to run this as root on a dedicated debian machine. Sorry this is junk. glhf!"
+        "You are expected to run this as root on a dedicated debian machine. Sorry this is junk. glhf!",
       );
     }
 
@@ -107,7 +107,7 @@ export const BuildZebra = createZAction(
       const { out: commitHash } = await cmd(
         "git",
         ["rev-parse", "main"],
-        "/root/zerve.git"
+        "/root/zerve.git",
       );
       if (!commitHash)
         throw new Error("Cannot identify the current git commit hash");
@@ -128,10 +128,10 @@ export const BuildZebra = createZAction(
       // delete unrelated apps
       const allApps = await ReadDir.call(joinPath(buildDir, "apps"));
       const nonDeployedApps = allApps.filter(
-        (appName) => appName !== "zebra-web" && appName !== "zebra-server"
+        (appName) => appName !== "zebra-web" && appName !== "zebra-server",
       );
       await DeleteRecursive.call(
-        nonDeployedApps.map((appName) => joinPath(buildDir, "apps", appName))
+        nonDeployedApps.map((appName) => joinPath(buildDir, "apps", appName)),
       );
       // install dependencies
       await cmd("yarn", ["--frozen-lockfile"], buildDir, {});
@@ -164,14 +164,14 @@ export const BuildZebra = createZAction(
           `/root/zebra-builds/${buildId}.tar.gz`,
           `${buildId}/`, // dont remove this trailing slash!
         ],
-        buildParentDir
+        buildParentDir,
       );
       // clean up
       await cmd("rm", ["-rf", buildDir]);
     } catch (e) {
       console.error("-----");
       console.error(
-        `Build failed. Writing logs to /root/zebra-build-details/${buildId}.json`
+        `Build failed. Writing logs to /root/zebra-build-details/${buildId}.json`,
       );
       console.error(e);
       console.error("-----");
@@ -184,7 +184,7 @@ export const BuildZebra = createZAction(
       throw e;
     }
     console.log(
-      `Build success, saved to /root/zebra-builds/${buildId}.tar.gz - Writing logs to /root/zebra-build-details/${buildId}.json`
+      `Build success, saved to /root/zebra-builds/${buildId}.tar.gz - Writing logs to /root/zebra-build-details/${buildId}.json`,
     );
     await WriteJSON.call({
       path: `/root/zebra-build-details/${buildId}.json`,
@@ -195,5 +195,5 @@ export const BuildZebra = createZAction(
     __is_build_in_progress_junky_check = false;
 
     return results;
-  }
+  },
 );

@@ -20,7 +20,7 @@ const zGetString = createZGettable(
   } as const,
   async (params: null) => {
     return "Hello";
-  }
+  },
 );
 ```
 

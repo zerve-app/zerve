@@ -24,7 +24,7 @@ export const ZOBSService = createZService(async () => {
     {
       enum: sceneList.scenes.map((scene) => scene.name),
     },
-    sceneList["current-scene"]
+    sceneList["current-scene"],
   );
   let lastSceneInOBS = sceneList["current-scene"];
   obs.on("SwitchScenes", (scene) => {
@@ -37,13 +37,13 @@ export const ZOBSService = createZService(async () => {
     }
   });
   const { isRecording, isRecordingPaused } = await obs.send(
-    "GetRecordingStatus"
+    "GetRecordingStatus",
   );
   const recordingStatus = createZState(
     {
       enum: ["recording", "starting", "stopping", "paused", "stopped"],
     } as const,
-    isRecording ? (isRecordingPaused ? "paused" : "recording") : "stopped"
+    isRecording ? (isRecordingPaused ? "paused" : "recording") : "stopped",
   );
   obs.on("RecordingStopping", (s) => {
     recordingStatus.z.set.call("stopping");

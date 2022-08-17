@@ -27,7 +27,7 @@ import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
 export type BottomSheetContext = {
   open: <O>(
     options: O,
-    node: (opts: { onClose: () => void; options: O }) => ReactNode
+    node: (opts: { onClose: () => void; options: O }) => ReactNode,
   ) => void;
   close: () => void;
 };
@@ -64,7 +64,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
     () => ({
       open: (
         options: any,
-        renderNode: (opts: { onClose: () => void; options: any }) => ReactNode
+        renderNode: (opts: { onClose: () => void; options: any }) => ReactNode,
       ) => {
         setSheetConfig({
           children: renderNode({ onClose: close, options }),
@@ -73,7 +73,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
       },
       close,
     }),
-    [setSheetConfig, close]
+    [setSheetConfig, close],
   );
   const {
     animatedHandleHeight,
@@ -137,12 +137,12 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
 }
 
 export function useBottomSheet<Options>(
-  renderNode: (opts: { onClose: () => void; options: Options }) => ReactNode
+  renderNode: (opts: { onClose: () => void; options: Options }) => ReactNode,
 ) {
   const context = useContext(BottomSheetCtx);
   if (!context)
     throw new Error(
-      "Cannot useBottomSheet outside of BottomSheetProvider (context)."
+      "Cannot useBottomSheet outside of BottomSheetProvider (context).",
     );
 
   return (options: Options) => {

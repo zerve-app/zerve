@@ -19,7 +19,7 @@ export function NavigationProvider({
             },
           },
         }),
-        []
+        [],
       )}
     >
       {children}

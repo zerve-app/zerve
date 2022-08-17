@@ -53,7 +53,7 @@ let hasChangedAny = false;
 function writeFileIfNeeded(
   basePath: string,
   filePath: string,
-  newFileContent: string
+  newFileContent: string,
 ) {
   const fullPath = join(basePath, filePath);
   const prevFileContent = readFileSync(fullPath, { encoding: "utf-8" });
@@ -84,19 +84,19 @@ Promise.all(
         Object.entries(zStoreData).map(([fileName, file]) => [
           fileName,
           file.value,
-        ])
+        ]),
       );
       const zFileSchemas = Object.fromEntries(
         Object.entries(zStoreData).map(([fileName, file]) => [
           fileName,
           file.schema,
-        ])
+        ]),
       );
       const refStoreSchemas = Object.fromEntries(
         Object.entries(zStoreSchemas).map(([schemaName, schema]) => [
           schema["$id"],
           schema,
-        ])
+        ]),
       );
 
       const schemaSchemas = Object.fromEntries(
@@ -118,11 +118,11 @@ Promise.all(
                     external: true,
                   },
                 },
-              }
+              },
             );
             return [schemaName, compiledSchema];
-          })
-        )
+          }),
+        ),
       );
 
       const fileSchemas = Object.fromEntries(
@@ -142,7 +142,7 @@ Promise.all(
                         read({ url, extension }, callback?) {
                           callback?.(
                             null,
-                            JSON.stringify(refStoreSchemas[url])
+                            JSON.stringify(refStoreSchemas[url]),
                           );
                         },
                       },
@@ -152,8 +152,8 @@ Promise.all(
                 }),
               },
             ];
-          })
-        )
+          }),
+        ),
       );
 
       const zClientFileData = `
@@ -185,8 +185,8 @@ ${Object.entries(zFileSchemas)
   .map(
     ([fileName, fileSchema]) =>
       `export const ${fileName} = zClient.createAccessor<${capitalize(
-        fileName
-      )}FileSchema>("${fileName}");`
+        fileName,
+      )}FileSchema>("${fileName}");`,
   )
   .join("\n")}
 
@@ -194,12 +194,12 @@ ${Object.entries(zFileSchemas)
       writeFileIfNeeded(
         projectPath,
         join(Z_GENERATED_CONST, zDynamicName, "index.ts"),
-        zClientFileData
+        zClientFileData,
       );
       writeFileIfNeeded(
         projectPath,
         join(Z_GENERATED_CONST, zDynamicName, "data-sync.json"),
-        JSON.stringify(zFileValues, null, 2)
+        JSON.stringify(zFileValues, null, 2),
       );
       writeFileIfNeeded(
         projectPath,
@@ -210,11 +210,11 @@ ${Object.entries(zFileSchemas)
             files: zFileSchemas,
           },
           null,
-          2
-        )
+          2,
+        ),
       );
-    }
-  )
+    },
+  ),
 )
   .then(() => {
     if (hasChangedAny) {

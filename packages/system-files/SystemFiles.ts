@@ -24,7 +24,7 @@ export function ensureNoPathEscape(path: string) {
     throw new RequestError(
       "PathValidationError",
       `Cannot use .. within your path`,
-      { path }
+      { path },
     );
   }
 }
@@ -45,7 +45,7 @@ export const WriteFile = createZAction(
   async ({ path, value }) => {
     await writeFile(path, value);
     return null;
-  }
+  },
 );
 
 export const WriteJSON = createZAction(
@@ -62,7 +62,7 @@ export const WriteJSON = createZAction(
   async ({ path, value }) => {
     await writeFile(path, JSON.stringify(value));
     return null;
-  }
+  },
 );
 
 export const ReadFile = createZAction(
@@ -70,7 +70,7 @@ export const ReadFile = createZAction(
   StringSchema,
   async (path) => {
     return await readFile(path, { encoding: "utf8" });
-  }
+  },
 );
 
 export const ReadJSON = createZAction(
@@ -85,7 +85,7 @@ export const ReadJSON = createZAction(
         return undefined;
       } else throw e;
     }
-  }
+  },
 );
 
 export const ReadDir = createZAction(
@@ -94,7 +94,7 @@ export const ReadDir = createZAction(
   async (path) => {
     const result = await readdir(path);
     return result;
-  }
+  },
 );
 
 export const MakeDir = createZAction(StringSchema, NullSchema, async (path) => {
@@ -116,7 +116,7 @@ export const Move = createZAction(
   async ({ from, to }) => {
     await move(from, to);
     return null;
-  }
+  },
 );
 
 export const Copy = createZAction(
@@ -133,7 +133,7 @@ export const Copy = createZAction(
   async ({ from, to }) => {
     await copy(from, to);
     return null;
-  }
+  },
 );
 
 export const Stat = createZAction(
@@ -150,7 +150,7 @@ export const Stat = createZAction(
   async (path) => {
     const stats = await stat(path);
     return { path, isDirectory: stats.isDirectory() };
-  }
+  },
 );
 
 export const Exists = createZAction(
@@ -158,7 +158,7 @@ export const Exists = createZAction(
   BooleanSchema,
   async (path: string) => {
     return await pathExists(path);
-  }
+  },
 );
 
 export const DeleteFile = createZAction(
@@ -167,7 +167,7 @@ export const DeleteFile = createZAction(
   async (path) => {
     await unlink(path);
     return null;
-  }
+  },
 );
 
 export const DeleteRecursive = createZAction(
@@ -177,5 +177,5 @@ export const DeleteRecursive = createZAction(
     // force set to true, so that we can delete any directory on the system, not just within the cwd
     await deleteAsync(path, { force: true });
     return null;
-  }
+  },
 );

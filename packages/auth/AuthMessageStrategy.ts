@@ -29,18 +29,18 @@ const AuthMessageStrategyDefaultConfig = {
 };
 export function createGenericMessageAuthStrategy<
   AddressSchema extends JSONSchema,
-  AuthDetails
+  AuthDetails,
 >(
   addressSchema: AddressSchema,
   handleMessageSend: (
     token: string,
-    address: FromSchema<AddressSchema>
+    address: FromSchema<AddressSchema>,
   ) => Promise<void>,
   configInput?: {
     authTimeoutMs?: number;
     authResetMs?: number;
     validateAddress?: (address: FromSchema<AddressSchema>) => void;
-  }
+  },
 ) {
   type Address = FromSchema<AddressSchema>;
 
@@ -78,7 +78,7 @@ export function createGenericMessageAuthStrategy<
       const addressFileSubpath = `${addressKey}.json`;
 
       const addressFile: AddressFileData = (await ReadJSON.call(
-        joinPath(strategyFilesPath, addressFileSubpath)
+        joinPath(strategyFilesPath, addressFileSubpath),
       )) || {
         address: payload.address,
         addressKey,
@@ -113,7 +113,7 @@ export function createGenericMessageAuthStrategy<
             // another message has been sent within the "reset" time, which should be lower than the timeout, so we are actually in a good state.
             // return (null - happy case), also waste some time to pretend that maybe we did actually send an email
             await new Promise((resolve) =>
-              setTimeout(resolve, 2000 + Math.floor(Math.random() * 2000))
+              setTimeout(resolve, 2000 + Math.floor(Math.random() * 2000)),
             );
             return null;
           } else {
@@ -128,7 +128,7 @@ export function createGenericMessageAuthStrategy<
         // at this point we need to create a new authRequest by creating a secret token and sending it to the user via their "address"
         if (payload.token) {
           console.log(
-            "Cannot provide a token when there is no pending auth request"
+            "Cannot provide a token when there is no pending auth request",
           );
           throw new Error("Invalid Auth Attempt");
         }
@@ -152,7 +152,7 @@ export function createGenericMessageAuthStrategy<
 
     getDetails: async (strategyFilesPath: string, addressKey: string) => {
       const details = await ReadJSON.call(
-        joinPath(strategyFilesPath, `${addressKey}.json`)
+        joinPath(strategyFilesPath, `${addressKey}.json`),
       );
       return details;
     },

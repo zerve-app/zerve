@@ -59,7 +59,7 @@ export const ChainLedgerCalculator = createZChainStateCalculator(
       schema: InjectValueActionSchema,
       handler: (
         state: LedgerState,
-        action: FromSchema<typeof InjectValueActionSchema>
+        action: FromSchema<typeof InjectValueActionSchema>,
       ) => {
         return {
           accounts: {
@@ -75,7 +75,7 @@ export const ChainLedgerCalculator = createZChainStateCalculator(
       schema: DestroyValueActionSchema,
       handler: (
         state: LedgerState,
-        action: FromSchema<typeof InjectValueActionSchema>
+        action: FromSchema<typeof InjectValueActionSchema>,
       ) => {
         if (action.amount <= 0) {
           throw new GenericError({
@@ -105,7 +105,7 @@ export const ChainLedgerCalculator = createZChainStateCalculator(
       schema: TransferValueActionSchema,
       handler: (
         state: LedgerState,
-        action: FromSchema<typeof TransferValueActionSchema>
+        action: FromSchema<typeof TransferValueActionSchema>,
       ) => {
         if (action.amount <= 0) {
           throw new GenericError({
@@ -133,5 +133,5 @@ export const ChainLedgerCalculator = createZChainStateCalculator(
         };
       },
     },
-  }
+  },
 );

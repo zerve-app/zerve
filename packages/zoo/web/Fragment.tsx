@@ -45,30 +45,30 @@ export function FragmentLink<FragmentState>({
 }
 
 export function useFragmentNavigate<FragmentState>(
-  Context: Context<FragmentContext<FragmentState> | null>
+  Context: Context<FragmentContext<FragmentState> | null>,
 ) {
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
     throw new Error(
-      "Cannot useFragmentNavigate outside the valid FragmentContext"
+      "Cannot useFragmentNavigate outside the valid FragmentContext",
     );
   return useCallback(
     (feature: FragmentState) => {
       fragmentContext.navigateFragment(feature);
     },
-    [fragmentContext.navigateFragment]
+    [fragmentContext.navigateFragment],
   );
 }
 
 export function useFragmentNavigationController<FragmentState>(
   stringifyFragment: (feature: FragmentState) => string,
-  parseFragment: (fragment: string) => FragmentState | null
+  parseFragment: (fragment: string) => FragmentState | null,
 ): readonly [FragmentState | null, string, FragmentContext<FragmentState>] {
   const { push, pathname, query } = useRouter();
   const fragmentString = query._ === undefined ? "" : String(query._);
   const fragment = useMemo(
     () => parseFragment(fragmentString),
-    [parseFragment, fragmentString]
+    [parseFragment, fragmentString],
   );
   const fragmentContext = useMemo(
     () => ({
@@ -83,7 +83,7 @@ export function useFragmentNavigationController<FragmentState>(
       fragment,
       fragmentString,
     }),
-    [parseFragment, fragment, stringifyFragment]
+    [parseFragment, fragment, stringifyFragment],
   );
   return [fragment, fragmentString, fragmentContext] as const;
 }

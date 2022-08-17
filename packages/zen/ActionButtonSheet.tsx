@@ -51,7 +51,7 @@ const ActionMenuItem = React.memo(ActionMenuItemUnmemo);
 
 export function useActionsSheet(
   renderButton: (onOpen: () => void) => ReactElement,
-  getActions: () => ActionButtonDef[]
+  getActions: () => ActionButtonDef[],
 ): readonly [null | ReactElement, () => void] {
   const [isOpen, setIsOpen] = useState(false);
   function onOpen() {

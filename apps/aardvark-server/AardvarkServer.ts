@@ -41,7 +41,7 @@ export async function startApp() {
     const secret = secrets[secretKey];
     if (typeof secret === "string") return secret;
     throw new Error(
-      `Failed to require secret string "${secretKey}" from secrets json`
+      `Failed to require secret string "${secretKey}" from secrets json`,
     );
   }
 
@@ -60,7 +60,7 @@ export async function startApp() {
   const Store = await createGeneralStore(
     Data,
     joinPath(dataDir, "ZerveStoreCache"),
-    "ZerveStore"
+    "ZerveStore",
   );
 
   const [zAuth] = await createAuth({

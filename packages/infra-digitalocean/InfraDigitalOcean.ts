@@ -41,7 +41,7 @@ export function createZDigitalOcean(config: { apiKey: string }) {
         });
         console.log("did create droplet", resultDroplet);
         return "soon";
-      }
+      },
     ),
     droplets: createZGettableGroup(
       (dropletId) => {
@@ -60,7 +60,7 @@ export function createZDigitalOcean(config: { apiKey: string }) {
           more: false,
           cursor: "",
         };
-      }
+      },
     ),
   });
 }

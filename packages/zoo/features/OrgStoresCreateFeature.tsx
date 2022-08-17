@@ -22,7 +22,7 @@ function OrgStoresCreate({ entityId, title }: OrgFeatureProps) {
     await postZAction(
       conn,
       ["Auth", "user", "Orgs", entityId, "CreateStore"],
-      value
+      value,
     );
     queryClient.invalidateQueries([
       conn.key,

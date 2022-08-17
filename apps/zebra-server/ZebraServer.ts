@@ -55,7 +55,7 @@ export async function startApp() {
     const secret = secrets[secretKey];
     if (typeof secret === "string") return secret;
     throw new Error(
-      `Failed to require secret string "${secretKey}" from secrets json`
+      `Failed to require secret string "${secretKey}" from secrets json`,
     );
   }
 
@@ -80,7 +80,7 @@ export async function startApp() {
     handleUserIdChange: async (
       prevUserId: string,
       userId: string,
-      entityData: any
+      entityData: any,
     ) => {
       try {
         await Move.call({
@@ -102,8 +102,8 @@ export async function startApp() {
               newEntity.ownerUserId = userId;
             }
             await writeEntity(affiliatedOrgId, newEntity);
-          }
-        )
+          },
+        ),
       );
       if (memoryStores[prevUserId]) {
         const userMemoryStores = memoryStores[prevUserId];
@@ -117,7 +117,7 @@ export async function startApp() {
   const memoryStores: Record<string, Record<string, GeneralStoreModule>> = {};
   async function getMemoryStore(
     entityId: string,
-    storeId: string
+    storeId: string,
   ): Promise<GeneralStoreModule> {
     const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
     if (alreadyInMemoryStore) return alreadyInMemoryStore;
@@ -125,17 +125,17 @@ export async function startApp() {
       throw new NotFoundError(
         "NotFound",
         `The ${entityId}/${storeId} store does not exist`,
-        { entityId, storeId }
+        { entityId, storeId },
       );
     const StoreData = await createCoreData(
-      joinPath(getEntityStoreDir(entityId, storeId), `Data`)
+      joinPath(getEntityStoreDir(entityId, storeId), `Data`),
     );
     const userMemoryStores =
       memoryStores[entityId] || (memoryStores[entityId] = {});
     const newMemoryStore = await createGeneralStore(
       StoreData,
       joinPath(getEntityStoreDir(entityId, storeId), `StoreCache`),
-      `Store`
+      `Store`,
     );
     userMemoryStores[storeId] = newMemoryStore;
     return newMemoryStore;
@@ -164,7 +164,7 @@ export async function startApp() {
           if (e.code !== "ENOENT") throw e;
         }
         return { children, more: false, cursor: "" };
-      }
+      },
     );
   }
 
@@ -174,7 +174,7 @@ export async function startApp() {
         throw new RequestError(
           "AlreadyExists",
           `The "${storeId}" store already exists.`,
-          { storeId }
+          { storeId },
         );
       const newStorePath = getEntityStoreDir(entityId, storeId);
       await mkdirp(newStorePath);
@@ -206,7 +206,7 @@ export async function startApp() {
         });
 
         return null;
-      }
+      },
     );
 
     const Orgs = createZGettableGroup(
@@ -217,7 +217,7 @@ export async function startApp() {
           throw new ForbiddenError(
             "NotInOrg",
             `You do not have access to the "${orgId}" org.`,
-            { orgId, userId }
+            { orgId, userId },
           );
         return createZContainer({
           orgId: createZStatic(orgId),
@@ -233,7 +233,7 @@ export async function startApp() {
                 cursor: "",
                 more: false,
               };
-            }
+            },
           ),
           role: createZStatic("member"),
           ...(isUserOwner ? getOrgOwnerAbilities(userId, orgId) : {}),
@@ -247,7 +247,7 @@ export async function startApp() {
           more: false,
           cursor: "",
         };
-      }
+      },
     );
 
     const OrgInvites = createZGettableGroup(
@@ -260,7 +260,7 @@ export async function startApp() {
             async (doesAccept: boolean) => {
               // ok respond to org invite ok
               return null;
-            }
+            },
           ),
         });
       },
@@ -270,7 +270,7 @@ export async function startApp() {
           more: false,
           cursor: "",
         };
-      }
+      },
     );
     return {
       ...user,

@@ -25,7 +25,7 @@ export type KeyPair = FromSchema<typeof KeyPairSchema>;
 export const zCreateKeyPair = createZAction(
   NullSchema,
   KeyPairSchema,
-  createKeyPair
+  createKeyPair,
 );
 
 export async function createKeyPair(): Promise<KeyPair> {

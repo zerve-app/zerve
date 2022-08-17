@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 export function createJSONHandler(
-  handler: (req: Request) => Promise<{ response: any }>
+  handler: (req: Request) => Promise<{ response: any }>,
 ) {
   return (req: Request, res: Response) => {
     handler(req)
@@ -16,7 +16,7 @@ export function createJSONHandler(
             message: e.message,
             code: e.code,
             details: e.details,
-          })
+          }),
         );
       });
   };

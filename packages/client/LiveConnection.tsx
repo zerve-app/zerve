@@ -22,7 +22,7 @@ const liveConnectionStore = new Map<
 
 function startConnection(
   savedConn: Connection,
-  queryClient: QueryClient
+  queryClient: QueryClient,
 ): [LiveConnection, () => void] {
   const [httpProtocol, hostPort] = savedConn.url.split("://");
   const wsProtocol = httpProtocol === "https" ? "wss" : "ws";
@@ -49,14 +49,14 @@ function startConnection(
     } else if (message.t === "Update") {
       queryClient.setQueryData(
         [savedConn?.key, "z", ...message.path, ".node", "value"],
-        message.value
+        message.value,
       );
 
       queryClient.setQueryData(
         [savedConn?.key, "z", ...message.path, ".node"],
         (node) => {
           return { ...node, node: message.value };
-        }
+        },
       );
     } else {
       console.log("Unrecognized Connection Message", message);
@@ -83,7 +83,7 @@ function startConnection(
 
 function leaseConnection(
   savedConn: Connection,
-  queryClient: QueryClient
+  queryClient: QueryClient,
 ): {
   connection: LiveConnection;
   release: () => void;

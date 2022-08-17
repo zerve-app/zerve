@@ -3,7 +3,7 @@ import { createGenericMessageAuthStrategy } from "./AuthMessageStrategy";
 import { NullSchema } from "@zerve/core";
 
 export function createTestAuthStrategy(
-  tag: string
+  tag: string,
 ): AuthStrategy<typeof NullSchema, {}> {
   return {
     authorizeSchema: NullSchema,

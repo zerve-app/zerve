@@ -26,7 +26,7 @@ export default function Palette({ onClose }: { onClose: () => void }) {
   const [actionKey, setActionKey] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   const [pendingAction, setPendingAction] = useState<null | PaletteAction>(
-    null
+    null,
   );
 
   useKeyboardEffect("escape", onClose);

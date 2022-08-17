@@ -87,7 +87,7 @@ function AddButton({
 
 function expandSchema(
   schema: JSONSchema,
-  schemaStore: SchemaStore
+  schemaStore: SchemaStore,
 ): JSONSchema | undefined {
   if (schema === false) return false;
   if (schema === undefined) return undefined;
@@ -95,7 +95,7 @@ function expandSchema(
   if (schemaObj === true) schemaObj = {};
   if (schemaObj.$ref) {
     const refSchema = Object.values(schemaStore || {}).find(
-      (s) => s.$id === schemaObj.$ref
+      (s) => s.$id === schemaObj.$ref,
     );
     if (refSchema) {
       schemaObj = refSchema;
@@ -152,7 +152,7 @@ export function JSONSchemaObjectForm({
   const { properties, additionalProperties, propertyTitles } = schema;
   if (schema?.type && schema?.type !== "object") {
     throw new Error(
-      "JSONSchemaObjectForm can not handle type: " + schema?.type
+      "JSONSchemaObjectForm can not handle type: " + schema?.type,
     );
   }
   const errors: { message: string }[] = [];
@@ -164,7 +164,7 @@ export function JSONSchemaObjectForm({
     errors.push({ message: "Value is not an object " + JSON.stringify(value) });
   }
   const propertyKeys = new Set(
-    properties == null ? [] : Object.keys(properties)
+    properties == null ? [] : Object.keys(properties),
   );
   const otherKeys = value
     ? Object.keys(value).filter((p) => !propertyKeys.has(p))
@@ -176,18 +176,18 @@ export function JSONSchemaObjectForm({
           ([propName, propSchema]) => [
             propName,
             expandSchema(propSchema || defaultObjectItemsSchema, schemaStore),
-          ]
-        )
+          ],
+        ),
       ),
-    [schema.properties]
+    [schema.properties],
   );
   const expandedAdditionalPropertiesSchema = useMemo(
     () =>
       expandSchema(
         schema.additionalProperties || defaultObjectItemsSchema,
-        schemaStore
+        schemaStore,
       ),
-    [schema.additionalProperties]
+    [schema.additionalProperties],
   );
 
   const propertyNameInput = useTextInputFormModal<null | string>(
@@ -200,7 +200,7 @@ export function JSONSchemaObjectForm({
           onValue({
             ...(value || {}),
             [propertyName]: getDefaultSchemaValue(
-              expandedAdditionalPropertiesSchema
+              expandedAdditionalPropertiesSchema,
             ),
           });
         } else {
@@ -211,15 +211,15 @@ export function JSONSchemaObjectForm({
                   if (propKey === propertyEditKey)
                     return [propertyName, propValue];
                   return [propKey, propValue];
-                }
-              )
-            )
+                },
+              ),
+            ),
           );
         }
       },
       defaultValue: propertyEditKey || "",
       inputLabel: "New Property Name",
-    })
+    }),
   );
 
   return (
@@ -334,7 +334,7 @@ export function JSONSchemaArrayForm({
 }) {
   const expandedItemsSchema = useMemo(
     () => expandSchema(schema.items || defaultArrayItemsSchema, schemaStore),
-    [schema.items]
+    [schema.items],
   );
   const addButton = (
     <AddButton
@@ -426,7 +426,7 @@ function ObjectFormField({
             label || schema.title || schema.type || "object",
             schema,
             value,
-            onValue
+            onValue,
           );
         }}
       />
@@ -465,7 +465,7 @@ function ArrayFormField({
             label || schema.title || schema.type || "array",
             schema,
             value,
-            onValue
+            onValue,
           );
         }}
       />
@@ -565,12 +565,12 @@ function FormFieldHeader({
             icon: "clipboard",
             onPress: async () => {
               await setStringAsync(
-                typeof value === "string" ? value : JSON.stringify(value)
+                typeof value === "string" ? value : JSON.stringify(value),
               );
             },
           },
       ].filter(Boolean);
-    }
+    },
   );
 
   return header;
@@ -609,7 +609,7 @@ export function OneOfFormField({
         },
       },
     ],
-    [actions, () => {}]
+    [actions, () => {}],
   );
 
   return (
@@ -924,7 +924,7 @@ export function JSONSchemaEditor({
 }) {
   const expandedSchema = useMemo(
     () => expandSchema(schema, schemaStore),
-    [schema, schemaStore]
+    [schema, schemaStore],
   );
   if (!expandedSchema) {
     debugger;

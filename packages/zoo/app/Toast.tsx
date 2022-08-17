@@ -26,7 +26,7 @@ function appendToast(t: Toast) {
     () => {
       clearToast(key);
     },
-    t.durationSec ? t.durationSec * 1000 : 6000
+    t.durationSec ? t.durationSec * 1000 : 6000,
   );
 }
 

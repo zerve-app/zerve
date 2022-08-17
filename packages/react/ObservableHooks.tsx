@@ -2,7 +2,7 @@ import { FromSchema, ZObservable } from "@zerve/core";
 import React, { useEffect, useState } from "react";
 
 export function useZObservable<Schema>(
-  observable: ZObservable<Schema>
+  observable: ZObservable<Schema>,
 ): FromSchema<Schema> {
   const [state, setState] = useState<FromSchema<Schema>>(observable.get());
   useEffect(() => {
@@ -15,10 +15,10 @@ export function useZObservable<Schema>(
 }
 
 export function useZObservableMaybe<Schema>(
-  observable?: null | ZObservable<Schema>
+  observable?: null | ZObservable<Schema>,
 ): FromSchema<Schema> | undefined {
   const [state, setState] = useState<undefined | FromSchema<Schema>>(
-    observable?.get() || undefined
+    observable?.get() || undefined,
   );
   useEffect(() => {
     setState(observable?.get() || undefined);

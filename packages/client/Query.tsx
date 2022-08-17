@@ -26,7 +26,7 @@ export function useConnectionRootType(options?: QueryOptions) {
 
 export function useConnectionProjects(
   storePath: string[],
-  options?: QueryOptions
+  options?: QueryOptions,
 ) {
   return useZNode([...storePath, "State"], options);
 }
@@ -38,7 +38,7 @@ function useConnectionQuery<Result>(
   options?: Omit<
     UseQueryOptions<Result, void, Result, QueryKey>,
     "queryKey" | "queryFn"
-  >
+  >,
 ) {
   const queryResult = useQuery<Result, void, Result, string[]>(
     path,
@@ -46,7 +46,7 @@ function useConnectionQuery<Result>(
       const result = await getQuery();
       return result;
     },
-    options
+    options,
   );
   useEffect(() => {
     return conn?.isConnected?.subscribe((isConn) => {
@@ -73,7 +73,7 @@ export function useZNode(path: string[], options?: QueryOptions) {
     {
       cacheTime: 10000,
       onError: options?.onError,
-    }
+    },
   );
 }
 
@@ -100,7 +100,7 @@ export function useZNodeValue(path: string[], options?: QueryOptions) {
     {
       cacheTime: 10000,
       onError: options?.onError,
-    }
+    },
   );
 }
 
@@ -117,7 +117,7 @@ export function useZChildren(path: string[], options?: QueryOptions) {
     },
     {
       onError: options?.onError,
-    }
+    },
   );
 }
 
@@ -134,7 +134,7 @@ export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
     },
     {
       onError: options?.onError,
-    }
+    },
   );
 }
 
@@ -150,7 +150,7 @@ export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
         additionalProperties: false,
         required: ["type", "$ref"],
       };
-    }
+    },
   );
   const finalSchema = {
     oneOf: [
@@ -201,7 +201,7 @@ export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
 
 export function useZStoreJSONSchema(
   storePath: string[],
-  options?: QueryOptions
+  options?: QueryOptions,
 ) {
   const schemas = useZStoreSchemas(storePath, options);
   return useMemo(() => {

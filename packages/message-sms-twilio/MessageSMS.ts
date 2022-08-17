@@ -42,17 +42,17 @@ export function createZMessageSMS(config: {
           method: "post",
           headers: {
             Authorization: `Basic ${Buffer.from(
-              `${config.twilioKeySid}:${config.twilioKeySecret}`
+              `${config.twilioKeySid}:${config.twilioKeySecret}`,
             ).toString("base64")}`,
           },
           data,
-        }
+        },
       );
       if (resp.status >= 300) {
         console.error("Failed SMS send:", resp.data);
         throw new Error("SMS Send Failure");
       }
       return {};
-    }
+    },
   );
 }

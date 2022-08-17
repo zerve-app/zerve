@@ -5,7 +5,7 @@ import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
 
 type ModalContext = null | {
   onModal: (
-    renderer: (opts: { onClose: () => void }) => React.ReactNode
+    renderer: (opts: { onClose: () => void }) => React.ReactNode,
   ) => void;
 };
 const ModalContext = createContext<ModalContext>(null);
@@ -14,7 +14,7 @@ export function useModal<Options>(
   renderModal: (opts: {
     onClose: () => void;
     options: Options;
-  }) => React.ReactNode
+  }) => React.ReactNode,
 ) {
   const ctx = useContext(ModalContext);
   if (!ctx) throw new Error("Cannot useModal outside of Zen or Modal context");
@@ -26,7 +26,7 @@ export function useModal<Options>(
 
 export function ModalProvider({ children }: { children: ReactNode }) {
   const [openDialogContent, setOpenDialogContent] = useState<null | ReactNode>(
-    null
+    null,
   );
   const onClose = () => {
     setOpenDialogContent(null);
@@ -34,12 +34,12 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const context = useMemo(
     () => ({
       onModal: (
-        renderer: (opts: { onClose: () => void }) => React.ReactNode
+        renderer: (opts: { onClose: () => void }) => React.ReactNode,
       ) => {
         setOpenDialogContent(renderer({ onClose }));
       },
     }),
-    []
+    [],
   );
   return (
     <ModalContext.Provider value={context}>

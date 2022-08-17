@@ -38,7 +38,7 @@ export function JSONSchemaForm({
   padded?: boolean;
 }) {
   const [valueState, setValueState] = useState(
-    value === undefined ? getDefaultSchemaValue(schema) : value
+    value === undefined ? getDefaultSchemaValue(schema) : value,
   );
   const { error, isLoading, handle } = useAsyncHandler(async (value) => {
     await onValue?.(value);

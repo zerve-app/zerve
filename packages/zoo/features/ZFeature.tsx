@@ -48,7 +48,7 @@ export function ZFeature({
           openRawJSON(`${path.join("/")} Value`, data?.node);
         },
       },
-    ]
+    ],
   );
 
   return (

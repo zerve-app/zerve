@@ -47,7 +47,7 @@ export function StoreSchemasFeature({ storePath }: { storePath: string[] }) {
   const { openSchema } = useStoreNavigation(storePath);
   const [optionsButton, openOptions] = useActionsSheet(
     (onOpen) => <OptionsButton onOptions={onOpen} />,
-    () => []
+    () => [],
   );
 
   return (

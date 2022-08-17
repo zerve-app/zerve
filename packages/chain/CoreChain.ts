@@ -21,43 +21,43 @@ import { joinPath, MakeDir, ReadJSON, WriteJSON } from "@zerve/system-files";
 export type ZChainStateCalculator<
   State,
   Actions extends Record<string, ZActionDefinition<State, any>>,
-  StateSchema extends JSONSchema
+  StateSchema extends JSONSchema,
 > = {
   stateSchema: StateSchema;
   initialState: State;
   actions: Actions;
   validateAction: <ActionName extends keyof Actions>(
-    action: any
+    action: any,
   ) => FromSchema<Actions[ActionName]["schema"]>;
 };
 
 export function createZChainStateCalculator<
   State,
   Actions extends Record<string, ZActionDefinition<State, any>>,
-  StateSchema extends JSONSchema
+  StateSchema extends JSONSchema,
 >(
   stateSchema: StateSchema,
   initialState: State,
-  actions: Actions
+  actions: Actions,
 ): ZChainStateCalculator<State, Actions, StateSchema> {
   const validators = Object.fromEntries(
     Object.entries(actions).map(([actionName, actionDef]) => {
       return [actionName, ajv.compile(actionDef.schema)];
-    })
+    }),
   );
   return {
     stateSchema,
     initialState,
     actions,
     validateAction: <ActionName extends keyof Actions>(
-      action: any
+      action: any,
     ): FromSchema<Actions[ActionName]["schema"]> => {
       const validator = validators[action.name];
       if (!validator)
         throw new RequestError(
           "ValidationError",
           `cannot validate unknown action "${action.name}"`,
-          { name: action.name, actions: Object.keys(validators) }
+          { name: action.name, actions: Object.keys(validators) },
         );
       const valid = validator(action.value);
       if (!valid) {
@@ -76,19 +76,19 @@ export type ZActionDefinition<State, PayloadSchema extends JSONSchema> = {
 export async function createZChainState<
   State,
   Actions extends Record<string, ZActionDefinition<State, any>>,
-  StateSchema extends JSONSchema
+  StateSchema extends JSONSchema,
 >(
   data: CoreDataModule,
   cacheFilesPath: string,
   docName: string,
-  calculator: ZChainStateCalculator<State, Actions, StateSchema>
+  calculator: ZChainStateCalculator<State, Actions, StateSchema>,
 ) {
   await MakeDir.call(joinPath(cacheFilesPath, "state"));
   await MakeDir.call(joinPath(cacheFilesPath, "blocks"));
 
   async function _getCachedResult(blockId: string) {
     return await ReadJSON.call(
-      joinPath(cacheFilesPath, "state", `eval-${blockId}`)
+      joinPath(cacheFilesPath, "state", `eval-${blockId}`),
     );
   }
 
@@ -121,12 +121,12 @@ export async function createZChainState<
 
   async function _extractBlocksToCache(
     deepState: DeepBlockState,
-    blockCache: BlockCache
+    blockCache: BlockCache,
   ): Promise<any> {
     if (deepState === null) return null;
     if (Array.isArray(deepState))
       return Promise.all(
-        deepState.map((d) => _extractBlocksToCache(d, blockCache))
+        deepState.map((d) => _extractBlocksToCache(d, blockCache)),
       );
     if (typeof deepState === "object") {
       if (deepState.type === "Block" && deepState.jsonValue !== undefined) {
@@ -139,8 +139,8 @@ export async function createZChainState<
           Object.entries(deepState).map(async ([k, v]) => [
             k,
             await _extractBlocksToCache(v, blockCache),
-          ])
-        )
+          ]),
+        ),
       );
     }
     return deepState;
@@ -149,7 +149,7 @@ export async function createZChainState<
   async function _evalCommitStep(
     state: State,
     commit: any,
-    blockCache: BlockCache
+    blockCache: BlockCache,
   ): Promise<State> {
     const matchedAction =
       calculator.actions[commit.value.name as keyof typeof calculator.actions];
@@ -168,7 +168,7 @@ export async function createZChainState<
 
   async function _evalCommitChain<V>(
     commitValue: Commit<V>,
-    blockCache: BlockCache
+    blockCache: BlockCache,
   ) {
     const { blocksInChain, walkEndCacheResultValue } =
       await _rollupBlocksInCommitChain(commitValue);
@@ -185,7 +185,7 @@ export async function createZChainState<
       const nextValue = await _evalCommitStep(
         walkReduceValue,
         stepBlock,
-        blockCache
+        blockCache,
       );
       walkReduceValue = nextValue;
     }
@@ -195,7 +195,7 @@ export async function createZChainState<
   function _aggregateLinkedAccessibleBlocks(
     tree: TreeState<any>,
     blockCache: BlockCache,
-    outputBlocks: BlockCache
+    outputBlocks: BlockCache,
   ) {
     // // todo, add back this sort of functionality.
     // // this function was responsible for looking at the latest evaluated state and identifying all of the deeply-refereneced blocks, then copying them to a new cache so that the old cache can be garbage collected. (old computed blocks do not need to be retained)
@@ -227,7 +227,7 @@ export async function createZChainState<
       }
       try {
         const cachedBlockData = await ReadJSON.call(
-          joinPath(cacheFilesPath, "blocks", blockId)
+          joinPath(cacheFilesPath, "blocks", blockId),
         );
         return cachedBlockData;
       } catch (e) {
@@ -269,7 +269,7 @@ export async function createZChainState<
         _aggregateLinkedAccessibleBlocks(
           evalValue,
           evalBlockCache,
-          cachableBlocks
+          cachableBlocks,
         );
         await WriteJSON.call({
           path: joinPath(cacheFilesPath, "state", `eval-${evalBlockId}`),
@@ -347,7 +347,7 @@ export async function createZChainState<
           on = (prevDocValue as BlockLink).id;
         } else
           throw new Error(
-            `Dispatch only works when the doc is BlockLink type (to a Commit type block). Instead the "${docName}" doc is of type "${prevDocValue?.type}"`
+            `Dispatch only works when the doc is BlockLink type (to a Commit type block). Instead the "${docName}" doc is of type "${prevDocValue?.type}"`,
           );
       }
       const commitValue: Commit<any> = {
@@ -373,7 +373,7 @@ export async function createZChainState<
         commitId: commitBlock.id,
         name: docName,
       };
-    }
+    },
   );
 
   function createZEval(path: string[]): ZGroup<any, void, any> {
@@ -412,7 +412,7 @@ export async function createZChainState<
           }
         }
         return evalResult;
-      }
+      },
     );
   }
 

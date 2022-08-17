@@ -7,7 +7,7 @@ export function useTextInputFormModal<A>(
     onValue: (value: string, openArgument: A) => void;
     inputLabel: string;
     defaultValue: string;
-  }
+  },
 ) {
   return useModal<A>(({ onClose, options }) => {
     const { inputLabel, defaultValue, onValue } = onGetInput(options);

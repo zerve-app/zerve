@@ -56,7 +56,7 @@ export function StoreSchemaFeature({
           leave();
         },
       },
-    ]
+    ],
   );
   return (
     <VStack>

@@ -33,7 +33,7 @@ import { SchemaStore } from ".";
 
 export function getDefaultSchemaValue(
   schema: any,
-  schemaStore?: SchemaStore
+  schemaStore?: SchemaStore,
 ): any {
   let usableSchema = schema;
   if (schema === false) throw new Error("Cannot find value for false schema");
@@ -41,7 +41,7 @@ export function getDefaultSchemaValue(
   if (schema.type === "null") return null;
   if (schema.$ref) {
     const refSchema = Object.values(schemaStore || {}).find(
-      (s) => s.$id === schema.$ref
+      (s) => s.$id === schema.$ref,
     );
     if (refSchema) {
       usableSchema = refSchema;
@@ -59,8 +59,8 @@ export function getDefaultSchemaValue(
         ([propertyName, propertySchema]) => [
           propertyName,
           getDefaultSchemaValue(propertySchema, schemaStore),
-        ]
-      )
+        ],
+      ),
     );
   }
 }

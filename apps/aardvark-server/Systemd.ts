@@ -24,7 +24,7 @@ User=zerve
 ExecStart=${params.execStart}
 Restart=on-failure
 ${Object.entries(params.env).map(
-  ([envName, envValue]) => `Environment=${envName}="${envValue}"`
+  ([envName, envValue]) => `Environment=${envName}="${envValue}"`,
 ).join(`
 `)}
 
@@ -79,12 +79,12 @@ export async function applySystemdConfig(state: DeploymentsState) {
         workingDir: joinPath(
           DeploymentsPath,
           deploymentName,
-          "apps/zebra-server"
+          "apps/zebra-server",
         ),
         execStart: `/usr/bin/node ${joinPath(
           DeploymentsPath,
           deploymentName,
-          "apps/zebra-server/build/ZebraServer.js"
+          "apps/zebra-server/build/ZebraServer.js",
         )}`,
         env: {
           PORT: String(deploySpec.serverPort),
@@ -99,7 +99,7 @@ export async function applySystemdConfig(state: DeploymentsState) {
         execStart: `${joinPath(
           DeploymentsPath,
           deploymentName,
-          "node_modules/.bin/next"
+          "node_modules/.bin/next",
         )} start`,
         env: {
           PORT: String(deploySpec.webPort),
@@ -107,7 +107,7 @@ export async function applySystemdConfig(state: DeploymentsState) {
           Z_ORIGIN: `https://${deploymentName}.zerve.dev`,
         },
       });
-    })
+    }),
   );
   await systemdReloadConfig();
 }

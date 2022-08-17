@@ -71,7 +71,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
-      "X-Requested-With, Content-Type, Authorization"
+      "X-Requested-With, Content-Type, Authorization",
     );
     res.header("Cache-Control", "no-cache, no-store, must-revalidate");
     if (req.method === "OPTIONS") {
@@ -85,17 +85,17 @@ export async function startZedServer(port: number, zed: AnyZed) {
     "/",
     createJSONHandler(async () => ({
       response: "This is the Zerve API server. The API root is at /.z/",
-    }))
+    })),
   );
 
   async function handleGetZedRequest<
     StateSchema extends JSONSchema,
-    GetOptions
+    GetOptions,
   >(
     zed: ZGettable<StateSchema, GetOptions>,
     method: Request["method"],
     headers: HeaderStuffs,
-    query: GetOptions
+    query: GetOptions,
   ) {
     if (method === "GET") {
       const value = await zed.get(query);
@@ -106,7 +106,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
 
   async function handleObserveZedRequest<
     StateSchema extends JSONSchema,
-    GetOptions
+    GetOptions,
   >(
     zed: ZObservable<StateSchema>,
     method: Request["method"],
@@ -114,7 +114,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     contextPath: string[],
     query?: {
       zClientSubscribe?: string;
-    }
+    },
   ) {
     if (method === "GET") {
       if (query?.zClientSubscribe) {
@@ -139,7 +139,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     zed: ZAction<Schema, Response>,
     method: Request["method"],
     headers: HeaderStuffs,
-    body: any
+    body: any,
   ) {
     if (method === "GET") {
       return {
@@ -158,7 +158,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
   async function handleZContainerRequest<Z extends Record<string, AnyZed>>(
     zed: ZContainer<Z>,
     method: Request["method"],
-    headers: HeaderStuffs
+    headers: HeaderStuffs,
   ) {
     if (method === "GET") {
       return { children: Object.keys(zed.z) };
@@ -166,19 +166,19 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new WrongMethodError(
       "WrongMethod",
       `Method ${method} not available.`,
-      { method }
+      { method },
     );
   }
 
   async function handleZAuthContainerRequest<
-    AuthZ extends Record<string, AnyZed>
+    AuthZ extends Record<string, AnyZed>,
   >(
     zed: ZAuthContainer<AuthZ>,
     query: ParsedQs,
     method: Request["method"],
     contextPath: string[],
     headers: HeaderStuffs,
-    body: any
+    body: any,
   ) {
     if (!headers.auth)
       throw new UnauthorizedError("Unauthorized", "Unauthorized", {});
@@ -190,7 +190,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
       method,
       contextPath,
       headers,
-      body
+      body,
     );
   }
 
@@ -198,7 +198,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     zed: ZGroup<Z, O, R>,
     method: Request["method"],
     headers: HeaderStuffs,
-    query: O
+    query: O,
   ) {
     if (method === "GET") {
       const getValue = await zed.get(query);
@@ -207,7 +207,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new WrongMethodError(
       "WrongMethod",
       `Method ${method} not available.`,
-      { method }
+      { method },
     );
   }
 
@@ -228,7 +228,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
             message: e.message,
             code: e.code,
             details: e.details,
-          })
+          }),
         );
       });
   }
@@ -239,7 +239,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     method: Request["method"],
     contextPath: string[],
     headers: HeaderStuffs,
-    body: any
+    body: any,
   ) {
     if (zed.zType === "Gettable") {
       return await handleGetZedRequest(zed, method, headers, query);
@@ -250,7 +250,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         method,
         headers,
         contextPath,
-        query
+        query,
       );
     }
     if (zed.zType === "Action") {
@@ -269,7 +269,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         method,
         contextPath,
         headers,
-        body
+        body,
       );
     }
     if (zed.zType === "Static") {
@@ -345,7 +345,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         children: Object.fromEntries(
           Object.entries(zed.z).map(([childKey, childZed]) => {
             return [childKey, handleZNodeTypeSummaryRequest(childZed)];
-          })
+          }),
         ),
       };
     }
@@ -371,7 +371,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     method: Request["method"],
     contextPath: string[],
     headers: HeaderStuffs,
-    body: any
+    body: any,
   ): Promise<any> {
     if (path.length === 0)
       return await handleZNodeRequest(
@@ -380,7 +380,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         method,
         contextPath,
         headers,
-        body
+        body,
       );
 
     if (path.length === 1 && path[0] === ".type") {
@@ -402,9 +402,9 @@ export async function startZedServer(port: number, zed: AnyZed) {
             throw new NotFoundError(
               "NotFound",
               `Can not look up "${pathTerm}" because it is not a numeric index to the ${contextPath.join(
-                "/"
+                "/",
               )}/${resultingSubPath.join("/")} array.`,
-              { subPath: resultingSubPath, path, pathTerm }
+              { subPath: resultingSubPath, path, pathTerm },
             );
           }
           v = resultingValue[Number(pathTerm)];
@@ -415,9 +415,9 @@ export async function startZedServer(port: number, zed: AnyZed) {
           throw new NotFoundError(
             "NotFound",
             `Can not look up "${pathTerm}" in /.z/${contextPath.join(
-              "/"
+              "/",
             )}/${resultingSubPath.join("/")}`,
-            { subPath: resultingSubPath, path, pathTerm }
+            { subPath: resultingSubPath, path, pathTerm },
           );
         }
         resultingValue = v;
@@ -442,7 +442,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         method,
         [...contextPath, pathTerm],
         headers,
-        body
+        body,
       );
     }
 
@@ -458,7 +458,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         method,
         contextPath,
         headers,
-        body
+        body,
       );
     }
 
@@ -477,7 +477,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         method,
         [...contextPath, pathTerm],
         headers,
-        body
+        body,
       );
     }
 
@@ -525,8 +525,8 @@ export async function startZedServer(port: number, zed: AnyZed) {
             req.method,
             [],
             headers,
-            body
-          )
+            body,
+          ),
         );
       });
     } else {
@@ -539,8 +539,8 @@ export async function startZedServer(port: number, zed: AnyZed) {
           req.method,
           [],
           headers,
-          undefined
-        )
+          undefined,
+        ),
       );
     }
   }

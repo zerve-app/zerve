@@ -24,7 +24,7 @@ ${deploymentKey}.zerve.dev {
   }
   reverse_proxy http://localhost:${spec.webPort}
 }
-`
+`,
 ).join(`
 `)}
 `,

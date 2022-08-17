@@ -41,7 +41,7 @@ function getDefaultValueOfSchema(schema: JSONSchema) {
       Object.entries(schema.properties).forEach(
         ([propertyName, propertySchema]) => {
           objDefaults[propertyName] = getDefaultValueOfSchema(propertySchema);
-        }
+        },
       );
     }
     return objDefaults;
@@ -74,7 +74,7 @@ export function exploreUnionSchema(schema: JSONSchema): {
     }
     if (!type) {
       throw new Error(
-        "cannot handle a union/anyOf with complicated children types"
+        "cannot handle a union/anyOf with complicated children types",
       );
     }
     if (distinctTypeOptions.has(type)) {
@@ -106,13 +106,13 @@ export function exploreUnionSchema(schema: JSONSchema): {
           ) {
             constProperties[childPropName] = childPropSchema.const;
           }
-        }
+        },
       );
       Object.keys(constProperties).forEach((keyName) => {
         if (unionKeys.indexOf(keyName) === -1) unionKeys.push(keyName);
       });
       return constProperties;
-    }
+    },
   );
 
   const unionKeyMap = {};
@@ -127,7 +127,7 @@ export function exploreUnionSchema(schema: JSONSchema): {
           walkKeyMap[constValue] || (walkKeyMap[constValue] = newNodeValue);
         walkKeyMap = thisKeyMap;
       });
-    }
+    },
   );
 
   const isAlwaysObject =
@@ -166,7 +166,7 @@ export function exploreUnionSchema(schema: JSONSchema): {
             : "?",
         value: String(optionSchemaIndex),
       };
-    }
+    },
   );
   return {
     options,
@@ -185,7 +185,7 @@ export function exploreUnionSchema(schema: JSONSchema): {
         // this means that we can use the type to find a specific schema.
         const matchedIndex = optionSchemas.findIndex(
           (schema) =>
-            typeof schema === "object" && schema.type === observedValueType
+            typeof schema === "object" && schema.type === observedValueType,
         );
         if (matchedIndex === -1)
           throw new Error("Failed to match oneOf schema via distinct type");

@@ -10,7 +10,7 @@ export type ZObservable<Schema extends JSONSchema> = {
 export function createZObservable<Schema extends JSONSchema>(
   valueSchema: Schema,
   get: () => FromSchema<Schema>,
-  subscribe: (handler: (v: FromSchema<Schema>) => void) => () => void
+  subscribe: (handler: (v: FromSchema<Schema>) => void) => () => void,
 ): ZObservable<Schema> {
   return { zType: "Observable", get, valueSchema, subscribe };
 }

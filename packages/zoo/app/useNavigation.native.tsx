@@ -21,7 +21,7 @@ export function useGlobalNavigation() {
         title: string,
         schema: any,
         value: any,
-        onValue?: undefined | ((value: any) => void)
+        onValue?: undefined | ((value: any) => void),
       ) => {
         push("JSONInput", { value, schema, onValue });
       },
@@ -35,7 +35,7 @@ export function useGlobalNavigation() {
         navigate("Error", { error });
       },
     }),
-    []
+    [],
   );
 }
 
@@ -59,7 +59,7 @@ export function useConnectionNavigation() {
         nav.goBack();
       },
     }),
-    [conn]
+    [conn],
   );
 }
 
@@ -107,11 +107,11 @@ export function useStoreNavigation(storePath: string[]) {
             connection,
             storePath,
             name,
-          })
+          }),
         );
       },
     }),
-    [connection]
+    [connection],
   );
 }
 
@@ -136,13 +136,13 @@ export function useStoreFileNavigation(storePath: string[], fileName: string) {
         goBack();
       },
     }),
-    []
+    [],
   );
 }
 
 export function useStoreSchemaNavigation(
   storePath: string[],
-  schemaName: string
+  schemaName: string,
 ) {
   const { goBack } = useReactNavigation();
 
@@ -153,6 +153,6 @@ export function useStoreSchemaNavigation(
       },
       setSchemaName: (schemaName: string) => {},
     }),
-    []
+    [],
   );
 }

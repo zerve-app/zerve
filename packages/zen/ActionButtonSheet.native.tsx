@@ -5,7 +5,7 @@ import { useBottomSheet } from "./BottomSheet";
 
 export function useActionsSheet(
   renderButton: (onOpen: () => void) => ReactNode,
-  getActions: () => ActionButtonDef[]
+  getActions: () => ActionButtonDef[],
 ): readonly [null | ReactNode, () => void] {
   const onOpen = useBottomSheet<void>(({ onClose }) => (
     <VStack padded>

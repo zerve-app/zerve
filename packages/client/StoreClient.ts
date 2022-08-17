@@ -6,7 +6,7 @@ export function createZStoreClient(
   zStoreOrigin: string,
   zStorePath: string,
   zStoreSchema: any,
-  zStoreData: any
+  zStoreData: any,
 ) {
   const connection: Connection = {
     key: "StaticClient",
@@ -20,7 +20,7 @@ export function createZStoreClient(
       return resp.value;
     }
     function use(
-      queryOptions?: UseQueryOptions<unknown, unknown, unknown, any>
+      queryOptions?: UseQueryOptions<unknown, unknown, unknown, any>,
     ) {
       return useQuery([".zerve-store", zStorePath, name], get, queryOptions);
     }

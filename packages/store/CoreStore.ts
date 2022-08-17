@@ -94,7 +94,7 @@ const DeleteSchemaActionSchema = {
 
 function validateNode(
   node: FromSchema<typeof NodeSchema>,
-  schemas: SchemaStore
+  schemas: SchemaStore,
 ) {
   if (typeof node !== "object") throw new Error("Invalid Store Node");
   if (node.value === undefined) throw new Error("Store Node value missing");
@@ -106,7 +106,7 @@ function validateNode(
 
 function handleWriteSchemaValue(
   state: FromSchema<typeof StateTreeSchema>,
-  action: FromSchema<typeof WriteSchemaValueActionSchema>
+  action: FromSchema<typeof WriteSchemaValueActionSchema>,
 ): FromSchema<typeof StateTreeSchema> {
   const { name, schema, value } = action;
   if (name[0] === "$")
@@ -133,7 +133,7 @@ const GenericCalculator = createZChainStateCalculator(
       schema: WriteValueActionSchema,
       handler: (
         state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof WriteValueActionSchema>
+        action: FromSchema<typeof WriteValueActionSchema>,
       ) => {
         const { name, value } = action;
         if (name[0] === "$")
@@ -162,7 +162,7 @@ const GenericCalculator = createZChainStateCalculator(
       schema: RenameValueActionSchema,
       handler: (
         state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof RenameValueActionSchema>
+        action: FromSchema<typeof RenameValueActionSchema>,
       ) => {
         const { prevName, newName } = action;
         const newState: typeof state = { ...state };
@@ -176,7 +176,7 @@ const GenericCalculator = createZChainStateCalculator(
       schema: DeleteActionSchema,
       handler: (
         state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof DeleteActionSchema>
+        action: FromSchema<typeof DeleteActionSchema>,
       ) => {
         if (action.name[0] === "$")
           throw new Error("Cannot delete a hidden file that begins with $");
@@ -189,7 +189,7 @@ const GenericCalculator = createZChainStateCalculator(
       schema: WriteSchemaActionSchema,
       handler: (
         state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof WriteSchemaActionSchema>
+        action: FromSchema<typeof WriteSchemaActionSchema>,
       ) => {
         const schemas = state.$schemas || {};
         schemas[action.schemaName] = {
@@ -206,7 +206,7 @@ const GenericCalculator = createZChainStateCalculator(
       schema: DeleteSchemaActionSchema,
       handler: (
         state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof DeleteSchemaActionSchema>
+        action: FromSchema<typeof DeleteSchemaActionSchema>,
       ) => {
         const schemas = state.$schemas ? { ...state.$schemas } : {};
         delete schemas[action.schemaName];
@@ -216,7 +216,7 @@ const GenericCalculator = createZChainStateCalculator(
         };
       },
     },
-  }
+  },
 );
 
 export type GeneralStoreModule = Awaited<ReturnType<typeof createGeneralStore>>;
@@ -224,17 +224,17 @@ export type GeneralStoreModule = Awaited<ReturnType<typeof createGeneralStore>>;
 export async function createGeneralStore(
   data: CoreDataModule,
   cacheFilesPath: string,
-  docName: string
+  docName: string,
 ) {
   const genStore = await CoreChain.createZChainState(
     data,
     cacheFilesPath,
     docName,
-    GenericCalculator
+    GenericCalculator,
   );
 
   async function validateWriteValue(
-    input: FromSchema<typeof WriteValueActionSchema>
+    input: FromSchema<typeof WriteValueActionSchema>,
   ): Promise<void> {
     const storeState = await genStore.z.State.get();
     const storeNodeValue = storeState[input.name];
@@ -244,14 +244,14 @@ export async function createGeneralStore(
       const valid = validateWithSchemaStore(
         storeNodeValue.schema,
         input.value,
-        schemaStore || EmptySchemaStore
+        schemaStore || EmptySchemaStore,
       );
     }
   }
 
   function validateWrite(
     input: FromSchema<typeof WriteSchemaValueActionSchema>,
-    storeValue: any // uh fix this
+    storeValue: any, // uh fix this
   ) {
     const schemaStore = storeValue?.["$schemas"] || EmptySchemaStore;
     if (input.value === undefined) {
@@ -265,14 +265,14 @@ export async function createGeneralStore(
   }
 
   async function validateWriteSchemaValue(
-    input: FromSchema<typeof WriteSchemaValueActionSchema>
+    input: FromSchema<typeof WriteSchemaValueActionSchema>,
   ): Promise<void> {
     const storeValue = await genStore.z.State.get();
     validateWrite(input, storeValue);
   }
 
   async function validateCreateValue(
-    input: FromSchema<typeof WriteSchemaValueActionSchema>
+    input: FromSchema<typeof WriteSchemaValueActionSchema>,
   ): Promise<void> {
     const storeValue = await genStore.z.State.get();
     if (storeValue[input.name]) {
@@ -291,7 +291,7 @@ export async function createGeneralStore(
       if (action.name === "WriteSchemaValue")
         await validateWriteSchemaValue(action.value);
       return await genStore.z.Dispatch.call(action);
-    }
+    },
   );
 
   return createZMetaContainer(
@@ -301,6 +301,6 @@ export async function createGeneralStore(
     },
     {
       zContract: "Store",
-    }
+    },
   );
 }

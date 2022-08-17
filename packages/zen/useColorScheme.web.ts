@@ -15,7 +15,7 @@ type MediaQuery = {
 };
 
 const mediaQuery: undefined | MediaQuery = global?.window?.matchMedia(
-  "(prefers-color-scheme: dark)"
+  "(prefers-color-scheme: dark)",
 );
 
 function getAppearanceOfMQMatches(matches: undefined | boolean) {

@@ -29,7 +29,7 @@ const ApplySystemConfig = createZAction(
 
   async (spec) => {
     return {};
-  }
+  },
 );
 
 const SystemCaddy = createZContainer({

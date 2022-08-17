@@ -61,7 +61,7 @@ export function ConnectionPage({
           });
         },
       },
-    ]
+    ],
   );
   return (
     <>

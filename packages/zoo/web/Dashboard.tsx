@@ -190,7 +190,7 @@ function NavigationSidebar<FeatureState>({
   Context: Context<null | FragmentContext<FeatureState>>;
   getFeatureTitle: (feature: FeatureState) => string;
   getFeatureIcon: (
-    feature: FeatureState
+    feature: FeatureState,
   ) => ComponentProps<typeof FontAwesome>["name"] | null;
   footer?: ReactNode;
   activeFeatures: Array<FeatureState>;
@@ -199,7 +199,7 @@ function NavigationSidebar<FeatureState>({
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
     throw new Error(
-      "Cannot render NavigationSidebar outside of a FragmentContext"
+      "Cannot render NavigationSidebar outside of a FragmentContext",
     );
   const topParent = activeFeatures[0];
   const topParentKey =
@@ -221,7 +221,7 @@ function NavigationSidebar<FeatureState>({
           !!defaultFeatureKey &&
           defaultFeatureKey === fragmentKey
         }
-      />
+      />,
     );
     if (topParentKey === fragmentKey) {
       activeFeatures.forEach((feature) => {
@@ -235,7 +235,7 @@ function NavigationSidebar<FeatureState>({
             to={feature}
             title={getFeatureTitle(feature)}
             icon={getFeatureIcon(feature)}
-          />
+          />,
         );
       });
     }
@@ -270,7 +270,7 @@ export function DashboardPage<Feature>({
   getFeatureTitle: (feature: Feature) => string;
   navigationFooter?: ReactNode;
   getFeatureIcon: (
-    feature: Feature
+    feature: Feature,
   ) => ComponentProps<typeof FontAwesome>["name"] | null;
   getParentFeatures?: (feature: Feature) => Array<Feature>;
   stringifyFeatureFragment: (feature: Feature) => string;
@@ -280,11 +280,11 @@ export function DashboardPage<Feature>({
   const [feature, fragment, fragmentContext] =
     useFragmentNavigationController<Feature>(
       stringifyFeatureFragment,
-      parseFeatureFragment
+      parseFeatureFragment,
     );
   const parentFeatures = useMemo(
     () => (getParentFeatures && feature ? getParentFeatures(feature) : []),
-    [getParentFeatures, feature]
+    [getParentFeatures, feature],
   );
   const { width } = useWindowDimensions();
   const wideEnoughForNavigation = width >= NavigationBarWidth + PaneWidth;
@@ -343,7 +343,7 @@ export function DashboardPage<Feature>({
                   key: fragmentContext.stringifyFragment(displayFeature),
                   title: getFeatureTitle(displayFeature),
                   icon: getFeatureIcon(displayFeature),
-                })
+                }),
               )}
             </View>
           </View>

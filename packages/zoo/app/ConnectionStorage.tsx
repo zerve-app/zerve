@@ -42,24 +42,24 @@ const DefaultConnections =
 
 const connectionsNode = connectionStorage.getStorageNode(
   "Connections",
-  DefaultConnections
+  DefaultConnections,
 );
 
 export function useConnectionDisclosedState(connectionKey: string) {
   const node = connectionStorage.getStorageNode(
     `disclosed-${connectionKey}`,
-    true
+    true,
   );
   return connectionStorage.useNodeState(node);
 }
 
 export function setConnectionDisclosed(
   connectionKey: string,
-  isDisclosed: boolean
+  isDisclosed: boolean,
 ) {
   const node = connectionStorage.getStorageNode(
     `disclosed-${connectionKey}`,
-    true
+    true,
   );
   node.set(isDisclosed);
 }
@@ -104,14 +104,14 @@ export function useWebConnection(config: SiteConfig) {
 }
 
 export function mutateConnections(
-  mutator: (connections: Connection[]) => Connection[]
+  mutator: (connections: Connection[]) => Connection[],
 ) {
   connectionStorage.mutateStorage("Connections", DefaultConnections, mutator);
 }
 
 export function destroyConnection(key: string) {
   mutateConnections((connections) =>
-    connections.filter((conn) => conn.key !== key)
+    connections.filter((conn) => conn.key !== key),
   );
 }
 
@@ -164,7 +164,7 @@ function clearSessionToken(connectionKey: string) {
             sessionToken: null,
           },
         };
-      })
+      }),
     );
   }
 }
@@ -220,7 +220,7 @@ function getCookie(name: string): string | null {
 
 export function setSession(
   connectionKey: string,
-  session: SavedSession | null
+  session: SavedSession | null,
 ) {
   if (Platform.OS === "web") {
     setCookieSession(session);
@@ -233,7 +233,7 @@ export function setSession(
           ...conn,
           session,
         };
-      })
+      }),
     );
   }
 }
@@ -257,7 +257,7 @@ export function setSessionUserId(connectionKey: string, userId: string) {
             userLabel: userId,
           },
         };
-      })
+      }),
     );
   }
 }

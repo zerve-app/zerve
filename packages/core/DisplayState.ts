@@ -22,7 +22,7 @@ type ActionPayloads = {};
 export function DisplayStateReducer<ActionType extends keyof ActionPayloads>(
   state: DisplayState,
   actionType: ActionType,
-  actionPayload: ActionPayloads[ActionType]
+  actionPayload: ActionPayloads[ActionType],
 ): DisplayState {
   switch (actionType) {
     case "SetTitle":

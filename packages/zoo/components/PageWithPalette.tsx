@@ -20,7 +20,7 @@ export function PageWithPalette({
 
   useKeyboardEffect(
     "palette",
-    useCallback(() => setPaletteOpen(true), [setPaletteOpen])
+    useCallback(() => setPaletteOpen(true), [setPaletteOpen]),
   );
   const colors = useColors();
   return (

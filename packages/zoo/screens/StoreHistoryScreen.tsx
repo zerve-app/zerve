@@ -18,7 +18,7 @@ function StoreHistoryPage({
   const { data, isLoading } = useZNodeValue([...storePath, "State"]);
   const [optionsButton, openOptions] = useActionsSheet(
     (onOpen) => <OptionsButton onOptions={onOpen} />,
-    () => []
+    () => [],
   );
   return (
     <>

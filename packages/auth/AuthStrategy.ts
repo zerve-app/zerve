@@ -8,15 +8,15 @@ type StrategyAuthentication<AuthenticationDetails extends Object = {}> = {
 export type AuthStrategy<
   AuthorizePayloadSchema extends JSONSchema,
   Details,
-  AuthenticationDetails = {}
+  AuthenticationDetails = {},
 > = {
   authorizeSchema: AuthorizePayloadSchema;
   authorize: (
     payload: FromSchema<AuthorizePayloadSchema>,
-    strategyFilesPath: string
+    strategyFilesPath: string,
   ) => Promise<null | StrategyAuthentication<AuthenticationDetails>>;
   getDetails: (
     strategyFilesPath: string,
-    strategyKey: string
+    strategyKey: string,
   ) => Promise<Details>;
 };

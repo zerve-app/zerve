@@ -13,5 +13,5 @@ export const DiskUsage = createZGettable(
     });
 
     return { usage };
-  }
+  },
 );

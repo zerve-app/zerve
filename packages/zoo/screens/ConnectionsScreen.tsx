@@ -66,7 +66,7 @@ function OrderScreenContainer<Item extends KeyedObject>({
         </ShadowDecorator>
       );
     },
-    [renderItem]
+    [renderItem],
   );
   return (
     <DraggableFlatList

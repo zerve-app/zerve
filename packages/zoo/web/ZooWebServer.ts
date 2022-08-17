@@ -9,14 +9,14 @@ export type WebPathRootServerProps = {
 
 export async function validateUserCanAccessOrg(
   config: SiteConfig,
-  orgId: string
+  orgId: string,
 ) {
   try {
     const userRoleInOrg = await serverGet(
       config.origin,
       `.z/Auth/user/Orgs/${orgId}/role`,
       undefined,
-      extractSessionAuth(["Auth"], config.session)
+      extractSessionAuth(["Auth"], config.session),
     );
     // console.log("Users role is", userRoleInOrg);
     return true;
@@ -29,14 +29,14 @@ export async function verifyStoreExists(
   config: SiteConfig,
   entityId: string,
   storeId: string,
-  entityIsOrg: boolean
+  entityIsOrg: boolean,
 ): Promise<boolean> {
   if (!config.session)
     throw new Error("No user session, cannot verifyStoreExists");
   const userId = config.session.userId;
   if (!entityIsOrg && userId !== entityId) {
     throw new Error(
-      "Cannot verifyStoreExists because userId does not match requested entityId"
+      "Cannot verifyStoreExists because userId does not match requested entityId",
     );
   }
   const storePath = entityIsOrg
@@ -47,7 +47,7 @@ export async function verifyStoreExists(
       config.origin,
       storePath,
       undefined,
-      extractSessionAuth(["Auth"], config.session)
+      extractSessionAuth(["Auth"], config.session),
     );
     return true;
   } catch (e) {
@@ -61,7 +61,7 @@ async function validateSession(origin: string, session: SavedSession | null) {
     origin,
     ".z/Auth/user",
     undefined,
-    extractSessionAuth(["Auth"], session)
+    extractSessionAuth(["Auth"], session),
   );
   if (userNode && userNode !== UnauthorizedError) return session;
   return null;
@@ -79,7 +79,7 @@ export async function getSiteConfig(context) {
 }
 
 function getCookieSession(
-  cookieValue: string | undefined
+  cookieValue: string | undefined,
 ): SavedSession | null {
   if (!cookieValue) return null;
   const value = getCookie(cookieValue, "ZSession");

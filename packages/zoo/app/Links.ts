@@ -59,7 +59,7 @@ export type HomeStackScreenProps<Screen extends keyof HomeStackParamList> =
   NativeStackScreenProps<HomeStackParamList, Screen>;
 
 export type SettingsStackScreenProps<
-  Screen extends keyof SettingsStackParamList
+  Screen extends keyof SettingsStackParamList,
 > = NativeStackScreenProps<SettingsStackParamList, Screen>;
 
 export const navigationLinking: LinkingOptions<RootStackParamList> = {

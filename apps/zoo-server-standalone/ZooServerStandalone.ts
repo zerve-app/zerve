@@ -23,7 +23,7 @@ export async function startApp() {
   const PublicStore = await createGeneralStore(
     Data,
     joinPath(dataDir, "PublicStoreCache"),
-    "PublicStore"
+    "PublicStore",
   );
 
   const zRoot = createZContainer({

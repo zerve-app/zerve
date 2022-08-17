@@ -20,7 +20,7 @@ const Fetch = createZAction(
       method,
       body: jsonBody == null ? undefined : JSON.stringify(jsonBody),
     });
-  }
+  },
 );
 
 export type FetchModule = typeof Fetch;

@@ -19,7 +19,7 @@ export type UserNavigationState =
     };
 
 export function UserFeatureLink(
-  props: Omit<ComponentProps<typeof NavLink<UserNavigationState>>, "Context">
+  props: Omit<ComponentProps<typeof NavLink<UserNavigationState>>, "Context">,
 ) {
   return (
     <NavLink<UserNavigationState> Context={UserDashboardContext} {...props} />

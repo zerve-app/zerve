@@ -10,7 +10,7 @@ import { defineKeySource } from "@zerve/core";
 export type BottomSheetContext = {
   open: <O>(
     options: O,
-    node: (opts: { onClose: () => void; options: O }) => ReactNode
+    node: (opts: { onClose: () => void; options: O }) => ReactNode,
   ) => void;
   close: () => void;
 };
@@ -30,11 +30,11 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
     () => ({
       open: (
         options: any,
-        renderNode: (opts: { onClose: () => void; options: any }) => ReactNode
+        renderNode: (opts: { onClose: () => void; options: any }) => ReactNode,
       ) => {},
       close,
     }),
-    [close]
+    [close],
   );
   return (
     <BottomSheetCtx.Provider value={context}>
@@ -44,7 +44,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
 }
 
 export function useBottomSheet<Options>(
-  renderNode: (opts: { onClose: () => void; options: Options }) => ReactNode
+  renderNode: (opts: { onClose: () => void; options: Options }) => ReactNode,
 ) {
   const context = useContext(BottomSheetCtx);
 

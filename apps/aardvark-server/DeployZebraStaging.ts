@@ -102,5 +102,5 @@ export const DeployZebraStaging = (buildId: string) =>
       await applyCaddyfile(state);
 
       return null;
-    }
+    },
   );
