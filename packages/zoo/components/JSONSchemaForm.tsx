@@ -60,7 +60,6 @@ export function JSONSchemaForm({
         }}
       >
         <VStack padded={padded}>
-          {isLoading && <Spinner />}
           {error && <Paragraph danger>{error.message}</Paragraph>}
           <JSONSchemaEditor
             id={id}
@@ -91,8 +90,10 @@ export function JSONSchemaForm({
               small
               title="Cancel"
               chromeless
+              disabled={isLoading}
             />
           )}
+          {isLoading && <Spinner />}
         </VStack>
       </Form>
     </>

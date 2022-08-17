@@ -1,15 +1,26 @@
-import React, { ReactNode } from "react";
+import React, { ComponentProps, ReactNode } from "react";
 import { StyleProp, StyleSheet, TextStyle, View } from "react-native";
 import { useColors } from "./useColors";
 import { ThemedText } from "./Themed";
 
-export function Title({ title }: { title: string }) {
+export function Title({
+  title,
+  style,
+  ...themedTextProps
+}: {
+  title: string;
+  style?: TextStyle;
+} & ComponentProps<typeof ThemedText>) {
   return (
     <ThemedText
-      style={{
-        fontWeight: "bold",
-        fontSize: 24,
-      }}
+      {...themedTextProps}
+      style={[
+        {
+          fontWeight: "bold",
+          fontSize: 24,
+        },
+        style,
+      ]}
     >
       {title}
     </ThemedText>

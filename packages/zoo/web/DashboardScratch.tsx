@@ -4,7 +4,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useZNodeValue } from "@zerve/client/Query";
 import { SchemaStore } from "@zerve/core";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
-import { useSaveFile } from "@zerve/client/Mutation";
+import { useSaveEntry } from "@zerve/client/Mutation";
 import { LogoutButton } from "../components/Auth";
 import { useConnection } from "@zerve/client/Connection";
 
@@ -25,7 +25,7 @@ function FileFeaturePane({
     "State",
     "$schemas",
   ]);
-  const saveFile = useSaveFile(storePath);
+  const saveFile = useSaveEntry(storePath);
   if (isLoading || isSchemasLoading) return null;
   const { schema, value } = data;
   return (

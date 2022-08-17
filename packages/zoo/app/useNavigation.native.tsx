@@ -70,13 +70,13 @@ export function useStoreNavigation(storePath: string[]) {
   if (!connection) throw new Error("Connection required to navigate");
   return useMemo(
     () => ({
-      openFile: (name: string) => {
+      openEntry: (name: string) => {
         navigate("HomeStack", {
           screen: "File",
           params: { connection, storePath, name },
         });
       },
-      openNewFile: () => {
+      openNewEntry: () => {
         navigate("HomeStack", {
           screen: "NewFile",
           params: { connection, storePath },
@@ -101,7 +101,7 @@ export function useStoreNavigation(storePath: string[]) {
         });
       },
 
-      replaceToFile: (name: string) => {
+      replaceToEntry: (name: string) => {
         dispatch(
           StackActions.replace("File", {
             connection,
@@ -122,7 +122,7 @@ export function useStoreFileNavigation(storePath: string[], fileName: string) {
   if (!connection) throw new Error("Connection required to navigate");
   return useMemo(
     () => ({
-      setFileName: (fileName: string) => {},
+      setEntryName: (fileName: string) => {},
       backTo: () => {
         goBack();
       },

@@ -16,7 +16,7 @@ import {
 } from "@zerve/core";
 import { createJSONBlock } from "@zerve/crypto";
 import { CoreDataModule } from "@zerve/data";
-import { joinPath, MakeDir, ReadJSON } from "@zerve/system-files";
+import { joinPath, MakeDir, ReadJSON, WriteJSON } from "@zerve/system-files";
 
 export type ZChainStateCalculator<
   State,

@@ -100,8 +100,8 @@ export function useConnectionNavigation() {
   );
 }
 
-export function useStoreNavigation(storePath: string[]) {
-  const { push, pop } = useRouter();
+export function useStoreNavigation(location: string[]) {
+  const { push, replace } = useRouter();
   const conn = useConnection();
   const connection = conn?.key;
   if (!connection) throw new Error("needs connection here ok");
@@ -109,28 +109,34 @@ export function useStoreNavigation(storePath: string[]) {
     throw new Error("Cannot navigate with this connection yet");
   return useMemo(
     () => ({
-      openFile: (fileName: string) => {
-        push(`${storePath.join("/")}/$entries/${fileName}`);
+      openEntry: (entryName: string) => {
+        push(`/${location.join("/")}/$entries/${entryName}`);
       },
-      openNewFile: () => {
-        push(`${storePath.join("/")}/$new`);
+      openNewEntry: () => {
+        push(`/${location.join("/")}/$new`);
       },
       openSchema: (schema: string) => {
-        push(`${storePath.join("/")}/$schemas/${schema}`);
+        push(`/${location.join("/")}/$schemas/${schema}`);
       },
       openSchemas: () => {
-        push(`${storePath.join("/")}/$schemas`);
+        push(`/${location.join("/")}/$schemas`);
       },
       openHistory: () => {},
-      replaceToFile: (fileName: string) => {
-        push(`${storePath.join("/")}/$entries/${fileName}`);
+      replaceToEntry: (entryName: string) => {
+        replace(`/${location.join("/")}?_=entries-${entryName}`);
+      },
+      replaceToEntrySchema: (entryName: string) => {
+        replace(`/${location.join("/")}?_=entries-${entryName}_schema`);
+      },
+      replaceToSchema: (schemaName: string) => {
+        replace(`/${location.join("/")}?_=schemas-${schemaName}`);
       },
     }),
     []
   );
 }
 
-export function useStoreFileNavigation(storePath: string[], fileName: string) {
+export function useStoreFileNavigation(storePath: string[], entryName: string) {
   const { push, pop } = useRouter();
   const conn = useConnection();
   const connection = conn?.key;
@@ -139,15 +145,15 @@ export function useStoreFileNavigation(storePath: string[], fileName: string) {
     throw new Error("Cannot navigate with this connection yet");
   return useMemo(
     () => ({
-      setFileName: (fileName: string) => {},
+      setEntryName: (entryName: string) => {},
       openSchema: () => {
-        push(`${storePath.join("/")}/$entries/${fileName}/$schema`);
+        push(`${storePath.join("/")}/$entries/${entryName}/$schema`);
       },
       leave: () => {
         push(`${storePath.join("/")}`);
       },
       backTo: () => {
-        push(`${storePath.join("/")}/$entries/${fileName}`);
+        push(`${storePath.join("/")}/$entries/${entryName}`);
       },
     }),
     []

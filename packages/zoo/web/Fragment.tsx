@@ -30,10 +30,12 @@ export function FragmentLink<FragmentState>({
   const { stringifyFragment, navigateFragment } = fragmentContext;
   return (
     <a
+      tabIndex={-1}
       style={{ textDecoration: "none" }}
-      href={`?_${stringifyFragment(to)}`}
-      onClick={(e) => {
+      href={`?_=${stringifyFragment(to)}`}
+      onClickCapture={(e) => {
         e.preventDefault();
+        e.stopPropagation();
         navigateFragment(to);
       }}
     >

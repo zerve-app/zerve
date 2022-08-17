@@ -8,20 +8,22 @@ import { useMutation, useQueryClient } from "react-query";
 import { useConnection } from "./Connection";
 import { postZAction } from "./ServerCalls";
 
-export function useCreateFile(storePath: string[]) {
+export function useCreateEntry(storePath: string[]) {
   const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
     async (name: string) => {
+      console.log("usecreatee");
       if (conn) {
         await postZAction(conn, [...storePath, "Dispatch"], {
-          name: "WriteSchemaValue",
+          name: "CreateValue",
           value: {
             name,
             schema: { type: "null" },
             value: null,
           },
         });
+        console.log("BADNEWSshould not see this ok!");
       } else {
         // deprecated "local" behavior.. should be consolidated into logic above
         // await dispatch(name, {
@@ -80,7 +82,7 @@ export function useCreateSchema(storePath: string[]) {
   );
 }
 
-export function useDeleteFile(
+export function useDeleteEntry(
   storePath: string[],
   opts?: { onSuccess?: () => void }
 ) {
@@ -114,8 +116,8 @@ export function useDeleteFile(
   );
 }
 
-export function useSaveFile(storePath: string[]) {
-  if (!storePath) throw new Error("Cannot useSaveFile withtout storePath");
+export function useSaveEntry(storePath: string[]) {
+  if (!storePath) throw new Error("Cannot useSaveEntry withtout storePath");
   const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
@@ -145,7 +147,7 @@ export function useSaveFile(storePath: string[]) {
   );
 }
 
-export function useRenameFile(storePath: string[]) {
+export function useRenameEntry(storePath: string[]) {
   const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
@@ -172,7 +174,7 @@ export function useRenameFile(storePath: string[]) {
   );
 }
 
-export function useSaveFileSchema(
+export function useSaveEntrySchema(
   storePath: string[],
   schemaStore: SchemaStore
 ) {

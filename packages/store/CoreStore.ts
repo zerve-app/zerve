@@ -104,6 +104,25 @@ function validateNode(
   validateWithSchemaStore(node.schema, node.value, schemas);
 }
 
+function handleWriteSchemaValue(
+  state: FromSchema<typeof StateTreeSchema>,
+  action: FromSchema<typeof WriteSchemaValueActionSchema>
+): FromSchema<typeof StateTreeSchema> {
+  const { name, schema, value } = action;
+  if (name[0] === "$")
+    throw new Error("Cannot write to a hidden file that begins with $");
+  const prevNode = state[name];
+  const node = {
+    schema: schema,
+    value: value === undefined ? prevNode?.value || null : action.value,
+  };
+  validateNode(node, state.$schemas || EmptySchemaStore);
+  return {
+    ...state,
+    [name]: node,
+  };
+}
+
 const GenericCalculator = createZChainStateCalculator(
   StateTreeSchema,
   {
@@ -133,26 +152,12 @@ const GenericCalculator = createZChainStateCalculator(
     },
     WriteSchemaValue: {
       schema: WriteSchemaValueActionSchema,
-      handler: (
-        state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof WriteSchemaValueActionSchema>
-      ) => {
-        const { name, schema, value } = action;
-        if (name[0] === "$")
-          throw new Error("Cannot write to a hidden file that begins with $");
-        const prevNode = state[name];
-        const node = {
-          schema: schema,
-          value: value === undefined ? prevNode?.value || null : action.value,
-        };
-        validateNode(node, state.$schemas || EmptySchemaStore);
-        return {
-          ...state,
-          [name]: node,
-        };
-      },
+      handler: handleWriteSchemaValue,
     },
-
+    CreateValue: {
+      schema: WriteSchemaValueActionSchema,
+      handler: handleWriteSchemaValue,
+    },
     RenameValue: {
       schema: RenameValueActionSchema,
       handler: (
@@ -244,31 +249,44 @@ export async function createGeneralStore(
     }
   }
 
-  async function validateWriteSchemaValue(
-    input: FromSchema<typeof WriteSchemaValueActionSchema>
-  ): Promise<void> {
-    const schemasNode = await genStore.z.State.get();
-    const schemaStore = schemasNode?.["$schemas"] || EmptySchemaStore;
-
+  function validateWrite(
+    input: FromSchema<typeof WriteSchemaValueActionSchema>,
+    storeValue: any // uh fix this
+  ) {
+    const schemaStore = storeValue?.["$schemas"] || EmptySchemaStore;
     if (input.value === undefined) {
-      const storeNode = await genStore.z.State.getChild(input.name);
-      const storeNodeValue = await storeNode.get();
+      const storeEntryValue = storeValue[input.name];
       if (input.schema != null) {
-        validateWithSchemaStore(
-          input.schema,
-          storeNodeValue.value,
-          schemaStore
-        );
+        validateWithSchemaStore(input.schema, storeEntryValue, schemaStore);
       }
     } else {
       validateWithSchemaStore(input.schema, input.value, schemaStore);
     }
   }
 
+  async function validateWriteSchemaValue(
+    input: FromSchema<typeof WriteSchemaValueActionSchema>
+  ): Promise<void> {
+    const storeValue = await genStore.z.State.get();
+    validateWrite(input, storeValue);
+  }
+
+  async function validateCreateValue(
+    input: FromSchema<typeof WriteSchemaValueActionSchema>
+  ): Promise<void> {
+    const storeValue = await genStore.z.State.get();
+    if (storeValue[input.name]) {
+      throw new Error(`Value named "${input.name}" already exists in store.`);
+    }
+    validateWrite(input, storeValue);
+  }
+
   const Dispatch = createZAction(
     genStore.z.Dispatch.payloadSchema,
     genStore.z.Dispatch.responseSchema,
     async (action) => {
+      if (action.name === "CreateValue")
+        await validateCreateValue(action.value);
       if (action.name === "WriteValue") await validateWriteValue(action.value);
       if (action.name === "WriteSchemaValue")
         await validateWriteSchemaValue(action.value);

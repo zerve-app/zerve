@@ -3,9 +3,9 @@ import React, { useMemo } from "react";
 import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import ScreenHeader from "../components/ScreenHeader";
 import {
-  useDeleteFile,
-  useRenameFile,
-  useSaveFile,
+  useDeleteEntry,
+  useRenameEntry,
+  useSaveEntry,
 } from "@zerve/client/Mutation";
 import { useZStoreSchemas, useZNodeValue } from "@zerve/client/Query";
 import {
@@ -34,12 +34,12 @@ export function FileFeature({
     refetch,
   } = useZNodeValue([...storePath, "State", name]);
   const isLoading = isSchemasLoading || isNodeLoading;
-  const { setFileName, openSchema, leave } = useStoreFileNavigation(
+  const { setEntryName, openSchema, leave } = useStoreFileNavigation(
     storePath,
     name
   );
   const { openRawJSON } = useGlobalNavigation();
-  const deleteFile = useDeleteFile(
+  const deleteFile = useDeleteEntry(
     storePath,
     useMemo(
       () => ({
@@ -48,15 +48,15 @@ export function FileFeature({
       [name]
     )
   );
-  const saveFile = useSaveFile(storePath);
-  const renameFile = useRenameFile(storePath);
+  const saveFile = useSaveEntry(storePath);
+  const renameFile = useRenameEntry(storePath);
   const renameFilePrompt = useTextInputFormModal<string>((prevName: string) => {
     return {
       inputLabel: "New Entry Name",
       defaultValue: prevName,
       onValue: (inputName: string) => {
         const formattedName = prepareStoreFileName(inputName);
-        setFileName(formattedName);
+        setEntryName(formattedName);
         renameFile.mutate({ prevName: name, newName: formattedName });
       },
     };

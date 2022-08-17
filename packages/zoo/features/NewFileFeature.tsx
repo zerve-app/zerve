@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 import { Input, VStack } from "@zerve/zen";
 import { AsyncButton } from "../components/Button";
 import ScreenHeader from "../components/ScreenHeader";
-import { useCreateFile } from "@zerve/client/Mutation";
+import { useCreateEntry } from "@zerve/client/Mutation";
 import { prepareStoreFileName } from "@zerve/core";
 import {
   useConnectionNavigation,
@@ -12,14 +12,14 @@ import {
 import { Form } from "../components/Form";
 
 export function NewFileFeature({ storePath }: { storePath: string[] }) {
-  const createFile = useCreateFile(storePath);
+  const createEntry = useCreateEntry(storePath);
   const { backToZ } = useConnectionNavigation();
-  const { replaceToFile } = useStoreNavigation(storePath);
+  const { replaceToEntry } = useStoreNavigation(storePath);
   const [name, setName] = React.useState("");
   const handleSubmit = useCallback(async () => {
     const actualName = prepareStoreFileName(name);
-    await createFile.mutate(actualName);
-    replaceToFile(actualName);
+    await createEntry.mutate(actualName);
+    replaceToEntry(actualName);
   }, [name]);
   return (
     <>

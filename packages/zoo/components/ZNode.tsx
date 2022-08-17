@@ -116,7 +116,7 @@ export function ZStateNode({
 }
 
 export function NewFileButton({ path }: { path: string[] }) {
-  const { openNewFile } = useStoreNavigation(path);
+  const { openNewEntry } = useStoreNavigation(path);
   const conn = useConnection();
   return (
     <View
@@ -128,7 +128,7 @@ export function NewFileButton({ path }: { path: string[] }) {
     >
       <Button
         onPress={() => {
-          openNewFile();
+          openNewEntry();
         }}
         small
         title="New Entry"
@@ -149,7 +149,7 @@ function StoreChildList({
   connection: string;
   storePath: string[];
 }) {
-  const { openFile } = useStoreNavigation(storePath);
+  const { openEntry } = useStoreNavigation(storePath);
   if (!list?.length) return <Paragraph>No files here.</Paragraph>;
 
   return (
@@ -159,7 +159,7 @@ function StoreChildList({
         title: displayStoreFileName(child.name),
         icon: "list-ul",
         onPress: () => {
-          openFile(child.key);
+          openEntry(child.key);
         },
       }))}
     />

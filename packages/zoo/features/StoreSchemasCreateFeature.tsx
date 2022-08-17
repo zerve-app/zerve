@@ -1,12 +1,34 @@
-import { Title } from "@zerve/zen";
-import { memo } from "react";
+import { useCreateSchema } from "@zerve/client/Mutation";
+import { EmptySchemaStore, prepareStoreFileName } from "@zerve/core";
+import { memo, useCallback } from "react";
+import { useStoreNavigation } from "../app/useNavigation";
+import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
 
-function StoreSchemasCreate({ storePath, title }: StoreFeatureProps) {
+const SchemaNameSchema = {
+  type: "string",
+  title: "Schema Name",
+} as const;
+
+function StoreSchemasCreate({ storePath, location, title }: StoreFeatureProps) {
+  const createSchema = useCreateSchema(storePath);
+  const { replaceToSchema } = useStoreNavigation(location);
+  const handleSubmit = useCallback(async (name) => {
+    const actualName = prepareStoreFileName(name);
+    await createSchema.mutateAsync(actualName);
+    replaceToSchema(actualName);
+  }, []);
   return (
-    <FeaturePane title={title} spinner={false}>
-      <Title title={"soon"} />
+    <FeaturePane title={title} spinner={createSchema.isLoading}>
+      <JSONSchemaForm
+        id="schema-create-name"
+        onSubmit={handleSubmit}
+        schema={SchemaNameSchema}
+        schemaStore={EmptySchemaStore}
+        saveLabel="Create Schema"
+        padded
+      />
     </FeaturePane>
   );
 }

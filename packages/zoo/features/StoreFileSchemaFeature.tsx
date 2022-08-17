@@ -1,5 +1,5 @@
 import ScreenHeader from "../components/ScreenHeader";
-import { useSaveFileSchema } from "@zerve/client/Mutation";
+import { useSaveEntrySchema } from "@zerve/client/Mutation";
 import {
   connectionSchemasToZSchema,
   useZStoreSchemas,
@@ -12,10 +12,8 @@ import { displayStoreFileName } from "@zerve/core";
 import { showToast } from "@zerve/zen/Toast";
 import { useMemo } from "react";
 import {
-  useConnectionNavigation,
   useGlobalNavigation,
   useStoreFileNavigation,
-  useStoreNavigation,
 } from "../app/useNavigation";
 import { useActionsSheet } from "@zerve/zen";
 
@@ -36,7 +34,7 @@ export function StoreFileSchemaFeature({
 
   const { openRawJSON } = useGlobalNavigation();
   const { backTo } = useStoreFileNavigation(storePath, name);
-  const saveSchema = useSaveFileSchema(storePath, schemaStore);
+  const saveSchema = useSaveEntrySchema(storePath, schemaStore);
 
   const [optionsButton, openOptions] = useActionsSheet(
     (onOpen) => <OptionsButton onOptions={onOpen} />,

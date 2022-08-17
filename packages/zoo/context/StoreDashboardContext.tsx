@@ -1,17 +1,18 @@
 import { ComponentProps, createContext } from "react";
-import { NavLink } from "../web/Dashboard";
+import { NavLink, NavLinkButton } from "../web/Dashboard";
 import { FragmentContext } from "../web/Fragment";
 
 export type StoreFeatureProps = {
   title: string;
   storePath: Array<string>;
+  location: Array<string>;
 };
 
 export type StoreNavigationState =
   | {
       key: "entries";
       path?: Array<string>;
-      child?: "create";
+      child?: "create" | "schema";
     }
   | { key: "schemas"; schema?: string; child?: "create" }
   | {
@@ -23,6 +24,20 @@ export function StoreFeatureLink(
 ) {
   return (
     <NavLink<StoreNavigationState> Context={StoreDashboardContext} {...props} />
+  );
+}
+
+export function StoreFeatureLinkButton(
+  props: Omit<
+    ComponentProps<typeof NavLinkButton<StoreNavigationState>>,
+    "Context"
+  >
+) {
+  return (
+    <NavLinkButton<StoreNavigationState>
+      Context={StoreDashboardContext}
+      {...props}
+    />
   );
 }
 

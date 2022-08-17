@@ -8,6 +8,8 @@ import React, {
 import { View, Text } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import {
+  Button,
+  Icon,
   NavBar,
   NavBarSpacer,
   NavBarZLogo,
@@ -60,7 +62,7 @@ export function NavLinkContent({
   return (
     <View
       style={{
-        padding: 10,
+        paddingVertical: 14,
         paddingHorizontal: 12,
         flexDirection: "row",
         backgroundColor: isActive ? "#FFC8FC" : "transparent",
@@ -113,6 +115,35 @@ export function NavLink<FeatureState>({
         icon={icon}
         isActive={isActive}
         inset={inset}
+      />
+    </FragmentLink>
+  );
+}
+
+export function NavLinkButton<FeatureState>({
+  title,
+  icon,
+  to,
+  Context,
+}: {
+  title: string;
+  icon?: ComponentProps<typeof FontAwesome>["name"] | null;
+  to: FeatureState;
+  Context: Context<null | FragmentContext<FeatureState>>;
+}) {
+  const fragmentContext = useContext(Context);
+  if (!fragmentContext)
+    throw new Error("Cannot render NavLinkButton outside of a FragmentContext");
+  return (
+    <FragmentLink<FeatureState> to={to} Context={Context}>
+      <Button
+        onPress={() => {
+          // this should not be reached. FragmentLink should stopPropagation() the event before it hits the button because it uses onClickCapture
+          // but just in case:
+          fragmentContext.navigateFragment(to);
+        }}
+        title={title}
+        left={icon && <Icon name={icon} />}
       />
     </FragmentLink>
   );

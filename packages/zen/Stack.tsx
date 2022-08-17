@@ -15,6 +15,24 @@ export function Padding({ children }: { children: ReactNode }) {
   return <View style={{ margin: 12 }}>{children}</View>;
 }
 
+export function VSpaced({
+  space = 1,
+  children,
+}: {
+  space?: number;
+  children: ReactNode;
+}) {
+  return (
+    <View
+      style={{
+        paddingVertical: space * 10,
+      }}
+    >
+      {children}
+    </View>
+  );
+}
+
 export function VStack({
   children,
   style,

@@ -37,7 +37,7 @@ export function ThemedText(
   } & TextProps
 ) {
   const colors = useColors();
-  const { lightColor, darkColor, ...otherProps } = props;
+  const { lightColor, darkColor, style, ...otherProps } = props;
   const color = props.tint
     ? colors.tint
     : props.danger
@@ -45,11 +45,12 @@ export function ThemedText(
     : props.secondary
     ? colors.secondaryText
     : colors.text;
+
   return (
     <Text
       numberOfLines={props.oneLine ? 1 : undefined}
       ellipsizeMode="tail"
-      style={{ color }}
+      style={[{ color }, style]}
       {...otherProps}
     />
   );
