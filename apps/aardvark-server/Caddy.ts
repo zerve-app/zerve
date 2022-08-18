@@ -8,7 +8,7 @@ export async function applyCaddyfile(state: DeploymentsState) {
     value: `
 aardvark.zerve.dev {
 	route /.z* {
-    reverse_proxy http://localhost:8999
+		reverse_proxy http://localhost:8999
 	}
 	reverse_proxy http://localhost:8990
 }
@@ -17,10 +17,10 @@ ${Object.entries(state.specs).map(
   ([deploymentKey, spec]) => `
 ${deploymentKey}.zerve.dev {
 	tls {
-    dns cloudflare {$CF_KEY}
+    dns cloudflare {env.CF_KEY}
 	}
 	route /.z* {
-    reverse_proxy http://localhost:${spec.serverPort}
+		reverse_proxy http://localhost:${spec.serverPort}
 	}
 	reverse_proxy http://localhost:${spec.webPort}
 }
