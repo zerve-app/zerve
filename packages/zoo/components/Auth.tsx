@@ -56,6 +56,15 @@ const CodeSchema = {
   capitalize: "characters",
 } as const;
 
+export function isSeeminglyAnonUser(userId: string) {
+  return userId.length === 11 && userId[3] === "-" && userId[7] === "-";
+}
+
+export function getUserDisplayName(userId: string) {
+  if (isSeeminglyAnonUser(userId)) return "Anon";
+  return userId;
+}
+
 function LoginStrategyForm({
   strategy,
   path,

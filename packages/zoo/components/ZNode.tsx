@@ -37,7 +37,7 @@ import {
 } from "@zerve/core";
 import { View } from "react-native";
 import { useTextInputFormModal } from "./TextInputFormModal";
-import { LoginForm, LogoutButton } from "./Auth";
+import { isSeeminglyAnonUser, LoginForm, LogoutButton } from "./Auth";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -236,17 +236,19 @@ export function ZStoreNode({
   );
 }
 
-function ChangeUsernameButton({
+export function ChangeUsernameButton({
   connection,
   session,
+  onUserIdChange,
 }: {
   connection: Connection;
   session: SavedSession;
+  onUserIdChange?: (userId: string) => void;
 }) {
   const promptNewUserName = useTextInputFormModal<void>(() => {
     return {
       inputLabel: "New User Name",
-      defaultValue: session.userId || "?",
+      defaultValue: isSeeminglyAnonUser(session.userId) ? "" : session.userId,
       onValue: (username) => {
         postZAction(
           connection,
@@ -254,6 +256,7 @@ function ChangeUsernameButton({
           username,
         )
           .then(() => {
+            onUserIdChange?.(username);
             setSessionUserId(connection.key, username);
           })
           .catch((e) => {
@@ -274,7 +277,7 @@ function ChangeUsernameButton({
   );
 }
 
-function ChangePasswordButton({
+export function ChangePasswordButton({
   connection,
   session,
 }: {
@@ -285,15 +288,15 @@ function ChangePasswordButton({
     return {
       inputLabel: "New Password",
       defaultValue: "",
-      onValue: (password) => {
-        postZAction(connection, [...session.authPath, "user", "setPassword"], {
-          newPassword: password,
-        })
-          .then(() => {})
-          .catch((e) => {
-            console.log("catch failed Password change");
-            throw e;
-          });
+      secureTextEntry: true,
+      onValue: async (password) => {
+        await postZAction(
+          connection,
+          [...session.authPath, "user", "setPassword"],
+          {
+            newPassword: password,
+          },
+        );
       },
     };
   });

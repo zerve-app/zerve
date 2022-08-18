@@ -104,6 +104,7 @@ export function Button({
     flexDirection: "row",
     alignItems: "center",
     transform: [{ translateY: -pressHeight.value * 3 }],
+    overflow: "hidden",
   }));
   const pressBounceTimeout = useRef<null | ReturnType<typeof setTimeout>>(null);
   const appendageProps = { color, size: small ? 18 : 24 };

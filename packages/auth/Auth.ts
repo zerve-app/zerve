@@ -337,6 +337,17 @@ export async function createAuth<
   };
   await MakeDir.call(authFilesPath);
 
+  async function getDefaultUserId(uniqueSeed: string): Promise<string> {
+    const userId = `${uniqueSeed.slice(0, 3)}-${uniqueSeed.slice(
+      4,
+      7,
+    )}-${uniqueSeed.slice(8, 11)}`;
+    if (await Exists.call(joinPath(authFilesPath, "entities", userId))) {
+      throw new Error("Whoops, please try again.");
+    }
+    return userId;
+  }
+
   const createSessionPayloadSchema = {
     oneOf: Object.entries(strategies).map(([strategyKey, strategy]) => {
       return {
@@ -599,17 +610,18 @@ export async function createAuth<
             );
             const prevAuthentication: AuthenticationFileData | undefined =
               await ReadJSON.call(authenticatorJsonPath);
+
             let authentication: AuthenticationFileData =
               prevAuthentication ||
-              (() => {
+              (await (async () => {
                 return {
                   creationTime: Date.now(),
                   authenticatorId,
                   strategyKey,
                   strategyName,
-                  userId: authenticatorId,
+                  userId: await getDefaultUserId(authenticatorId),
                 };
-              })();
+              })());
 
             // eventually mutate the authenticator here?
 

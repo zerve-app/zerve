@@ -4,9 +4,11 @@
 import { FromSchema } from "json-schema-to-ts";
 
 const TitleSchema = {
+  title: "Text",
   type: "string",
 } as const;
 const DescriptionSchema = {
+  title: "Text",
   type: "string",
 } as const;
 
@@ -16,12 +18,21 @@ const SchemaMeta = {
   description: DescriptionSchema,
 } as const;
 
-export const NullSchemaSchema = {
+const SchemaMetaTitles = {
+  title: "Title",
+  description: "Description",
+} as const;
+
+export const NullSchemaSchema: ZSchema = {
   type: "object",
   title: "Empty",
   properties: {
     type: { const: "null" },
     ...SchemaMeta,
+  },
+  propertyTitles: {
+    ...SchemaMetaTitles,
+    type: "Type",
   },
   required: ["type"],
   additionalProperties: false,
@@ -38,6 +49,11 @@ export const NumberSchemaSchema = {
     type: { const: "number" },
     ...SchemaMeta,
     default: { type: "number" }, // uhh this implies the need of a more powerful generic/recursion o_O. Like {$ref:'#'}
+  },
+  propertyTitles: {
+    ...SchemaMetaTitles,
+    type: "Type",
+    default: "Default",
   },
   required: ["type"],
   additionalProperties: false,
@@ -96,6 +112,14 @@ export const StringSchemaSchema = {
     inputType: TextInputTypeSchemaSchema,
     capitalize: CapitalizeSchema,
   },
+  propertyTitles: {
+    ...SchemaMetaTitles,
+    type: "Type",
+    default: "Default",
+    placeholder: "Placeholder",
+    inputType: "Keyboard Type",
+    capitalize: "Auto-Caps",
+  },
   required: ["type"],
   additionalProperties: false,
 } as const;
@@ -111,6 +135,11 @@ export const BooleanSchemaSchema = {
     type: { const: "boolean" },
     ...SchemaMeta,
     default: { type: "boolean" }, // uhh this implies the need of a more powerful generic/recursion o_O
+  },
+  propertyTitles: {
+    ...SchemaMetaTitles,
+    type: "Type",
+    default: "Default",
   },
   required: ["type"],
   additionalProperties: false,
@@ -138,6 +167,10 @@ export const RefSchemaSchema = {
   properties: {
     ...SchemaMeta,
     $ref: { type: "string" },
+  },
+  propertyTitles: {
+    ...SchemaMetaTitles,
+    $ref: "Schema",
   },
   required: ["$ref"],
   additionalProperties: false,
@@ -189,6 +222,7 @@ export const ObjectSchemaSchema = {
     required: { type: "array", items: { type: "string" } },
   },
   propertyTitles: {
+    ...SchemaMetaTitles,
     properties: "Properties",
     required: "Required",
     propertyTitles: "Property Titles",

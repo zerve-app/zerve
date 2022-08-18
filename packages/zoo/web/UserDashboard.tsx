@@ -36,7 +36,10 @@ export function UserDashboard({ entityId }: { entityId: string }) {
             <LogoutButton
               connection={conn}
               session={session}
-              onComplete={() => push("/")}
+              onComplete={() => {
+                // experienced a race condition where the login window pops up again. this hack aims to avoid that:
+                setTimeout(() => push("/"), 100);
+              }}
             />
           )}
         </VStack>

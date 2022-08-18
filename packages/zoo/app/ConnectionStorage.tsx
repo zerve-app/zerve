@@ -84,8 +84,8 @@ export const WEB_PRIMARY_CONN = __DEV__ ? "dev" : "main";
 export function useWebConnection(config: SiteConfig) {
   const [session, setSession] = useState(config.session);
   useEffect(() => {
-    function handleSessionUpdate(session: SavedSession) {
-      setSession(session);
+    function handleSessionUpdate(newSession: SavedSession) {
+      setSession(newSession);
     }
     webConnectionUpdateHandlers.add(handleSessionUpdate);
     return () => {

@@ -3,6 +3,7 @@ import { ComponentProps } from "react";
 import { Text, View } from "react-native";
 
 import Svg, { SvgProps, Path } from "react-native-svg";
+import { getUserDisplayName } from "../components/Auth";
 
 function DashboardHeaderItem({
   label,
@@ -86,7 +87,7 @@ export function OrgHeader({ orgId }: { orgId: string }) {
 export function UserHeader({ userId }: { userId: string }) {
   return (
     <DashboardHeaderItem
-      label={userId}
+      label={getUserDisplayName(userId)}
       color={"#4A4EB1"}
       href={`/${userId}`}
       icon="user"

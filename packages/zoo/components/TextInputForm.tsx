@@ -1,5 +1,11 @@
 import React, { useCallback } from "react";
-import { Input, VStack } from "@zerve/zen";
+import {
+  Input,
+  Spinner,
+  ThemedText,
+  useAsyncHandler,
+  VStack,
+} from "@zerve/zen";
 import { useState } from "react";
 import { showErrorToast } from "@zerve/zen/Toast";
 import { Form } from "./Form";
@@ -8,21 +14,23 @@ export function TextInputForm({
   onSubmit,
   defaultValue = "",
   inputLabel = "name",
+  secureTextEntry,
 }: {
-  onSubmit: (v: string) => void;
+  onSubmit: (v: string) => Promise<void>;
   defaultValue?: string;
   inputLabel?: string;
+  secureTextEntry?: boolean;
 }) {
   const [s, setS] = useState(defaultValue || "");
-  const handleSubmit = useCallback(() => {
-    try {
-      onSubmit(s);
-    } catch (e) {
-      showErrorToast(e.message);
-    }
+  const handleSubmitAsync = useCallback(async () => {
+    await onSubmit(s);
   }, [s]);
+  const { handle, isLoading, error } = useAsyncHandler<void, Error>(
+    handleSubmitAsync,
+  );
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handle}>
+      {error && <ThemedText danger>{error.message}</ThemedText>}
       <Input
         label={inputLabel}
         autoFocus
@@ -30,9 +38,10 @@ export function TextInputForm({
         onValue={setS}
         returnKeyType="done"
         enablesReturnKeyAutomatically
-        onSubmitEditing={handleSubmit}
-        // InputComponent={BottomSheetTextInput}
+        onSubmitEditing={handle}
+        keyboardType={secureTextEntry ? "password" : "default"}
       />
+      {isLoading && <Spinner />}
     </Form>
   );
 }

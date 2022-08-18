@@ -13,9 +13,14 @@ function UserSettings({
     <FeaturePane title={title}>
       <UserFeatureLink
         title="Profile"
+        icon="user"
         to={{ key: "settings", child: "profile" }}
       />
-      <UserFeatureLink title="Auth" to={{ key: "settings", child: "auth" }} />
+      <UserFeatureLink
+        title="Auth"
+        icon="lock"
+        to={{ key: "settings", child: "auth" }}
+      />
     </FeaturePane>
   );
 }

@@ -1,12 +1,12 @@
 import { Text, View } from "react-native";
 import * as Select from "@radix-ui/react-select";
-import { bigShadow, smallShadow } from "./Style";
 import Layout from "./Layout";
 import { useAllColors, useColors } from "./useColors";
 import { Pressable } from "react-native";
 import { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { Icon } from "./Icon";
+import { smallShadow } from "./Style";
 
 export type DropdownOption = {
   value: string;
@@ -19,12 +19,14 @@ function DropdownItem({
   icon,
   title,
   active,
+  unselected,
   onSelect,
 }: {
   value: boolean | string | number;
   icon?: any;
   title: string;
   active?: boolean;
+  unselected?: boolean;
   onSelect: () => void;
 }) {
   const { active: colors, inverted } = useAllColors();
@@ -42,26 +44,37 @@ function DropdownItem({
       <Pressable
         style={{
           backgroundColor: focused ? colors.tint : "transparent",
-          padding: 12,
+          paddingHorizontal: 12,
+          paddingVertical: unselected ? 6 : 12,
           flexDirection: "row",
+          borderWidth: 3,
+          borderColor: focused ? colors.tint : "transparent",
         }}
         onPress={onSelect}
       >
         <Select.ItemText asChild>
           <Text
-            style={{ flex: 1, color: focused ? inverted.text : colors.text }}
+            style={{
+              fontWeight: active && !unselected ? "bold" : "normal",
+              flex: 1,
+              color: focused
+                ? inverted.text
+                : unselected
+                ? colors.secondaryText
+                : colors.text,
+            }}
           >
             {title}
           </Text>
         </Select.ItemText>
 
-        {active && (
+        {active && !unselected ? (
           <Icon
             name="check"
-            color={focused ? inverted.text : colors.text}
-            size={24}
+            color={focused ? inverted.tint : colors.tint}
+            size={16}
           />
-        )}
+        ) : null}
 
         <Select.ItemIndicator />
       </Pressable>
@@ -69,23 +82,34 @@ function DropdownItem({
   );
 }
 
-export function Dropdown<OptionValues>({
+const UNSELECTED_ITEM_KEY = "$dropdown_unselected_key";
+
+export function Dropdown({
   options,
   value,
   onOptionSelect,
   unselectedLabel = "Select...",
   id,
+  allowUnselect,
 }: {
   options: DropdownOption[];
-  value: string;
+  value: string | null;
   id: string;
   onOptionSelect: (optionValue: string) => void;
   unselectedLabel?: string;
+  allowUnselect?: boolean;
 }) {
   const selectedOption = options.find((opt) => opt.value === value);
-  const { background } = useColors();
+  const { background, text, secondaryText } = useColors();
+  const allOptions: DropdownOption[] =
+    selectedOption === undefined || allowUnselect
+      ? [{ value: UNSELECTED_ITEM_KEY, title: unselectedLabel }, ...options]
+      : options;
   return (
-    <Select.Root value={value || undefined} onValueChange={onOptionSelect}>
+    <Select.Root
+      value={value == null ? UNSELECTED_ITEM_KEY : value}
+      onValueChange={onOptionSelect}
+    >
       <Select.Trigger
         id={id}
         style={{
@@ -97,32 +121,48 @@ export function Dropdown<OptionValues>({
           borderRadius: Layout.borderRadius,
           padding: 12,
           flexDirection: "row",
-          boxShadow: "rgb(17 17 17 / 25%) 0px 3px 3px", // matches smallShadow
+          border: "1px solid rgba(80, 80, 80, 0.2)",
         }}
       >
         <Select.Value asChild>
-          <Text style={{ paddingHorizontal: 12, flex: 1, textAlign: "left" }}>
-            {selectedOption ? selectedOption.title : unselectedLabel}
+          <Text
+            style={{
+              paddingRight: 12,
+              flex: 1,
+              textAlign: "left",
+              color: selectedOption === undefined ? secondaryText : text,
+            }}
+          >
+            {selectedOption === undefined
+              ? unselectedLabel
+              : selectedOption.title}
           </Text>
         </Select.Value>
-        <Icon name="chevron-down" />
+        <Icon name="chevron-down" size={16} color={secondaryText} />
       </Select.Trigger>
 
       <Select.Content>
         <Select.ScrollUpButton />
-        <Select.Viewport asChild>
+        <Select.Viewport>
           <View
             style={{
               backgroundColor: background,
               borderRadius: Layout.borderRadius,
-              ...bigShadow,
+              borderWidth: 1,
+              borderColor: "#ccc",
+              ...smallShadow,
             }}
           >
-            {options.map((option) => (
+            {allOptions.map((option) => (
               <DropdownItem
                 key={option.value}
-                active={option.value === value}
-                {...option}
+                unselected={option.value === UNSELECTED_ITEM_KEY}
+                active={
+                  option.value === value ||
+                  (value == null && option.value === UNSELECTED_ITEM_KEY)
+                }
+                value={option.value}
+                title={option.title}
                 onSelect={() => {
                   onOptionSelect(option.value);
                 }}

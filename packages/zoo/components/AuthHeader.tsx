@@ -1,7 +1,7 @@
 import { useConnection } from "@zerve/client/Connection";
 import { Button, HStack, Link, ThemedText, useModal } from "@zerve/zen";
 import { Text, View } from "react-native";
-import { LoginForm } from "./Auth";
+import { isSeeminglyAnonUser, LoginForm } from "./Auth";
 import { useRouter } from "next/router";
 
 function UserProfileIcon() {
@@ -41,7 +41,7 @@ export function AuthHeader() {
           <ThemedText
             style={{ alignSelf: "center", fontWeight: "bold", fontSize: 16 }}
           >
-            {userLabel}
+            {isSeeminglyAnonUser(userId) ? userLabel : userId}
           </ThemedText>
           <UserProfileIcon />
         </View>

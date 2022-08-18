@@ -21,6 +21,8 @@ import {
   Dropdown,
   ActionButtonDef,
   useActionsSheet,
+  useColorScheme,
+  useColors,
 } from "@zerve/zen";
 import { useGlobalNavigation } from "../app/useNavigation";
 import { View } from "react-native";
@@ -530,29 +532,16 @@ function FormFieldHeader({
   schema?: any;
   actions?: ActionButtonDef[];
 }) {
-  const [header] = useActionsSheet(
+  const { tint } = useColors();
+  const [typeLabelView] = useActionsSheet(
     (onOpen) => (
-      <View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingBottom: 6,
-          }}
-        >
-          {typeof label === "string" ? (
-            <>
-              <Label>{label}</Label>
-              <View style={{ width: 40 }} />
-            </>
-          ) : (
-            label
-          )}
-          <View style={{ flex: 1 }} />
-          <Label tint for={id}>
+      <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+        <Icon name="chevron-down" color={tint} size={12} />
+        {typeLabel && (
+          <Label tint style={{ marginLeft: 8 }}>
             {typeLabel}
           </Label>
-        </View>
+        )}
       </View>
     ),
     () => {
@@ -573,7 +562,28 @@ function FormFieldHeader({
     },
   );
 
-  return header;
+  return (
+    <View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          paddingBottom: 6,
+        }}
+      >
+        {typeof label === "string" ? (
+          <>
+            <Label forId={id}>{label}</Label>
+            <View style={{ width: 40 }} />
+          </>
+        ) : (
+          label
+        )}
+        <View style={{ flex: 1 }} />
+        {typeLabelView}
+      </View>
+    </View>
+  );
 }
 
 export function OneOfFormField({
@@ -627,7 +637,7 @@ export function OneOfFormField({
             <Dropdown
               id={id}
               options={unionOptions.options}
-              unselectedLabel={`Select Type`}
+              unselectedLabel={`[Type Not Selected]`}
               value={matched}
               onOptionSelect={(optionValue) => {
                 const converter = unionOptions.converters[Number(optionValue)];
@@ -814,6 +824,7 @@ export function LeafFormField({
           actions={actions}
         />
         <Input
+          id={id}
           disabled={!onValue}
           value={value}
           onValue={onValue}
@@ -936,17 +947,17 @@ export function JSONSchemaEditor({
   if (expandedSchema.oneOf) {
     const unionOptions = exploreUnionSchema(expandedSchema);
     const matched = unionOptions.match(value);
-    const matchedSchema = expandedSchema.oneOf[matched];
+    const matchedSchema = expandedSchema.oneOf[Number(matched)];
     return (
       <>
         {onValue && (
           <Dropdown
             id={`${id}-oneof-select`}
             options={unionOptions.options}
-            value={String(matched)}
+            value={matched}
             unselectedLabel={`Select Type...`}
             onOptionSelect={(optionValue) => {
-              const converter = unionOptions.converters[optionValue];
+              const converter = unionOptions.converters[Number(optionValue)];
               const convertedValue = converter(value);
               onValue(convertedValue);
             }}

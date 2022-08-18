@@ -1,3 +1,4 @@
+import { useRequiredConnection } from "@zerve/client/Connection";
 import {
   StoreDashboardContext,
   StoreFeatureProps,

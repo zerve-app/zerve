@@ -7,6 +7,7 @@ import { ZTextInputType } from "@zerve/core";
 
 export function Input({
   value,
+  id,
   onValue,
   onSubmitEditing,
   label,
@@ -22,6 +23,7 @@ export function Input({
   onBlur,
 }: {
   value: string;
+  id?: string;
   onValue?: (value: string) => void;
   onSubmitEditing?: () => void;
   label?: string;
@@ -44,12 +46,15 @@ export function Input({
         <Label style={[marginHInset, marginVInset]}>{label}</Label>
       )}
       <TextInputComponent
+        id={id}
+        nativeID={id}
         placeholderTextColor={colors.secondaryText}
         autoFocus={autoFocus}
         style={{
           ...getRowStyles(colors),
           color: colors.text,
           backgroundColor: colors.background,
+          outlineColor: colors.tint,
         }}
         focusable={!disabled}
         keyboardType={keyboardType === "password" ? "default" : keyboardType}
