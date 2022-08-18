@@ -148,6 +148,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
       };
     } else if (method === "POST") {
       const validBody = validateWithSchema(zed.payloadSchema, body);
+      console.log("handleActionZedRequest");
       const result = await zed.call(validBody);
       return result || null;
     } else {
@@ -254,6 +255,20 @@ export async function startZedServer(port: number, zed: AnyZed) {
       );
     }
     if (zed.zType === "Action") {
+      console.log(
+        "- handleZNodeRequest Action",
+        JSON.stringify(
+          {
+            query,
+            method,
+            headers,
+            body,
+            contextPath,
+          },
+          null,
+          2,
+        ),
+      );
       return await handleActionZedRequest(zed, method, headers, body);
     }
     if (zed.zType === "Group") {
@@ -493,6 +508,20 @@ export async function startZedServer(port: number, zed: AnyZed) {
     const pathSegments = req.path
       .split("/")
       .filter((segment) => segment !== "");
+    console.log(
+      "- zHandler",
+      JSON.stringify(
+        {
+          path: req.path,
+          query: req.query,
+          method: req.method,
+          headers: req.headers,
+          body: req.body,
+        },
+        null,
+        2,
+      ),
+    );
     const headers: HeaderStuffs = {};
     if (req.headers.authorization) {
       const encoded = req.headers.authorization.slice(6);
