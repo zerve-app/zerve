@@ -6,6 +6,7 @@ import {
   validateWithSchemaStore,
   createZMetaContainer,
   EmptySchemaStore,
+  JSONSchema,
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
@@ -104,133 +105,152 @@ function validateNode(
   validateWithSchemaStore(node.schema, node.value, schemas);
 }
 
-function handleWriteSchemaValue(
-  state: FromSchema<typeof StateTreeSchema>,
-  action: FromSchema<typeof WriteSchemaValueActionSchema>,
-): FromSchema<typeof StateTreeSchema> {
-  const { name, schema, value } = action;
-  if (name[0] === "$")
-    throw new Error("Cannot write to a hidden file that begins with $");
-  const prevNode = state[name];
-  const node = {
-    schema: schema,
-    value: value === undefined ? prevNode?.value || null : action.value,
-  };
-  validateNode(node, state.$schemas || EmptySchemaStore);
-  return {
-    ...state,
-    [name]: node,
-  };
-}
-
-const GenericCalculator = createZChainStateCalculator(
-  StateTreeSchema,
-  {
-    $schemas: {},
-  },
-  {
-    WriteValue: {
-      schema: WriteValueActionSchema,
-      handler: (
-        state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof WriteValueActionSchema>,
-      ) => {
-        const { name, value } = action;
-        if (name[0] === "$")
-          throw new Error("Cannot write to a hidden file that begins with $");
-        const prevNode: NodeSchema | undefined = state[name];
-        const node = {
-          ...(prevNode || {}),
-          value,
-        };
-        validateNode(node, state.$schemas || EmptySchemaStore);
-        return {
-          ...state,
-          [name]: node,
-        };
-      },
-    },
-    WriteSchemaValue: {
-      schema: WriteSchemaValueActionSchema,
-      handler: handleWriteSchemaValue,
-    },
-    CreateValue: {
-      schema: WriteSchemaValueActionSchema,
-      handler: handleWriteSchemaValue,
-    },
-    RenameValue: {
-      schema: RenameValueActionSchema,
-      handler: (
-        state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof RenameValueActionSchema>,
-      ) => {
-        const { prevName, newName } = action;
-        const newState: typeof state = { ...state };
-        const value = newState[prevName];
-        delete newState[prevName];
-        newState[newName] = value;
-        return newState;
-      },
-    },
-    Delete: {
-      schema: DeleteActionSchema,
-      handler: (
-        state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof DeleteActionSchema>,
-      ) => {
-        if (action.name[0] === "$")
-          throw new Error("Cannot delete a hidden file that begins with $");
-        const newState = { ...state };
-        delete newState[action.name];
-        return newState;
-      },
-    },
-    WriteSchema: {
-      schema: WriteSchemaActionSchema,
-      handler: (
-        state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof WriteSchemaActionSchema>,
-      ) => {
-        const schemas = state.$schemas || {};
-        schemas[action.schemaName] = {
-          ...action.schema,
-          $id: `https://type.zerve.link/${action.schemaName}`,
-        };
-        return {
-          ...state,
-          $schemas: schemas,
-        };
-      },
-    },
-    DeleteSchema: {
-      schema: DeleteSchemaActionSchema,
-      handler: (
-        state: FromSchema<typeof StateTreeSchema>,
-        action: FromSchema<typeof DeleteSchemaActionSchema>,
-      ) => {
-        const schemas = state.$schemas ? { ...state.$schemas } : {};
-        delete schemas[action.schemaName];
-        return {
-          ...state,
-          $schemas: schemas,
-        };
-      },
-    },
-  },
-);
-
 export type GeneralStoreModule = Awaited<ReturnType<typeof createGeneralStore>>;
 
 export async function createGeneralStore(
   data: CoreDataModule,
   cacheFilesPath: string,
   docName: string,
+  solidSchemas?: Record<string, JSONSchema>,
 ) {
+  function handleWriteSchemaValue(
+    state: FromSchema<typeof StateTreeSchema>,
+    action: FromSchema<typeof WriteSchemaValueActionSchema>,
+  ): FromSchema<typeof StateTreeSchema> {
+    const { name, schema, value } = action;
+    if (name[0] === "$")
+      throw new Error("Cannot write to a hidden file that begins with $");
+    const prevNode = state[name];
+    const node = {
+      schema: schema,
+      value: value === undefined ? prevNode?.value || null : action.value,
+    };
+    const schemaStore = {
+      ...(state.$schemas || EmptySchemaStore),
+      ...solidSchemas,
+    };
+    validateNode(node, schemaStore);
+    return {
+      ...state,
+      [name]: node,
+    };
+  }
+
+  const GenericCalculator = createZChainStateCalculator(
+    StateTreeSchema,
+    {
+      $schemas: {},
+    },
+    {
+      WriteValue: {
+        schema: WriteValueActionSchema,
+        handler: (
+          state: FromSchema<typeof StateTreeSchema>,
+          action: FromSchema<typeof WriteValueActionSchema>,
+        ) => {
+          const { name, value } = action;
+          if (name[0] === "$")
+            throw new Error("Cannot write to a hidden file that begins with $");
+          const prevNode: NodeSchema | undefined = state[name];
+          const node = {
+            ...(prevNode || {}),
+            value,
+          };
+          const schemaStore = {
+            ...(state.$schemas || EmptySchemaStore),
+            ...solidSchemas,
+          };
+          validateNode(node, schemaStore);
+          return {
+            ...state,
+            [name]: node,
+          };
+        },
+      },
+      WriteSchemaValue: {
+        schema: WriteSchemaValueActionSchema,
+        handler: handleWriteSchemaValue,
+      },
+      CreateValue: {
+        schema: WriteSchemaValueActionSchema,
+        handler: handleWriteSchemaValue,
+      },
+      RenameValue: {
+        schema: RenameValueActionSchema,
+        handler: (
+          state: FromSchema<typeof StateTreeSchema>,
+          action: FromSchema<typeof RenameValueActionSchema>,
+        ) => {
+          const { prevName, newName } = action;
+          const newState: typeof state = { ...state };
+          const value = newState[prevName];
+          delete newState[prevName];
+          newState[newName] = value;
+          return newState;
+        },
+      },
+      Delete: {
+        schema: DeleteActionSchema,
+        handler: (
+          state: FromSchema<typeof StateTreeSchema>,
+          action: FromSchema<typeof DeleteActionSchema>,
+        ) => {
+          if (action.name[0] === "$")
+            throw new Error("Cannot delete a hidden file that begins with $");
+          const newState = { ...state };
+          delete newState[action.name];
+          return newState;
+        },
+      },
+      WriteSchema: {
+        schema: WriteSchemaActionSchema,
+        handler: (
+          state: FromSchema<typeof StateTreeSchema>,
+          action: FromSchema<typeof WriteSchemaActionSchema>,
+        ) => {
+          const schemas = state.$schemas || {};
+          schemas[action.schemaName] = {
+            ...action.schema,
+            $id: `https://type.zerve.link/${action.schemaName}`,
+          };
+          return {
+            ...state,
+            $schemas: schemas,
+          };
+        },
+      },
+      DeleteSchema: {
+        schema: DeleteSchemaActionSchema,
+        handler: (
+          state: FromSchema<typeof StateTreeSchema>,
+          action: FromSchema<typeof DeleteSchemaActionSchema>,
+        ) => {
+          const schemas = state.$schemas ? { ...state.$schemas } : {};
+          delete schemas[action.schemaName];
+          return {
+            ...state,
+            $schemas: schemas,
+          };
+        },
+      },
+    },
+  );
   const genStore = await CoreChain.createZChainState(
     data,
     cacheFilesPath,
     docName,
     GenericCalculator,
+    (storeState) =>
+      solidSchemas
+        ? {
+            ...storeState,
+            $schemas: {
+              // maybe these should be reversed?:
+              ...storeState.$schemas,
+              ...solidSchemas,
+            },
+          }
+        : storeState,
   );
 
   async function validateWriteValue(
@@ -238,14 +258,13 @@ export async function createGeneralStore(
   ): Promise<void> {
     const storeState = await genStore.z.State.get();
     const storeNodeValue = storeState[input.name];
-    const schemaStore = storeState["$schemas"];
+    const storeSchemas = storeState["$schemas"] || EmptySchemaStore;
 
     if (storeNodeValue.schema != null) {
-      const valid = validateWithSchemaStore(
-        storeNodeValue.schema,
-        input.value,
-        schemaStore || EmptySchemaStore,
-      );
+      validateWithSchemaStore(storeNodeValue.schema, input.value, {
+        ...storeSchemas,
+        ...solidSchemas,
+      });
     }
   }
 
@@ -253,7 +272,8 @@ export async function createGeneralStore(
     input: FromSchema<typeof WriteSchemaValueActionSchema>,
     storeValue: any, // uh fix this
   ) {
-    const schemaStore = storeValue?.["$schemas"] || EmptySchemaStore;
+    const storeSchemas = storeValue?.["$schemas"] || EmptySchemaStore;
+    const schemaStore = { ...storeSchemas, ...solidSchemas };
     if (input.value === undefined) {
       const storeEntryValue = storeValue[input.name];
       if (input.schema != null) {
