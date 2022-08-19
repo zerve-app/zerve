@@ -10,6 +10,7 @@ import {
 } from "./Deployments";
 import {
   applySystemdConfig,
+  systemdRestart,
   systemdStartAndEnable,
   systemdStopAndDisable,
 } from "./Systemd";
@@ -21,10 +22,16 @@ const DeployRequestSchema = {
       title: "Deployment Key",
       description: "Used as the *.zerve.dev subdomain",
       type: "string",
-      example: "staging",
+      default: "staging",
+    },
+    replace: {
+      title: "Replace Build",
+      description: "",
+      type: "boolean",
+      default: false,
     },
   },
-  required: ["deploymentName"],
+  required: ["deploymentName", "replace"],
   additionalProperties: false,
 } as const;
 
@@ -36,7 +43,10 @@ export const DeployZebraStaging = (buildId: string) =>
   createZAction(
     DeployRequestSchema,
     NullSchema,
-    async ({ deploymentName }: FromSchema<typeof DeployRequestSchema>) => {
+    async ({
+      deploymentName,
+      replace,
+    }: FromSchema<typeof DeployRequestSchema>) => {
       if (__junky_check_disable_simultaneous_builds) {
         throw new Error(
           "Cannot perform simultaneous builds right now. or maybe build has failed and aardvark needs restart",
@@ -45,8 +55,16 @@ export const DeployZebraStaging = (buildId: string) =>
       __junky_check_disable_simultaneous_builds = true;
       // check against deployment config file
       const prevState = await readDeploymentsState();
-      if (prevState.specs[deploymentName] || deploymentName === "aardvark") {
-        throw new Error("deployment with this name already exists");
+      if (
+        (prevState.specs[deploymentName] && !replace) ||
+        deploymentName === "aardvark"
+      ) {
+        throw new Error(
+          "deployment with this name already exists. Use 'replace' instead?",
+        );
+      }
+      if (replace && !prevState.specs[deploymentName]) {
+        throw new Error("no deployment with this name to replace");
       }
       let { availPortIndex } = prevState;
 
@@ -67,8 +85,10 @@ export const DeployZebraStaging = (buildId: string) =>
       await writeDeploymentsState(state);
 
       // clean up previous deployment
-      await systemdStopAndDisable(`z.${deploymentName}.server`);
-      await systemdStopAndDisable(`z.${deploymentName}.web`);
+      if (replace) {
+        await systemdStopAndDisable(`z.${deploymentName}.server`);
+        await systemdStopAndDisable(`z.${deploymentName}.web`);
+      }
       await DeleteRecursive.call(deploymentPath);
 
       // copy deployment and fix ownership
@@ -104,8 +124,13 @@ export const DeployZebraStaging = (buildId: string) =>
       // apply systemd config
       await applySystemdConfig(state);
 
-      await systemdStartAndEnable(`z.${deploymentName}.server`);
-      await systemdStartAndEnable(`z.${deploymentName}.web`);
+      if (replace) {
+        await systemdStartAndEnable(`z.${deploymentName}.server`);
+        await systemdStartAndEnable(`z.${deploymentName}.web`);
+      } else {
+        await systemdRestart(`z.${deploymentName}.server`);
+        await systemdRestart(`z.${deploymentName}.web`);
+      }
 
       await applyCaddyfile(state);
 

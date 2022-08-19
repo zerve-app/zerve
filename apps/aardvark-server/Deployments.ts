@@ -62,6 +62,7 @@ export async function writeDeploymentsState(state: DeploymentsState) {
 }
 
 export const DeploymentsPath = "/home/zerve/deployments";
+export const DeploymentsDataPath = "/home/zerve/deployments-data";
 
 function getDeploymentDestroy(deploymentName: string) {
   return createZAction(NullSchema, NullSchema, async () => {
@@ -84,6 +85,8 @@ function getDeploymentDestroy(deploymentName: string) {
 
     const deploymentPath = joinPath(DeploymentsPath, deploymentName);
     await DeleteRecursive.call(deploymentPath);
+    const deploymentDataPath = joinPath(DeploymentsDataPath, deploymentName);
+    await DeleteRecursive.call(deploymentDataPath);
 
     return null;
   });

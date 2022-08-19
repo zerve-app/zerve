@@ -70,6 +70,13 @@ export async function systemdStartAndEnable(serviceKey: string) {
   });
 }
 
+export async function systemdRestart(serviceKey: string) {
+  await Command.call({
+    command: "systemctl",
+    args: ["restart", serviceKey],
+  });
+}
+
 export async function applySystemdConfig(state: DeploymentsState) {
   await DeleteRecursive.call("/etc/systemd/system/z.*");
   await Promise.all(
