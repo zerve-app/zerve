@@ -19,12 +19,14 @@ import { CoreDataModule } from "@zerve/data";
 import { joinPath, MakeDir, ReadJSON, WriteJSON } from "@zerve/system-files";
 
 export type ZChainStateCalculator<
-  State,
-  Actions extends Record<string, ZActionDefinition<State, any>>,
   StateSchema extends JSONSchema,
+  Actions extends Record<
+    string,
+    ZActionDefinition<FromSchema<StateSchema>, any>
+  >,
 > = {
   stateSchema: StateSchema;
-  initialState: State;
+  initialState: FromSchema<StateSchema>;
   actions: Actions;
   validateAction: <ActionName extends keyof Actions>(
     action: any,
@@ -32,14 +34,17 @@ export type ZChainStateCalculator<
 };
 
 export function createZChainStateCalculator<
-  State,
-  Actions extends Record<string, ZActionDefinition<State, any>>,
   StateSchema extends JSONSchema,
+  Actions extends Record<
+    string,
+    ZActionDefinition<FromSchema<StateSchema>, any>
+  >,
 >(
   stateSchema: StateSchema,
-  initialState: State,
+  initialState: FromSchema<StateSchema>,
   actions: Actions,
-): ZChainStateCalculator<State, Actions, StateSchema> {
+  finalStateMapper: (value: FromSchema<StateSchema>) => FromSchema<StateSchema>,
+): ZChainStateCalculator<StateSchema, Actions> {
   const validators = Object.fromEntries(
     Object.entries(actions).map(([actionName, actionDef]) => {
       return [actionName, ajv.compile(actionDef.schema)];
@@ -68,20 +73,31 @@ export function createZChainStateCalculator<
   } as const;
 }
 
-export type ZActionDefinition<State, PayloadSchema extends JSONSchema> = {
+export type ZActionDefinition<
+  StateSchema extends JSONSchema,
+  PayloadSchema extends JSONSchema,
+> = {
   schema: PayloadSchema;
-  handler: (state: State, payload: FromSchema<PayloadSchema>) => State;
+  handler: (
+    state: FromSchema<StateSchema>,
+    payload: FromSchema<PayloadSchema>,
+  ) => FromSchema<StateSchema>;
 };
 
 export async function createZChainState<
-  State,
-  Actions extends Record<string, ZActionDefinition<State, any>>,
   StateSchema extends JSONSchema,
+  Actions extends Record<
+    string,
+    ZActionDefinition<FromSchema<StateSchema>, any>
+  >,
 >(
   data: CoreDataModule,
   cacheFilesPath: string,
   docName: string,
-  calculator: ZChainStateCalculator<State, Actions, StateSchema>,
+  calculator: ZChainStateCalculator<StateSchema, Actions>,
+  finalStateMapper?: (
+    state: FromSchema<StateSchema>,
+  ) => FromSchema<StateSchema>,
 ) {
   await MakeDir.call(joinPath(cacheFilesPath, "state"));
   await MakeDir.call(joinPath(cacheFilesPath, "blocks"));
@@ -147,10 +163,10 @@ export async function createZChainState<
   }
 
   async function _evalCommitStep(
-    state: State,
+    state: FromSchema<StateSchema>,
     commit: any,
     blockCache: BlockCache,
-  ): Promise<State> {
+  ): Promise<FromSchema<StateSchema>> {
     const matchedAction =
       calculator.actions[commit.value.name as keyof typeof calculator.actions];
     if (matchedAction) {
@@ -376,47 +392,17 @@ export async function createZChainState<
     },
   );
 
-  function createZEval(path: string[]): ZGroup<any, void, any> {
-    let schema: JSONSchema = calculator.stateSchema;
-    path.forEach((pathTerm) => {
-      if (typeof schema === "object" && schema.type === "object") {
-        if (schema.properties && schema.properties[pathTerm]) {
-          schema = schema.properties[pathTerm];
-        } else if (schema.additionalProperties) {
-          schema = [{ type: "null" }, schema.additionalProperties];
-        } else {
-          throw new Error("failed to find schema property");
-        }
-      } else {
-        throw new Error("Cannot Eval path within non-object schema");
-      }
-    });
-    return createZGettable(
-      schema,
-      // async (childKey: string) => {
-      //   return createZEval([...path, childKey]);
-      // },
-      async () => {
-        let evalResult = await _getEval();
-        for (let pathIndex in path) {
-          const pathTerm = path[pathIndex];
-          if (Array.isArray(evalResult)) {
-            evalResult = evalResult[Number(pathTerm)] || null;
-          } else if (evalResult === null) {
-            // deliberately check for null before typeof === 'object', because typeof null is object. ffs, js
-            throw new NotFoundError("NotFound", "Not Found.", { path });
-          } else if (typeof evalResult === "object") {
-            evalResult = evalResult[pathTerm] || null;
-          } else {
-            throw new NotFoundError("NotFound", "Not Found.", { path });
-          }
-        }
-        return evalResult;
-      },
-    );
-  }
+  const State = createZGettable<StateSchema, void>(
+    calculator.stateSchema,
+    async () => {
+      let evalResult = await _getEval();
 
-  const State = createZEval([]);
+      if (finalStateMapper) {
+        return finalStateMapper(evalResult);
+      }
+      return evalResult;
+    },
+  );
 
   return createZContainer({
     Dispatch,
