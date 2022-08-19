@@ -6,8 +6,15 @@ import {
   prepareStoreFileName,
   SchemaStore,
 } from "@zerve/core";
-import { Label, Title, useAsyncHandler, VSpaced, VStack } from "@zerve/zen";
-import { memo, useCallback } from "react";
+import {
+  Label,
+  ThemedText,
+  Title,
+  useAsyncHandler,
+  VSpaced,
+  VStack,
+} from "@zerve/zen";
+import { memo, useCallback, useMemo } from "react";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { FeaturePane, NavLink } from "../web/Dashboard";
 import { useQueryClient } from "react-query";
@@ -19,6 +26,7 @@ import {
 } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
 import { useZNodeValue, useZStoreSchemas } from "@zerve/client/Query";
+import { JSONSchemaEditorContext } from "../components/JSONSchemaEditor";
 
 const EntryNameSchema = {
   type: "string",
@@ -61,15 +69,27 @@ function EntryContent({
       </VStack>
     );
 
+  const editorContext = useMemo(() => {
+    return {
+      OverrideFieldComponents: {
+        "https://type.zerve.link/HumanText": () => (
+          <ThemedText>Hello human</ThemedText>
+        ),
+      },
+    };
+  }, []);
+
   return (
-    <JSONSchemaForm
-      id={`entry-${path.join("-")}`}
-      onValue={onValue}
-      value={value}
-      schema={schema}
-      schemaStore={schemaStore}
-      padded
-    />
+    <JSONSchemaEditorContext.Provider value={editorContext}>
+      <JSONSchemaForm
+        id={`entry-${path.join("-")}`}
+        onValue={onValue}
+        value={value}
+        schema={schema}
+        schemaStore={schemaStore}
+        padded
+      />
+    </JSONSchemaEditorContext.Provider>
   );
 }
 

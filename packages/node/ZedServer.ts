@@ -224,6 +224,9 @@ export async function startZedServer(port: number, zed: AnyZed) {
       })
       .catch((e) => {
         console.error(e);
+        if (e.httpStatus === 401) {
+          res.header("WWW-Authenticate", "Basic realm=AuthTokenRequired");
+        }
         res.status(e.httpStatus || 500).send(
           stringify({
             message: e.message,
@@ -255,20 +258,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
       );
     }
     if (zed.zType === "Action") {
-      console.log(
-        "- handleZNodeRequest Action",
-        JSON.stringify(
-          {
-            query,
-            method,
-            headers,
-            body,
-            contextPath,
-          },
-          null,
-          2,
-        ),
-      );
       return await handleActionZedRequest(zed, method, headers, body);
     }
     if (zed.zType === "Group") {
@@ -508,20 +497,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
     const pathSegments = req.path
       .split("/")
       .filter((segment) => segment !== "");
-    console.log(
-      "- zHandler",
-      JSON.stringify(
-        {
-          path: req.path,
-          query: req.query,
-          method: req.method,
-          headers: req.headers,
-          body: req.body,
-        },
-        null,
-        2,
-      ),
-    );
     const headers: HeaderStuffs = {};
     if (req.headers.authorization) {
       const encoded = req.headers.authorization.slice(6);

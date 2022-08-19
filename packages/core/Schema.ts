@@ -45,7 +45,10 @@ export function getDefaultSchemaValue(
     );
     if (refSchema) {
       usableSchema = refSchema;
-    } else throw new Error("Schema Ref not Found");
+    } else {
+      debugger;
+      throw new Error("Schema Ref not Found");
+    }
   }
   if (usableSchema.default) return usableSchema.default; // maybe this should be validated? idk.
   if (usableSchema.type === "boolean") return false;

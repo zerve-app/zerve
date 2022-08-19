@@ -1,7 +1,8 @@
-import React, { ReactNode, useMemo } from "react";
+import React, { createContext, ReactNode, useContext, useMemo } from "react";
 import {
   CapitalizeSchema,
   exploreUnionSchema,
+  FromSchema,
   getDefaultSchemaValue,
   JSONSchema,
   JSONSchemaPluck,
@@ -21,17 +22,26 @@ import {
   Dropdown,
   ActionButtonDef,
   useActionsSheet,
-  useColorScheme,
   useColors,
 } from "@zerve/zen";
 import { useGlobalNavigation } from "../app/useNavigation";
 import { View } from "react-native";
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
 import { setStringAsync } from "expo-clipboard";
 import { useTextInputFormModal } from "./TextInputFormModal";
+
+export type FieldComponent<FieldSchema extends JSONSchema> = React.FC<{
+  id: string;
+  onSubmitEditing: (() => void) | undefined;
+  value: FromSchema<FieldSchema>;
+  onValue?: undefined | ((v: FromSchema<FieldSchema>) => void);
+  schema: FieldSchema;
+}>;
+type JSONSchemaEditorContext = {
+  OverrideFieldComponents?: Record<string, FieldComponent<any>>;
+};
+export const JSONSchemaEditorContext = createContext<JSONSchemaEditorContext>(
+  {},
+);
 
 function extractTypeSchema(type, schemaObj) {
   const subType = { type };
@@ -537,11 +547,11 @@ function FormFieldHeader({
     (onOpen) => (
       <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
         <Icon name="chevron-down" color={tint} size={12} />
-        {typeLabel && (
+        {typeLabel ? (
           <Label tint style={{ marginLeft: 8 }}>
             {typeLabel}
           </Label>
-        )}
+        ) : null}
       </View>
     ),
     () => {
@@ -685,6 +695,30 @@ export function FormField({
   onSubmitEditing?: () => void;
 }) {
   const expandedSchema = useMemo(() => expandSchema(schema), [schema]);
+
+  const { OverrideFieldComponents } = useContext(JSONSchemaEditorContext);
+  const OverrideComponent = OverrideFieldComponents?.[schema.$id];
+  if (OverrideComponent) {
+    return (
+      <>
+        <FormFieldHeader
+          id={id}
+          label={label}
+          typeLabel={schema.title || schema.type}
+          value={value}
+          actions={actions}
+        />
+        <OverrideComponent
+          id={id}
+          value={value}
+          onValue={onValue}
+          schema={schema}
+          onSubmitEditing={onSubmitEditing}
+        />
+      </>
+    );
+  }
+
   if (!expandedSchema)
     return (
       <ThemedText>
@@ -937,6 +971,21 @@ export function JSONSchemaEditor({
     () => expandSchema(schema, schemaStore),
     [schema, schemaStore],
   );
+  const { OverrideFieldComponents } = useContext(JSONSchemaEditorContext);
+  const OverrideComponent = OverrideFieldComponents?.[expandedSchema.$id];
+  if (OverrideComponent) {
+    return (
+      <>
+        <OverrideComponent
+          id={id}
+          value={value}
+          onValue={onValue}
+          schema={schema}
+          onSubmitEditing={onSubmitEditing}
+        />
+      </>
+    );
+  }
   if (!expandedSchema) {
     debugger;
     return <ThemedText>Value not allowed.</ThemedText>;

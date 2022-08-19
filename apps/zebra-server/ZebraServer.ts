@@ -37,6 +37,22 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 const homeDir = process.env.HOME;
 const defaultZDataDir = `${homeDir}/.zerve`;
 
+const HumanTextSchema = {
+  $id: "https://type.zerve.link/HumanText",
+  title: "HumanText",
+  type: "array",
+  items: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      text: StringSchema,
+      bold: BooleanSchema,
+      italic: BooleanSchema,
+    },
+    required: ["text"],
+  },
+} as const;
+
 const dataDir =
   process.env.ZERVE_DATA_DIR ||
   (process.env.NODE_ENV === "dev"
@@ -136,6 +152,7 @@ export async function startApp() {
       StoreData,
       joinPath(getEntityStoreDir(entityId, storeId), `StoreCache`),
       `Store`,
+      { HumanText: HumanTextSchema },
     );
     userMemoryStores[storeId] = newMemoryStore;
     return newMemoryStore;

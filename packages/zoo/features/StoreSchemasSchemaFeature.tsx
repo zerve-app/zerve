@@ -96,7 +96,6 @@ function StoreSchemasSchema({
   title,
 }: StoreFeatureProps & { schema: string }) {
   const schemas = useZStoreJSONSchema(storePath);
-  console.log("StoreSchemasSchema", schemas.data);
   const schemaQuery = useZNodeValue([
     ...storePath,
     "State",
