@@ -125,6 +125,12 @@ export function useStoreNavigation(location: string[]) {
       replaceToEntry: (entryName: string) => {
         replace(`/${location.join("/")}?_=entries-${entryName}`);
       },
+      openEntrySchema: (entryName: string) => {
+        push(`/${location.join("/")}?_=entries-${entryName}_schema`);
+      },
+      replaceToEntries: () => {
+        replace(`/${location.join("/")}?_=entries`);
+      },
       replaceToEntrySchema: (entryName: string) => {
         replace(`/${location.join("/")}?_=entries-${entryName}_schema`);
       },

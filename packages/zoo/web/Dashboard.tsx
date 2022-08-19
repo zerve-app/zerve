@@ -8,13 +8,16 @@ import React, {
 import { View, Text } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import {
+  ActionButtonDef,
   Button,
   Icon,
+  IconButton,
   NavBar,
   NavBarSpacer,
   NavBarZLogo,
   PageContainer,
   Spinner,
+  useActionsSheet,
   useWindowDimensions,
 } from "@zerve/zen";
 import { AuthHeader } from "../components/AuthHeader";
@@ -153,11 +156,24 @@ export function FeaturePane({
   title,
   children,
   spinner,
+  actions,
 }: {
   title: string;
   children: ReactNode;
   spinner?: boolean;
+  actions?: ActionButtonDef[];
 }) {
+  const actionButton = useActionsSheet(
+    (onOpen: () => void) => (
+      <IconButton
+        icon={<Icon name="ellipsis-v" />}
+        onPress={onOpen}
+        altTitle="Options"
+      />
+    ),
+    () => actions || [],
+  );
+
   return (
     <View
       style={{
@@ -166,8 +182,15 @@ export function FeaturePane({
         width: PaneWidth,
       }}
     >
-      <View style={{ minHeight: 80, padding: 16 }}>
-        <Text style={{ fontSize: 28, color: "#464646" }}>{title}</Text>
+      <View style={{ minHeight: 80 }}>
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{ fontSize: 28, color: "#464646", flex: 1, padding: 16 }}
+          >
+            {title}
+          </Text>
+          {actions && actionButton}
+        </View>
         {spinner && (
           <Spinner style={{ position: "absolute", right: 10, bottom: 10 }} />
         )}

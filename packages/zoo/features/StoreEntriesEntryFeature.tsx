@@ -2,12 +2,14 @@ import { useConnection, useRequiredConnection } from "@zerve/client/Connection";
 import { postZAction } from "@zerve/client/ServerCalls";
 import {
   AllJSONSchemaType,
+  displayStoreFileName,
   EmptySchemaStore,
   prepareStoreFileName,
   SchemaStore,
 } from "@zerve/core";
 import {
   Label,
+  showToast,
   ThemedText,
   Title,
   useAsyncHandler,
@@ -19,7 +21,11 @@ import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { FeaturePane, NavLink } from "../web/Dashboard";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
-import { useCreateEntry, useSaveEntry } from "@zerve/client/Mutation";
+import {
+  useCreateEntry,
+  useDeleteEntry,
+  useSaveEntry,
+} from "@zerve/client/Mutation";
 import {
   StoreFeatureLinkButton,
   StoreFeatureProps,
@@ -101,11 +107,51 @@ function StoreEntriesEntry({
 }: StoreFeatureProps & { path: Array<string> }) {
   const saveEntry = useSaveEntry(storePath);
   const schemas = useZStoreSchemas(storePath);
+  const entryName = path[0];
   const entry = useZNodeValue([...storePath, "State", path[0]]);
+  const { openEntrySchema, replaceToEntries } = useStoreNavigation(location);
+  const deleteFile = useDeleteEntry(
+    storePath,
+    useMemo(
+      () => ({
+        onSuccess: () =>
+          showToast(`${displayStoreFileName(entryName)} Deleted`),
+      }),
+      [entryName],
+    ),
+  );
   return (
     <FeaturePane
       title={title}
       spinner={saveEntry.isLoading || schemas.isFetching || entry.isFetching}
+      actions={[
+        {
+          key: "Refresh",
+          title: "Refresh",
+          icon: "refresh",
+          onPress: () => {
+            schemas.refetch();
+            entry.refetch();
+          },
+        },
+        {
+          key: "EditSchema",
+          title: "Edit Schema",
+          icon: "crosshairs",
+          onPress: () => {
+            openEntrySchema(entryName);
+          },
+        },
+        {
+          key: "delete",
+          title: "Delete",
+          danger: true,
+          onPress: async () => {
+            await deleteFile.mutateAsync(entryName);
+            replaceToEntries();
+          },
+        },
+      ]}
     >
       {entry.data && schemas.data ? (
         <EntryContent

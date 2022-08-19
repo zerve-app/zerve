@@ -17,6 +17,10 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
     action.onLongPress?.();
     action.onHandled?.();
   };
+  const color = action.danger ? colors.active.dangerText : colors.active.text;
+  const activeBackground = action.danger
+    ? colors.active.dangerText
+    : colors.active.tint;
   return (
     <Pressable onPress={handlePress} onLongPress={handleLongPress}>
       <DropdownMenu.Item
@@ -33,12 +37,12 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
           paddingLeft: 10,
           paddingRight: 10,
           cursor: "pointer",
-          backgroundColor: isFocused ? colors.active.tint : "transparent",
+          backgroundColor: isFocused ? activeBackground : "transparent",
         }}
       >
         <Text
           style={{
-            color: isFocused ? colors.inverted.text : colors.active.text,
+            color: isFocused ? colors.inverted.text : color,
           }}
         >
           {action.title}
