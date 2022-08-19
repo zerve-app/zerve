@@ -41,7 +41,7 @@ export function StoreDashboard({
       defaultFeature={{ key: "entries" }}
       getFeatureTitle={(feature: StoreNavigationState) => {
         if (feature.key === "settings") {
-          return "Settings";
+          return "Store Settings";
         }
         if (feature.key === "entries") {
           if (feature.child === "create") return "Create Entry";

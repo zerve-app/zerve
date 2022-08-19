@@ -148,7 +148,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
       };
     } else if (method === "POST") {
       const validBody = validateWithSchema(zed.payloadSchema, body);
-      console.log("handleActionZedRequest");
       const result = await zed.call(validBody);
       return result || null;
     } else {

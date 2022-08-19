@@ -57,7 +57,7 @@ export function UserDashboard({ entityId }: { entityId: string }) {
           const settingsFeature = feature?.child;
           if (settingsFeature === "profile") return "User Profile";
           if (settingsFeature === "auth") return "Auth Settings";
-          return "Settings";
+          return "Account Settings";
         }
         return "?";
       }}

@@ -124,7 +124,6 @@ export async function startApp() {
       if (memoryStores[prevUserId]) {
         const userMemoryStores = memoryStores[prevUserId];
         delete memoryStores[prevUserId];
-        memoryStores[userId] = userMemoryStores;
       }
     },
     getUserZeds,
@@ -136,6 +135,11 @@ export async function startApp() {
     storeId: string,
   ): Promise<GeneralStoreModule> {
     const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
+    console.log("getMemoryStore", {
+      entityId,
+      storeId,
+      already: !!alreadyInMemoryStore,
+    });
     if (alreadyInMemoryStore) return alreadyInMemoryStore;
     if (!(await doesEntityStoreExist(entityId, storeId)))
       throw new NotFoundError(
