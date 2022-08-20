@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import {
   AsyncButton,
   Button,
@@ -9,12 +9,14 @@ import {
   VStack,
 } from "@zerve/zen";
 import { useEffect, useRef, useState } from "react";
-import { JSONSchemaEditor } from "./JSONSchemaEditor";
+import { JSONSchemaEditor, JSONSchemaEditorContext } from "./JSONSchemaEditor";
 import {
   EmptySchemaStore,
   getDefaultSchemaValue,
+  JSONSchema,
   SchemaStore,
 } from "@zerve/core";
+import { getValueExport, getValueImport } from "./JSONSchemaEditorUtilities";
 
 export function JSONSchemaForm({
   id,
@@ -37,26 +39,41 @@ export function JSONSchemaForm({
   schemaStore?: SchemaStore;
   padded?: boolean;
 }) {
-  const [valueState, setValueState] = useState(
-    value === undefined ? getDefaultSchemaValue(schema) : value,
-  );
+  const { OverrideFieldComponents } = useContext(JSONSchemaEditorContext);
+  const [importValue, exportValue] = useMemo(() => {
+    return [
+      getValueImport(OverrideFieldComponents),
+      getValueExport(OverrideFieldComponents),
+    ];
+  }, [OverrideFieldComponents]);
+  const initValue = useMemo(() => {
+    return importValue(
+      value === undefined ? getDefaultSchemaValue(schema) : value,
+      schema,
+    );
+  }, [value, schema, importValue]);
+
+  const [valueState, setValueState] = useState(initValue);
+  const [savedValue, setSavedValue] = useState(initValue);
+
   const { error, isLoading, handle } = useAsyncHandler(async (value) => {
-    await onValue?.(value);
-    await onSubmit?.(value);
+    const outputValue = exportValue(value, schema);
+    await onValue?.(outputValue);
+    await onSubmit?.(outputValue);
+    setSavedValue(value);
   });
-  const seenValueState = useRef(value);
-  useEffect(() => {
-    if (seenValueState.current !== value) {
-      setValueState(value);
-      seenValueState.current = value;
-    }
-  }, [value]);
+  // const seenValueState = useRef(value);
+  // useEffect(() => {
+  //   if (seenValueState.current !== value) {
+  //     setValueState(value);
+  //     seenValueState.current = value;
+  //   }
+  // }, [value]);
   return (
     <>
       <Form
-        onSubmit={async () => {
-          await onValue?.(valueState);
-          await onSubmit?.(valueState);
+        onSubmit={() => {
+          handle(valueState);
         }}
       >
         <VStack padded={padded}>
@@ -66,13 +83,12 @@ export function JSONSchemaForm({
             value={valueState}
             onValue={setValueState}
             schema={schema}
-            onSubmitEditing={async () => {
-              await onValue?.(valueState);
-              await onSubmit?.(valueState);
+            onSubmitEditing={() => {
+              handle(valueState);
             }}
             schemaStore={schemaStore || EmptySchemaStore}
           />
-          {(valueState !== value || onSubmit) && (
+          {(valueState !== savedValue || onSubmit) && (
             <Button
               title={saveLabel || "Save"}
               primary

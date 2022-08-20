@@ -26,3 +26,4 @@ export * from "./BottomSheet";
 export * from "./Form";
 export * from "./useWindowDimensions";
 export * from "./useAsyncHandler";
+export * from "./HumanTextInput";

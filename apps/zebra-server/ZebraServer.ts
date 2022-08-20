@@ -17,13 +17,13 @@ import {
   NotFoundError,
   ChildrenListOptions,
   BooleanSchema,
+  HumanTextSchema,
 } from "@zerve/core";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
   createAuth,
   createEmailAuthStrategy,
   createSMSAuthStrategy,
-  createTestAuthStrategy,
 } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
 import { Move } from "@zerve/system-files";
@@ -36,22 +36,6 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 
 const homeDir = process.env.HOME;
 const defaultZDataDir = `${homeDir}/.zerve`;
-
-const HumanTextSchema = {
-  $id: "https://type.zerve.link/HumanText",
-  title: "HumanText",
-  type: "array",
-  items: {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-      text: StringSchema,
-      bold: BooleanSchema,
-      italic: BooleanSchema,
-    },
-    required: ["text"],
-  },
-} as const;
 
 const dataDir =
   process.env.ZERVE_DATA_DIR ||
@@ -135,11 +119,6 @@ export async function startApp() {
     storeId: string,
   ): Promise<GeneralStoreModule> {
     const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
-    console.log("getMemoryStore", {
-      entityId,
-      storeId,
-      already: !!alreadyInMemoryStore,
-    });
     if (alreadyInMemoryStore) return alreadyInMemoryStore;
     if (!(await doesEntityStoreExist(entityId, storeId)))
       throw new NotFoundError(

@@ -8,6 +8,7 @@ import {
   SchemaStore,
 } from "@zerve/core";
 import {
+  HumanTextInput,
   Label,
   showToast,
   ThemedText,
@@ -78,9 +79,7 @@ function EntryContent({
   const editorContext = useMemo(() => {
     return {
       OverrideFieldComponents: {
-        "https://type.zerve.link/HumanText": () => (
-          <ThemedText>Hello human</ThemedText>
-        ),
+        "https://type.zerve.link/HumanText": HumanTextInput,
       },
     };
   }, []);

@@ -22,12 +22,15 @@
     "react-native-web": "~0.18.7"
   },
   "dependencies": {
-    "react-native-reanimated": "~2.9.1",
-    "react-native-gesture-handler": "~2.5.0",
     "@radix-ui/react-dialog": "^0.1.7",
     "@radix-ui/react-dropdown-menu": "^0.1.6",
     "@radix-ui/react-select": "^0.1.1",
-    "react-native-svg": "12.3.0",
-    "react-native-safe-area-context": "^4.3.1"
+    "@tiptap/react": "^2.0.0-beta.114",
+    "@tiptap/starter-kit": "^2.0.0-beta.191",
+    "quill-delta": "^5.0.0",
+    "react-native-gesture-handler": "~2.5.0",
+    "react-native-reanimated": "~2.9.1",
+    "react-native-safe-area-context": "^4.3.1",
+    "react-native-svg": "12.3.0"
   }
 }

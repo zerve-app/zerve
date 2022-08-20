@@ -15,6 +15,8 @@ export * from "./UnionSchema";
 export * from "./StoreFile";
 export * from "./State";
 export * from "./Workflow";
+export * from "./JSONSchemaComponents";
+export * from "./HumanText";
 
 export const Z_PROTOCOL_VERSION = "0.1.0";
 

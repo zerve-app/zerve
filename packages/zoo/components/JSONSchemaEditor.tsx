@@ -8,6 +8,7 @@ import {
   JSONSchemaPluck,
   LeafSchema,
   SchemaStore,
+  FieldComponentProps,
 } from "@zerve/core";
 import {
   Button,
@@ -28,16 +29,20 @@ import { useGlobalNavigation } from "../app/useNavigation";
 import { View } from "react-native";
 import { setStringAsync } from "expo-clipboard";
 import { useTextInputFormModal } from "./TextInputFormModal";
+import { useValueImporter } from "./JSONSchemaEditorUtilities";
 
-export type FieldComponent<FieldSchema extends JSONSchema> = React.FC<{
-  id: string;
-  onSubmitEditing: (() => void) | undefined;
-  value: FromSchema<FieldSchema>;
-  onValue?: undefined | ((v: FromSchema<FieldSchema>) => void);
-  schema: FieldSchema;
-}>;
+export type FieldComponent<
+  FieldSchema extends JSONSchema,
+  InternalValue,
+> = React.FC<FieldComponentProps<FieldSchema>> & {
+  import?: (value: FromSchema<FieldSchema>) => InternalValue;
+  export?: (internalValue: InternalValue) => FromSchema<FieldSchema>;
+};
+
+export type OverrideFieldComponents = Record<string, FieldComponent<any, any>>;
+
 type JSONSchemaEditorContext = {
-  OverrideFieldComponents?: Record<string, FieldComponent<any>>;
+  OverrideFieldComponents?: OverrideFieldComponents;
 };
 export const JSONSchemaEditorContext = createContext<JSONSchemaEditorContext>(
   {},
@@ -201,6 +206,7 @@ export function JSONSchemaObjectForm({
       ),
     [schema.additionalProperties],
   );
+  const importValue = useValueImporter(schemaStore);
 
   const propertyNameInput = useTextInputFormModal<null | string>(
     (propertyEditKey) => ({
@@ -208,11 +214,15 @@ export function JSONSchemaObjectForm({
         if (!onValue) return;
         if (value?.[propertyName] !== undefined)
           throw new Error(`Key ${propertyName} already exists here.`);
+        const propertySchema =
+          expandedPropertiesSchema[propertyName] ||
+          expandedAdditionalPropertiesSchema;
         if (propertyEditKey === null) {
           onValue({
             ...(value || {}),
-            [propertyName]: getDefaultSchemaValue(
-              expandedAdditionalPropertiesSchema,
+            [propertyName]: importValue(
+              getDefaultSchemaValue(propertySchema),
+              propertySchema,
             ),
           });
         } else {
@@ -348,6 +358,7 @@ export function JSONSchemaArrayForm({
     () => expandSchema(schema.items || defaultArrayItemsSchema, schemaStore),
     [schema.items],
   );
+  const importValue = useValueImporter(schemaStore);
   const addButton = (
     <AddButton
       label="Add Item"
@@ -355,7 +366,10 @@ export function JSONSchemaArrayForm({
         onValue &&
           onValue([
             ...(value || []),
-            getDefaultSchemaValue(expandedItemsSchema),
+            importValue(
+              getDefaultSchemaValue(expandedItemsSchema),
+              expandedItemsSchema,
+            ),
           ]);
       }}
     />
