@@ -18,7 +18,7 @@
     "reconnecting-websocket": "^4.4.0",
     "fs-extra": "^10.0.0",
     "ws": "^8.5.0",
-    "react-query": "3.39.0",
+    "react-query": "3.39.2",
     "buffer": "^6.0.3"
   },
   "peerDependencies": {

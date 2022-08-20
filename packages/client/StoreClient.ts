@@ -14,15 +14,25 @@ export function createZStoreClient(
     url: `${zStoreProtocol}${zStoreOrigin}`,
   };
 
-  function createAccessor<FileType>(name: string) {
-    async function get(): Promise<FileType> {
-      const resp = await serverGet(connection.url, `.z/${zStorePath}/${name}`);
+  function createAccessor<EntryType>(name: string) {
+    async function get(): Promise<EntryType> {
+      const resp = await serverGet(connection.url, `${zStorePath}/${name}`);
       return resp.value;
     }
     function use(
-      queryOptions?: UseQueryOptions<unknown, unknown, unknown, any>,
+      queryOptions?: UseQueryOptions<
+        // union with undefined here is not desirable. but otherwise RQ data type does not indicate that the value is undefined during loading.. wtf?
+        EntryType | undefined,
+        string | undefined,
+        EntryType | undefined,
+        any
+      >,
     ) {
-      return useQuery([".zerve-store", zStorePath, name], get, queryOptions);
+      return useQuery<EntryType | undefined, string | undefined>(
+        [".zerve-store", zStorePath, name],
+        get,
+        queryOptions,
+      );
     }
     return { use, get };
   }

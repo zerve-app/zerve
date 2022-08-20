@@ -10,17 +10,17 @@
     "clean": "rimraf node_modules .next .expo"
   },
   "dependencies": {
-    "@expo/next-adapter": "^4.0.10",
+    "@expo/next-adapter": "^4.0.12",
     "@expo/vector-icons": "^13.0.0",
     "@zerve/cli": "*",
     "@zerve/zoo": "*",
-    "next": "12.2.2",
-    "node-fetch": "^3.2.9",
+    "next": "12.2.5",
+    "node-fetch": "^3.2.10",
     "raf": "^3.4.1",
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-native": "0.69.4",
-    "react-native-safe-area-context": "^4.3.1",
+    "react-native-safe-area-context": "^4.3.3",
     "react-native-web": "~0.18.7"
   },
   "devDependencies": {

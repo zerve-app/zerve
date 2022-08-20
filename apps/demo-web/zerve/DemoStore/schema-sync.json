@@ -1,0 +1,44 @@
+{
+  "schemas": {
+    "QuestionAnswer": {
+      "additionalProperties": false,
+      "properties": {
+        "Answer": {
+          "capitalize": "none",
+          "default": "",
+          "description": "",
+          "placeholder": "",
+          "title": "",
+          "type": "string"
+        },
+        "Question": {
+          "capitalize": "none",
+          "default": "",
+          "description": "",
+          "placeholder": "",
+          "title": "",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object",
+      "$id": "https://type.zerve.link/QuestionAnswer"
+    }
+  },
+  "files": {
+    "FAQEntries": {
+      "default": [],
+      "description": "",
+      "items": {
+        "$ref": "https://type.zerve.link/QuestionAnswer",
+        "title": "QuestionAnswer"
+      },
+      "title": "",
+      "type": "array"
+    },
+    "BigQuestion": {
+      "$ref": "https://type.zerve.link/QuestionAnswer",
+      "title": "QuestionAnswer"
+    }
+  }
+}

@@ -37,3 +37,34 @@ export function PageContainer({ children }: { children: ReactNode }) {
     <View style={{ backgroundColor: "#ebebeb", flex: 1 }}>{children}</View>
   );
 }
+
+export function DemoPageContainer({
+  children,
+  isLoading,
+  error,
+}: {
+  children: ReactNode;
+  isLoading?: boolean;
+  error?: string;
+}) {
+  return (
+    <PageContainer>
+      <View
+        style={{
+          alignSelf: "center",
+          borderWidth: 1,
+          borderColor: "#ccc",
+          borderRadius: 10,
+          backgroundColor: "white",
+          margin: 32,
+          paddingHorizontal: 20,
+          paddingTop: 16,
+          paddingBottom: 32,
+          width: 700,
+        }}
+      >
+        {children}
+      </View>
+    </PageContainer>
+  );
+}

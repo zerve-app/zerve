@@ -287,10 +287,12 @@ export async function startApp() {
   }
 
   const zRoot = createZContainer({
-    Store: createZGroup(async (userId: string) => {
+    store: createZGroup(async (userId: string) => {
       return createZGroup(async (storeId: string) => {
         const store = await getMemoryStore(userId, storeId);
-        return store.z.State;
+        return createZContainer({
+          state: store.z.State,
+        });
       });
     }),
 
