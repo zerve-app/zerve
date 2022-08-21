@@ -1,5 +1,6 @@
 import React from "react";
-import { useModal, VStack } from "@zerve/zen";
+import { useModal } from "./Modal";
+import { VStack } from "./Stack";
 import { TextInputForm } from "./TextInputForm";
 
 export function useTextInputFormModal<A>(

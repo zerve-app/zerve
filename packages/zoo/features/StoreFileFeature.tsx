@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 
-import { HomeStackParamList, RootStackParamList } from "../app/Links";
 import ScreenHeader from "../components/ScreenHeader";
 import {
   useDeleteEntry,
@@ -17,7 +16,7 @@ import { showToast } from "@zerve/zen/Toast";
 import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
 import { useActionsSheet } from "@zerve/zen";
-import { useTextInputFormModal } from "../components/TextInputFormModal";
+import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 
 export function FileFeature({
   name,

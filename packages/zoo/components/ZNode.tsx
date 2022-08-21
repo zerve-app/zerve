@@ -36,7 +36,7 @@ import {
   GenericError,
 } from "@zerve/core";
 import { View } from "react-native";
-import { useTextInputFormModal } from "./TextInputFormModal";
+import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 import { isSeeminglyAnonUser, LoginForm, LogoutButton } from "./Auth";
 
 export function ZInlineNode({ path }: { path: string[] }) {

@@ -39,6 +39,9 @@
     "BigQuestion": {
       "$ref": "https://type.zerve.link/QuestionAnswer",
       "title": "QuestionAnswer"
+    },
+    "f": {
+      "type": "null"
     }
   }
 }

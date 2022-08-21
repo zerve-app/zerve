@@ -205,7 +205,7 @@ export const zAccessors = {
 ${Object.entries(zEntrySchemas)
   .map(
     ([entryName, fileSchema]) =>
-      `  ${entryName}: zClient.createAccessor<${capitalize(
+      `  ${capitalize(entryName)}: zClient.createAccessor<${capitalize(
         entryName,
       )}FileSchema>("${entryName}"),`,
   )

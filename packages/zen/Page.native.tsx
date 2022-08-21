@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { ThemedText } from "./Themed";
 
 export function PageSection({
@@ -45,26 +45,25 @@ export function DemoPageContainer({
 }: {
   children: ReactNode;
   isLoading?: boolean;
-  error?: string | null | undefined;
+  error?: string;
 }) {
   return (
-    <PageContainer>
+    <ScrollView style={{ flex: 1 }}>
       <View
         style={{
+          marginVertical: 32,
           alignSelf: "center",
           borderWidth: 1,
           borderColor: "#ccc",
           borderRadius: 10,
           backgroundColor: "white",
-          margin: 32,
           paddingHorizontal: 20,
           paddingTop: 16,
           paddingBottom: 32,
-          width: 700,
         }}
       >
         {children}
       </View>
-    </PageContainer>
+    </ScrollView>
   );
 }

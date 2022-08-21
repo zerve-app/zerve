@@ -2,6 +2,7 @@ import Head from "next/head";
 import React from "react";
 import "raf/polyfill";
 import { AppProps } from "next/app";
+import Colors from "@zerve/zen/Colors";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -29,6 +30,30 @@ function MyApp({ Component, pageProps }: AppProps) {
           rel="manifest"
           crossOrigin="use-credentials"
           href="/site.webmanifest"
+        />
+        <style
+          dangerouslySetInnerHTML={{
+            // this is hacky, but we should somehow associate css with @zerve/zen/HumanTextInput
+            __html: `
+.HumanTextEditorContent {
+}
+.HumanTextEditorContent > div {
+  padding: 1px 12px;
+}
+.HumanTextEditorContent p {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+.HumanTextEditorContent code {
+  background-color: #dbceea;
+  padding: 2px;
+  border-radius: 2px;
+}
+.HumanTextEditorContent a {
+  color: ${Colors.light.tint};
+}
+`,
+          }}
         />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#8427b2" />
         <meta name="msapplication-TileColor" content="#8c42b4" />

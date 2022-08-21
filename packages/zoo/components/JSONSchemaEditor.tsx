@@ -28,7 +28,7 @@ import {
 import { useGlobalNavigation } from "../app/useNavigation";
 import { View } from "react-native";
 import { setStringAsync } from "expo-clipboard";
-import { useTextInputFormModal } from "./TextInputFormModal";
+import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 import { useValueImporter } from "./JSONSchemaEditorUtilities";
 
 export type FieldComponent<

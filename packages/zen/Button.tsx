@@ -28,7 +28,7 @@ export function IconButton({
 }) {
   const colors = useColors();
   const finalColor = color || colors.secondaryText;
-  const iconSize = size === "sm" ? 12 : 24;
+  const iconSize = size === "sm" ? 18 : 24;
   const padding = size === "sm" ? 8 : 12;
   return (
     <Pressable

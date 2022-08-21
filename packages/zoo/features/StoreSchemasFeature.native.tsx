@@ -14,7 +14,7 @@ import {
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
-import { useTextInputFormModal } from "../components/TextInputFormModal";
+import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 
 function CreateSchemaButton({ storePath }: { storePath: string[] }) {
   const createSchema = useCreateSchema(storePath);

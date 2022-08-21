@@ -28,4 +28,4 @@ export default {
     tintInverted: "#9b65bc",
     tint: "#D2B4E4",
   } as ColorTheme,
-};
+} as const;
