@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/node": "18.0.6",
     "cross-env": "^7.0.3",
-    "eslint-config-next": "^12.1.6",
+    "eslint-config-next": "^12.2.5",
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^9.0.0",
     "tsconfig": "*"

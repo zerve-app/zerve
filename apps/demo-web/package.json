@@ -29,9 +29,9 @@
     "react-native-web": "~0.18.7"
   },
   "devDependencies": {
-    "@types/node": "18.0.6",
+    "@types/node": "^16.11.51",
     "cross-env": "^7.0.3",
-    "eslint-config-next": "^12.1.6",
+    "eslint-config-next": "^12.2.5",
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^9.0.0",
     "tsconfig": "*"
