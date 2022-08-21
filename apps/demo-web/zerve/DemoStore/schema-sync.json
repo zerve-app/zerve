@@ -1,15 +1,12 @@
 {
   "schemas": {
     "QuestionAnswer": {
+      "$id": "https://type.zerve.link/QuestionAnswer",
       "additionalProperties": false,
       "properties": {
         "Answer": {
-          "capitalize": "none",
-          "default": "",
-          "description": "",
-          "placeholder": "",
-          "title": "",
-          "type": "string"
+          "$ref": "https://type.zerve.link/HumanText",
+          "title": "HumanText"
         },
         "Question": {
           "capitalize": "none",
@@ -21,8 +18,42 @@
         }
       },
       "required": [],
-      "type": "object",
-      "$id": "https://type.zerve.link/QuestionAnswer"
+      "type": "object"
+    },
+    "HumanText": {
+      "$id": "https://type.zerve.link/HumanText",
+      "title": "HumanText",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "bold": {
+            "type": "boolean"
+          },
+          "italic": {
+            "type": "boolean"
+          },
+          "strike": {
+            "type": "boolean"
+          },
+          "underline": {
+            "type": "boolean"
+          },
+          "code": {
+            "type": "boolean"
+          },
+          "linkHref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
     }
   },
   "files": {

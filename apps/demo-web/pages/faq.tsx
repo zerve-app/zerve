@@ -1,7 +1,8 @@
 import React, { ReactNode } from "react";
 import { DemoPageContainer, Title } from "@zerve/zen";
 import { Text, View } from "react-native";
-import { useFAQEntries } from "../zerve/DemoStore";
+import { useBigQuestion, useFAQEntries } from "../zerve/DemoStore";
+import { HumanText } from "@zerve/react-native-content/HumanText";
 
 function QuestionAnswerRow({
   question,
@@ -28,16 +29,19 @@ function QuestionAnswerRow({
 }
 
 export default function FAQPage() {
-  const { data, isLoading, error } = useFAQEntries();
+  // const { data, isLoading, error } = useFAQEntries();
+  const { data, isLoading, error } = useBigQuestion();
+  console.log(data);
   return (
     <DemoPageContainer isLoading={isLoading} error={error}>
       <Title title="Frequently Asked Questions" />
-      {data?.map((faqEntry) => (
+      {/* {data?.map((faqEntry) => (
         <QuestionAnswerRow
           question={faqEntry.Question}
           answer={<Text>{faqEntry.Answer}</Text>}
         />
-      ))}
+      ))} */}
+      <HumanText value={[]} options={{ linkWebTarget: "" }} />
     </DemoPageContainer>
   );
 }

@@ -19,6 +19,7 @@
     "@expo/config-types": "^46.0.2",
     "@expo/next-adapter": "^4.0.12",
     "@zerve/zen": "*",
+    "@zerve/react-native-content": "*",
     "@zerve/client": "*",
     "@zerve/cli": "*",
     "react-query": "^3.39.2",
@@ -37,7 +38,7 @@
   },
   "zerve": {
     "dynamicSync": {
-      "DemoStore": "https://staging.zerve.dev/.z/Store/ev/demo"
+      "DemoStore": "https://staging.zerve.dev/.z/store/ev/demo"
     }
   }
 }

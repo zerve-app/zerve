@@ -74,7 +74,7 @@ Promise.all(
       const parsedURL = String(url).match(/^(https?:\/\/)([^\/]+)\/(.+)$/);
       if (!parsedURL) fail(`Invalid dynamicSync URL: ${url}`);
       const [_fullUrl, protocol, origin, path] = parsedURL;
-      const res = await fetch(url);
+      const res = await fetch(`${url}/state`);
       if (!existsSync(join(projectPath, Z_GENERATED_CONST, zDynamicName))) {
         console.log(`> Creating "zerve/${zDynamicName}" client directory`);
         mkdirSync(join(projectPath, Z_GENERATED_CONST, zDynamicName));

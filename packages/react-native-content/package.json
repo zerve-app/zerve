@@ -1,0 +1,21 @@
+{
+  "name": "@zerve/react-native-content",
+  "version": "0.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
+  "devDependencies": {
+    "@types/react": "~17.0.21",
+    "@types/react-native": "^0.69.1",
+    "config": "*",
+    "tsconfig": "*",
+    "typescript": "^4.7.4"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "dependencies": {}
+}

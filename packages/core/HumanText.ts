@@ -1,3 +1,4 @@
+import { FromSchema } from "json-schema-to-ts";
 import { BooleanSchema, StringSchema } from "./JSONSchema";
 
 export const HumanTextSchema = {
@@ -19,3 +20,5 @@ export const HumanTextSchema = {
     required: ["text"],
   },
 } as const;
+
+export type HumanText = FromSchema<typeof HumanTextSchema>;

@@ -7,12 +7,22 @@ import { createZStoreClient } from '@zerve/client/StoreClient';
 
 const zStoreProtocol = "https://";
 const zStoreOrigin = "staging.zerve.dev";
-const zStorePath = ".z/Store/ev/demo";
+const zStorePath = ".z/store/ev/demo";
 
 export interface QuestionAnswer {
-  Answer?: string;
+  Answer?: HumanText;
   Question?: string;
 }
+
+export type HumanText = {
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  strike?: boolean;
+  underline?: boolean;
+  code?: boolean;
+  linkHref?: string;
+}[];
 
 export type FAQEntriesFileSchema = QuestionAnswer[];
 

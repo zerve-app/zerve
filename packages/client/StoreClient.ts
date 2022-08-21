@@ -16,7 +16,10 @@ export function createZStoreClient(
 
   function createAccessor<EntryType>(name: string) {
     async function get(): Promise<EntryType> {
-      const resp = await serverGet(connection.url, `${zStorePath}/${name}`);
+      const resp = await serverGet(
+        connection.url,
+        `${zStorePath}/state/${name}`,
+      );
       return resp.value;
     }
     function use(
