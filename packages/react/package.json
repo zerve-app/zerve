@@ -8,8 +8,8 @@
   },
   "devDependencies": {
     "@types/react": "~17.0.21",
-    "config": "*",
-    "tsconfig": "*",
+    "@zerve/config": "*",
+    "@zerve/tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "dependencies": {

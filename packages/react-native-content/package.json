@@ -9,8 +9,8 @@
   "devDependencies": {
     "@types/react": "~17.0.21",
     "@types/react-native": "^0.69.1",
-    "config": "*",
-    "tsconfig": "*",
+    "@zerve/config": "*",
+    "@zerve/tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "peerDependencies": {

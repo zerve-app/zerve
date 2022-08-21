@@ -8,8 +8,8 @@
   },
   "devDependencies": {
     "@types/json-stable-stringify": "^1.0.33",
-    "config": "*",
-    "tsconfig": "*",
+    "@zerve/config": "*",
+    "@zerve/tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "dependencies": {

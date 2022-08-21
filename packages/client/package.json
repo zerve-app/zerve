@@ -10,8 +10,8 @@
     "@types/express": "^4.17.13",
     "@types/fs-extra": "^9.0.13",
     "@types/ws": "^8.5.3",
-    "config": "*",
-    "tsconfig": "*",
+    "@zerve/config": "*",
+    "@zerve/tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "dependencies": {

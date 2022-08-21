@@ -34,7 +34,7 @@
     "eslint-config-next": "^12.2.5",
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^9.0.0",
-    "tsconfig": "*"
+    "@zerve/tsconfig": "*"
   },
   "zerve": {
     "dynamicSync": {
