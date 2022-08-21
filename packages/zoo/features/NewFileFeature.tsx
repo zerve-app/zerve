@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { Input, VStack } from "@zerve/zen";
+import { Input, VStack, Form } from "@zerve/zen";
 import { AsyncButton } from "../components/Button";
 import ScreenHeader from "../components/ScreenHeader";
 import { useCreateEntry } from "@zerve/client/Mutation";
@@ -9,7 +9,6 @@ import {
   useConnectionNavigation,
   useStoreNavigation,
 } from "../app/useNavigation";
-import { Form } from "../components/Form";
 
 export function NewFileFeature({ storePath }: { storePath: string[] }) {
   const createEntry = useCreateEntry(storePath);

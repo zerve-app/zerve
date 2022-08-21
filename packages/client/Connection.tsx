@@ -1,3 +1,4 @@
+import React from "react";
 import { NotFoundError, GenericError } from "@zerve/core";
 import { createContext, ReactNode, useContext } from "react";
 import { QueryClientProvider, QueryClient } from "react-query";

@@ -25,6 +25,7 @@
     "build:mobile": "yarn workspace zoo-mobile rebuild",
     "build:ios": "yarn workspace zoo-mobile eas build --platform=ios --profile=production",
     "build:ios:internal": "yarn workspace zoo-mobile eas build --platform=ios --profile=internal",
+    "build:ios:simulator": "yarn workspace zoo-mobile eas build --platform=ios --profile=simulator",
     "build:android:internal": "yarn workspace zoo-mobile eas build --platform=android --profile=internal",
     "build:android:dev": "yarn workspace zoo-mobile eas build --platform=android --profile=development",
     "build:android": "yarn workspace zoo-mobile eas build --platform=android --profile=production",

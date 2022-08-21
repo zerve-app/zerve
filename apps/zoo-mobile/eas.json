@@ -4,17 +4,18 @@
   },
   "build": {
     "development": {
-      "node": "16.16.0",
-      "distribution": "internal",
-      "android": {
-        "gradleCommand": ":app:assembleDebug"
+      "env": {
+        "DESCRIPTION": "Used for development of the app on simulators."
       },
-      "ios": {
-        "buildConfiguration": "Debug"
-      }
+      "node": "16.17.0",
+      "distribution": "internal",
+      "developmentClient": true
     },
     "internal": {
-      "node": "16.16.0",
+      "env": {
+        "DESCRIPTION": "Used for testing the release-ready app on real devices."
+      },
+      "node": "16.17.0",
       "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleRelease"
@@ -24,14 +25,26 @@
       }
     },
     "simulator": {
-      "node": "16.16.0",
+      "env": {
+        "DESCRIPTION": "Used for testing the release-ready app on simulators."
+      },
+      "node": "16.17.0",
       "distribution": "internal",
       "ios": {
         "simulator": true,
-        "buildConfiguration": "Debug"
+        "buildConfiguration": "Release"
       }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "DESCRIPTION": "Used for app store distribution."
+      },
+      "node": "16.17.0",
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "distribution": "store"
+    }
   },
   "submit": {
     "production": {}

@@ -3,6 +3,7 @@
     "pflannery.vscode-versionlens",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
+    "bycedric.vscode-expo"
   ],
   "unwantedRecommendations": []
 }

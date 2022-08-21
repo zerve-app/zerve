@@ -1,3 +1,4 @@
+import React from "react";
 import { ComponentProps, ReactNode } from "react";
 import { ThemedText } from "./Themed";
 

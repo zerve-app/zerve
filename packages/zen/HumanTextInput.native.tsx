@@ -10,8 +10,6 @@ import {
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-throw new Error("not tested yet.");
-
 type CustomAttributes = {
   bold: boolean;
   italic: boolean;
