@@ -1,4 +1,4 @@
-import { Title } from "@zerve/zen";
+import { Title, VStack } from "@zerve/zen";
 import { memo } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
@@ -6,7 +6,9 @@ import { FeaturePane } from "../web/Dashboard";
 function StoreSettings({ storePath, title }: StoreFeatureProps) {
   return (
     <FeaturePane title={title}>
-      <Title title="soon" />
+      <VStack padded>
+        <Title title="Experimental Features:" />
+      </VStack>
     </FeaturePane>
   );
 }

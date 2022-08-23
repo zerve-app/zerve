@@ -40,12 +40,22 @@ function getDefaultValueOfSchema(schema: JSONSchema) {
     if (schema.properties) {
       Object.entries(schema.properties).forEach(
         ([propertyName, propertySchema]) => {
-          objDefaults[propertyName] = getDefaultValueOfSchema(propertySchema);
+          if (propertySchema.default) {
+            objDefaults[propertyName] = propertySchema.default;
+          }
         },
       );
+      schema.required?.forEach((requiredPropertyName) => {
+        const propertySchema = schema.properties[requiredPropertyName];
+        if (propertySchema)
+          objDefaults[requiredPropertyName] =
+            getDefaultValueOfSchema(propertySchema);
+      });
     }
     return objDefaults;
   }
+  if (schema.oneOf) return getDefaultValueOfSchema(schema.oneOf[0]);
+  throw new Error("Cannot determine default value of this schema");
 }
 
 type CalculatedUnionOption = {

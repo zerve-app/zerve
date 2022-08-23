@@ -1,4 +1,5 @@
 import { useRequiredConnection } from "@zerve/client/Connection";
+import { displayStoreFileName } from "@zerve/core";
 import {
   StoreDashboardContext,
   StoreFeatureProps,
@@ -48,16 +49,16 @@ export function StoreDashboard({
           if (feature.path?.length) {
             const nodeName = feature.path.at(-1) as string;
             if (feature.child === "schema") {
-              return `Schema: ${nodeName}`;
+              return `Schema: ${displayStoreFileName(nodeName)}`;
             }
-            return nodeName;
+            return displayStoreFileName(nodeName);
           }
           return "Entries";
         }
         if (feature.key === "schemas") {
           if (feature.child === "create") return "Create Schema";
           if (feature.schema) {
-            return `Schema: ${feature.schema}`;
+            return `Schema: ${displayStoreFileName(feature.schema)}`;
           }
           return "Schemas";
         }

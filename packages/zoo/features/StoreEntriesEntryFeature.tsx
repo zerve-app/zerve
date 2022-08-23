@@ -33,7 +33,7 @@ import {
 } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
 import { useZNodeValue, useZStoreSchemas } from "@zerve/client/Query";
-import { JSONSchemaEditorContext } from "../components/JSONSchemaEditor";
+import { JSONSchemaEditorContext } from "../components/JSONSchemaEditorUtilities";
 
 const EntryNameSchema = {
   type: "string",

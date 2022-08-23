@@ -18,7 +18,7 @@ export function Label({
   style?: TextStyle;
 }) {
   return (
-    <label htmlFor={forId}>
+    <label htmlFor={forId} style={{ display: "flex" }}>
       <ThemedText
         secondary={secondary}
         tint={tint}

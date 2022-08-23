@@ -23,11 +23,11 @@ const SchemaMetaTitles = {
   description: "Description",
 } as const;
 
-export const NullSchemaSchema: ZSchema = {
+export const NullSchemaSchema = {
   type: "object",
   title: "Empty",
   properties: {
-    type: { const: "null" },
+    type: { const: "null", title: "Empty" },
     ...SchemaMeta,
   },
   propertyTitles: {
@@ -44,9 +44,9 @@ export const NullSchema = {
 
 export const NumberSchemaSchema = {
   type: "object",
-  title: "Number",
+  title: "Number Schema",
   properties: {
-    type: { const: "number" },
+    type: { const: "number", title: "Number" },
     ...SchemaMeta,
     default: { type: "number" }, // uhh this implies the need of a more powerful generic/recursion o_O. Like {$ref:'#'}
   },
@@ -103,9 +103,9 @@ export type ZTextInputType = FromSchema<typeof TextInputTypeSchemaSchema>;
 
 export const StringSchemaSchema = {
   type: "object",
-  title: "Text",
+  title: "Text Schema",
   properties: {
-    type: { const: "string" },
+    type: { const: "string", title: "String" },
     ...SchemaMeta,
     default: { type: "string" }, // uhh this implies the need of a more powerful generic/recursion o_O
     placeholder: { type: "string" },
@@ -120,6 +120,10 @@ export const StringSchemaSchema = {
     inputType: "Keyboard Type",
     capitalize: "Auto-Caps",
   },
+  default: {
+    type: "string",
+    title: "Text",
+  },
   required: ["type"],
   additionalProperties: false,
 } as const;
@@ -130,7 +134,7 @@ export const StringSchema = {
 
 export const BooleanSchemaSchema = {
   type: "object",
-  title: "Switch",
+  title: "Switch Schema",
   properties: {
     type: { const: "boolean" },
     ...SchemaMeta,
@@ -156,21 +160,26 @@ export const ConstSchemaSchema = {
     const: {
       type: ["string", "boolean", "number"],
     },
+    ...SchemaMeta,
   },
   additionalProperties: false,
   required: ["const"],
+  propertyTitles: {
+    ...SchemaMetaTitles,
+    const: "Constant Value",
+  },
 } as const;
 
 export const RefSchemaSchema = {
-  title: "Ref",
+  title: "Schema Reference",
   type: "object",
   properties: {
+    $ref: { type: "string", title: "Reference" },
     ...SchemaMeta,
-    $ref: { type: "string" },
   },
   propertyTitles: {
-    ...SchemaMetaTitles,
     $ref: "Schema",
+    ...SchemaMetaTitles,
   },
   required: ["$ref"],
   additionalProperties: false,
@@ -189,30 +198,34 @@ export const PrimitiveSchemaSchema = {
 export type PrimitiveSchema = FromSchema<typeof PrimitiveSchemaSchema>;
 
 export const LeafSchemaSchema = {
+  title: "Schema",
   oneOf: [
     ...PrimitiveSchemaSchema.oneOf,
     // ConstSchemaSchema // disabled for now because the union dropdown broken when selecting object type
   ],
-  default: { type: "null" },
 } as const;
 export type LeafSchema = FromSchema<typeof LeafSchemaSchema>;
 
-export const FalseSchema = { const: false, title: "Disabled" } as const;
+export const DisabledSchema = { const: false, title: "Disabled" } as const;
 export const TrueSchema = { const: true } as const;
 
 export const ObjectSchemaSchema = {
-  title: "Object",
+  title: "Object Schema",
   type: "object",
   properties: {
-    type: { const: "object" },
-    ...SchemaMeta,
+    type: { const: "object", title: "Object" },
     properties: {
+      title: "Object Properties",
       type: "object",
       additionalProperties: LeafSchemaSchema,
+      default: {},
     },
     additionalProperties: {
-      oneOf: [FalseSchema, ...LeafSchemaSchema.oneOf],
+      ...LeafSchemaSchema,
+      title: "Object Additional Properties",
+      oneOf: [DisabledSchema, ...LeafSchemaSchema.oneOf],
     } as const,
+    ...SchemaMeta,
     propertyTitles: {
       description:
         "The keys match the Properties, and the values act as override titles",
@@ -222,40 +235,41 @@ export const ObjectSchemaSchema = {
     required: { type: "array", items: { type: "string" } },
   },
   propertyTitles: {
-    ...SchemaMetaTitles,
+    type: "Type",
     properties: "Properties",
-    required: "Required",
-    propertyTitles: "Property Titles",
     additionalProperties: "Additional Properties",
+    ...SchemaMetaTitles,
+    required: "Required Properties",
+    propertyTitles: "Property Titles",
   },
-  required: [
-    "type",
-    //"properties",
-    "additionalProperties",
-  ],
+  required: ["type", "properties", "additionalProperties"],
   additionalProperties: false,
   default: {
-    // uhh this implies the need of a more powerful generic/recursion o_O
     type: "object",
     properties: {},
-    required: [],
     additionalProperties: false,
   },
 } as const;
 
 export const ArraySchemaSchema = {
-  title: "List",
+  title: "List Schema",
   type: "object",
   properties: {
-    type: { const: "array" },
+    type: { const: "array", title: "List" },
     ...SchemaMeta,
     items: LeafSchemaSchema,
     default: {
       type: "array",
-    }, // uhh this implies the need of a more powerful generic/recursion o_O
+    },
   },
-  required: ["type"],
+  required: ["type", "items"],
   additionalProperties: false,
+  propertyTitles: {
+    ...SchemaMetaTitles,
+    type: "Type",
+    items: "Items",
+    default: "Default",
+  },
 } as const;
 
 export const ZSchemaSchema = {

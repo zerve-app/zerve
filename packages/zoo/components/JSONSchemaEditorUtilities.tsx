@@ -1,9 +1,27 @@
-import { SchemaStore } from "@zerve/core";
-import { useContext, useMemo } from "react";
 import {
-  JSONSchemaEditorContext,
-  OverrideFieldComponents,
-} from "./JSONSchemaEditor";
+  FieldComponentProps,
+  FromSchema,
+  JSONSchema,
+  SchemaStore,
+} from "@zerve/core";
+import { createContext, useContext, useMemo } from "react";
+
+export type FieldComponent<
+  FieldSchema extends JSONSchema,
+  InternalValue,
+> = React.FC<FieldComponentProps<FieldSchema>> & {
+  import?: (value: FromSchema<FieldSchema>) => InternalValue;
+  export?: (internalValue: InternalValue) => FromSchema<FieldSchema>;
+};
+
+export type OverrideFieldComponents = Record<string, FieldComponent<any, any>>;
+
+type JSONSchemaEditorContext = {
+  OverrideFieldComponents?: OverrideFieldComponents;
+};
+export const JSONSchemaEditorContext = createContext<JSONSchemaEditorContext>(
+  {},
+);
 
 export function getValueImport(
   OverrideFieldComponents: OverrideFieldComponents | undefined,
@@ -68,4 +86,40 @@ export function useValueImporter(schemaStore: SchemaStore) {
     [OverrideFieldComponents],
   );
   return importer;
+}
+
+export function extractTypeSchema(type, schemaObj) {
+  const subType = { type };
+  if (type === "string") {
+    subType.minLength = schemaObj.minLength;
+    subType.maxLength = schemaObj.maxLength;
+    subType.pattern = schemaObj.pattern;
+    subType.format = schemaObj.format;
+  } else if (type === "object") {
+    subType.required = schemaObj.required;
+    subType.properties = schemaObj.properties;
+    subType.patternProperties = schemaObj.properties;
+    subType.additionalProperties = schemaObj.additionalProperties;
+    subType.unevaluatedProperties = schemaObj.unevaluatedProperties;
+    subType.propertyNames = schemaObj.propertyNames;
+    subType.minProperties = schemaObj.minProperties;
+    subType.maxProperties = schemaObj.maxProperties;
+  } else if (type === "array") {
+    subType.items = schemaObj.items;
+    subType.prefixItems = schemaObj.prefixItems;
+    subType.contains = schemaObj.contains;
+    subType.minContains = schemaObj.minContains;
+    subType.maxContains = schemaObj.maxContains;
+    subType.uniqueItems = schemaObj.uniqueItems;
+    subType.minItems = schemaObj.minItems;
+    subType.maxItems = schemaObj.maxItems;
+  } else if (type === "integer" || type === "number") {
+    subType.minimum = schemaObj.minimum;
+    subType.exclusiveMinimum = schemaObj.exclusiveMinimum;
+    subType.maximum = schemaObj.maximum;
+    subType.exclusiveMaximum = schemaObj.exclusiveMaximum;
+    subType.multipleOf = schemaObj.multipleOf;
+  }
+
+  return subType;
 }

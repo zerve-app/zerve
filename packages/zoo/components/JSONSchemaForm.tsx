@@ -9,14 +9,18 @@ import {
   VStack,
 } from "@zerve/zen";
 import { useEffect, useRef, useState } from "react";
-import { JSONSchemaEditor, JSONSchemaEditorContext } from "./JSONSchemaEditor";
+import { JSONSchemaEditor } from "./JSONSchemaEditor";
 import {
   EmptySchemaStore,
   getDefaultSchemaValue,
   JSONSchema,
   SchemaStore,
 } from "@zerve/core";
-import { getValueExport, getValueImport } from "./JSONSchemaEditorUtilities";
+import {
+  getValueExport,
+  getValueImport,
+  JSONSchemaEditorContext,
+} from "./JSONSchemaEditorUtilities";
 
 export function JSONSchemaForm({
   id,

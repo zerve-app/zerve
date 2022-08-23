@@ -176,6 +176,7 @@ export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
               properties: {
                 ...zSubSchema.properties.properties,
                 additionalProperties: {
+                  ...zSubSchema.properties.properties.additionalProperties,
                   oneOf: [
                     ...zSubSchema.properties.properties.additionalProperties
                       .oneOf,
@@ -184,6 +185,7 @@ export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
                 },
               },
               additionalProperties: {
+                ...zSubSchema.properties.additionalProperties,
                 oneOf: [
                   ...zSubSchema.properties.additionalProperties.oneOf,
                   ...refSchemas,

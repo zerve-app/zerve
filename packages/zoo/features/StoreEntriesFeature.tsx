@@ -1,4 +1,5 @@
 import { useZNode } from "@zerve/client/Query";
+import { displayStoreFileName } from "@zerve/core";
 import { VStack } from "@zerve/zen";
 import { memo, useMemo } from "react";
 import {
@@ -19,7 +20,7 @@ function StoreEntries({ storePath, title }: StoreFeatureProps) {
       {entries.map((entryName) => {
         return (
           <StoreFeatureLink
-            title={entryName}
+            title={displayStoreFileName(entryName)}
             key={entryName}
             to={{
               key: "entries",

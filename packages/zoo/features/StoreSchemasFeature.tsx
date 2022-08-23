@@ -1,4 +1,5 @@
 import { useZNode } from "@zerve/client/Query";
+import { displayStoreFileName } from "@zerve/core";
 import { VStack } from "@zerve/zen";
 import { memo, useMemo } from "react";
 import {
@@ -23,7 +24,7 @@ function StoreSchemas({ storePath, title }: StoreFeatureProps) {
               key: "schemas",
               schema: schemaName,
             }}
-            title={schemaName}
+            title={displayStoreFileName(schemaName)}
           />
         );
       })}

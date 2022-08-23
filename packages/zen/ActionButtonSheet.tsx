@@ -56,16 +56,24 @@ const ActionMenuItem = React.memo(ActionMenuItemUnmemo);
 export function useActionsSheet(
   renderButton: (onOpen: () => void) => ReactElement,
   getActions: () => ActionButtonDef[],
+  disabled?: boolean,
 ): readonly [null | ReactElement, () => void] {
   const [isOpen, setIsOpen] = useState(false);
   function onOpen() {
+    if (disabled) return;
     setIsOpen(true);
   }
   const colors = useColors();
-  return [
+  const content = disabled ? (
+    renderButton(onOpen)
+  ) : (
     <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenu.Trigger
-        style={{ border: "none", backgroundColor: "transparent" }}
+        style={{
+          border: "none",
+          backgroundColor: "transparent",
+          padding: 0,
+        }}
       >
         {renderButton(onOpen)}
       </DropdownMenu.Trigger>
@@ -85,8 +93,12 @@ export function useActionsSheet(
           <ActionMenuItem action={action} key={action.key} />
         ))}
       </DropdownMenu.Content>
-    </DropdownMenu.Root>,
-
-    () => {},
+    </DropdownMenu.Root>
+  );
+  return [
+    content,
+    () => {
+      setIsOpen(true);
+    },
   ] as const;
 }
