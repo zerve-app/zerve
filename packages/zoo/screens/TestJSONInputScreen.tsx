@@ -8,7 +8,7 @@ import {
   PageTitle,
   Paragraph,
 } from "@zerve/zen";
-import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
+import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import { EmptySchemaStore, JSONSchema } from "@zerve/core";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "../components/ScreenContainer";

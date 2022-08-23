@@ -26,7 +26,7 @@ import {
   useStoreNavigation,
 } from "../app/useNavigation";
 import { FontAwesome } from "@expo/vector-icons";
-import { JSONSchemaEditor } from "./JSONSchemaEditor";
+import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import { Icon } from "@zerve/zen/Icon";
 import { getZIcon } from "../app/ZIcon";
 import { storeHistoryEvent } from "../app/History";

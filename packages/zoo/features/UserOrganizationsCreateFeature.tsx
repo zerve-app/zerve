@@ -1,8 +1,7 @@
 import { useRequiredConnection } from "@zerve/client/Connection";
 import { postZAction } from "@zerve/client/ServerCalls";
-import { Title, useAsyncHandler } from "@zerve/zen";
+import { JSONSchemaForm, Title, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import {
   UserDashboardContext,
   UserFeatureProps,

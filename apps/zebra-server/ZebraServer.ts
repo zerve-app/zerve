@@ -26,7 +26,7 @@ import {
   createSMSAuthStrategy,
 } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
-import { Move } from "@zerve/system-files";
+import { Move, DeleteRecursive } from "@zerve/system-files";
 import { createGeneralStore, GeneralStoreModule } from "@zerve/store";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
@@ -150,7 +150,7 @@ export async function startApp() {
   }
 
   function getStoreGroup(entityId: string) {
-    return createZGettableGroup(
+    const Stores = createZGettableGroup(
       async (storeId: string) => {
         return await getMemoryStore(entityId, storeId);
       },
@@ -166,6 +166,45 @@ export async function startApp() {
         return { children, more: false, cursor: "" };
       },
     );
+    const DestroyStore = createZAction(
+      StringSchema,
+      NullSchema,
+      async (storeId) => {
+        if (!doesEntityStoreExist(entityId, storeId)) {
+          throw new Error("Store does not exist.");
+        }
+        await DeleteRecursive.call(getEntityStoreDir(entityId, storeId));
+        if (memoryStores[entityId]?.[storeId]) {
+          delete memoryStores[entityId]?.[storeId];
+        }
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // lol
+        return null;
+      },
+    );
+    const MoveStore = createZAction(
+      {
+        type: "object",
+        properties: { from: StringSchema, to: StringSchema },
+        additionalProperties: false,
+        required: ["from", "to"],
+      },
+      NullSchema,
+      async ({ from, to }) => {
+        if (memoryStores[entityId]?.[from]) {
+          delete memoryStores[entityId]?.[from];
+        }
+        await Move.call({
+          from: getEntityStoreDir(entityId, from),
+          to: getEntityStoreDir(entityId, to),
+        });
+        // in case some race condition caused this to be created during the move process..
+        if (memoryStores[entityId]?.[from]) {
+          delete memoryStores[entityId]?.[from];
+        }
+        return null;
+      },
+    );
+    return { Stores, DestroyStore, MoveStore };
   }
 
   function getStoreCreatorAction(entityId: string) {
@@ -176,8 +215,8 @@ export async function startApp() {
           `The "${storeId}" store already exists.`,
           { storeId },
         );
-      const newStorePath = getEntityStoreDir(entityId, storeId);
-      await mkdirp(newStorePath);
+      const storePath = getEntityStoreDir(entityId, storeId);
+      await mkdirp(storePath);
       return null;
     });
   }
@@ -191,7 +230,7 @@ export async function startApp() {
 
   async function getUserZeds(user, { userId }): Record<string, AnyZed> {
     const CreateStore = getStoreCreatorAction(userId);
-    const Stores = getStoreGroup(userId);
+    const StoreGroup = getStoreGroup(userId);
     const CreateOrg = createZAction(
       StringSchema,
       NullSchema,
@@ -222,7 +261,7 @@ export async function startApp() {
         return createZContainer({
           orgId: createZStatic(orgId),
           CreateStore: getStoreCreatorAction(orgId),
-          Stores: getStoreGroup(orgId),
+          ...getStoreGroup(orgId),
           Members: createZGettableGroup(
             async (memberId: string) => {
               return createZStatic({});
@@ -278,7 +317,7 @@ export async function startApp() {
       CreateOrg,
       Orgs,
       OrgInvites,
-      Stores,
+      ...StoreGroup,
     };
   }
   async function doesEntityStoreExist(entityId: string, storeId: string) {

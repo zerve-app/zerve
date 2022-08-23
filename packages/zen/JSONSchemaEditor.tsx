@@ -8,22 +8,6 @@ import {
   LeafSchema,
   SchemaStore,
 } from "@zerve/core";
-import {
-  Button,
-  InfoRow,
-  Input,
-  Label,
-  Paragraph,
-  SwitchInput,
-  ThemedText,
-  Icon,
-  VStack,
-  Dropdown,
-  ActionButtonDef,
-  useActionsSheet,
-  useColors,
-} from "@zerve/zen";
-import { useGlobalNavigation } from "../app/useNavigation";
 import { Pressable, TextStyle, View } from "react-native";
 import { setStringAsync } from "expo-clipboard";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
@@ -32,6 +16,18 @@ import {
   JSONSchemaEditorContext,
   useValueImporter,
 } from "./JSONSchemaEditorUtilities";
+import { Button } from "./Button";
+import { Icon } from "./Icon";
+import { Label } from "./Label";
+import { useColors } from "./useColors";
+import { VStack } from "./Stack";
+import { Paragraph } from "./Text";
+import { ThemedText } from "./Themed";
+import { ActionButtonDef } from "./ActionButton";
+import { InfoRow } from "./Row";
+import { Dropdown } from "./Dropdown";
+import { useActionsSheet } from "./ActionButtonSheet";
+import { Input, SwitchInput } from "./Input";
 
 function AddButton({
   onPress,
@@ -454,7 +450,7 @@ function ObjectField({
   schema: JSONSchema;
   actions?: ActionButtonDef[];
 }) {
-  const { openSchemaInput } = useGlobalNavigation();
+  // const { openSchemaInput } = useGlobalNavigation();
   return (
     <>
       <FieldHeader
@@ -468,12 +464,12 @@ function ObjectField({
       <Button
         title={(JSON.stringify(value) || "").slice(0, 60)}
         onPress={() => {
-          openSchemaInput(
-            label || getHumanLabelOfSchema(schema),
-            schema,
-            value,
-            onValue,
-          );
+          // openSchemaInput(
+          //   label || getHumanLabelOfSchema(schema),
+          //   schema,
+          //   value,
+          //   onValue,
+          // );
         }}
       />
     </>
@@ -496,7 +492,7 @@ function ArrayField({
   schema: JSONSchema;
   actions?: ActionButtonDef[];
 }) {
-  const { openSchemaInput } = useGlobalNavigation();
+  // const { openSchemaInput } = useGlobalNavigation();
   return (
     <>
       <FieldHeader
@@ -510,12 +506,12 @@ function ArrayField({
       <Button
         title={(JSON.stringify(value) || "").slice(0, 60)}
         onPress={() => {
-          openSchemaInput(
-            label || getHumanLabelOfSchema(schema),
-            schema,
-            value,
-            onValue,
-          );
+          // openSchemaInput(
+          //   label || getHumanLabelOfSchema(schema),
+          //   schema,
+          //   value,
+          //   onValue,
+          // );
         }}
       />
     </>

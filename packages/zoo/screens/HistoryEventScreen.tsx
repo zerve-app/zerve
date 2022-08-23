@@ -5,7 +5,7 @@ import { HomeStackScreenProps } from "../app/Links";
 import { useHistoryEvent } from "../app/History";
 import { format } from "date-fns";
 import NotFoundScreen from "./NotFoundScreen";
-import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
+import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import { EmptySchemaStore } from "@zerve/core";
 
 export default function HistoryEventScreen({

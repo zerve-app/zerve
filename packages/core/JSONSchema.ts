@@ -1,7 +1,7 @@
 // from this file we export OUR OWN CUSTOM JSON-SCHEMA.
 // the Zerve JSON schema defined in this file is a subset of all JSON-schema, and also a superset that enhances the UI and extends zerve functionality
 
-import { FromSchema } from "json-schema-to-ts";
+import { FromSchema, JSONSchema } from "json-schema-to-ts";
 
 const TitleSchema = {
   title: "Text",
@@ -41,6 +41,14 @@ export type NullSchema = FromSchema<typeof NullSchemaSchema>;
 export const NullSchema = {
   type: "null",
 } as const;
+
+export function isEmptySchema(schema: JSONSchema) {
+  if (schema === undefined) return true;
+  if (schema === true) return false;
+  if (schema === false) return true;
+  if (schema.type === "null") return true;
+  return false;
+}
 
 export const NumberSchemaSchema = {
   type: "object",

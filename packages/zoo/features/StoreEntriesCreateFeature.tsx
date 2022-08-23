@@ -1,10 +1,10 @@
 import { EmptySchemaStore, prepareStoreFileName } from "@zerve/core";
 import { memo, useCallback } from "react";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { FeaturePane } from "../web/Dashboard";
 import { useCreateEntry } from "@zerve/client/Mutation";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
+import { JSONSchemaForm } from "@zerve/zen";
 
 const EntryNameSchema = {
   type: "string",

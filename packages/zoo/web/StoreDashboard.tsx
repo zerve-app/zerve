@@ -84,6 +84,7 @@ export function StoreDashboard({
         const storeFeatureProps = {
           key,
           location: [entityId, storeId],
+          storeId,
           storePath: entityIsOrg
             ? ["Auth", "user", "Orgs", entityId, "Stores", storeId]
             : ["Auth", "user", "Stores", storeId],

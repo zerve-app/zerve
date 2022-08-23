@@ -12,10 +12,10 @@ import {
   Title,
   useAsyncHandler,
   VSpaced,
+  JSONSchemaForm,
   VStack,
 } from "@zerve/zen";
 import { memo, useCallback, useMemo } from "react";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { FeaturePane, NavLink } from "../web/Dashboard";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";

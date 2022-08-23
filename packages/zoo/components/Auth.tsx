@@ -14,13 +14,13 @@ import {
   AsyncButton,
   Button,
   Icon,
+  JSONSchemaForm,
   showToast,
   Title,
   VStack,
 } from "@zerve/zen";
 import { useState } from "react";
 import { forceLocalLogout, logout, setSession } from "../app/ConnectionStorage";
-import { JSONSchemaForm } from "./JSONSchemaForm";
 
 const LoginStrategies = [
   {

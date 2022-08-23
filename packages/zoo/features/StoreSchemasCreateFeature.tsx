@@ -1,8 +1,8 @@
 import { useCreateSchema } from "@zerve/client/Mutation";
 import { EmptySchemaStore, prepareStoreFileName } from "@zerve/core";
+import { JSONSchemaForm } from "@zerve/zen";
 import { memo, useCallback } from "react";
 import { useStoreNavigation } from "../app/useNavigation";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
 

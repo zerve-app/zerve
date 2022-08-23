@@ -9,6 +9,8 @@ import {
 } from "@zerve/core";
 import {
   HumanTextInput,
+  JSONSchemaEditorContext,
+  JSONSchemaForm,
   Label,
   showToast,
   ThemedText,
@@ -18,7 +20,6 @@ import {
   VStack,
 } from "@zerve/zen";
 import { memo, useCallback, useMemo } from "react";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { FeaturePane, NavLink } from "../web/Dashboard";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
@@ -33,7 +34,6 @@ import {
 } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
 import { useZNodeValue, useZStoreSchemas } from "@zerve/client/Query";
-import { JSONSchemaEditorContext } from "../components/JSONSchemaEditorUtilities";
 
 const EntryNameSchema = {
   type: "string",

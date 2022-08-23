@@ -1,9 +1,8 @@
 import { useConnection, useRequiredConnection } from "@zerve/client/Connection";
 import { postZAction } from "@zerve/client/ServerCalls";
 import { EmptySchemaStore, prepareStoreFileName } from "@zerve/core";
-import { showToast, Title, useAsyncHandler } from "@zerve/zen";
+import { JSONSchemaForm, showToast, Title, useAsyncHandler } from "@zerve/zen";
 import { memo, useCallback, useMemo } from "react";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { FeaturePane, NavLink } from "../web/Dashboard";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";

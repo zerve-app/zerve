@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useConnection } from "@zerve/client/Connection";
 import { WEB_PRIMARY_CONN } from "./ConnectionStorage";
 import { Title, useModal } from "@zerve/zen";
-import { JSONSchemaEditor } from "../components/JSONSchemaEditor";
+import { JSONSchemaEditor } from "@zerve/zen";
 import { EmptySchemaStore, SchemaStore } from "@zerve/core";
 
 function JSONInputModal({

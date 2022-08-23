@@ -1,6 +1,7 @@
 // import { JSONSchema } from "json-schema-to-ts";
 
-import { SchemaStore } from ".";
+import { SchemaStore } from "./Validate";
+import { isEmptySchema } from "./JSONSchema";
 
 // export type ZSchema<S extends JSONSchema> = {
 //   name: string;
@@ -35,10 +36,8 @@ export function getDefaultSchemaValue(
   schema: any,
   schemaStore?: SchemaStore,
 ): any {
+  if (isEmptySchema(schema)) return null;
   let usableSchema = schema;
-  if (schema === false) throw new Error("Cannot find value for false schema");
-  if (schema === true) return null;
-  if (schema.type === "null") return null;
   if (schema.$ref) {
     const refSchema = Object.values(schemaStore || {}).find(
       (s) => s.$id === schema.$ref,
