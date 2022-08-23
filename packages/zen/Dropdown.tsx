@@ -3,7 +3,7 @@ import * as Select from "@radix-ui/react-select";
 import Layout from "./Layout";
 import { useAllColors, useColors } from "./useColors";
 import { Pressable } from "react-native";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { Icon } from "./Icon";
 import { smallShadow } from "./Style";
@@ -84,7 +84,7 @@ function DropdownItem({
 
 const UNSELECTED_ITEM_KEY = "$dropdown_unselected_key";
 
-export function Dropdown({
+export function DropdownUnmemo({
   options,
   value,
   onOptionSelect,
@@ -175,3 +175,5 @@ export function Dropdown({
     </Select.Root>
   );
 }
+
+export const Dropdown = memo(DropdownUnmemo);

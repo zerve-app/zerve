@@ -112,7 +112,8 @@ export function exploreUnionSchema(schema: JSONSchema): {
         ([childPropName, childPropSchema]) => {
           if (
             typeof childPropSchema === "object" &&
-            childPropSchema.const !== undefined
+            childPropSchema.const !== undefined &&
+            optionSchema.required?.indexOf(childPropName) !== -1
           ) {
             constProperties[childPropName] = childPropSchema.const;
           }

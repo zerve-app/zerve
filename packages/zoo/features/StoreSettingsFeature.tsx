@@ -1,4 +1,13 @@
-import { Button, Title, useModal, VStack } from "@zerve/zen";
+import {
+  Button,
+  HStack,
+  Label,
+  SwitchInput,
+  ThemedText,
+  Title,
+  useModal,
+  VStack,
+} from "@zerve/zen";
 import { Dialog, useDialog } from "@zerve/zen/Dialog";
 import { memo, useContext } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
@@ -7,7 +16,12 @@ import { useMutation, useQueryClient } from "react-query";
 import { useRequiredConnection } from "@zerve/client/Connection";
 import { postZAction } from "@zerve/client/ServerCalls";
 import { useRouter } from "next/router";
-import { StringSchema } from "@zerve/core";
+import {
+  AllExperimentalSchemas,
+  StoreSettings,
+  StringSchema,
+} from "@zerve/core";
+import { useZNode, useZNodeValue } from "@zerve/client/Query";
 
 function RenameStoreDialog({
   onClose,
@@ -121,13 +135,90 @@ function useRenameStoreDialog(storePath: string[], location: string[]) {
   ));
 }
 
+function useStoreSettings(storePath: string[]) {
+  const storeId = storePath.at(-1);
+  const parentPath = storePath.slice(0, -2);
+  return useZNodeValue([...parentPath, "StoreSettings", storeId]);
+}
+function useSetStoreSettings(storePath: string[]) {
+  const conn = useRequiredConnection();
+  const queryClient = useQueryClient();
+  const storeId = storePath.at(-1);
+  const parentPath = storePath.slice(0, -2);
+  return useMutation(
+    async (settings: StoreSettings) => {
+      await postZAction(conn, [...parentPath, "WriteStoreSettings"], {
+        storeId,
+        settings,
+      });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          ...parentPath,
+          "Stores",
+          storeId,
+        ]);
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          ...parentPath,
+          "StoreSettings",
+          storeId,
+        ]);
+      },
+    },
+  );
+}
+
+function ExperimentalSchemas({
+  settings,
+  onSettings,
+}: {
+  settings: StoreSettings;
+  onSettings: (settings: StoreSettings) => Promise<void>;
+}) {
+  return (
+    <>
+      {AllExperimentalSchemas.map((experimentalSchemaName) => (
+        <HStack>
+          <Label>{experimentalSchemaName}</Label>
+          <SwitchInput
+            value={!!settings?.enabledSchemas?.[experimentalSchemaName]}
+            onValue={(isEnabled) =>
+              onSettings({
+                ...settings,
+                enabledSchemas: {
+                  ...settings.enabledSchemas,
+                  [experimentalSchemaName]: isEnabled,
+                },
+              })
+            }
+          />
+        </HStack>
+      ))}
+    </>
+  );
+  // return <ThemedText>{JSON.stringify(settings.data)}</ThemedText>;
+}
+
 function StoreSettings({ storePath, location, title }: StoreFeatureProps) {
   const onDeleteStoreDialog = useDeleteStoreDialog(storePath, location);
   const onRenameStoreDialog = useRenameStoreDialog(storePath, location);
+  const settingsQuery = useStoreSettings(storePath);
+  const setSettings = useSetStoreSettings(storePath);
   return (
-    <FeaturePane title={title}>
+    <FeaturePane title={title} spinner={settingsQuery.isFetching}>
       <VStack padded>
-        <Title title="Experimental Features:" />
+        <Title title="Experimental Schemas:" />
+        {settingsQuery.data && (
+          <ExperimentalSchemas
+            settings={settingsQuery.data}
+            onSettings={setSettings.mutate}
+          />
+        )}
         <Title title="Dangerous:" />
         <Button danger title="Rename Store" onPress={onRenameStoreDialog} />
         <Button danger title="Delete Store" onPress={onDeleteStoreDialog} />

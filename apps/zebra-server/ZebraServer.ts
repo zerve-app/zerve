@@ -18,6 +18,10 @@ import {
   ChildrenListOptions,
   BooleanSchema,
   HumanTextSchema,
+  FromSchema,
+  JSONSchema,
+  StoreSettings,
+  StoreSettingsSchema,
 } from "@zerve/core";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
@@ -26,11 +30,16 @@ import {
   createSMSAuthStrategy,
 } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
-import { Move, DeleteRecursive } from "@zerve/system-files";
+import {
+  Move,
+  DeleteRecursive,
+  WriteJSON,
+  joinPath,
+  ReadJSON,
+} from "@zerve/system-files";
 import { createGeneralStore, GeneralStoreModule } from "@zerve/store";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
-import { joinPath, ReadJSON } from "@zerve/system-files";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 
@@ -46,6 +55,8 @@ const dataDir =
 const secretsFile =
   process.env.ZERVE_SECRETS_JSON ||
   joinPath(process.cwd(), "../../secrets.json");
+
+type MemoryStore = { store: GeneralStoreModule; settings: StoreSettings };
 
 export async function startApp() {
   console.log("Starting Data Dir", dataDir);
@@ -113,32 +124,62 @@ export async function startApp() {
     getUserZeds,
   });
 
-  const memoryStores: Record<string, Record<string, GeneralStoreModule>> = {};
+  const memoryStores: Record<string, Record<string, MemoryStore>> = {};
   async function getMemoryStore(
     entityId: string,
     storeId: string,
-  ): Promise<GeneralStoreModule> {
+    providedSettings?: StoreSettings,
+  ): Promise<MemoryStore> {
     const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
-    if (alreadyInMemoryStore) return alreadyInMemoryStore;
+    if (
+      alreadyInMemoryStore &&
+      providedSettings &&
+      alreadyInMemoryStore.settings === providedSettings
+    )
+      return alreadyInMemoryStore;
     if (!(await doesEntityStoreExist(entityId, storeId)))
       throw new NotFoundError(
         "NotFound",
         `The ${entityId}/${storeId} store does not exist`,
         { entityId, storeId },
       );
-    const StoreData = await createCoreData(
-      joinPath(getEntityStoreDir(entityId, storeId), `Data`),
-    );
+    const storePath = getEntityStoreDir(entityId, storeId);
+    const StoreData = await createCoreData(joinPath(storePath, `Data`));
     const userMemoryStores =
       memoryStores[entityId] || (memoryStores[entityId] = {});
-    const newMemoryStore = await createGeneralStore(
+    const storeSettings: StoreSettings =
+      providedSettings ||
+      ((await ReadJSON.call(
+        joinPath(storePath, "settings.json"),
+      )) as StoreSettings) ||
+      {};
+    const enabledSchemas: Record<string, JSONSchema> = {};
+    if (storeSettings?.enabledSchemas?.HumanText)
+      enabledSchemas.HumanText = HumanTextSchema;
+    const store = await createGeneralStore(
       StoreData,
       joinPath(getEntityStoreDir(entityId, storeId), `StoreCache`),
       `Store`,
-      { HumanText: HumanTextSchema },
+      enabledSchemas,
     );
+    const newMemoryStore = { store, settings: storeSettings };
     userMemoryStores[storeId] = newMemoryStore;
     return newMemoryStore;
+  }
+  async function writeStoreSettings(
+    entityId: string,
+    storeId: string,
+    settings: StoreSettings,
+  ) {
+    const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
+    const storePath = getEntityStoreDir(entityId, storeId);
+    const settingsPath = joinPath(storePath, "settings.json");
+    await WriteJSON.call({ path: settingsPath, value: settings });
+    if (alreadyInMemoryStore) {
+      // this will re-instansiate the store in memory with new settings
+      getMemoryStore(entityId, storeId, settings);
+      // its a bit unintuitive that getMemoryStore has side effects, sorry.
+    }
   }
 
   function getUserDir(userId: string): string {
@@ -152,7 +193,8 @@ export async function startApp() {
   function getStoreGroup(entityId: string) {
     const Stores = createZGettableGroup(
       async (storeId: string) => {
-        return await getMemoryStore(entityId, storeId);
+        const memStore = await getMemoryStore(entityId, storeId);
+        return memStore.store;
       },
       async (getOptions: ChildrenListOptions) => {
         const userStorePath = joinPath(getUserDir(entityId), "stores");
@@ -204,7 +246,41 @@ export async function startApp() {
         return null;
       },
     );
-    return { Stores, DestroyStore, MoveStore };
+    const StoreSettings = createZGroup(async (storeId) =>
+      createZGettable(StoreSettingsSchema, async () => {
+        const memStore = await getMemoryStore(entityId, storeId);
+        return memStore.settings;
+      }),
+    );
+    const WriteStoreSettings = createZAction(
+      {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          storeId: StringSchema,
+          settings: StoreSettingsSchema,
+        },
+        required: ["storeId", "settings"],
+      } as const,
+      NullSchema,
+      async ({
+        settings,
+        storeId,
+      }: {
+        settings: StoreSettings;
+        storeId: string;
+      }) => {
+        writeStoreSettings(entityId, storeId, settings);
+        return null;
+      },
+    );
+    return {
+      Stores,
+      DestroyStore,
+      MoveStore,
+      StoreSettings,
+      WriteStoreSettings,
+    };
   }
 
   function getStoreCreatorAction(entityId: string) {
@@ -228,7 +304,10 @@ export async function startApp() {
     };
   }
 
-  async function getUserZeds(user, { userId }): Record<string, AnyZed> {
+  async function getUserZeds(
+    user,
+    { userId },
+  ): Promise<Record<string, AnyZed>> {
     const CreateStore = getStoreCreatorAction(userId);
     const StoreGroup = getStoreGroup(userId);
     const CreateOrg = createZAction(
@@ -328,9 +407,9 @@ export async function startApp() {
   const zRoot = createZContainer({
     store: createZGroup(async (userId: string) => {
       return createZGroup(async (storeId: string) => {
-        const store = await getMemoryStore(userId, storeId);
+        const memStore = await getMemoryStore(userId, storeId);
         return createZContainer({
-          state: store.z.State,
+          state: memStore.store.z.State,
         });
       });
     }),

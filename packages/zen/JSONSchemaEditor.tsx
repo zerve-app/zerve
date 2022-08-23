@@ -430,6 +430,7 @@ function getHumanLabelOfSchema(schema: JSONSchema) {
   if (schema.type === "object") return "Object";
   if (schema.type === "number") return "Number";
   if (schema.type === "string") return "Text";
+  if (schema.const !== undefined) return ""; // constant does not need a human label
   return "?";
 }
 
@@ -796,7 +797,8 @@ export function FormField({
   if (!expandedSchema)
     return (
       <ThemedText danger>
-        {label} Failed to expand schema: {JSON.stringify({ schema, value })}
+        Could not find schema for "{label}" property with value:{" "}
+        {JSON.stringify(value)}
       </ThemedText>
     );
   if (isLeafType(expandedSchema.type) || expandedSchema.const != null) {

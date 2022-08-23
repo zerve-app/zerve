@@ -111,8 +111,17 @@ export async function createGeneralStore(
   data: CoreDataModule,
   cacheFilesPath: string,
   docName: string,
-  solidSchemas?: Record<string, JSONSchema>,
+  inputSolidSchemas?: Record<string, JSONSchema>,
 ) {
+  const solidSchemas = Object.fromEntries(
+    Object.entries(inputSolidSchemas || {}).map(([schemaName, schema]) => [
+      schemaName,
+      {
+        ...schema,
+        readOnly: true,
+      },
+    ]),
+  );
   function handleWriteSchemaValue(
     state: FromSchema<typeof StateTreeSchema>,
     action: FromSchema<typeof WriteSchemaValueActionSchema>,

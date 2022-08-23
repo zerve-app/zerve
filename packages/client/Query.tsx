@@ -143,14 +143,16 @@ export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
 export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
   const refSchemas = Object.entries(schemas || {}).map(
     ([schemaName, schema]) => {
+      const $id = `https://type.zerve.link/${schemaName}`;
       return {
+        $id,
         type: "object",
         properties: {
           title: { const: displayStoreFileName(schemaName) },
-          $ref: { const: `https://type.zerve.link/${schemaName}` },
+          $ref: { const: $id },
         },
         additionalProperties: false,
-        required: ["type", "$ref"],
+        required: ["$ref"],
       };
     },
   );

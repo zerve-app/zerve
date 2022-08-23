@@ -12,7 +12,13 @@ import { FeaturePane } from "../web/Dashboard";
 function StoreSchemas({ storePath, title }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);
   const entries = useMemo(() => {
-    return data && Object.keys(data.node?.$schemas);
+    const schemas = data?.node?.$schemas;
+    return (
+      schemas &&
+      Object.keys(schemas).filter((schemaName) => {
+        return !schemas?.[schemaName]?.readOnly;
+      })
+    );
   }, [data]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
