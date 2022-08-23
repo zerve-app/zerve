@@ -1,5 +1,5 @@
 {
-  "extends": "@zerve/tsconfig/expo-app.json",
+  "extends": "tsconfig/expo-app.json",
   "compilerOptions": {
     "strict": true
   }

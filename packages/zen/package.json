@@ -11,7 +11,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/react-native": "^0.69.1",
     "@zerve/config": "*",
-    "@zerve/tsconfig": "*",
+    "tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "peerDependencies": {

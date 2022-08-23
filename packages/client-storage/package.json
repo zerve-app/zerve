@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@zerve/config": "*",
-    "@zerve/tsconfig": "*",
+    "tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "dependencies": {

@@ -20,7 +20,7 @@
     "expo-font": "~10.2.0"
   },
   "devDependencies": {
-    "@zerve/tsconfig": "*"
+    "tsconfig": "*"
   },
   "peerDependencies": {
     "react": "*",

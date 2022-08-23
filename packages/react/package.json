@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/react": "~17.0.21",
     "@zerve/config": "*",
-    "@zerve/tsconfig": "*",
+    "tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "dependencies": {

@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/json-stable-stringify": "^1.0.33",
     "@zerve/config": "*",
-    "@zerve/tsconfig": "*",
+    "tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "dependencies": {

@@ -11,7 +11,7 @@
     "@types/fs-extra": "^9.0.13",
     "@types/ws": "^8.5.3",
     "@zerve/config": "*",
-    "@zerve/tsconfig": "*",
+    "tsconfig": "*",
     "typescript": "^4.7.4"
   },
   "dependencies": {
