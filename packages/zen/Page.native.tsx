@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { ScrollView, View } from "react-native";
+import { Spinner } from "./Spinner";
 import { ThemedText } from "./Themed";
 
 export function PageSection({
@@ -51,8 +52,9 @@ export function DemoPageContainer({
     <ScrollView style={{ flex: 1 }}>
       <View
         style={{
-          marginVertical: 32,
-          alignSelf: "center",
+          marginVertical: 42,
+          marginHorizontal: 16,
+          alignSelf: "stretch",
           borderWidth: 1,
           borderColor: "#ccc",
           borderRadius: 10,
@@ -62,6 +64,12 @@ export function DemoPageContainer({
           paddingBottom: 32,
         }}
       >
+        {error && <ThemedText danger>{error}</ThemedText>}
+        {isLoading && (
+          <View style={{ position: "absolute", top: 20, right: 20 }}>
+            <Spinner />
+          </View>
+        )}
         {children}
       </View>
     </ScrollView>

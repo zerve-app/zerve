@@ -51,7 +51,7 @@ export function DemoPageContainer({
     <PageContainer>
       <View
         style={{
-          alignSelf: "center",
+          alignSelf: "stretch",
           borderWidth: 1,
           borderColor: "#ccc",
           borderRadius: 10,
@@ -60,10 +60,12 @@ export function DemoPageContainer({
           paddingHorizontal: 20,
           paddingTop: 16,
           paddingBottom: 32,
-          width: 700,
+          maxWidth: 700,
+          flexDirection: "row",
         }}
       >
-        {children}
+        {error && <ThemedText danger>{error}</ThemedText>}
+        <View style={{ flex: 1, alignSelf: "stretch" }}>{children}</View>
       </View>
     </PageContainer>
   );
