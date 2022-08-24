@@ -48,6 +48,9 @@ function StoreEntriesSchema({
             releaseDirty();
             showToast("Schema has been updated.");
           }}
+          onCancel={() => {
+            releaseDirty();
+          }}
           schema={fullSchema}
           padded
         />
