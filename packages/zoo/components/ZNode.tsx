@@ -34,6 +34,7 @@ import {
   displayStoreFileName,
   EmptySchemaStore,
   GenericError,
+  getDefaultSchemaValue,
 } from "@zerve/core";
 import { View } from "react-native";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
@@ -425,7 +426,9 @@ export function ZActionNode({
   connection: string;
   path: string[];
 }) {
-  const [actionValue, setActionValue] = useState(null);
+  const [actionValue, setActionValue] = useState(
+    getDefaultSchemaValue(type.payload),
+  );
   const [error, setError] = useState<null | GenericError>(null);
   const conn = useConnection();
 
