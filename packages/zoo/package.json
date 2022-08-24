@@ -12,6 +12,7 @@
     "@zerve/client": "*",
     "@zerve/client-storage": "*",
     "@zerve/core": "*",
+    "react-query": "^3.39.2",
     "@zerve/react": "*",
     "@zerve/zen": "*",
     "expo-linear-gradient": "^11.4.0",
