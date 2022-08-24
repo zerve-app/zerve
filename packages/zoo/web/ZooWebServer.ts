@@ -57,13 +57,17 @@ export async function verifyStoreExists(
 
 async function validateSession(origin: string, session: SavedSession | null) {
   if (!session) return null;
-  const userNode = await serverGet(
-    origin,
-    ".z/Auth/user",
-    undefined,
-    extractSessionAuth(["Auth"], session),
-  );
-  if (userNode && userNode !== UnauthorizedError) return session;
+  try {
+    const userNode = await serverGet(
+      origin,
+      ".z/Auth/user",
+      undefined,
+      extractSessionAuth(["Auth"], session),
+    );
+    if (userNode && userNode !== UnauthorizedError) return session;
+  } catch (e) {
+    return null;
+  }
   return null;
 }
 

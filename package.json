@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "dev": "concurrently \"yarn workspace zoo-server-standalone dev\" \"yarn workspace zoo-web dev\"",
+    "dev": "cross-env Z_ORIGIN=\"http://localhost:9888\" concurrently \"yarn workspace zoo-server-standalone dev\" \"yarn workspace zoo-web dev --port 9000\"",
     "dev:zebra": "concurrently \"yarn workspace zebra-server dev\" \"yarn workspace zebra-web dev\"",
     "dev:aardvark": "cross-env Z_ORIGIN=\"http://localhost:3988\" concurrently \"yarn workspace aardvark-server dev\" \"yarn workspace zoo-web dev\"",
     "dev:server": "concurrently \"yarn workspace zoo-server-standalone dev\"",
