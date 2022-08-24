@@ -16,6 +16,7 @@ import {
   ThemedText,
   Title,
   useAsyncHandler,
+  useTextInputFormModal,
   VSpaced,
   VStack,
 } from "@zerve/zen";
@@ -26,6 +27,7 @@ import { useRouter } from "next/router";
 import {
   useCreateEntry,
   useDeleteEntry,
+  useRenameEntry,
   useSaveEntry,
 } from "@zerve/client/Mutation";
 import {
@@ -113,7 +115,8 @@ function StoreEntriesEntry({
   const schemas = useZStoreSchemas(storePath);
   const entryName = path[0];
   const entry = useZNodeValue([...storePath, "State", path[0]]);
-  const { openEntrySchema, replaceToEntries } = useStoreNavigation(location);
+  const { openEntrySchema, replaceToEntries, replaceToEntry } =
+    useStoreNavigation(location);
   const deleteFile = useDeleteEntry(
     storePath,
     useMemo(
@@ -123,6 +126,20 @@ function StoreEntriesEntry({
       }),
       [entryName],
     ),
+  );
+  const renameEntry = useRenameEntry(storePath);
+  const renameEntryPrompt = useTextInputFormModal<string>(
+    (prevName: string) => {
+      return {
+        inputLabel: "New Entry Name",
+        defaultValue: prevName,
+        onValue: (inputName: string) => {
+          const formattedName = prepareStoreFileName(inputName);
+          replaceToEntry(formattedName);
+          renameEntry.mutate({ prevName: entryName, newName: formattedName });
+        },
+      };
+    },
   );
   const { releaseDirty } = useUnsavedContext();
   return (
@@ -145,6 +162,14 @@ function StoreEntriesEntry({
           icon: "crosshairs",
           onPress: () => {
             openEntrySchema(entryName);
+          },
+        },
+        {
+          key: "RenameEntry",
+          title: "Rename Entry",
+          icon: "edit",
+          onPress: () => {
+            renameEntryPrompt(entryName);
           },
         },
         {
