@@ -1,18 +1,17 @@
-import { useConnection, useRequiredConnection } from "@zerve/client/Connection";
-import { postZAction } from "@zerve/client/ServerCalls";
-import { EmptySchemaStore, prepareStoreFileName } from "@zerve/core";
-import { JSONSchemaForm, showToast, Title, useAsyncHandler } from "@zerve/zen";
-import { memo, useCallback, useMemo } from "react";
-import { FeaturePane, NavLink } from "../web/Dashboard";
-import { useQueryClient } from "react-query";
-import { useRouter } from "next/router";
 import {
-  useCreateEntry,
-  useSaveEntry,
-  useSaveEntrySchema,
-} from "@zerve/client/Mutation";
-import { StoreFeatureProps } from "../context/StoreDashboardContext";
-import { useStoreNavigation } from "../app/useNavigation";
+  JSONSchemaEditorContext,
+  JSONSchemaForm,
+  showToast,
+  Title,
+  useAsyncHandler,
+} from "@zerve/zen";
+import { memo, useMemo } from "react";
+import { FeaturePane } from "../web/Dashboard";
+import { useSaveEntry, useSaveEntrySchema } from "@zerve/client/Mutation";
+import {
+  StoreFeatureProps,
+  useUnsavedContext,
+} from "../context/StoreDashboardContext";
 import {
   connectionSchemasToZSchema,
   useZNodeValue,
@@ -32,6 +31,7 @@ function StoreEntriesSchema({
     return connectionSchemasToZSchema(schemas.data);
   }, [schemas.data]);
   const entry = useZNodeValue([...storePath, "State", path[0]]);
+  const { claimDirty, releaseDirty } = useUnsavedContext();
   return (
     <FeaturePane
       title={title}
@@ -42,8 +42,10 @@ function StoreEntriesSchema({
           id={`entry-schema-${path.join("-")}`}
           saveLabel="Save Schema"
           value={entry.data.schema}
+          onDirty={claimDirty}
           onValue={async (schema) => {
             await saveSchema.mutateAsync({ name: path[0], schema });
+            releaseDirty();
             showToast("Schema has been updated.");
           }}
           schema={fullSchema}
