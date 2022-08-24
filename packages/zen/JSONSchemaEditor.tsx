@@ -141,17 +141,19 @@ export function ObjectEditor({
   }
   const { properties, additionalProperties, propertyTitles, required } = schema;
   const errors: { message: string }[] = [];
-  if (value === undefined) {
+  let valueKeys: string[] = [];
+  if (value == undefined) {
     errors.push({
       message: "Value is empty but should be an object.",
     });
   } else if (typeof value !== "object") {
     errors.push({ message: "Value is not an object " + JSON.stringify(value) });
+  } else {
+    valueKeys = Object.keys(value);
   }
   const propertyKeys = new Set(
     properties == null ? [] : Object.keys(properties),
   );
-  const valueKeys = Object.keys(value);
   const otherKeys = value ? valueKeys.filter((p) => !propertyKeys.has(p)) : [];
   const expandedPropertiesSchema = useMemo(
     () =>
