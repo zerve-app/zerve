@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { ComponentProps, useContext, useMemo } from "react";
 import { useState } from "react";
 import { JSONSchemaEditor } from "./JSONSchemaEditor";
 import {
@@ -17,12 +17,14 @@ import { Form } from "./Form";
 import { VStack } from "./Stack";
 import { Paragraph } from "./Text";
 import { useAsyncHandler } from "./useAsyncHandler";
+import { Icon } from "./Icon";
 
 export function JSONSchemaForm({
   id,
   value,
   schema,
   saveLabel,
+  saveIcon,
   onValue,
   onDirty,
   onCancel,
@@ -34,6 +36,7 @@ export function JSONSchemaForm({
   value?: any;
   schema: any;
   saveLabel?: string;
+  saveIcon?: ComponentProps<typeof Icon>["name"];
   onCancel?: () => void;
   onValue?: (value: any) => Promise<void>;
   onDirty?: () => void;

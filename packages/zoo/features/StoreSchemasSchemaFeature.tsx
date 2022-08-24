@@ -41,6 +41,7 @@ function StoreSchemasSchema({
           <JSONSchemaForm
             id={`file-schema-${schemaName}`}
             saveLabel="Save Schema"
+            saveIcon="check-circle"
             value={schemaQuery.data}
             onValue={async (schemaValue) => {
               await saveSchema.mutateAsync({

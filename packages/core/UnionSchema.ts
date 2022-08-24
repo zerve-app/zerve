@@ -1,5 +1,7 @@
 import { JSONSchema } from "json-schema-to-ts";
 import { JSONSchema7 } from "json-schema-to-ts/lib/definitions";
+import { getDefaultSchemaValue } from "./Schema";
+import { SchemaStore } from "./Validate";
 
 export const AllJSONSchemaTypes = [
   "string",
@@ -24,40 +26,6 @@ function getTypeOf(jsonValue: any): AllJSONSchemaType {
   throw new Error("Cannot get JSON type of: " + jsonValue);
 }
 
-function getDefaultValueOfSchema(schema: JSONSchema) {
-  if (typeof schema !== "object")
-    throw new Error("cannot get default of non-object schema");
-  if (schema.default) return schema.default;
-  if (schema.const !== undefined) return schema.const;
-  if (schema.type === "null") return null;
-  if (schema.type === "string") return "";
-  if (schema.type === "number") return 0;
-  if (schema.type === "integer") return 0;
-  if (schema.type === "boolean") return false;
-  if (schema.type === "array") return []; // fix to handle array schemas such as tuples that require default values?
-  if (schema.type === "object") {
-    const objDefaults = {};
-    if (schema.properties) {
-      Object.entries(schema.properties).forEach(
-        ([propertyName, propertySchema]) => {
-          if (propertySchema.default) {
-            objDefaults[propertyName] = propertySchema.default;
-          }
-        },
-      );
-      schema.required?.forEach((requiredPropertyName) => {
-        const propertySchema = schema.properties[requiredPropertyName];
-        if (propertySchema)
-          objDefaults[requiredPropertyName] =
-            getDefaultValueOfSchema(propertySchema);
-      });
-    }
-    return objDefaults;
-  }
-  if (schema.oneOf) return getDefaultValueOfSchema(schema.oneOf[0]);
-  throw new Error("Cannot determine default value of this schema");
-}
-
 type CalculatedUnionOption = {
   title: string;
   value: string;
@@ -67,6 +35,7 @@ export function exploreUnionSchema(schema: JSONSchema): {
   match: (v: any) => string | null;
   options: CalculatedUnionOption[];
   converters: ((v: any) => any)[];
+  schemaStore?: SchemaStore;
 } {
   if (typeof schema !== "object" || !schema.oneOf)
     throw new Error("Cannot exploreUnionSchema without schema .oneOf");
@@ -184,7 +153,7 @@ export function exploreUnionSchema(schema: JSONSchema): {
     converters: optionSchemas.map((optionSchema, optionSchemaIndex) => {
       return (v: any) => {
         if (!optionSchema) return null;
-        return getDefaultValueOfSchema(optionSchema);
+        return getDefaultSchemaValue(optionSchema, schemaStore);
       };
     }),
     match: (value: any): null | string => {

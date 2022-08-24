@@ -2,6 +2,7 @@
 
 import { SchemaStore } from "./Validate";
 import { isEmptySchema } from "./JSONSchema";
+import { JSONSchema } from "json-schema-to-ts";
 
 // export type ZSchema<S extends JSONSchema> = {
 //   name: string;
@@ -33,10 +34,12 @@ import { isEmptySchema } from "./JSONSchema";
 // }
 
 export function getDefaultSchemaValue(
-  schema: any,
+  schema: JSONSchema,
   schemaStore?: SchemaStore,
 ): any {
   if (isEmptySchema(schema)) return null;
+  if (schema === true) return null;
+  if (schema === false) return null;
   let usableSchema = schema;
   if (schema.$ref) {
     const refSchema = Object.values(schemaStore || {}).find(
@@ -50,6 +53,7 @@ export function getDefaultSchemaValue(
     }
   }
   if (usableSchema.default) return usableSchema.default; // maybe this should be validated? idk.
+  if (usableSchema.const !== undefined) return usableSchema.const;
   if (usableSchema.type === "boolean") return false;
   if (usableSchema.type === "number") return 0;
   if (usableSchema.type === "integer") return 0;
