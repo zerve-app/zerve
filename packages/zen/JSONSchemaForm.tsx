@@ -24,6 +24,7 @@ export function JSONSchemaForm({
   schema,
   saveLabel,
   onValue,
+  onDirty,
   onCancel,
   onSubmit,
   schemaStore,
@@ -35,6 +36,7 @@ export function JSONSchemaForm({
   saveLabel?: string;
   onCancel?: () => void;
   onValue?: (value: any) => Promise<void>;
+  onDirty?: () => void;
   onSubmit?: (value: any) => void | Promise<void>;
   schemaStore?: SchemaStore;
   padded?: boolean;
@@ -81,7 +83,10 @@ export function JSONSchemaForm({
           <JSONSchemaEditor
             id={id}
             value={valueState}
-            onValue={setValueState}
+            onValue={(value) => {
+              setValueState(value);
+              onDirty?.();
+            }}
             schema={schema}
             onSubmitEditing={() => {
               handle(valueState);
@@ -97,10 +102,10 @@ export function JSONSchemaForm({
               }}
             />
           )}
-          {!!onCancel && (
+          {!!onCancel && savedValue !== valueState && (
             <Button
               onPress={() => {
-                setValueState(value);
+                setValueState(savedValue);
                 onCancel?.();
               }}
               small

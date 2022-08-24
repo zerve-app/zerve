@@ -1,4 +1,4 @@
-import { ComponentProps, createContext } from "react";
+import { ComponentProps, createContext, useContext } from "react";
 import { NavLink, NavLinkButton } from "../web/Dashboard";
 import { FragmentContext } from "../web/Fragment";
 
@@ -44,3 +44,18 @@ export function StoreFeatureLinkButton(
 
 export const StoreDashboardContext =
   createContext<null | FragmentContext<StoreNavigationState>>(null);
+
+export type UnsavedEnvironment = {
+  claimDirty: () => void;
+  releaseDirty: () => void;
+};
+export const UnsavedContext = createContext<null | UnsavedEnvironment>(null);
+
+export function useUnsavedContext() {
+  const ctx = useContext(UnsavedContext);
+  if (!ctx)
+    throw new Error(
+      "Must use this feature within an UnsavedContext Environment ",
+    );
+  return ctx;
+}

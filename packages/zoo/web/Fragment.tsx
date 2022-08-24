@@ -3,6 +3,7 @@ import React, {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
 } from "react";
 import { useRouter } from "next/router";
@@ -62,6 +63,11 @@ export function useFragmentNavigate<FragmentState>(
 export function useFragmentNavigationController<FragmentState>(
   stringifyFragment: (feature: FragmentState) => string,
   parseFragment: (fragment: string) => FragmentState | null,
+  onFeature?: (fragment: FragmentState | null, fragmentString: string) => void,
+  onIntercept?: (
+    fragment: FragmentState,
+    navigateFeature: (f: FragmentState) => void,
+  ) => boolean,
 ): readonly [FragmentState | null, string, FragmentContext<FragmentState>] {
   const { push, pathname, query } = useRouter();
   const fragmentString = query._ === undefined ? "" : String(query._);
@@ -69,20 +75,26 @@ export function useFragmentNavigationController<FragmentState>(
     () => parseFragment(fragmentString),
     [parseFragment, fragmentString],
   );
+  function navigateFragment(to: FragmentState) {
+    const shouldAllow = !onIntercept || onIntercept?.(to, navigateFragment);
+    if (!shouldAllow) return;
+    push({
+      pathname,
+      query: { ...query, _: stringifyFragment(to) },
+    });
+  }
   const fragmentContext = useMemo(
     () => ({
       parseFragment,
       stringifyFragment,
-      navigateFragment: (to: FragmentState) => {
-        push({
-          pathname,
-          query: { ...query, _: stringifyFragment(to) },
-        });
-      },
+      navigateFragment,
       fragment,
       fragmentString,
     }),
     [parseFragment, fragment, stringifyFragment],
   );
+  useEffect(() => {
+    onFeature?.(fragment, fragmentString);
+  }, [fragment, fragmentString]);
   return [fragment, fragmentString, fragmentContext] as const;
 }

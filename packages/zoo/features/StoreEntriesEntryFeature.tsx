@@ -31,6 +31,7 @@ import {
 import {
   StoreFeatureLinkButton,
   StoreFeatureProps,
+  useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
 import { useZNodeValue, useZStoreSchemas } from "@zerve/client/Query";
@@ -83,12 +84,16 @@ function EntryContent({
       },
     };
   }, []);
-
+  const { claimDirty, releaseDirty } = useUnsavedContext();
   return (
     <JSONSchemaEditorContext.Provider value={editorContext}>
       <JSONSchemaForm
         id={`entry-${path.join("-")}`}
         onValue={onValue}
+        onDirty={claimDirty}
+        onCancel={() => {
+          releaseDirty();
+        }}
         value={value}
         schema={schema}
         schemaStore={schemaStore}
@@ -119,6 +124,7 @@ function StoreEntriesEntry({
       [entryName],
     ),
   );
+  const { releaseDirty } = useUnsavedContext();
   return (
     <FeaturePane
       title={title}
@@ -156,7 +162,8 @@ function StoreEntriesEntry({
         <EntryContent
           path={path}
           onValue={async (value) => {
-            saveEntry.mutate({ name: path[0], value });
+            await saveEntry.mutateAsync({ name: path[0], value });
+            releaseDirty();
           }}
           value={entry.data.value}
           schema={entry.data.schema}

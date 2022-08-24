@@ -271,6 +271,8 @@ export function DashboardPage<Feature>({
   header,
   renderFeature,
   navigation,
+  onIntercept,
+  onFeature,
   getFeatureTitle,
   getFeatureIcon,
   getParentFeatures,
@@ -290,6 +292,11 @@ export function DashboardPage<Feature>({
     icon: ComponentProps<typeof FontAwesome>["name"] | null;
   }) => ReactNode;
   navigation: Array<Feature>;
+  onIntercept?: (
+    feature: Feature,
+    navigateFeature: (feature: Feature) => void,
+  ) => boolean;
+  onFeature?: (feature: Feature | null, fragmentString: string) => void;
   getFeatureTitle: (feature: Feature) => string;
   navigationFooter?: ReactNode;
   getFeatureIcon: (
@@ -304,6 +311,8 @@ export function DashboardPage<Feature>({
     useFragmentNavigationController<Feature>(
       stringifyFeatureFragment,
       parseFeatureFragment,
+      onFeature,
+      onIntercept,
     );
   const parentFeatures = useMemo(
     () => (getParentFeatures && feature ? getParentFeatures(feature) : []),
