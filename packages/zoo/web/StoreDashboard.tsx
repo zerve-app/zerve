@@ -49,7 +49,6 @@ export function StoreDashboard({
   const unsavedEnvironment = useMemo(() => {
     return {
       releaseDirty: () => {
-        window.onbeforeunload = null;
         dirtyRef.current = false;
       },
       claimDirty: () => {
