@@ -8,7 +8,7 @@ const packageJsons = packageDirNames.map((pkgName) => {
     return JSON.parse(
       readFileSync(`../../packages/${pkgName}/package.json`, {
         encoding: "utf-8",
-      })
+      }),
     );
   } catch (e) {
     return null;
@@ -57,6 +57,8 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  // disable later.
+  productionBrowserSourceMaps: true,
 };
 
 const { withExpo } = require("@expo/next-adapter");
@@ -68,5 +70,5 @@ const withTM = require("next-transpile-modules")([
 
 module.exports = withPlugins(
   [withTM, [withExpo, { projectRoot: __dirname }]],
-  nextConfig
+  nextConfig,
 );
