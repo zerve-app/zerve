@@ -1,5 +1,6 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
 import { exploreUnionSchema } from "./UnionSchema";
+import { SchemaStore } from "./Validate";
 
 function expandEnumSchema(s) {
   if (!s.enum) return s;
@@ -14,11 +15,15 @@ function expandEnumSchema(s) {
 export function JSONSchemaPluck<Schema extends JSONSchema>(
   schema: Schema,
   value: any,
+  schemaStore: SchemaStore,
 ): FromSchema<Schema> {
   const schema1 = expandEnumSchema(schema);
 
   if (schema1.oneOf) {
-    const { options, converters, match } = exploreUnionSchema(schema1);
+    const { options, converters, match } = exploreUnionSchema(
+      schema1,
+      schemaStore,
+    );
     const matched = match(value);
     if (!matched) return schema1["default"];
   }

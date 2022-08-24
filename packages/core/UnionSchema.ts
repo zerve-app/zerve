@@ -31,11 +31,13 @@ type CalculatedUnionOption = {
   value: string;
 };
 
-export function exploreUnionSchema(schema: JSONSchema): {
+export function exploreUnionSchema(
+  schema: JSONSchema,
+  schemaStore: SchemaStore,
+): {
   match: (v: any) => string | null;
   options: CalculatedUnionOption[];
   converters: ((v: any) => any)[];
-  schemaStore?: SchemaStore;
 } {
   if (typeof schema !== "object" || !schema.oneOf)
     throw new Error("Cannot exploreUnionSchema without schema .oneOf");

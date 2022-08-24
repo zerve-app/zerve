@@ -5,6 +5,7 @@ import {
   EmptySchemaStore,
   NullSchema,
   isEmptySchema,
+  SchemaStore,
 } from "@zerve/core";
 import { useState } from "react";
 import { View } from "react-native";
@@ -23,6 +24,7 @@ export function Dialog<Schema extends JSONSchema>({
   confirmLabel,
   message,
   formSchema,
+  formSchemaStore,
   onConfirm,
   danger,
   onClose,
@@ -32,6 +34,7 @@ export function Dialog<Schema extends JSONSchema>({
   closeLabel?: string;
   confirmLabel?: string;
   formSchema?: Schema;
+  formSchemaStore?: SchemaStore;
   message?: string;
   danger?: boolean;
   onConfirm: (value: FromSchema<Schema>) => Promise<void>;
@@ -41,7 +44,7 @@ export function Dialog<Schema extends JSONSchema>({
     string
   >(onConfirm);
   const [state, setState] = useState<FromSchema<Schema>>(
-    getDefaultSchemaValue(formSchema),
+    getDefaultSchemaValue(formSchema || false, formSchemaStore),
   );
   return (
     <VStack padded>

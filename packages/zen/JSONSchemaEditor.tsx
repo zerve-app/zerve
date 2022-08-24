@@ -188,7 +188,10 @@ export function ObjectEditor({
             "Can not identify the schema of the property you are adding.",
           );
         if (propertyEditKey === null) {
-          const defaultValue = getDefaultSchemaValue(propertySchema);
+          const defaultValue = getDefaultSchemaValue(
+            propertySchema,
+            schemaStore,
+          );
           const importedValue = importValue(defaultValue, propertySchema);
           onValue({
             ...(value || {}),
@@ -234,7 +237,14 @@ export function ObjectEditor({
                   onPress={() => {
                     const propertySchema =
                       expandedPropertiesSchema[propertyName];
-                    const defaultValue = getDefaultSchemaValue(propertySchema);
+                    if (!propertySchema)
+                      throw new Error(
+                        `Can not find valid schema for "${propertyName}" property`,
+                      );
+                    const defaultValue = getDefaultSchemaValue(
+                      propertySchema,
+                      schemaStore,
+                    );
                     const importedValue = importValue(
                       defaultValue,
                       propertySchema,
@@ -361,21 +371,22 @@ export function ArrayEditor({
     [schema.items],
   );
   const importValue = useValueImporter(schemaStore);
-  const addButton = (
+  const addButton = onValue ? (
     <AddButton
       label="Add Item"
       onPress={() => {
-        onValue &&
-          onValue([
-            ...(value || []),
-            importValue(
-              getDefaultSchemaValue(expandedItemsSchema),
-              expandedItemsSchema,
-            ),
-          ]);
+        if (!expandedItemsSchema)
+          throw new Error("Cannot determine schema for list item");
+        onValue([
+          ...(value || []),
+          importValue(
+            getDefaultSchemaValue(expandedItemsSchema, schemaStore),
+            expandedItemsSchema,
+          ),
+        ]);
       }}
     />
-  );
+  ) : null;
   if (!Array.isArray(value))
     return (
       <>
@@ -387,6 +398,19 @@ export function ArrayEditor({
     <VStack>
       {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
       {value.map((childValue, childValueIndex) => {
+        const actions: ActionButtonDef[] = [];
+        if (onValue) {
+          actions.push({
+            key: "Delete",
+            title: "Delete",
+            icon: "trash",
+            onPress: () => {
+              const newValue = [...value];
+              newValue.splice(childValueIndex, 1);
+              onValue(newValue);
+            },
+          });
+        }
         return (
           <FormField
             id={`${id}_${childValueIndex}`}
@@ -394,18 +418,7 @@ export function ArrayEditor({
             value={childValue}
             schema={expandedItemsSchema}
             schemaStore={schemaStore}
-            actions={[
-              {
-                key: "Delete",
-                title: "Delete",
-                icon: "trash",
-                onPress: () => {
-                  const newValue = [...value];
-                  newValue.splice(childValueIndex, 1);
-                  onValue(newValue);
-                },
-              },
-            ]}
+            actions={actions}
             onValue={
               onValue
                 ? (childV) => {
@@ -887,6 +900,7 @@ export function LeafField({
   value,
   onValue,
   schema,
+  schemaStore,
   actions,
   onSubmitEditing,
   id,
@@ -897,6 +911,7 @@ export function LeafField({
   id: string;
   onValue?: (v: any) => void;
   schema: LeafSchema;
+  schemaStore: SchemaStore;
   actions?: ActionButtonDef[];
   onSubmitEditing?: () => void;
 }) {
@@ -934,7 +949,11 @@ export function LeafField({
     );
   }
   if (schema.type === "string") {
-    const autoCapitalize = JSONSchemaPluck(CapitalizeSchema, schema.capitalize);
+    const autoCapitalize = JSONSchemaPluck(
+      CapitalizeSchema,
+      schema.capitalize,
+      schemaStore,
+    );
     return (
       <>
         <FieldHeader
@@ -1152,6 +1171,7 @@ export function JSONSchemaEditor({
         value={value}
         onValue={onValue}
         schema={expandedSchema}
+        schemaStore={schemaStore}
         onSubmitEditing={onSubmitEditing}
       />
     );
