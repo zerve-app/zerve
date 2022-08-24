@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import { useActionsSheet, VStack } from "@zerve/zen";
+import { JSONSchemaForm, useActionsSheet, VStack } from "@zerve/zen";
 import ScreenHeader from "../components/ScreenHeader";
 import { useDeleteSchema, useSaveSchema } from "@zerve/client/Mutation";
 import { useZNodeValue, useZStoreJSONSchema } from "@zerve/client/Query";
@@ -9,7 +9,6 @@ import {
   useStoreSchemaNavigation,
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { displayStoreFileName } from "@zerve/core";
 import { showToast } from "@zerve/zen/Toast";
 

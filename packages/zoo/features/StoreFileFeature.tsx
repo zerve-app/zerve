@@ -13,9 +13,8 @@ import {
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
 import { showToast } from "@zerve/zen/Toast";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
-import { useActionsSheet } from "@zerve/zen";
+import { JSONSchemaForm, useActionsSheet } from "@zerve/zen";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 
 export function FileFeature({

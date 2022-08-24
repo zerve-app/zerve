@@ -7,7 +7,6 @@ import {
 } from "@zerve/client/Query";
 import { useNavigation } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
-import { JSONSchemaForm } from "../components/JSONSchemaForm";
 import { displayStoreFileName } from "@zerve/core";
 import { showToast } from "@zerve/zen/Toast";
 import { useMemo } from "react";
@@ -15,7 +14,7 @@ import {
   useGlobalNavigation,
   useStoreFileNavigation,
 } from "../app/useNavigation";
-import { useActionsSheet } from "@zerve/zen";
+import { JSONSchemaForm, useActionsSheet } from "@zerve/zen";
 
 export function StoreFileSchemaFeature({
   name,
