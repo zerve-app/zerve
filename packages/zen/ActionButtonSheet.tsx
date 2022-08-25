@@ -5,6 +5,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ActionButtonDef } from "./ActionButton";
 import { smallShadow } from "./Style";
 import { useAllColors, useColors } from "./useColors";
+import { Icon } from "./Icon";
 
 function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
   const colors = useAllColors();
@@ -21,6 +22,7 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
   const activeBackground = action.danger
     ? colors.active.dangerText
     : colors.active.tint;
+  const textColor = isFocused ? colors.inverted.text : color;
   return (
     <Pressable onPress={handlePress} onLongPress={handleLongPress}>
       <DropdownMenu.Item
@@ -38,11 +40,15 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
           paddingRight: 10,
           cursor: "pointer",
           backgroundColor: isFocused ? activeBackground : "transparent",
+          alignItems: "center",
+          display: "flex",
         }}
       >
+        {action.icon && <Icon name={action.icon} color={textColor} size={16} />}
         <Text
           style={{
-            color: isFocused ? colors.inverted.text : color,
+            color: textColor,
+            marginLeft: action.icon ? 10 : 0,
           }}
         >
           {action.title}

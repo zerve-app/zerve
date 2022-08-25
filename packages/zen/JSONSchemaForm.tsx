@@ -39,7 +39,7 @@ export function JSONSchemaForm({
   saveIcon?: ComponentProps<typeof Icon>["name"];
   onCancel?: () => void;
   onValue?: (value: any) => Promise<void>;
-  onDirty?: () => void;
+  onDirty?: (internalValue: any) => void;
   onSubmit?: (value: any) => void | Promise<void>;
   schemaStore?: SchemaStore;
   padded?: boolean;
@@ -88,7 +88,7 @@ export function JSONSchemaForm({
             value={valueState}
             onValue={(value) => {
               setValueState(value);
-              onDirty?.();
+              onDirty?.(value);
             }}
             schema={schema}
             onSubmitEditing={() => {

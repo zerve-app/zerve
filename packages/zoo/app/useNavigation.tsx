@@ -109,30 +109,46 @@ export function useStoreNavigation(location: string[]) {
     throw new Error("Cannot navigate with this connection yet");
   return useMemo(
     () => ({
-      openEntry: (entryName: string) => {
-        push(`/${location.join("/")}/$entries/${entryName}`);
+      openEntry: (entryName: string, path?: string[]) => {
+        push(
+          `/${location.join("/")}?_=entries-${entryName}${
+            path?.length ? `-${path.join("-")}` : ""
+          }`,
+        );
       },
       openNewEntry: () => {
-        push(`/${location.join("/")}/$new`);
+        push(`/${location.join("/")}?_=entries--create`);
       },
-      openSchema: (schema: string) => {
-        push(`/${location.join("/")}/$schemas/${schema}`);
+      openSchema: (schema: string, path?: string[]) => {
+        push(
+          `/${location.join("/")}?_=schemas-${schema}${
+            path?.length ? `-${path.join("-")}` : ""
+          }`,
+        );
       },
       openSchemas: () => {
-        push(`/${location.join("/")}/$schemas`);
+        push(`/${location.join("/")}?_=schemas`);
       },
       openHistory: () => {},
-      replaceToEntry: (entryName: string) => {
-        replace(`/${location.join("/")}?_=entries-${entryName}`);
+      replaceToEntry: (entryName: string, path?: string[]) => {
+        replace(
+          `/${location.join("/")}?_=entries-${entryName}${
+            path?.length ? `-${path.join("-")}` : ""
+          }`,
+        );
       },
-      openEntrySchema: (entryName: string) => {
-        push(`/${location.join("/")}?_=entries-${entryName}_schema`);
+      openEntrySchema: (entryName: string, path?: string[]) => {
+        push(
+          `/${location.join("/")}?_=entries-${entryName}--schema${
+            path?.length ? `-${path.join("-")}` : ""
+          }`,
+        );
       },
       replaceToEntries: () => {
         replace(`/${location.join("/")}?_=entries`);
       },
       replaceToEntrySchema: (entryName: string) => {
-        replace(`/${location.join("/")}?_=entries-${entryName}_schema`);
+        replace(`/${location.join("/")}?_=entries-${entryName}--schema`);
       },
       replaceToSchema: (schemaName: string) => {
         replace(`/${location.join("/")}?_=schemas-${schemaName}`);

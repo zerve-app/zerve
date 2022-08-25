@@ -1,7 +1,7 @@
 import { JSONSchema } from "json-schema-to-ts";
 import { JSONSchema7 } from "json-schema-to-ts/lib/definitions";
 import { getDefaultSchemaValue } from "./Schema";
-import { SchemaStore } from "./Validate";
+import { EmptySchemaStore, SchemaStore } from "./Validate";
 
 export const AllJSONSchemaTypes = [
   "string",
@@ -183,15 +183,169 @@ export function exploreUnionSchema(
             walkingKeyMap[theValue] == null
               ? walkingKeyMap["undefined"]
               : walkingKeyMap[theValue];
-
+          if (nextWalk === undefined) debugger;
           walkingKeyMap = nextWalk;
         });
         if (typeof walkingKeyMap === "number") {
           return String(walkingKeyMap);
         }
+        debugger;
         throw new Error("const key map contains unexpected value");
       }
       return null;
     },
   };
+}
+
+export function lookUpValue(value: any, child: string) {
+  if (value == null)
+    throw new Error(`Can not look up "${child}" within empty value.`);
+  if (Array.isArray(value)) return value[Number(child)];
+  if (typeof value === "object") return value[child];
+  throw new Error(
+    `Can not look up "${child}" within ${JSON.stringify(value)}.`,
+  );
+}
+
+export function drillSchemaValue(
+  inputSchema: JSONSchema,
+  inputValue: unknown,
+  path: string[],
+) {
+  let schema = inputSchema;
+  let value = inputValue;
+  path.forEach((pathTerm) => {
+    if (value == null) return;
+    if (schema === true) {
+      value = lookUpValue(value, pathTerm);
+      return;
+    }
+    if (schema === false)
+      throw new Error(`Can not look up "${pathTerm}" within empty schema`);
+    if (schema.oneOf) {
+      const { match } = exploreUnionSchema(schema, EmptySchemaStore);
+      const matched = match(value);
+      if (!matched) {
+        throw new Error(
+          "Can not drill into unmatched schema, yet. Maybe possible to construct oneOf schema if all options have similar properties",
+        );
+      }
+      schema = schema.oneOf[Number(matched)];
+    }
+    if (schema.type === "array") {
+      value = lookUpValue(value, pathTerm);
+      schema = schema.items;
+    } else if (schema.type === "object") {
+      value = lookUpValue(value, pathTerm);
+      schema =
+        schema.properties?.[pathTerm] || schema.additionalProperties || false;
+    } else {
+      throw new Error(`Can not look up "${pathTerm}" in schema`);
+    }
+  });
+  return { schema, value };
+}
+
+export function expandSchema(
+  schema: JSONSchema,
+  schemaStore: SchemaStore,
+): JSONSchema {
+  if (schema === false) return false;
+  let schemaObj = schema;
+  if (schemaObj === true) schemaObj = {};
+  if (schemaObj.$ref) {
+    const refSchema = Object.values(schemaStore || {}).find(
+      (s) => s.$id === schemaObj.$ref,
+    );
+    if (refSchema) {
+      schemaObj = refSchema;
+    } else {
+      console.log("Warning: Schema Ref not found! ", schema.$ref);
+    }
+  }
+  const { type } = schemaObj;
+  if (
+    schemaObj.oneOf !== undefined ||
+    schemaObj.anyOf !== undefined ||
+    schemaObj.allOf !== undefined ||
+    schemaObj.not !== undefined ||
+    schemaObj.const !== undefined ||
+    schemaObj.enum !== undefined
+  ) {
+    // composed schemas cannot really be expanded, they kind of already are. theoretically we should do some "factoring" here. eg: if we have a union of two strings we can factor out type: string to the top level.
+    // also, "allOf" can be collapsed, and "not" can be pre-evaluated
+    return schemaObj;
+  }
+  if (type == null) {
+    // any!
+    return {
+      oneOf: allTypesList.map((subType) => ({ type: subType })),
+    };
+  }
+  if (Array.isArray(type)) {
+    if (schema.oneOf) {
+      throw new Error("Cannot expand a schema that has types array and oneOf.");
+    }
+    return {
+      oneOf: type.map((subType) => extractTypeSchema(subType, schemaObj)),
+    };
+  }
+
+  return schemaObj;
+}
+
+export const allTypesList = [
+  "null",
+  "boolean",
+  "number",
+  "string",
+  // "integer", // LOL because we can't infer the difference between this and a number
+  "array",
+  "object",
+] as const;
+
+export function isLeafType(v: string) {
+  return (
+    v === "null" ||
+    v === "string" ||
+    v === "number" ||
+    v === "boolean" ||
+    v === "integer"
+  );
+}
+
+export function extractTypeSchema(type, schemaObj) {
+  const subType = { type };
+  if (type === "string") {
+    subType.minLength = schemaObj.minLength;
+    subType.maxLength = schemaObj.maxLength;
+    subType.pattern = schemaObj.pattern;
+    subType.format = schemaObj.format;
+  } else if (type === "object") {
+    subType.required = schemaObj.required;
+    subType.properties = schemaObj.properties;
+    subType.patternProperties = schemaObj.properties;
+    subType.additionalProperties = schemaObj.additionalProperties;
+    subType.unevaluatedProperties = schemaObj.unevaluatedProperties;
+    subType.propertyNames = schemaObj.propertyNames;
+    subType.minProperties = schemaObj.minProperties;
+    subType.maxProperties = schemaObj.maxProperties;
+  } else if (type === "array") {
+    subType.items = schemaObj.items;
+    subType.prefixItems = schemaObj.prefixItems;
+    subType.contains = schemaObj.contains;
+    subType.minContains = schemaObj.minContains;
+    subType.maxContains = schemaObj.maxContains;
+    subType.uniqueItems = schemaObj.uniqueItems;
+    subType.minItems = schemaObj.minItems;
+    subType.maxItems = schemaObj.maxItems;
+  } else if (type === "integer" || type === "number") {
+    subType.minimum = schemaObj.minimum;
+    subType.exclusiveMinimum = schemaObj.exclusiveMinimum;
+    subType.maximum = schemaObj.maximum;
+    subType.exclusiveMaximum = schemaObj.exclusiveMaximum;
+    subType.multipleOf = schemaObj.multipleOf;
+  }
+
+  return subType;
 }

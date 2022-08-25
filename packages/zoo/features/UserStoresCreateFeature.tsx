@@ -1,6 +1,6 @@
 import { useConnection, useRequiredConnection } from "@zerve/client/Connection";
 import { postZAction } from "@zerve/client/ServerCalls";
-import { EmptySchemaStore } from "@zerve/core";
+import { EmptySchemaStore, IDSchema } from "@zerve/core";
 import { JSONSchemaForm, Title, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { UserFeatureProps } from "../context/UserDashboardContext";
@@ -9,7 +9,7 @@ import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
 
 const StoreNameSchema = {
-  type: "string",
+  ...IDSchema,
   title: "Store Name",
 } as const;
 

@@ -1,5 +1,4 @@
 import {
-  createZContainer,
   FromSchema,
   createZAction,
   SchemaStore,
@@ -7,6 +6,7 @@ import {
   createZMetaContainer,
   EmptySchemaStore,
   JSONSchema,
+  EntryNameSchema,
 } from "@zerve/core";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
@@ -37,7 +37,7 @@ const StateTreeSchema = {
 const WriteValueActionSchema = {
   type: "object",
   properties: {
-    name: { type: "string", minLength: 1 },
+    name: EntryNameSchema,
     value: {},
   },
   additionalProperties: false,
@@ -47,8 +47,8 @@ const WriteValueActionSchema = {
 const RenameValueActionSchema = {
   type: "object",
   properties: {
-    prevName: { type: "string", minLength: 1 },
-    newName: { type: "string", minLength: 1 },
+    prevName: EntryNameSchema,
+    newName: EntryNameSchema,
   },
   additionalProperties: false,
   required: ["prevName", "newName"],
@@ -57,7 +57,7 @@ const RenameValueActionSchema = {
 const DeleteActionSchema = {
   type: "object",
   properties: {
-    name: { type: "string" },
+    name: EntryNameSchema,
   },
   additionalProperties: false,
   required: ["name"],
@@ -66,7 +66,7 @@ const DeleteActionSchema = {
 const WriteSchemaValueActionSchema = {
   type: "object",
   properties: {
-    name: { type: "string", minLength: 1 },
+    name: EntryNameSchema,
     schema: {},
     value: {},
   },
@@ -77,7 +77,7 @@ const WriteSchemaValueActionSchema = {
 const WriteSchemaActionSchema = {
   type: "object",
   properties: {
-    schemaName: { type: "string", minLength: 1 },
+    schemaName: EntryNameSchema,
     schema: {},
   },
   additionalProperties: false,
@@ -87,7 +87,7 @@ const WriteSchemaActionSchema = {
 const DeleteSchemaActionSchema = {
   type: "object",
   properties: {
-    schemaName: { type: "string", minLength: 1 },
+    schemaName: EntryNameSchema,
   },
   additionalProperties: false,
   required: ["schemaName"],

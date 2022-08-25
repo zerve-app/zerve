@@ -1,5 +1,5 @@
 import { displayStoreFileName } from "@zerve/core";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   StoreDashboardContext,
   StoreNavigationState,
@@ -46,16 +46,22 @@ export function StoreDashboard({
       />
     ),
   );
-  const unsavedEnvironment = useMemo(() => {
+  const dirtyValues = useMemo(() => new Map<string, any>(), []);
+  const [dirtyIds, setDirtyIds] = useState(new Set<string>());
+  const unsavedCtx = useMemo(() => {
     return {
       releaseDirty: () => {
         dirtyRef.current = false;
       },
-      claimDirty: () => {
+      claimDirty: (id: string, path: string[], value: any) => {
         dirtyRef.current = true;
       },
+      getDirtyValue: (id: string) => {
+        return dirtyValues.get(id);
+      },
+      dirtyIds,
     };
-  }, []);
+  }, [dirtyIds]);
   useEffect(() => {
     window.onbeforeunload = (e) => {
       if (dirtyRef.current) {
@@ -95,7 +101,7 @@ export function StoreDashboard({
     };
   }, []);
   return (
-    <UnsavedContext.Provider value={unsavedEnvironment}>
+    <UnsavedContext.Provider value={unsavedCtx}>
       <NavigateInterceptContext.Provider value={navigateInterrupt}>
         <DashboardPage<StoreNavigationState>
           Context={StoreDashboardContext}
@@ -137,12 +143,19 @@ export function StoreDashboard({
             }
             if (feature.key === "entries") {
               if (feature.child === "create") return "Create Entry";
-              if (feature.path?.length) {
-                const nodeName = feature.path.at(-1) as string;
+              if (feature.entryName) {
                 if (feature.child === "schema") {
-                  return `Schema: ${displayStoreFileName(nodeName)}`;
+                  let name = feature.entryName;
+                  if (feature.path?.length) {
+                    name = feature.path.at(-1) as string;
+                  }
+                  return `Schema: ${displayStoreFileName(name)}`;
                 }
-                return displayStoreFileName(nodeName);
+                if (feature.path?.length) {
+                  const nodeName = feature.path.at(-1) as string;
+                  return displayStoreFileName(nodeName);
+                }
+                return displayStoreFileName(feature.entryName);
               }
               return "Entries";
             }
@@ -159,7 +172,7 @@ export function StoreDashboard({
             if (feature.key === "entries") {
               if (feature.child === "create") return "plus-circle";
               if (feature.child === "schema") return "crosshairs";
-              if (feature.path?.length) return "file";
+              if (feature.entryName) return "file";
               return "folder-open";
             }
             if (feature.key === "schemas") {
@@ -185,19 +198,25 @@ export function StoreDashboard({
               if (feature.child === "create") {
                 return <StoreEntriesCreateFeature {...storeFeatureProps} />;
               }
-              if (feature.path?.length) {
-                if (feature.child === "schema") {
-                  return (
-                    <StoreEntriesSchemaFeature
-                      {...storeFeatureProps}
-                      path={feature.path}
-                    />
+              if (feature.child === "schema") {
+                if (!feature.entryName)
+                  throw new Error(
+                    "Cannot display feature for entry without name",
                   );
-                }
+                return (
+                  <StoreEntriesSchemaFeature
+                    {...storeFeatureProps}
+                    entryName={feature.entryName}
+                    path={feature.path || []}
+                  />
+                );
+              }
+              if (feature.entryName) {
                 return (
                   <StoreEntriesEntryFeature
                     {...storeFeatureProps}
-                    path={feature.path}
+                    entryName={feature.entryName}
+                    path={feature.path || []}
                   />
                 );
               }
@@ -228,23 +247,25 @@ export function StoreDashboard({
                 .split("entries")
                 .slice(1)
                 .join("entries");
-
-              if (restFragment === "_create") {
+              if (restFragment === "--create") {
                 return { key: "entries", child: "create" };
               }
-              if (restFragment.endsWith("_schema")) {
-                const pathFragment = restFragment.slice(0, -7);
-                const entryPath = pathFragment
-                  .slice(1)
-                  .split("-")
-                  .filter((s) => s !== "");
-                return { key: "entries", path: entryPath, child: "schema" };
+              if (restFragment === "") {
+                return { key: "entries" };
               }
-              const entryPath = restFragment
-                .slice(1)
-                .split("-")
-                .filter((s) => s !== "");
-              return { key: "entries", path: entryPath };
+              const schemasPath = restFragment.split("--schema");
+              if (schemasPath.length >= 2) {
+                const entryNameRestPath = schemasPath[0].split("-");
+                const entryName = entryNameRestPath[1];
+                const schemasRestPath = schemasPath[1].split("-");
+                const path = schemasRestPath.slice(1);
+                return { key: "entries", entryName, child: "schema", path };
+              } else {
+                const restPath = restFragment.split("-");
+                const entryName = restPath[1];
+                const path = restPath.slice(2);
+                return { key: "entries", entryName, path };
+              }
             }
             if (fragment.startsWith("schemas")) {
               if (fragment.endsWith("_create"))
@@ -271,15 +292,18 @@ export function StoreDashboard({
           }}
           stringifyFeatureFragment={(feature: StoreNavigationState) => {
             if (feature.key === "entries") {
-              if (feature.child === "create") return "entries_create";
+              if (feature.child === "create") return "entries--create";
               let fragment = "entries";
+              if (feature.entryName) {
+                fragment += `-${feature.entryName}`;
+              }
+              if (feature.child === "schema") {
+                fragment += "--schema";
+              }
               if (feature.path)
                 feature.path.forEach(
                   (entryPathTerm) => (fragment += `-${entryPathTerm}`),
                 );
-              if (feature.child === "schema") {
-                fragment += "_schema";
-              }
               return fragment;
             }
             if (feature.key === "schemas") {
@@ -294,23 +318,27 @@ export function StoreDashboard({
             return "";
           }}
           getParentFeatures={(feature) => {
-            if (feature.key === "entries" && feature.path?.length) {
-              const pathContext =
-                feature.child === "schema"
-                  ? feature.path
-                  : feature.path.slice(0, -1);
-              return [
-                { key: "entries" },
-                ...pathContext.map((path, index) => {
-                  return {
+            if (feature.key === "entries") {
+              const { entryName, path, child } = feature;
+              const parents: StoreNavigationState[] = [];
+              if (child === "create") {
+                return [{ key: "entries" }];
+              }
+              if (entryName) {
+                parents.push({ key: "entries" });
+                if (child === "schema") {
+                  parents.push({ key: "entries", entryName });
+                }
+                path?.forEach((_pathKey, index) => {
+                  parents.push({
                     key: "entries",
-                    path: feature.path?.slice(0, index + 1) as string[],
-                  } as const;
-                }),
-              ];
-            }
-            if (feature.key === "entries" && feature.child) {
-              return [{ key: "entries" }];
+                    child,
+                    entryName,
+                    path: path?.slice(0, index) as string[],
+                  });
+                });
+              }
+              return parents;
             }
             if (
               feature.key === "schemas" &&

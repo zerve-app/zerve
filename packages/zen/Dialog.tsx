@@ -6,6 +6,7 @@ import {
   NullSchema,
   isEmptySchema,
   SchemaStore,
+  GenericError,
 } from "@zerve/core";
 import { useState } from "react";
 import { View } from "react-native";
@@ -41,7 +42,7 @@ export function Dialog<Schema extends JSONSchema>({
 }) {
   const { handle, isLoading, error } = useAsyncHandler<
     FromSchema<Schema>,
-    string
+    GenericError
   >(onConfirm);
   const [state, setState] = useState<FromSchema<Schema>>(
     getDefaultSchemaValue(formSchema || false, formSchemaStore),
@@ -60,7 +61,7 @@ export function Dialog<Schema extends JSONSchema>({
         </View>
       )}
       <Title title={title} danger={danger} />
-      {error && <ThemedText>{error}</ThemedText>}
+      {error && <ThemedText danger>{error?.message}</ThemedText>}
       {message && <ThemedText danger={danger}>{message}</ThemedText>}
       {isEmptySchema(formSchema) ? null : (
         <JSONSchemaEditor

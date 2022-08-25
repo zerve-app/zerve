@@ -3,7 +3,10 @@ import { postZAction } from "@zerve/client/ServerCalls";
 import {
   AllJSONSchemaType,
   displayStoreFileName,
+  drillSchemaValue,
   EmptySchemaStore,
+  expandSchema,
+  JSONSchema,
   prepareStoreFileName,
   SchemaStore,
 } from "@zerve/core";
@@ -36,7 +39,11 @@ import {
   useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
-import { useZNodeValue, useZStoreSchemas } from "@zerve/client/Query";
+import {
+  connectionSchemasToZSchema,
+  useZNodeValue,
+  useZStoreSchemas,
+} from "@zerve/client/Query";
 
 const EntryNameSchema = {
   type: "string",
@@ -45,18 +52,42 @@ const EntryNameSchema = {
 
 function EntryContent({
   value,
+  entryName,
+  location,
   schema,
   schemaStore,
   path,
   onValue,
 }: {
   value: any;
-  schema: AllJSONSchemaType;
+  entryName: string;
+  location: string[];
+  schema: JSONSchema;
   schemaStore: SchemaStore;
   onValue: (v: any) => Promise<void>;
   path: Array<string>;
 }) {
-  if (schema.type === "null")
+  const fullSchema = useMemo(() => {
+    return connectionSchemasToZSchema(schemaStore);
+  }, [schemaStore]);
+  const { openEntry } = useStoreNavigation(location);
+  const editorContext = useMemo(() => {
+    return {
+      OverrideFieldComponents: {
+        "https://type.zerve.link/HumanText": HumanTextInput,
+      },
+      openChildEditor: (key: string) => {
+        openEntry(entryName, [...path, key]);
+      },
+    };
+  }, []);
+  const { schema: displaySchema, value: displayValue } = useMemo(() => {
+    const fullSchema = expandSchema(schema, schemaStore);
+    return drillSchemaValue(fullSchema, value, path);
+  }, [schema, value, path, schemaStore]);
+  const { claimDirty, releaseDirty } = useUnsavedContext();
+
+  if (typeof schema == "object" && schema.type === "null")
     return (
       <VStack padded>
         <VSpaced space={4}>
@@ -78,26 +109,19 @@ function EntryContent({
         />
       </VStack>
     );
-
-  const editorContext = useMemo(() => {
-    return {
-      OverrideFieldComponents: {
-        "https://type.zerve.link/HumanText": HumanTextInput,
-      },
-    };
-  }, []);
-  const { claimDirty, releaseDirty } = useUnsavedContext();
   return (
     <JSONSchemaEditorContext.Provider value={editorContext}>
       <JSONSchemaForm
-        id={`entry-${path.join("-")}`}
+        id={`entry-${entryName}-${path.join("-")}`}
         onValue={onValue}
-        onDirty={claimDirty}
+        onDirty={(value: any) => {
+          claimDirty(`entry-${entryName}`, path, value);
+        }}
         onCancel={() => {
           releaseDirty();
         }}
-        value={value}
-        schema={schema}
+        value={displayValue}
+        schema={displaySchema}
         schemaStore={schemaStore}
         padded
       />
@@ -108,13 +132,13 @@ function EntryContent({
 function StoreEntriesEntry({
   storePath,
   location,
+  entryName,
   path,
   title,
-}: StoreFeatureProps & { path: Array<string> }) {
+}: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const saveEntry = useSaveEntry(storePath);
   const schemas = useZStoreSchemas(storePath);
-  const entryName = path[0];
-  const entry = useZNodeValue([...storePath, "State", path[0]]);
+  const entry = useZNodeValue([...storePath, "State", entryName]);
   const { openEntrySchema, replaceToEntries, replaceToEntry } =
     useStoreNavigation(location);
   const deleteFile = useDeleteEntry(
@@ -175,6 +199,7 @@ function StoreEntriesEntry({
         {
           key: "delete",
           title: "Delete",
+          icon: "trash",
           danger: true,
           onPress: async () => {
             await deleteFile.mutateAsync(entryName);
@@ -186,8 +211,10 @@ function StoreEntriesEntry({
       {entry.data && schemas.data ? (
         <EntryContent
           path={path}
+          location={location}
+          entryName={entryName}
           onValue={async (value) => {
-            await saveEntry.mutateAsync({ name: path[0], value });
+            await saveEntry.mutateAsync({ name: entryName, value });
             releaseDirty();
           }}
           value={entry.data.value}

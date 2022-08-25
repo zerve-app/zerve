@@ -3,13 +3,25 @@
 
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
 
-const TitleSchema = {
+export const TitleSchema = {
   title: "Text",
   type: "string",
 } as const;
-const DescriptionSchema = {
+export const DescriptionSchema = {
   title: "Text",
   type: "string",
+} as const;
+
+export const IDSchema = {
+  title: "ID",
+  type: "string",
+  pattern: "^([0-9a-z])([0-9a-z_])*([0-9a-z])$",
+} as const;
+
+export const EntryNameSchema = {
+  title: "Entry Name",
+  type: "string",
+  pattern: "^([0-9A-Z])([0-9a-zA-Z_])*([0-9a-zA-Z])$",
 } as const;
 
 // the metadata that can accompany ANY schema

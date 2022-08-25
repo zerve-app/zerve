@@ -18,6 +18,7 @@ import { postZAction } from "@zerve/client/ServerCalls";
 import { useRouter } from "next/router";
 import {
   AllExperimentalSchemas,
+  IDSchema,
   StoreSettings,
   StringSchema,
 } from "@zerve/core";
@@ -59,7 +60,7 @@ function RenameStoreDialog({
       confirmLabel="Move Store"
       formSchema={
         {
-          ...StringSchema,
+          ...IDSchema,
           title: "New Store ID",
         } as const
       }

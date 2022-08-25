@@ -16,8 +16,9 @@ export type FieldComponent<
 
 export type OverrideFieldComponents = Record<string, FieldComponent<any, any>>;
 
-type JSONSchemaEditorContext = {
+export type JSONSchemaEditorContext = {
   OverrideFieldComponents?: OverrideFieldComponents;
+  openChildEditor?: (key: string) => void;
 };
 export const JSONSchemaEditorContext = createContext<JSONSchemaEditorContext>(
   {},
@@ -41,7 +42,7 @@ export function getValueImport(
           key,
           importNode(
             childValue,
-            schema.properties[key] || schema.additionalProperties,
+            schema.properties?.[key] || schema.additionalProperties,
           ),
         ]),
       );
@@ -69,7 +70,7 @@ export function getValueExport(
           key,
           exportNode(
             childValue,
-            schema.properties[key] || schema.additionalProperties,
+            schema.properties?.[key] || schema.additionalProperties,
           ),
         ]),
       );
@@ -86,40 +87,4 @@ export function useValueImporter(schemaStore: SchemaStore) {
     [OverrideFieldComponents],
   );
   return importer;
-}
-
-export function extractTypeSchema(type, schemaObj) {
-  const subType = { type };
-  if (type === "string") {
-    subType.minLength = schemaObj.minLength;
-    subType.maxLength = schemaObj.maxLength;
-    subType.pattern = schemaObj.pattern;
-    subType.format = schemaObj.format;
-  } else if (type === "object") {
-    subType.required = schemaObj.required;
-    subType.properties = schemaObj.properties;
-    subType.patternProperties = schemaObj.properties;
-    subType.additionalProperties = schemaObj.additionalProperties;
-    subType.unevaluatedProperties = schemaObj.unevaluatedProperties;
-    subType.propertyNames = schemaObj.propertyNames;
-    subType.minProperties = schemaObj.minProperties;
-    subType.maxProperties = schemaObj.maxProperties;
-  } else if (type === "array") {
-    subType.items = schemaObj.items;
-    subType.prefixItems = schemaObj.prefixItems;
-    subType.contains = schemaObj.contains;
-    subType.minContains = schemaObj.minContains;
-    subType.maxContains = schemaObj.maxContains;
-    subType.uniqueItems = schemaObj.uniqueItems;
-    subType.minItems = schemaObj.minItems;
-    subType.maxItems = schemaObj.maxItems;
-  } else if (type === "integer" || type === "number") {
-    subType.minimum = schemaObj.minimum;
-    subType.exclusiveMinimum = schemaObj.exclusiveMinimum;
-    subType.maximum = schemaObj.maximum;
-    subType.exclusiveMaximum = schemaObj.exclusiveMaximum;
-    subType.multipleOf = schemaObj.multipleOf;
-  }
-
-  return subType;
 }

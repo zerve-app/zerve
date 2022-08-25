@@ -22,6 +22,7 @@ import {
   JSONSchema,
   StoreSettings,
   StoreSettingsSchema,
+  IDSchema,
 } from "@zerve/core";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
@@ -226,7 +227,7 @@ export async function startApp() {
     const MoveStore = createZAction(
       {
         type: "object",
-        properties: { from: StringSchema, to: StringSchema },
+        properties: { from: IDSchema, to: IDSchema },
         additionalProperties: false,
         required: ["from", "to"],
       },
@@ -284,7 +285,7 @@ export async function startApp() {
   }
 
   function getStoreCreatorAction(entityId: string) {
-    return createZAction(StringSchema, NullSchema, async (storeId: string) => {
+    return createZAction(IDSchema, NullSchema, async (storeId: string) => {
       if (await doesEntityStoreExist(entityId, storeId))
         throw new RequestError(
           "AlreadyExists",

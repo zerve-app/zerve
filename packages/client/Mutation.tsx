@@ -23,7 +23,6 @@ export function useCreateEntry(storePath: string[]) {
             value: null,
           },
         });
-        console.log("BADNEWSshould not see this ok!");
       } else {
         // deprecated "local" behavior.. should be consolidated into logic above
         // await dispatch(name, {

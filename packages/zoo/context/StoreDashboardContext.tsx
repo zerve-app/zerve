@@ -12,8 +12,9 @@ export type StoreFeatureProps = {
 export type StoreNavigationState =
   | {
       key: "entries";
-      path?: Array<string>;
       child?: "create" | "schema";
+      entryName?: string;
+      path?: Array<string>;
     }
   | { key: "schemas"; schema?: string; child?: "create" }
   | {
@@ -45,11 +46,13 @@ export function StoreFeatureLinkButton(
 export const StoreDashboardContext =
   createContext<null | FragmentContext<StoreNavigationState>>(null);
 
-export type UnsavedEnvironment = {
-  claimDirty: () => void;
+export type UnsavedCtx = {
+  getDirtyValue: (id: string) => any;
+  claimDirty: (id: string, path: string[], value: any) => void;
   releaseDirty: () => void;
+  dirtyIds: Set<string>;
 };
-export const UnsavedContext = createContext<null | UnsavedEnvironment>(null);
+export const UnsavedContext = createContext<null | UnsavedCtx>(null);
 
 export function useUnsavedContext() {
   const ctx = useContext(UnsavedContext);
