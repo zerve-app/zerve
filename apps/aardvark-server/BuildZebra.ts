@@ -28,17 +28,24 @@ const CmdResultSchema = {
   },
 } as const;
 
-let __is_build_in_progress_junky_check = false;
+let isBuildInProgress = false;
 
 export const BuildZebra = createZAction(
   NullSchema,
-  { type: "array", items: CmdResultSchema } as const,
+  {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      buildResults: { type: "array", items: CmdResultSchema },
+      buildId: StringSchema,
+    },
+  } as const,
   async () => {
-    if (__is_build_in_progress_junky_check) {
-      throw new Error("a build is already in progress....");
+    if (isBuildInProgress) {
+      throw new Error("Cannot BuildZebra. Build is already in progress");
     }
-    __is_build_in_progress_junky_check = true;
-    console.log("==== Starting BuildZebra ====");
+    isBuildInProgress = true;
+    console.log("==== BuildZebra Start ====");
     const results: Array<FromSchema<typeof CmdResultSchema>> = [];
     async function cmd(
       command: string,
@@ -47,6 +54,11 @@ export const BuildZebra = createZAction(
       env?: Record<string, string>,
     ) {
       const startTime = Date.now();
+      console.log(
+        `BuildZebra: ${command} ${args.join(" ")} (${cwd}) ${JSON.stringify(
+          env,
+        )}`,
+      );
       const { out, err } = await Command.call({
         command,
         args,
@@ -54,6 +66,9 @@ export const BuildZebra = createZAction(
         env,
       });
       const endTime = Date.now();
+      const durationMs = endTime - startTime;
+      console.log({ out, err, durationMs });
+      console.log("----");
       const cmdResult: FromSchema<typeof CmdResultSchema> = {
         command,
         args,
@@ -61,7 +76,7 @@ export const BuildZebra = createZAction(
         err,
         cwd,
         env,
-        durationMs: endTime - startTime,
+        durationMs,
       } as const;
       results.push(cmdResult);
       return cmdResult;
@@ -178,21 +193,23 @@ export const BuildZebra = createZAction(
         path: `/root/zebra-build-details/${buildId}.json`,
         value: { error: e.toString(), results },
       });
-      __is_build_in_progress_junky_check = false;
+      isBuildInProgress = false;
 
       throw e;
     }
-    console.log(
-      `Build success, saved to /root/zebra-builds/${buildId}.tar.gz - Writing logs to /root/zebra-build-details/${buildId}.json`,
-    );
+
     await WriteJSON.call({
       path: `/root/zebra-build-details/${buildId}.json`,
       value: {
         results,
       },
     });
-    __is_build_in_progress_junky_check = false;
+    isBuildInProgress = false;
 
-    return results;
+    console.log(
+      `BuildZebra: success, saved to /root/zebra-builds/${buildId}.tar.gz - Writing logs to /root/zebra-build-details/${buildId}.json`,
+    );
+
+    return { buildResults: results, buildId };
   },
 );

@@ -1,6 +1,12 @@
 import { startZedServer } from "@zerve/node";
 
-import { createZContainer, createZStatic } from "@zerve/core";
+import {
+  createZAction,
+  createZContainer,
+  createZStatic,
+  NullSchema,
+  StringSchema,
+} from "@zerve/core";
 import { createAuth, createEmailAuthStrategy } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore, GeneralStoreModule } from "@zerve/store";
@@ -63,6 +69,32 @@ export async function startApp() {
     "ZerveStore",
   );
 
+  const BuildAndDeployZebraStaging = createZAction(
+    NullSchema,
+    StringSchema,
+    async () => {
+      console.log("== BuildAndDeployZebraStaging ==");
+      const build = await BuildZebra.call(null);
+      const buildId = build.buildId;
+      if (!buildId) throw new Error("buildId was returned from build");
+      console.log("== BuildAndDeployZebraStaging: completed build " + buildId);
+      const completedBuild = await CompletedBuilds.getChild(buildId);
+      if (!completedBuild) {
+        throw new Error(`Failed to find completed build ${buildId}`);
+      }
+      console.log(
+        "== BuildAndDeployZebraStaging: deploying staging build " +
+          (await completedBuild.z.BuildId.value),
+      );
+      await completedBuild.z.DeployStaging.call({
+        deploymentName: "staging",
+        replace: true,
+      });
+      console.log("== BuildAndDeployZebraStaging: completed ==");
+      return null;
+    },
+  );
+
   const [zAuth] = await createAuth({
     strategies: {
       Email: await createEmailAuthStrategy(Email, {
@@ -91,6 +123,7 @@ export async function startApp() {
         CompletedBuilds,
         BuildZebra,
         Deployments,
+        BuildAndDeployZebraStaging,
         ...user,
       };
     },
