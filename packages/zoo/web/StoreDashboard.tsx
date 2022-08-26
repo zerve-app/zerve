@@ -71,6 +71,7 @@ function allowedToNavigateToFeature(
   feature: StoreNavigationState,
   currentDirtyIds: Set<string>,
 ) {
+  if (currentDirtyIds.size === 0) return true;
   if (feature.key === "entries" && feature.child === "schema") {
     const destDirtyId = `entry-schema-${feature.entryName}`;
     if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
@@ -85,11 +86,11 @@ function allowedToNavigateToFeature(
   }
   if (feature.key === "schemas") {
     const destDirtyId = `schema-${feature.schema}`;
-    debugger;
     if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
       return true;
     }
   }
+  console.warn("Refusing to exit with dirty ids", currentDirtyIds);
   return false;
 }
 

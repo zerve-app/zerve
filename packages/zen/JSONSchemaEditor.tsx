@@ -29,6 +29,7 @@ import { InfoRow } from "./Row";
 import { Dropdown } from "./Dropdown";
 import { useActionsSheet } from "./ActionButtonSheet";
 import { Input, SwitchInput } from "./Input";
+import { Notice } from "./Notice";
 
 function AddButton({
   onPress,
@@ -390,6 +391,7 @@ export function ArrayEditor({
 }
 
 function getHumanLabelOfSchema(schema: JSONSchema) {
+  console.log("hello huuman", schema);
   if (schema === false) return "Never";
   if (schema === true) return "Any";
   if (schema.title) return schema.title;
@@ -422,13 +424,14 @@ function ObjectField({
   actions?: ActionButtonDef[];
 }) {
   const { openChildEditor } = useContext(JSONSchemaEditorContext);
+  const typeLabel = getHumanLabelOfSchema(schema);
   return (
     <>
       <FieldHeader
         id={id}
         label={label || "?"}
         labelActions={labelActions}
-        typeLabel={getHumanLabelOfSchema(schema)}
+        typeLabel={typeLabel}
         value={value}
         actions={actions}
       />
@@ -453,7 +456,7 @@ function ArrayField({
   value,
   onValue,
   schema,
-  key,
+  valueKey,
   actions,
 }: {
   id: string;
@@ -462,7 +465,7 @@ function ArrayField({
   value: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
-  key: string;
+  valueKey: string;
   actions?: ActionButtonDef[];
 }) {
   const { openChildEditor } = useContext(JSONSchemaEditorContext);
@@ -473,7 +476,7 @@ function ArrayField({
         id={id}
         label={label || "?"}
         labelActions={labelActions}
-        typeLabel={schema.title || getHumanLabelOfSchema(schema)}
+        typeLabel={getHumanLabelOfSchema(schema)}
         value={value}
         actions={actions}
       />
@@ -483,12 +486,7 @@ function ArrayField({
         onPress={
           openChildEditor
             ? () => {
-                openChildEditor(
-                  label || getHumanLabelOfSchema(schema),
-                  schema,
-                  value,
-                  onValue,
-                );
+                openChildEditor(valueKey);
               }
             : null
         }
@@ -781,11 +779,22 @@ export function FormField({
   }
   if (!expandedSchema) {
     if (valueKey[0] === "$") return null;
+    const deleteAction = actions?.find((a) => a.key === "Delete");
     return (
-      <ThemedText danger>
-        Could not find schema for "{label}" property with value:{" "}
-        {JSON.stringify(value)}
-      </ThemedText>
+      <Notice
+        danger
+        message={`Could not find schema for "${label}" property with value: ${JSON.stringify(
+          value,
+        )}`}
+      >
+        {deleteAction && (
+          <Button
+            small
+            title={`Delete ${label}`}
+            onPress={deleteAction.onPress}
+          />
+        )}
+      </Notice>
     );
   }
   if (isLeafType(expandedSchema.type) || expandedSchema.const != null) {

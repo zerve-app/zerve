@@ -163,7 +163,7 @@ export function FeaturePane({
   spinner?: boolean;
   actions?: ActionButtonDef[];
 }) {
-  const actionButton = useActionsSheet(
+  const [actionButton] = useActionsSheet(
     (onOpen: () => void) => (
       <IconButton
         icon={<Icon name="ellipsis-v" />}
@@ -173,7 +173,6 @@ export function FeaturePane({
     ),
     () => actions || [],
   );
-
   return (
     <View
       style={{
@@ -189,7 +188,7 @@ export function FeaturePane({
           >
             {title}
           </Text>
-          {actions && actionButton}
+          {actions ? actionButton : null}
         </View>
         {spinner && (
           <Spinner style={{ position: "absolute", right: 10, bottom: 10 }} />
