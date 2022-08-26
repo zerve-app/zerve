@@ -199,7 +199,6 @@ export function ObjectEditor({
                       defaultValue,
                       propertySchema,
                     );
-                    debugger;
                     onValue({
                       ...(value || {}),
                       [propertyName]: importedValue,

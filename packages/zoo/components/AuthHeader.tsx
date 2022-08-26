@@ -37,7 +37,7 @@ export function AuthHeader() {
     const url = `/${userId}`;
     return (
       <Link href={url}>
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", marginLeft: 40 }}>
           <ThemedText
             style={{ alignSelf: "center", fontWeight: "bold", fontSize: 16 }}
           >

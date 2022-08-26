@@ -1,14 +1,20 @@
 import {
+  Button,
+  HStack,
+  JSONSchemaEditor,
   JSONSchemaEditorContext,
   JSONSchemaForm,
   showToast,
+  Spacer,
   Title,
   useAsyncHandler,
+  VStack,
 } from "@zerve/zen";
-import { memo, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { FeaturePane } from "../web/Dashboard";
 import { useSaveEntry, useSaveEntrySchema } from "@zerve/client/Mutation";
 import {
+  StoreFeatureLink,
   StoreFeatureProps,
   useUnsavedContext,
 } from "../context/StoreDashboardContext";
@@ -20,10 +26,13 @@ import {
 } from "@zerve/client/Query";
 import { useStoreNavigation } from "../app/useNavigation";
 import {
+  AnyError,
   drillSchemaValue,
   EmptySchemaStore,
   exploreUnionSchema,
   JSONSchema,
+  lookUpValue,
+  mergeValue,
 } from "@zerve/core";
 
 function StoreEntriesSchema({
@@ -33,12 +42,23 @@ function StoreEntriesSchema({
   path,
   title,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
-  const saveEntry = useSaveEntry(storePath);
-  const schemas = useZStoreEntrySchema(storePath);
-  const saveSchema = useSaveEntrySchema(storePath, schemas.data?.$schemaStore);
-  const entry = useZNodeValue([...storePath, "State", entryName, "schema"]);
-  const { claimDirty, releaseDirty } = useUnsavedContext();
+  const schemaSchemaQuery = useZStoreEntrySchema(storePath);
+  const schemaStore = schemaSchemaQuery.data?.$schemaStore;
+  const saveSchema = useSaveEntrySchema(storePath, schemaStore);
+  const entrySchemaQuery = useZNodeValue([
+    ...storePath,
+    "State",
+    entryName,
+    "schema",
+  ]);
+  const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
+    useUnsavedContext();
   const { openEntrySchema } = useStoreNavigation(location);
+  const dirtyId = `entry-schema-${entryName}`;
+  const isDirty = dirtyIds.has(dirtyId);
+  const [draftValue, setDraftValue] = useState(
+    isDirty ? lookUpValue(getDirtyValue(dirtyId), path) : undefined,
+  );
   const editorContext = useMemo(() => {
     const ctx: JSONSchemaEditorContext = {
       openChildEditor: (key: string) => {
@@ -47,34 +67,77 @@ function StoreEntriesSchema({
     };
     return ctx;
   }, []);
-  const { schema: displaySchema, value: displayValue } = useMemo(
-    () => drillSchemaValue(schemas.data, entry.data, path),
-    [schemas.data, entry.data, path],
+  const savedSchemaValue = entrySchemaQuery.data;
+  const { schema: pathSchema, value: savedPathValue } = useMemo(
+    () => drillSchemaValue(schemaSchemaQuery.data, savedSchemaValue, path),
+    [schemaSchemaQuery.data, savedSchemaValue, path],
   );
-  const dirtyId = `entry-schema-${entryName}`;
+  const doSave = useAsyncHandler<void, AnyError>(async () => {
+    await saveSchema.mutateAsync({
+      name: entryName,
+      schema: getDirtyValue(dirtyId),
+    });
+    releaseDirty(dirtyId);
+  });
   return (
     <FeaturePane
       title={title}
-      spinner={saveEntry.isLoading || schemas.isFetching || entry.isFetching}
+      spinner={
+        doSave.isLoading ||
+        schemaSchemaQuery.isFetching ||
+        entrySchemaQuery.isFetching
+      }
     >
       <JSONSchemaEditorContext.Provider value={editorContext}>
-        {entry.data && schemas.data ? (
-          <JSONSchemaForm
-            id={`entry-schema-${path.join("-")}`}
-            saveLabel="Save Schema"
-            value={displayValue}
-            onDirty={() => claimDirty(dirtyId, path, "fuckk")}
-            onValue={async (schema) => {
-              await saveSchema.mutateAsync({ name: entryName, schema });
-              releaseDirty(dirtyId);
-              showToast("Schema has been updated.");
-            }}
-            onCancel={() => {
-              releaseDirty(dirtyId);
-            }}
-            schema={displaySchema}
-            padded
-          />
+        {entrySchemaQuery.data && schemaSchemaQuery.data ? (
+          <>
+            <VStack padded>
+              <JSONSchemaEditor
+                id={dirtyId}
+                onValue={(value: any) => {
+                  setDraftValue(value);
+                  if (path.length && !dirtyIds.has(dirtyId)) {
+                    claimDirty(
+                      dirtyId,
+                      [],
+                      mergeValue(savedSchemaValue, path, value),
+                    );
+                  } else {
+                    claimDirty(dirtyId, path, value);
+                  }
+                }}
+                value={draftValue === undefined ? savedPathValue : draftValue}
+                schema={pathSchema}
+                schemaStore={schemaStore}
+              />
+            </VStack>
+            <Spacer />
+            {isDirty &&
+              (path.length ? (
+                <StoreFeatureLink
+                  title="Unsaved Changes. Go Back to Save"
+                  to={{
+                    key: "entries",
+                    entryName,
+                    child: "schema",
+                    path: path.slice(0, -1),
+                  }}
+                  icon="backward"
+                />
+              ) : (
+                <HStack padded>
+                  <Button
+                    chromeless
+                    title="Discard"
+                    onPress={() => {
+                      setDraftValue(undefined);
+                      releaseDirty(dirtyId);
+                    }}
+                  />
+                  <Button primary title="Save Schema" onPress={doSave.handle} />
+                </HStack>
+              ))}
+          </>
         ) : null}
       </JSONSchemaEditorContext.Provider>
     </FeaturePane>

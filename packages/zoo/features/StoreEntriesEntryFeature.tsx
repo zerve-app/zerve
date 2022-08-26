@@ -44,6 +44,22 @@ import {
 } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
 import { useZNodeValue, useZStoreSchemas } from "@zerve/client/Query";
+import { Notice } from "@zerve/zen/Notice";
+
+function extractErrorMessage(error: AnyError) {
+  let message = error.message;
+  if (error.details?.errors) {
+    message = error.details.errors
+      .map((error) => {
+        if (error.dataPath) {
+          return `${error.dataPath} invalid: ${error.message}`;
+        }
+        return error.message;
+      })
+      .join("\n\n");
+  }
+  return message;
+}
 
 function EmptyEntryContent({
   entryName,
@@ -146,6 +162,7 @@ function StoreEntriesEntry({
     });
     releaseDirty(storeValueId);
   });
+
   return (
     <FeaturePane
       title={title}
@@ -197,6 +214,13 @@ function StoreEntriesEntry({
       ) : (
         <JSONSchemaEditorContext.Provider value={editorContext}>
           <VStack padded>
+            {doSave.error ? (
+              <Notice
+                danger
+                message={extractErrorMessage(doSave.error)}
+                icon="exclamation-circle"
+              />
+            ) : null}
             <JSONSchemaEditor
               id={`entry-${entryName}-${path.join("-")}`}
               onValue={(value: any) => {
@@ -234,6 +258,7 @@ function StoreEntriesEntry({
                   chromeless
                   title="Discard"
                   onPress={() => {
+                    doSave.reset();
                     setDraftValue(undefined);
                     releaseDirty(storeValueId);
                   }}

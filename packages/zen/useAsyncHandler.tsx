@@ -2,7 +2,12 @@ import { useState } from "react";
 
 export function useAsyncHandler<V, E>(
   handler: (v: V) => Promise<void>,
-): { error: null | E; isLoading: boolean; handle: (value: V) => void } {
+): {
+  error: null | E;
+  isLoading: boolean;
+  handle: (value: V) => void;
+  reset: () => void;
+} {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   function handle(value: V) {
@@ -17,5 +22,8 @@ export function useAsyncHandler<V, E>(
         setIsLoading(false);
       });
   }
-  return { error, isLoading, handle };
+  function reset() {
+    setError(null);
+  }
+  return { error, isLoading, handle, reset };
 }

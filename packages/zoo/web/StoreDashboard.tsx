@@ -71,10 +71,23 @@ function allowedToNavigateToFeature(
   feature: StoreNavigationState,
   currentDirtyIds: Set<string>,
 ) {
+  if (feature.key === "entries" && feature.child === "schema") {
+    const destDirtyId = `entry-schema-${feature.entryName}`;
+    if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
+      return true;
+    }
+  }
   if (feature.key === "entries") {
     const destDirtyId = `entry-${feature.entryName}`;
     if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
       if (!feature.child) return true;
+    }
+  }
+  if (feature.key === "schemas") {
+    const destDirtyId = `schema-${feature.schema}`;
+    debugger;
+    if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
+      return true;
     }
   }
   return false;

@@ -3,14 +3,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
 import { ReactNode } from "react";
 import { Link } from "./Link";
+import { ScrollView } from "react-native-gesture-handler";
 
 export function NavBar({ children }: { children: ReactNode }) {
   return (
-    <View
-      style={{ backgroundColor: "#decdec", height: 60, flexDirection: "row" }}
+    <ScrollView
+      horizontal
+      contentContainerStyle={{ flexDirection: "row", height: 60, flex: 1 }}
+      style={{ backgroundColor: "#decdec", maxHeight: 60 }}
     >
       {children}
-    </View>
+    </ScrollView>
   );
 }
 

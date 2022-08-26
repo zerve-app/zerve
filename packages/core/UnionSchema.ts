@@ -183,7 +183,6 @@ export function exploreUnionSchema(
             walkingKeyMap[theValue] == null
               ? walkingKeyMap["undefined"]
               : walkingKeyMap[theValue];
-          if (nextWalk === undefined) debugger;
           walkingKeyMap = nextWalk;
         });
         if (typeof walkingKeyMap === "number") {
