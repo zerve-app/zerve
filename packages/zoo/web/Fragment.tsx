@@ -11,7 +11,10 @@ import { useRouter } from "next/router";
 export type FragmentContext<FragmentState> = {
   stringifyFragment: (feature: FragmentState) => string;
   parseFragment: (fragment: string) => FragmentState | null;
-  navigateFragment: (fragmentState: FragmentState) => void;
+  navigateFragment: (
+    fragmentState: FragmentState,
+    shouldReplace?: boolean,
+  ) => void;
   fragment: FragmentState | null;
   fragmentString: string;
 };
@@ -53,8 +56,8 @@ export function useFragmentNavigate<FragmentState>(
       "Cannot useFragmentNavigate outside the valid FragmentContext",
     );
   return useCallback(
-    (feature: FragmentState) => {
-      fragmentContext.navigateFragment(feature);
+    (feature: FragmentState, shouldReplace?: boolean) => {
+      fragmentContext.navigateFragment(feature, shouldReplace);
     },
     [fragmentContext.navigateFragment],
   );
@@ -69,16 +72,17 @@ export function useFragmentNavigationController<FragmentState>(
     navigateFeature: (f: FragmentState) => void,
   ) => boolean,
 ): readonly [FragmentState | null, string, FragmentContext<FragmentState>] {
-  const { push, pathname, query } = useRouter();
+  const { push, replace, pathname, query } = useRouter();
   const fragmentString = query._ === undefined ? "" : String(query._);
   const fragment = useMemo(
     () => parseFragment(fragmentString),
     [parseFragment, fragmentString],
   );
-  function navigateFragment(to: FragmentState) {
+  function navigateFragment(to: FragmentState, shouldReplace?: boolean) {
     const shouldAllow = !onIntercept || onIntercept?.(to, navigateFragment);
     if (!shouldAllow) return;
-    push({
+    const navAct = shouldReplace ? replace : push;
+    navAct({
       pathname,
       query: { ...query, _: stringifyFragment(to) },
     });

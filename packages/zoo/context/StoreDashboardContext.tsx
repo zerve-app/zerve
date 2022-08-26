@@ -16,7 +16,12 @@ export type StoreNavigationState =
       entryName?: string;
       path?: Array<string>;
     }
-  | { key: "schemas"; schema?: string; child?: "create" }
+  | {
+      key: "schemas";
+      child?: "create";
+      schema?: string;
+      path?: Array<string>;
+    }
   | {
       key: "settings";
     };
@@ -49,7 +54,7 @@ export const StoreDashboardContext =
 export type UnsavedCtx = {
   getDirtyValue: (id: string) => any;
   claimDirty: (id: string, path: string[], value: any) => void;
-  releaseDirty: () => void;
+  releaseDirty: (id: string) => void;
   dirtyIds: Set<string>;
 };
 export const UnsavedContext = createContext<null | UnsavedCtx>(null);

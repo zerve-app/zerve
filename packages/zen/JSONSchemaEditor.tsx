@@ -199,6 +199,7 @@ export function ObjectEditor({
                       defaultValue,
                       propertySchema,
                     );
+                    debugger;
                     onValue({
                       ...(value || {}),
                       [propertyName]: importedValue,
@@ -779,14 +780,15 @@ export function FormField({
       </>
     );
   }
-
-  if (!expandedSchema)
+  if (!expandedSchema) {
+    if (valueKey[0] === "$") return null;
     return (
       <ThemedText danger>
         Could not find schema for "{label}" property with value:{" "}
         {JSON.stringify(value)}
       </ThemedText>
     );
+  }
   if (isLeafType(expandedSchema.type) || expandedSchema.const != null) {
     return (
       <LeafField

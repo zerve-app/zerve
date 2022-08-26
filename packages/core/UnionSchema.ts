@@ -189,15 +189,15 @@ export function exploreUnionSchema(
         if (typeof walkingKeyMap === "number") {
           return String(walkingKeyMap);
         }
-        debugger;
-        throw new Error("const key map contains unexpected value");
       }
       return null;
     },
   };
 }
 
-export function lookUpValue(value: any, child: string) {
+export function lookUpValue(value: any, child: string | string[]): any {
+  if (Array.isArray(child))
+    return child.reduce((prev, oneChild) => lookUpValue(prev, oneChild), value);
   if (value == null)
     throw new Error(`Can not look up "${child}" within empty value.`);
   if (Array.isArray(value)) return value[Number(child)];
@@ -205,6 +205,47 @@ export function lookUpValue(value: any, child: string) {
   throw new Error(
     `Can not look up "${child}" within ${JSON.stringify(value)}.`,
   );
+}
+
+export function mergeValue(
+  mainValue: any,
+  path: string[],
+  newChildValue: any,
+): any {
+  if (path.length === 0) return newChildValue;
+  const child = path[0];
+  const rest = path.slice(1);
+  if (Array.isArray(mainValue)) {
+    const childIndex = Number(child);
+    if (isNaN(childIndex)) {
+      throw new Error(
+        `Can not set child "${child}" in array at path "${path.join(".")}".`,
+      );
+    }
+    const newMainValue = Array.from(mainValue);
+    newMainValue[childIndex] = mergeValue(
+      newMainValue[childIndex],
+      rest,
+      newChildValue,
+    );
+    return newMainValue;
+  }
+  if (typeof mainValue === "object") {
+    const newMainValue = { ...mainValue };
+    newMainValue[child] = mergeValue(newMainValue[child], rest, newChildValue);
+    return newMainValue;
+  }
+  throw new Error(
+    'Can not set child "${child}" in ${JSON.stringify(mainValue)}.`);',
+  );
+}
+
+export function pathsEqual(path1: string[], path2: string[]) {
+  if (path1.length !== path2.length) return false;
+  for (let i = 0; i < path1.length; i++) {
+    if (path1[i] !== path2[i]) return false;
+  }
+  return true;
 }
 
 export function drillSchemaValue(

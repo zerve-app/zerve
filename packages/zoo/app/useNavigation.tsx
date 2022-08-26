@@ -5,6 +5,11 @@ import { WEB_PRIMARY_CONN } from "./ConnectionStorage";
 import { Title, useModal } from "@zerve/zen";
 import { JSONSchemaEditor } from "@zerve/zen";
 import { EmptySchemaStore, SchemaStore } from "@zerve/core";
+import { useFragmentNavigate } from "../web/Fragment";
+import {
+  StoreDashboardContext,
+  StoreNavigationState,
+} from "../context/StoreDashboardContext";
 
 function JSONInputModal({
   title,
@@ -101,57 +106,41 @@ export function useConnectionNavigation() {
 }
 
 export function useStoreNavigation(location: string[]) {
-  const { push, replace } = useRouter();
-  const conn = useConnection();
-  const connection = conn?.key;
-  if (!connection) throw new Error("needs connection here ok");
-  if (connection !== WEB_PRIMARY_CONN)
-    throw new Error("Cannot navigate with this connection yet");
+  const navigate = useFragmentNavigate<StoreNavigationState>(
+    StoreDashboardContext,
+  );
   return useMemo(
     () => ({
       openEntry: (entryName: string, path?: string[]) => {
-        push(
-          `/${location.join("/")}?_=entries-${entryName}${
-            path?.length ? `-${path.join("-")}` : ""
-          }`,
-        );
+        navigate({ key: "entries", entryName, path });
       },
       openNewEntry: () => {
-        push(`/${location.join("/")}?_=entries--create`);
+        navigate({ key: "entries", child: "create" });
       },
       openSchema: (schema: string, path?: string[]) => {
-        push(
-          `/${location.join("/")}?_=schemas-${schema}${
-            path?.length ? `-${path.join("-")}` : ""
-          }`,
-        );
+        navigate({ key: "schemas", schema, path });
       },
       openSchemas: () => {
-        push(`/${location.join("/")}?_=schemas`);
+        navigate({ key: "schemas" });
       },
       openHistory: () => {},
       replaceToEntry: (entryName: string, path?: string[]) => {
-        replace(
-          `/${location.join("/")}?_=entries-${entryName}${
-            path?.length ? `-${path.join("-")}` : ""
-          }`,
-        );
+        navigate({ key: "entries", entryName, path }, true);
       },
       openEntrySchema: (entryName: string, path?: string[]) => {
-        push(
-          `/${location.join("/")}?_=entries-${entryName}--schema${
-            path?.length ? `-${path.join("-")}` : ""
-          }`,
-        );
+        navigate({ key: "entries", entryName, path, child: "schema" });
+      },
+      replaceToSchemas: () => {
+        navigate({ key: "schemas" }, true);
       },
       replaceToEntries: () => {
-        replace(`/${location.join("/")}?_=entries`);
+        navigate({ key: "entries" }, true);
       },
       replaceToEntrySchema: (entryName: string) => {
-        replace(`/${location.join("/")}?_=entries-${entryName}--schema`);
+        navigate({ key: "entries", entryName, child: "schema" }, true);
       },
-      replaceToSchema: (schemaName: string) => {
-        replace(`/${location.join("/")}?_=schemas-${schemaName}`);
+      replaceToSchema: (schema: string) => {
+        navigate({ key: "schemas", schema }, true);
       },
     }),
     [],

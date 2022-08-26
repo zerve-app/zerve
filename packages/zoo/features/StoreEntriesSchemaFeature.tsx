@@ -13,8 +13,9 @@ import {
   useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import {
-  connectionSchemasToZSchema,
   useZNodeValue,
+  useZStoreEntrySchema,
+  useZStoreSchema,
   useZStoreSchemas,
 } from "@zerve/client/Query";
 import { useStoreNavigation } from "../app/useNavigation";
@@ -33,11 +34,8 @@ function StoreEntriesSchema({
   title,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const saveEntry = useSaveEntry(storePath);
-  const schemas = useZStoreSchemas(storePath);
-  const saveSchema = useSaveEntrySchema(storePath, schemas.data);
-  const fullSchema = useMemo(() => {
-    return connectionSchemasToZSchema(schemas.data);
-  }, [schemas.data]);
+  const schemas = useZStoreEntrySchema(storePath);
+  const saveSchema = useSaveEntrySchema(storePath, schemas.data?.$schemaStore);
   const entry = useZNodeValue([...storePath, "State", entryName, "schema"]);
   const { claimDirty, releaseDirty } = useUnsavedContext();
   const { openEntrySchema } = useStoreNavigation(location);
@@ -50,10 +48,10 @@ function StoreEntriesSchema({
     return ctx;
   }, []);
   const { schema: displaySchema, value: displayValue } = useMemo(
-    () => drillSchemaValue(fullSchema, entry.data, path),
-    [fullSchema, entry.data, path],
+    () => drillSchemaValue(schemas.data, entry.data, path),
+    [schemas.data, entry.data, path],
   );
-
+  const dirtyId = `entry-schema-${entryName}`;
   return (
     <FeaturePane
       title={title}
@@ -65,14 +63,14 @@ function StoreEntriesSchema({
             id={`entry-schema-${path.join("-")}`}
             saveLabel="Save Schema"
             value={displayValue}
-            onDirty={claimDirty}
+            onDirty={() => claimDirty(dirtyId, path, "fuckk")}
             onValue={async (schema) => {
               await saveSchema.mutateAsync({ name: entryName, schema });
-              releaseDirty();
+              releaseDirty(dirtyId);
               showToast("Schema has been updated.");
             }}
             onCancel={() => {
-              releaseDirty();
+              releaseDirty(dirtyId);
             }}
             schema={displaySchema}
             padded

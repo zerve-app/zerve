@@ -1,9 +1,21 @@
 import React, { ReactNode, Children } from "react";
 import { View, ViewStyle } from "react-native";
 
-export function HStack({ children }: { children: ReactNode }) {
+export function HStack({
+  children,
+  padded,
+}: {
+  children: ReactNode;
+  padded?: boolean;
+}) {
   return (
-    <View style={{ flexDirection: "row", padding: 6, paddingVertical: 12 }}>
+    <View
+      style={{
+        flexDirection: "row",
+        padding: 6,
+        paddingVertical: padded ? 12 : 0,
+      }}
+    >
       {Children.map(children, (el) => (
         <View style={{ flex: 1, marginHorizontal: 6 }}>{el}</View>
       ))}
@@ -31,6 +43,10 @@ export function VSpaced({
       {children}
     </View>
   );
+}
+
+export function Spacer() {
+  return <View style={{ flex: 1 }} />;
 }
 
 export function VStack({

@@ -69,13 +69,7 @@ export function useCreateSchema(storePath: string[]) {
     },
     {
       onSuccess: (something, name) => {
-        queryClient.invalidateQueries([
-          conn?.key,
-          "z",
-          ...storePath,
-          "State",
-          "$schemas",
-        ]);
+        queryClient.invalidateQueries([conn?.key, "z", ...storePath, "State"]);
       },
     },
   );
@@ -265,25 +259,46 @@ export function useDeleteSchema(storePath: string[]) {
   const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
-    async (payload: { schemaName: string }) => {
+    async (schemaName: string) => {
       if (!conn) {
         return;
       }
       await postZAction(conn, [...storePath, "Dispatch"], {
         name: "DeleteSchema",
-        value: payload,
+        value: { schemaName },
       });
     },
     {
       onSuccess: (something, { schemaName }) => {
+        queryClient.invalidateQueries([conn?.key, "z", ...storePath, "State"]);
+        // showToast(`${schemaName} Schema Deleted`);
+      },
+    },
+  );
+}
+
+export function useRenameSchema(storePath: string[]) {
+  const conn = useConnection();
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (payload: { prevName: string; newName: string }) => {
+      if (conn) {
+        await postZAction(conn, [...storePath, "Dispatch"], {
+          name: "RenameSchema",
+          value: payload,
+        });
+      } else {
+        // "local" behavior.. should be consolidated into logic above
+      }
+    },
+    {
+      onSuccess: (something, { name }) => {
         queryClient.invalidateQueries([
           conn?.key,
           "z",
           ...storePath,
-          "State",
-          "$schemas",
+          "State", // well this is aggressive..
         ]);
-        // showToast(`${schemaName} Schema Deleted`);
       },
     },
   );

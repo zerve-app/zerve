@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { JSONSchemaForm, useActionsSheet, VStack } from "@zerve/zen";
 import ScreenHeader from "../components/ScreenHeader";
 import { useDeleteSchema, useSaveSchema } from "@zerve/client/Mutation";
-import { useZNodeValue, useZStoreJSONSchema } from "@zerve/client/Query";
+import { useZNodeValue, useZStoreSchema } from "@zerve/client/Query";
 import {
   useGlobalNavigation,
   useStoreSchemaNavigation,
@@ -29,7 +29,7 @@ export function StoreSchemaFeature({
     data: fullSchema,
     isError,
     isLoading: isSLoading,
-  } = useZStoreJSONSchema(storePath);
+  } = useZStoreSchema(storePath);
   const saveSchema = useSaveSchema(storePath);
   const deleteSchema = useDeleteSchema(storePath);
   const { openRawJSON } = useGlobalNavigation();
@@ -51,7 +51,7 @@ export function StoreSchemaFeature({
         icon: "trash",
         danger: true,
         onPress: () => {
-          deleteSchema.mutate({ schemaName: schema });
+          deleteSchema.mutate(schema);
           leave();
         },
       },

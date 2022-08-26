@@ -123,26 +123,16 @@ export function useZChildren(path: string[], options?: QueryOptions) {
   );
 }
 
-export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
-  const conn = useConnection();
-  if (!conn) throw new Error("Cannot useDoc outside of connection context.");
-  return useConnectionQuery<Record<string, ZSchema>>(
-    conn,
-    [conn.key, "z", ...storePath, "State", "$schemas"],
-    async () => {
-      if (!conn || options?.skipLoading) return undefined;
-      const schemas = await getZ(conn, [...storePath, "State", "$schemas"]);
-      return schemas as Record<string, ZSchema>;
-    },
-    {
-      onError: options?.onError,
-    },
-  );
-}
-
-export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
-  const refSchemas = Object.entries(schemas || {}).map(
-    ([schemaName, schema]) => {
+export function schemaStoreToSchema(
+  schemaStore: Record<string, ZSchema>,
+  filterRef?: string,
+) {
+  const refSchemas = Object.entries(schemaStore || {})
+    .filter(([schemaName]) => {
+      if (filterRef === schemaName) return false;
+      return true;
+    })
+    .map(([schemaName, schema]) => {
       const $id = `https://type.zerve.link/${schemaName}`;
       return {
         $id,
@@ -154,12 +144,12 @@ export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
         additionalProperties: false,
         required: ["$ref"],
       };
-    },
-  );
+    });
   const finalSchema = {
+    uhg: true,
     oneOf: [
       ...ZSchemaSchema.oneOf.map((zSubSchema) => {
-        if (zSubSchema.title === "List") {
+        if (zSubSchema.title === "List Schema") {
           const listSchema = {
             ...zSubSchema,
             properties: {
@@ -170,7 +160,7 @@ export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
             },
           };
           return listSchema;
-        } else if (zSubSchema.title === "Object") {
+        } else if (zSubSchema.title === "Object Schema") {
           return {
             ...zSubSchema,
             properties: {
@@ -201,19 +191,69 @@ export function connectionSchemasToZSchema(schemas: Record<string, ZSchema>) {
       }),
       ...refSchemas,
     ],
+    $refSchemas: refSchemas,
+    $schemaStore: schemaStore,
   };
   return finalSchema;
 }
 
-export function useZStoreJSONSchema(
+export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
+  const conn = useConnection();
+  if (!conn) throw new Error("Cannot useDoc outside of connection context.");
+  return useConnectionQuery<Record<string, ZSchema>>(
+    conn,
+    [conn.key, "z", ...storePath, "State", "$schemas"],
+    async () => {
+      if (!conn || options?.skipLoading) return undefined;
+      const schemas = await getZ(conn, [...storePath, "State", "$schemas"]);
+      return schemas as Record<string, ZSchema>;
+    },
+    {
+      onError: options?.onError,
+    },
+  );
+}
+
+export function useZStoreSchema(
+  storePath: string[],
+  schemaName: string,
+  options?: QueryOptions,
+) {
+  const schemas = useZStoreSchemas(storePath, options);
+  const schema = useMemo(() => {
+    return {
+      ...schemas,
+      data: schemas.data?.[schemaName],
+    };
+  }, [schemas, schemas.data]);
+  return schema;
+}
+
+export function useZStoreEntrySchema(
   storePath: string[],
   options?: QueryOptions,
 ) {
   const schemas = useZStoreSchemas(storePath, options);
-  return useMemo(() => {
+  const schema = useMemo(() => {
     return {
       ...schemas,
-      data: connectionSchemasToZSchema(schemas.data),
+      data: schemaStoreToSchema(schemas.data),
     };
   }, [schemas, schemas.data]);
+  return schema;
+}
+
+export function useZStoreSchemaSchema(
+  storePath: string[],
+  schemaName: string,
+  options?: QueryOptions,
+) {
+  const schemas = useZStoreSchemas(storePath, options);
+  const schemaSchema = useMemo(() => {
+    return {
+      ...schemas,
+      data: schemaStoreToSchema(schemas.data, schemaName),
+    };
+  }, [schemas, schemas.data]);
+  return schemaSchema;
 }

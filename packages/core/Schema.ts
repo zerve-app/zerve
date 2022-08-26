@@ -69,4 +69,8 @@ export function getDefaultSchemaValue(
       ),
     );
   }
+  if (usableSchema.oneOf) {
+    return getDefaultSchemaValue(usableSchema.oneOf[0], schemaStore);
+  }
+  throw new Error("Cannot find a default value for this schema");
 }

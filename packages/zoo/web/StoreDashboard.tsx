@@ -1,4 +1,4 @@
-import { displayStoreFileName } from "@zerve/core";
+import { displayStoreFileName, mergeValue } from "@zerve/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   StoreDashboardContext,
@@ -19,6 +19,67 @@ import { useRouter } from "next/router";
 import { NavigateInterceptContext, useModal } from "@zerve/zen";
 import { Dialog } from "@zerve/zen/Dialog";
 
+function parseFeatureFragment(fragment: string): null | StoreNavigationState {
+  if (fragment.startsWith("entries")) {
+    const restFragment = fragment.split("entries").slice(1).join("entries");
+    if (restFragment === "--create") {
+      return { key: "entries", child: "create" };
+    }
+    if (restFragment === "") {
+      return { key: "entries" };
+    }
+    const schemasPath = restFragment.split("--schema");
+    if (schemasPath.length >= 2) {
+      const entryNameRestPath = schemasPath[0].split("-");
+      const entryName = entryNameRestPath[1];
+      const schemasRestPath = schemasPath[1].split("-");
+      const path = schemasRestPath.slice(1);
+      return { key: "entries", entryName, child: "schema", path };
+    } else {
+      const restPath = restFragment.split("-");
+      const entryName = restPath[1];
+      const path = restPath.slice(2);
+      return { key: "entries", entryName, path };
+    }
+  }
+  if (fragment.startsWith("schemas")) {
+    if (fragment.endsWith("--create"))
+      return { key: "schemas", child: "create" };
+    const restFragment = fragment.split("schemas").slice(1).join("schemas");
+    const schemaPath = restFragment
+      .slice(1)
+      .split("-")
+      .filter((s) => s !== "");
+    if (schemaPath.length) {
+      return {
+        key: "schemas",
+        schema: schemaPath[0],
+        path: schemaPath.slice(1),
+      };
+    }
+    return { key: "schemas" };
+  }
+  if (fragment.startsWith("settings")) {
+    return { key: "settings" };
+  }
+
+  if (fragment === "settings") return { key: "settings" };
+  return null;
+}
+
+function allowedToNavigateToFeature(
+  feature: StoreNavigationState,
+  currentDirtyIds: Set<string>,
+) {
+  if (feature.key === "entries") {
+    const destDirtyId = `entry-${feature.entryName}`;
+    if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
+      if (!feature.child) return true;
+    }
+  }
+  return false;
+}
+
 export function StoreDashboard({
   storeId,
   entityId,
@@ -29,7 +90,7 @@ export function StoreDashboard({
   entityIsOrg: boolean;
 }) {
   const { beforePopState, push } = useRouter();
-  const dirtyRef = useRef(false);
+  const dirtyIdsRef = useRef<Set<string>>(new Set());
   const latestFeatureRef = useRef<null | string>(null);
   const openModal = useModal<() => void>(
     ({ onClose, options: discardChangesAndNavigate }) => (
@@ -50,11 +111,27 @@ export function StoreDashboard({
   const [dirtyIds, setDirtyIds] = useState(new Set<string>());
   const unsavedCtx = useMemo(() => {
     return {
-      releaseDirty: () => {
-        dirtyRef.current = false;
+      releaseDirty: (id: string) => {
+        dirtyValues.delete(id);
+        const newDirtyIds = new Set(dirtyIdsRef.current);
+        newDirtyIds.delete(id);
+        setDirtyIds(newDirtyIds);
+        dirtyIdsRef.current = newDirtyIds;
       },
       claimDirty: (id: string, path: string[], value: any) => {
-        dirtyRef.current = true;
+        if (dirtyIds.has(id)) {
+          dirtyValues.set(id, mergeValue(dirtyValues.get(id), path, value));
+          return;
+        }
+        if (path.length) {
+          throw new Error(
+            "May not set dirty with a path for an ID that is not already dirty",
+          );
+        }
+        const newDirtyIds = new Set([...dirtyIds, id]);
+        dirtyIdsRef.current = newDirtyIds;
+        dirtyValues.set(id, value);
+        setDirtyIds(newDirtyIds);
       },
       getDirtyValue: (id: string) => {
         return dirtyValues.get(id);
@@ -64,7 +141,7 @@ export function StoreDashboard({
   }, [dirtyIds]);
   useEffect(() => {
     window.onbeforeunload = (e) => {
-      if (dirtyRef.current) {
+      if (dirtyIdsRef.current.size) {
         return "Unsaved changes will be lost.";
       }
       return undefined;
@@ -72,14 +149,23 @@ export function StoreDashboard({
   }, []);
   useEffect(() => {
     beforePopState((state) => {
-      if (dirtyRef.current) {
+      // dear god why doesnt next provide the real query params...
+      const fragmentString = state.as.split("_=")[1].split("&")[0];
+      const fragment = parseFeatureFragment(fragmentString);
+      if (
+        fragment &&
+        allowedToNavigateToFeature(fragment, dirtyIdsRef.current)
+      ) {
+        return true;
+      }
+      if (dirtyIdsRef.current.size) {
         window.history.pushState(
           { pushId: Date.now() }, // maybe this is not needed?
           "unused",
           `?_=${latestFeatureRef.current}`,
         );
         openModal(() => {
-          dirtyRef.current = false;
+          dirtyIdsRef.current = new Set();
           push(state.as);
         });
         return false;
@@ -89,9 +175,9 @@ export function StoreDashboard({
   }, []);
   const navigateInterrupt = useMemo(() => {
     return (href: string) => {
-      if (dirtyRef.current) {
+      if (dirtyIdsRef.current.size) {
         openModal(() => {
-          dirtyRef.current = false;
+          dirtyIdsRef.current = new Set();
           push(href);
         });
         return false;
@@ -109,9 +195,12 @@ export function StoreDashboard({
             feature: StoreNavigationState,
             navigateFeature: (feature: StoreNavigationState) => void,
           ) => {
-            if (dirtyRef.current) {
+            if (allowedToNavigateToFeature(feature, dirtyIdsRef.current)) {
+              return true;
+            }
+            if (dirtyIdsRef.current.size) {
               openModal(() => {
-                dirtyRef.current = false;
+                dirtyIdsRef.current = new Set();
                 navigateFeature(feature);
               });
               return false;
@@ -160,9 +249,14 @@ export function StoreDashboard({
               return "Entries";
             }
             if (feature.key === "schemas") {
-              if (feature.child === "create") return "Create Schema";
-              if (feature.schema) {
-                return `Schema: ${displayStoreFileName(feature.schema)}`;
+              const { child, schema, path } = feature;
+              if (child === "create") return "Create Schema";
+              if (schema) {
+                if (path?.length) {
+                  const nodeName = path.at(-1) as string;
+                  return displayStoreFileName(nodeName);
+                }
+                return `Schema: ${displayStoreFileName(schema)}`;
               }
               return "Schemas";
             }
@@ -231,6 +325,7 @@ export function StoreDashboard({
                   <StoreSchemasSchemaFeature
                     {...storeFeatureProps}
                     schema={feature.schema}
+                    path={feature.path || []}
                   />
                 );
               }
@@ -241,55 +336,7 @@ export function StoreDashboard({
             }
             return null;
           }}
-          parseFeatureFragment={(fragment: string) => {
-            if (fragment.startsWith("entries")) {
-              const restFragment = fragment
-                .split("entries")
-                .slice(1)
-                .join("entries");
-              if (restFragment === "--create") {
-                return { key: "entries", child: "create" };
-              }
-              if (restFragment === "") {
-                return { key: "entries" };
-              }
-              const schemasPath = restFragment.split("--schema");
-              if (schemasPath.length >= 2) {
-                const entryNameRestPath = schemasPath[0].split("-");
-                const entryName = entryNameRestPath[1];
-                const schemasRestPath = schemasPath[1].split("-");
-                const path = schemasRestPath.slice(1);
-                return { key: "entries", entryName, child: "schema", path };
-              } else {
-                const restPath = restFragment.split("-");
-                const entryName = restPath[1];
-                const path = restPath.slice(2);
-                return { key: "entries", entryName, path };
-              }
-            }
-            if (fragment.startsWith("schemas")) {
-              if (fragment.endsWith("_create"))
-                return { key: "schemas", child: "create" };
-              const restFragment = fragment
-                .split("schemas")
-                .slice(1)
-                .join("schemas");
-              const schemaPath = restFragment
-                .slice(1)
-                .split("-")
-                .filter((s) => s !== "");
-              if (schemaPath.length) {
-                return { key: "schemas", schema: schemaPath[0] };
-              }
-              return { key: "schemas" };
-            }
-            if (fragment.startsWith("settings")) {
-              return { key: "settings" };
-            }
-
-            if (fragment === "settings") return { key: "settings" };
-            return null;
-          }}
+          parseFeatureFragment={parseFeatureFragment}
           stringifyFeatureFragment={(feature: StoreNavigationState) => {
             if (feature.key === "entries") {
               if (feature.child === "create") return "entries--create";
@@ -308,8 +355,12 @@ export function StoreDashboard({
             }
             if (feature.key === "schemas") {
               let fragment = "schemas";
-              if (feature.child === "create") fragment += "_create";
+              if (feature.child === "create") return "schemas--create";
               if (feature.schema) fragment += `-${feature.schema}`;
+              if (feature.path)
+                feature.path.forEach(
+                  (entryPathTerm) => (fragment += `-${entryPathTerm}`),
+                );
               return fragment;
             }
             if (feature.key === "settings") {
@@ -340,11 +391,21 @@ export function StoreDashboard({
               }
               return parents;
             }
-            if (
-              feature.key === "schemas" &&
-              (feature.child || feature.schema)
-            ) {
-              return [{ key: "schemas" }];
+            if (feature.key === "schemas") {
+              const { path, schema, child } = feature;
+              const parents: StoreNavigationState[] = [];
+              if (child || schema) {
+                parents.push({ key: "schemas" });
+              }
+              path?.forEach((_pathKey, index) => {
+                parents.push({
+                  key: "schemas",
+                  child,
+                  schema,
+                  path: path?.slice(0, index) as string[],
+                });
+              });
+              return parents;
             }
             return [];
           }}

@@ -1,21 +1,27 @@
-import { useConnection, useRequiredConnection } from "@zerve/client/Connection";
-import { postZAction } from "@zerve/client/ServerCalls";
 import {
-  AllJSONSchemaType,
+  AnyError,
   displayStoreFileName,
   drillSchemaValue,
   EmptySchemaStore,
   expandSchema,
+  GenericError,
+  isEmptySchema,
   JSONSchema,
+  lookUpValue,
+  mergeValue,
   prepareStoreFileName,
   SchemaStore,
 } from "@zerve/core";
 import {
+  Button,
+  HStack,
   HumanTextInput,
+  JSONSchemaEditor,
   JSONSchemaEditorContext,
   JSONSchemaForm,
   Label,
   showToast,
+  Spacer,
   ThemedText,
   Title,
   useAsyncHandler,
@@ -23,109 +29,50 @@ import {
   VSpaced,
   VStack,
 } from "@zerve/zen";
-import { memo, useCallback, useMemo } from "react";
-import { FeaturePane, NavLink } from "../web/Dashboard";
-import { useQueryClient } from "react-query";
-import { useRouter } from "next/router";
+import { memo, useEffect, useMemo, useState } from "react";
+import { FeaturePane } from "../web/Dashboard";
 import {
-  useCreateEntry,
   useDeleteEntry,
   useRenameEntry,
   useSaveEntry,
 } from "@zerve/client/Mutation";
 import {
+  StoreFeatureLink,
   StoreFeatureLinkButton,
   StoreFeatureProps,
   useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
-import {
-  connectionSchemasToZSchema,
-  useZNodeValue,
-  useZStoreSchemas,
-} from "@zerve/client/Query";
+import { useZNodeValue, useZStoreSchemas } from "@zerve/client/Query";
 
-const EntryNameSchema = {
-  type: "string",
-  title: "Entry Name",
-} as const;
-
-function EntryContent({
-  value,
+function EmptyEntryContent({
   entryName,
-  location,
-  schema,
-  schemaStore,
   path,
-  onValue,
 }: {
-  value: any;
   entryName: string;
-  location: string[];
-  schema: JSONSchema;
-  schemaStore: SchemaStore;
-  onValue: (v: any) => Promise<void>;
   path: Array<string>;
 }) {
-  const fullSchema = useMemo(() => {
-    return connectionSchemasToZSchema(schemaStore);
-  }, [schemaStore]);
-  const { openEntry } = useStoreNavigation(location);
-  const editorContext = useMemo(() => {
-    return {
-      OverrideFieldComponents: {
-        "https://type.zerve.link/HumanText": HumanTextInput,
-      },
-      openChildEditor: (key: string) => {
-        openEntry(entryName, [...path, key]);
-      },
-    };
-  }, []);
-  const { schema: displaySchema, value: displayValue } = useMemo(() => {
-    const fullSchema = expandSchema(schema, schemaStore);
-    return drillSchemaValue(fullSchema, value, path);
-  }, [schema, value, path, schemaStore]);
-  const { claimDirty, releaseDirty } = useUnsavedContext();
-
-  if (typeof schema == "object" && schema.type === "null")
-    return (
-      <VStack padded>
-        <VSpaced space={4}>
-          <Title
-            secondary
-            style={{ textAlign: "center" }}
-            title="This Entry is Empty"
-          />
-        </VSpaced>
-        <Label>You can modify the schema here:</Label>
-        <StoreFeatureLinkButton
-          title="Set Schema"
-          icon="crosshairs"
-          to={{
-            key: "entries",
-            path,
-            child: "schema",
-          }}
-        />
-      </VStack>
-    );
   return (
-    <JSONSchemaEditorContext.Provider value={editorContext}>
-      <JSONSchemaForm
-        id={`entry-${entryName}-${path.join("-")}`}
-        onValue={onValue}
-        onDirty={(value: any) => {
-          claimDirty(`entry-${entryName}`, path, value);
+    <VStack padded>
+      <VSpaced space={4}>
+        <Title
+          secondary
+          style={{ textAlign: "center" }}
+          title="This Entry is Empty"
+        />
+      </VSpaced>
+      <Label>You can modify the schema here:</Label>
+      <StoreFeatureLinkButton
+        title="Set Schema"
+        icon="crosshairs"
+        to={{
+          key: "entries",
+          entryName,
+          path,
+          child: "schema",
         }}
-        onCancel={() => {
-          releaseDirty();
-        }}
-        value={displayValue}
-        schema={displaySchema}
-        schemaStore={schemaStore}
-        padded
       />
-    </JSONSchemaEditorContext.Provider>
+    </VStack>
   );
 }
 
@@ -137,8 +84,8 @@ function StoreEntriesEntry({
   title,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const saveEntry = useSaveEntry(storePath);
-  const schemas = useZStoreSchemas(storePath);
-  const entry = useZNodeValue([...storePath, "State", entryName]);
+  const schemasQuery = useZStoreSchemas(storePath);
+  const entryQuery = useZNodeValue([...storePath, "State", entryName]);
   const { openEntrySchema, replaceToEntries, replaceToEntry } =
     useStoreNavigation(location);
   const deleteFile = useDeleteEntry(
@@ -165,19 +112,54 @@ function StoreEntriesEntry({
       };
     },
   );
-  const { releaseDirty } = useUnsavedContext();
+  const { openEntry } = useStoreNavigation(location);
+  const editorContext = useMemo(() => {
+    return {
+      OverrideFieldComponents: {
+        "https://type.zerve.link/HumanText": HumanTextInput,
+      },
+      openChildEditor: (key: string) => {
+        openEntry(entryName, [...path, key]);
+      },
+    };
+  }, []);
+  const entrySchema = entryQuery.data?.schema;
+  const savedEntryValue = entryQuery.data?.value;
+  const schemaStore = schemasQuery.data || EmptySchemaStore;
+
+  const storeValueId = `entry-${entryName}`;
+  const { schema: pathSchema, value: savedPathValue } = useMemo(() => {
+    const fullSchema = entrySchema && expandSchema(entrySchema, schemaStore);
+    return drillSchemaValue(fullSchema, savedEntryValue, path);
+  }, [entrySchema, savedEntryValue, path, schemaStore]);
+
+  const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
+    useUnsavedContext();
+  const isDirty = dirtyIds.has(storeValueId);
+  const [draftValue, setDraftValue] = useState(
+    isDirty ? lookUpValue(getDirtyValue(storeValueId), path) : undefined,
+  );
+  const doSave = useAsyncHandler<void, AnyError>(async () => {
+    await saveEntry.mutateAsync({
+      name: entryName,
+      value: getDirtyValue(storeValueId),
+    });
+    releaseDirty(storeValueId);
+  });
   return (
     <FeaturePane
       title={title}
-      spinner={saveEntry.isLoading || schemas.isFetching || entry.isFetching}
+      spinner={
+        saveEntry.isLoading || schemasQuery.isFetching || entryQuery.isFetching
+      }
       actions={[
         {
           key: "Refresh",
           title: "Refresh",
           icon: "refresh",
           onPress: () => {
-            schemas.refetch();
-            entry.refetch();
+            entryQuery.refetch();
+            entryQuery.refetch();
           },
         },
         {
@@ -208,20 +190,59 @@ function StoreEntriesEntry({
         },
       ]}
     >
-      {entry.data && schemas.data ? (
-        <EntryContent
-          path={path}
-          location={location}
-          entryName={entryName}
-          onValue={async (value) => {
-            await saveEntry.mutateAsync({ name: entryName, value });
-            releaseDirty();
-          }}
-          value={entry.data.value}
-          schema={entry.data.schema}
-          schemaStore={schemas.data}
-        />
-      ) : null}
+      {!(savedEntryValue !== undefined || !schemaStore) ? null : isEmptySchema(
+          entrySchema,
+        ) ? (
+        <EmptyEntryContent entryName={entryName} path={path} />
+      ) : (
+        <JSONSchemaEditorContext.Provider value={editorContext}>
+          <VStack padded>
+            <JSONSchemaEditor
+              id={`entry-${entryName}-${path.join("-")}`}
+              onValue={(value: any) => {
+                setDraftValue(value);
+                if (path.length && !dirtyIds.has(storeValueId)) {
+                  claimDirty(
+                    storeValueId,
+                    [],
+                    mergeValue(savedEntryValue, path, value),
+                  );
+                } else {
+                  claimDirty(storeValueId, path, value);
+                }
+              }}
+              value={draftValue === undefined ? savedPathValue : draftValue}
+              schema={pathSchema}
+              schemaStore={schemaStore}
+            />
+          </VStack>
+          <Spacer />
+          {isDirty &&
+            (path.length ? (
+              <StoreFeatureLink
+                title="Unsaved Changes. Go Back to Save"
+                to={{
+                  key: "entries",
+                  entryName,
+                  path: path.slice(0, -1),
+                }}
+                icon="backward"
+              />
+            ) : (
+              <HStack padded>
+                <Button
+                  chromeless
+                  title="Discard"
+                  onPress={() => {
+                    setDraftValue(undefined);
+                    releaseDirty(storeValueId);
+                  }}
+                />
+                <Button primary title="Save Changes" onPress={doSave.handle} />
+              </HStack>
+            ))}
+        </JSONSchemaEditorContext.Provider>
+      )}
     </FeaturePane>
   );
 }

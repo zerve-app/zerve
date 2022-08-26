@@ -93,6 +93,16 @@ const DeleteSchemaActionSchema = {
   required: ["schemaName"],
 } as const;
 
+const RenameSchemaActionSchema = {
+  type: "object",
+  properties: {
+    prevName: EntryNameSchema,
+    newName: EntryNameSchema,
+  },
+  additionalProperties: false,
+  required: ["prevName", "newName"],
+} as const;
+
 function validateNode(
   node: FromSchema<typeof NodeSchema>,
   schemas: SchemaStore,
@@ -240,6 +250,20 @@ export async function createGeneralStore(
             ...state,
             $schemas: schemas,
           };
+        },
+      },
+      RenameSchema: {
+        schema: RenameSchemaActionSchema,
+        handler: (
+          state: FromSchema<typeof StateTreeSchema>,
+          action: FromSchema<typeof DeleteSchemaActionSchema>,
+        ) => {
+          const { prevName, newName } = action;
+          const newSchemas: typeof state["$schemas"] = { ...state.$schemas };
+          const value = newSchemas[prevName];
+          delete newSchemas[prevName];
+          newSchemas[newName] = value;
+          return { ...state, $schemas: newSchemas };
         },
       },
     },

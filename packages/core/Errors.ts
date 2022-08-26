@@ -20,6 +20,8 @@ export class GenericError<ErrorCode, Details> extends Error {
   }
 }
 
+export type AnyError = GenericError<any, any>;
+
 export class ServerError<
   ErrorCode = "UnknownError",
   Details = undefined,
