@@ -38,6 +38,7 @@
     "aardvark:update": "ssh aardvark /root/aardvark-script.sh UpdateAardvark",
     "aardvark:build": "yarn workspace aardvark-server build && yarn workspace zoo-web build",
     "aardvark:start": "cross-env Z_ORIGIN=\"http://localhost:3988\" concurrently \"yarn workspace aardvark-server start\" \"yarn workspace zoo-web start\"",
+    "aardvark:logs": "ssh aardvark -t \"journalctl -u AardvarkServer -n 150 --follow\"",
     "docs": "yarn workspace @zerve/docs start"
   },
   "devDependencies": {

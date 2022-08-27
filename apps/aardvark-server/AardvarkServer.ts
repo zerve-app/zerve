@@ -18,6 +18,7 @@ import { BuildZebra } from "./BuildZebra";
 import { DiskUsage } from "./DiskUsage";
 import { Deployments } from "./Deployments";
 import { joinPath, Move, ReadJSON } from "@zerve/system-files";
+import { setupServer } from "./Servers";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3988;
 
@@ -90,7 +91,7 @@ export async function startApp() {
         deploymentName: "staging",
         replace: true,
       });
-      console.log("== BuildAndDeployZebraStaging: completed ==");
+      console.log("== BuildAndDeployZebraStaging: completed success ==");
       return null;
     },
   );
@@ -124,6 +125,7 @@ export async function startApp() {
         BuildZebra,
         Deployments,
         BuildAndDeployZebraStaging,
+        setupServer,
         ...user,
       };
     },

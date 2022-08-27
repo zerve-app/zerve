@@ -164,6 +164,7 @@ export const DeployZebraStaging = (buildId: string) =>
       await applyCaddyfile(state);
 
       isDeploymentInProgress = false;
+      console.log("== DeployZebraStaging: complete");
 
       return null;
     },
