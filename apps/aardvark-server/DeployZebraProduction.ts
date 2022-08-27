@@ -1,6 +1,7 @@
 import { createZAction, FromSchema, NullSchema } from "@zerve/core";
 import { Command } from "@zerve/system-commands";
-import { serverCommand } from "./Servers";
+import { ensureServerTextFile, serverCommand } from "./Servers";
+import { getSystemdServiceFile } from "./Systemd";
 
 const DeployRequestSchema = {
   type: "object",
@@ -75,9 +76,62 @@ export const DeployZebraProduction = (buildId: string) =>
         `mv /home/zerve/${buildId} ${deploymentPath}`,
       );
 
-      // apply systemd config
-      // restart services
-      // apply caddy config
+      await ensureServerTextFile(
+        "zebra",
+        "/etc/systemd/system/ZebraServer.service",
+        getSystemdServiceFile({
+          serviceKey: "ZebraServer",
+          workingDir: "/home/zerve/zebra/apps/zebra-server",
+          execStart:
+            "/usr/bin/node /home/zerve/zebra/apps/zebra-server/build/ZebraServer.js",
+          env: {
+            PORT: "8888",
+            NODE_ENV: "production",
+            Z_ORIGIN: "https://alpha.zerve.dev",
+            ZERVE_DATA_DIR: dataDir,
+          },
+        }),
+      );
+      await ensureServerTextFile(
+        "zebra",
+        "/etc/systemd/system/ZebraWeb.service",
+        getSystemdServiceFile({
+          serviceKey: "ZebraWeb",
+          workingDir: "/home/zerve/zebra/apps/zebra-web",
+          execStart: "/home/zerve/zebra/node_modules/.bin/next start",
+          env: {
+            PORT: "8000",
+            NODE_ENV: "production",
+            Z_ORIGIN: "https://alpha.zerve.dev",
+          },
+        }),
+      );
+      await serverCommand("zebra", "systemctl daemon-reload");
+      await serverCommand("zebra", "systemctl enable ZebraServer");
+      await serverCommand("zebra", "systemctl enable ZebraWeb");
+      await serverCommand("zebra", "systemctl restart ZebraServer");
+      await serverCommand("zebra", "systemctl restart ZebraWeb");
+
+      await ensureServerTextFile(
+        "zebra",
+        "/etc/caddy/Caddyfile",
+        `
+alpha.zerve.app {
+	tls {
+    dns cloudflare {env.CF_KEY}
+	}
+	route /.z* {
+		reverse_proxy http://localhost:8888
+	}
+	reverse_proxy http://localhost:8000
+}
+`,
+      );
+
+      await serverCommand(
+        "zebra",
+        "caddy reload --config /etc/caddy/Caddyfile",
+      );
 
       console.log("= DeployZebraProduction clean up previous deployment");
       await serverCommand("zebra", "rm -rf /home/zerve/prev-zebra");

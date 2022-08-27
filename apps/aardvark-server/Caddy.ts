@@ -29,6 +29,7 @@ ${deploymentKey}.zerve.dev {
 `)}
 `,
   });
+  console.log("Wrote Caddyfile. Reloading config.");
   await Command.call({
     command: "caddy",
     args: ["reload", "--config", "/etc/caddy/Caddyfile"],

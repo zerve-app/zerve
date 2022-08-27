@@ -7,7 +7,7 @@ import {
 } from "@zerve/system-files";
 import { DeploymentsPath, DeploymentsState } from "./Deployments";
 
-export async function writeSystemdServiceFile(params: {
+export function getSystemdServiceFile(params: {
   serviceKey: string;
   workingDir: string;
   execStart: string;
@@ -31,9 +31,18 @@ ${Object.entries(params.env).map(
 [Install]
 WantedBy=multi-user.target
 `;
+  return serviceFileValue;
+}
+
+export async function writeSystemdServiceFile(params: {
+  serviceKey: string;
+  workingDir: string;
+  execStart: string;
+  env: Record<string, string>;
+}) {
   await WriteFile.call({
     path: joinPath("/etc/systemd/system", `${params.serviceKey}.service`),
-    value: serviceFileValue,
+    value: getSystemdServiceFile(params),
   });
 }
 

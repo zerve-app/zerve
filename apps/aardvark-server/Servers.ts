@@ -26,6 +26,43 @@ export async function ensureServerCommand(serverName: string, command: string) {
   return results;
 }
 
+export async function writeServerTextFile(
+  serverName: string,
+  path: string,
+  value: string,
+) {
+  await ensureServerCommand(
+    serverName,
+    `cat <<EOF > ${path}
+${value}
+EOF`,
+  );
+}
+
+export async function readServerTextFile(serverName: string, path: string) {
+  const catResult = await serverCommand(serverName, `cat ${path}`);
+  if (catResult.responseCode !== 0) return undefined;
+  const returnedContent = catResult.out.split("\r\n").slice(0, -1).join("\n");
+  return returnedContent || undefined;
+}
+
+export async function ensureServerTextFile(
+  serverName: string,
+  path: string,
+  value: string,
+) {
+  let didWrite = false;
+  const prevFile = await readServerTextFile(serverName, path);
+  if (prevFile !== value) {
+    await writeServerTextFile(serverName, path, value);
+    console.log("Wrote " + path);
+    didWrite = true;
+  } else {
+    console.log("Verified " + path + " content is correct.");
+  }
+  return didWrite;
+}
+
 export const setupServer = createZAction(
   {
     type: "object",
@@ -47,6 +84,15 @@ export const setupServer = createZAction(
         command: `ssh`,
         args: [serverName, "-tt", command],
       });
+    }
+    async function writeTextFile(path: string, value: string) {
+      return await writeServerTextFile(serverName, path, value);
+    }
+    async function readTextFile(path: string) {
+      return await readServerTextFile(serverName, path);
+    }
+    async function ensureTextFile(path: string, value: string) {
+      return await ensureServerTextFile(serverName, path, value);
     }
     async function ensureServerCommand(command: string) {
       const results = await serverCommand(command);
@@ -224,34 +270,6 @@ export const setupServer = createZAction(
       await ensureServerCommand("systemctl start caddy");
       const caddyInstalledVersion = await ensureServerCommand("caddy version");
       console.log("Installed Caddy version: " + caddyInstalledVersion.out);
-    }
-
-    async function writeTextFile(path: string, value: string) {
-      await ensureServerCommand(`cat <<EOF > ${path}
-${value}
-EOF`);
-    }
-    async function readTextFile(path: string) {
-      const catResult = await serverCommand(`cat ${path}`);
-      if (catResult.responseCode !== 0) return undefined;
-      const returnedContent = catResult.out
-        .split("\r\n")
-        .slice(0, -1)
-        .join("\n");
-      return returnedContent || undefined;
-    }
-
-    async function ensureTextFile(path: string, value: string) {
-      let didWrite = false;
-      const prevFile = await readTextFile(path);
-      if (prevFile !== value) {
-        await writeTextFile(path, value);
-        console.log("Wrote " + path);
-        didWrite = true;
-      } else {
-        console.log("Verified " + path + " content is correct.");
-      }
-      return didWrite;
     }
 
     async function ls(path: string) {
