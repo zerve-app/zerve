@@ -88,7 +88,7 @@ export const DeployZebraProduction = (buildId: string) =>
           env: {
             PORT: "8888",
             NODE_ENV: "production",
-            Z_ORIGIN: "https://alpha.zerve.dev",
+            Z_ORIGIN: "https://alpha.zerve.app",
             ZERVE_DATA_DIR: dataDir,
           },
         }),
@@ -103,7 +103,7 @@ export const DeployZebraProduction = (buildId: string) =>
           env: {
             PORT: "8000",
             NODE_ENV: "production",
-            Z_ORIGIN: "https://alpha.zerve.dev",
+            Z_ORIGIN: "https://alpha.zerve.app",
           },
         }),
       );
