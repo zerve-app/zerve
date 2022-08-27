@@ -11,6 +11,21 @@ const secretsFile =
   process.env.ZERVE_SECRETS_JSON ||
   joinPath(process.cwd(), "../../secrets.json");
 
+export async function serverCommand(serverName: string, command: string) {
+  return await TryCommand.call({
+    command: `ssh`,
+    args: [serverName, "-tt", command],
+  });
+}
+export async function ensureServerCommand(serverName: string, command: string) {
+  const results = await serverCommand(serverName, command);
+  if (results.responseCode !== 0) {
+    console.log(results);
+    throw new Error("Failed to run " + command);
+  }
+  return results;
+}
+
 export const setupServer = createZAction(
   {
     type: "object",

@@ -7,6 +7,8 @@ import {
   StringSchema,
   FromSchema,
   validateWithSchema,
+  NotFoundError,
+  createZStatic,
 } from "@zerve/core";
 import {
   DeleteRecursive,
@@ -29,6 +31,7 @@ export const DeploymentSpecSchema = {
     webPort: NumberSchema,
     deploymentPath: StringSchema,
     dataDir: StringSchema,
+    buildId: StringSchema,
   },
   required: ["serverPort", "webPort", "deploymentPath", "dataDir"],
 } as const;
@@ -94,8 +97,22 @@ function getDeploymentDestroy(deploymentName: string) {
 
 export const Deployments = createZGettableGroup(
   async (deploymentName: string) => {
+    const state = await readDeploymentsState();
+    const deploymentState = state.specs[deploymentName];
+    if (!deploymentState)
+      throw new NotFoundError(
+        "NotFound",
+        `Deployment ${deploymentName} Not Found`,
+        { deploymentName },
+      );
+    const { buildId } = deploymentState;
     return createZContainer({
       Destroy: getDeploymentDestroy(deploymentName),
+      Build: createZStatic({
+        zContract: "Link",
+        destination: `/Auth/user/CompletedBuilds/${buildId}`,
+        details: { buildId },
+      }),
     } as const);
   },
   async () => {

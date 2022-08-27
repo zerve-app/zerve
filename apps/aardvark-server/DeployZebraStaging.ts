@@ -49,7 +49,7 @@ export const DeployZebraStaging = (buildId: string) =>
     }: FromSchema<typeof DeployRequestSchema>) => {
       if (isDeploymentInProgress) {
         throw new Error(
-          "Cannot perform simultaneous builds right now. or maybe build has failed and aardvark needs restart",
+          "Cannot perform simultaneous deployments. Or maybe deployment has failed badly and aardvark needs restart",
         );
       }
       console.log("== DeployZebraStaging start");
@@ -75,7 +75,7 @@ export const DeployZebraStaging = (buildId: string) =>
       const webPort = ++availPortIndex;
       const serverPort = ++availPortIndex;
       console.log(
-        "= DeployZebraStaging writeDeploymentsState ",
+        "= DeployZebraStaging ",
         JSON.stringify(
           { deploymentPath, dataDir, webPort, serverPort },
           null,
@@ -88,7 +88,13 @@ export const DeployZebraStaging = (buildId: string) =>
         availPortIndex,
         specs: {
           ...prevState.specs,
-          [deploymentName]: { deploymentPath, webPort, serverPort, dataDir },
+          [deploymentName]: {
+            deploymentPath,
+            webPort,
+            serverPort,
+            dataDir,
+            buildId,
+          },
         },
       };
       console.log(

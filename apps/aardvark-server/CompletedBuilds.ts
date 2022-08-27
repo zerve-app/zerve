@@ -8,6 +8,7 @@ import {
 } from "@zerve/core";
 import { Command } from "@zerve/system-commands";
 import { ReadDir, ReadJSON } from "@zerve/system-files";
+import { DeployZebraProduction } from "./DeployZebraProduction";
 import { DeployZebraStaging } from "./DeployZebraStaging";
 
 function getBuildDetailsZ(buildId: string) {
@@ -34,6 +35,7 @@ export const CompletedBuilds = createZGettableGroup(
     return createZContainer({
       BuildId: createZStatic(buildId),
       DeployStaging: DeployZebraStaging(buildId),
+      DeployProduction: DeployZebraProduction(buildId),
       Details: getBuildDetailsZ(buildId),
       Destroy: getBuildDestroyZ(buildId),
     } as const);
