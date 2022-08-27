@@ -63,6 +63,7 @@ export const DeployZebraProduction = (buildId: string) =>
 
       console.log("= DeployZebraProduction make data dir " + dataDir);
       await serverCommand("zebra", `mkdir -p ${dataDir}`);
+      await serverCommand("zebra", `chown -R zerve:zerve ${dataDir}`);
 
       console.log("= DeployZebraProduction MOVE PREVIOUS " + deploymentPath);
       await serverCommand(
@@ -118,7 +119,7 @@ export const DeployZebraProduction = (buildId: string) =>
         `
 alpha.zerve.app {
 	tls {
-    dns cloudflare {env.CF_KEY}
+		dns cloudflare {env.CF_KEY}
 	}
 	route /.z* {
 		reverse_proxy http://localhost:8888
