@@ -391,7 +391,6 @@ export function ArrayEditor({
 }
 
 function getHumanLabelOfSchema(schema: JSONSchema) {
-  console.log("hello huuman", schema);
   if (schema === false) return "Never";
   if (schema === true) return "Any";
   if (schema.title) return schema.title;

@@ -13,6 +13,7 @@ import {
   ReadDir,
   WriteJSON,
 } from "@zerve/system-files";
+import { writeJSONFile } from "@zerve/node";
 
 const CmdResultSchema = {
   type: "object",
@@ -110,6 +111,7 @@ export const BuildZebra = createZAction(
       .replace("T", "-")
       .replace(/:/g, "-");
     let buildId = buildTimeString;
+    const buildTime = new Date().toISOString();
 
     try {
       // clean up the previous build
@@ -164,6 +166,10 @@ export const BuildZebra = createZAction(
       await Copy.call({
         from: "/root/secrets.json",
         to: joinPath(buildDir, "secrets.json"),
+      });
+      writeJSONFile(joinPath(buildDir, "build.json"), {
+        buildTime,
+        buildId,
       });
 
       // run build commands

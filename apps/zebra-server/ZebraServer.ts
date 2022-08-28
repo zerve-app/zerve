@@ -42,6 +42,7 @@ import {
 import { createGeneralStore, GeneralStoreModule } from "@zerve/store";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
+import { createStream as createRotatingWriteStream } from "rotating-file-stream";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 
@@ -54,6 +55,8 @@ const dataDir =
     ? joinPath(process.cwd(), "dev-data")
     : defaultZDataDir);
 
+const loggingDir = joinPath(dataDir, "logs");
+
 const secretsFile =
   process.env.ZERVE_SECRETS_JSON ||
   joinPath(process.cwd(), "../../secrets.json");
@@ -62,6 +65,59 @@ type MemoryStore = { store: GeneralStoreModule; settings: StoreSettings };
 
 export async function startApp() {
   console.log("Starting Data Dir", dataDir);
+
+  const myBuildData = await ReadJSON.call(
+    joinPath(process.cwd(), "../../build.json"),
+  );
+  const myBuildId = myBuildData?.buildId || "unknown";
+  const logPath = joinPath(loggingDir, `${myBuildId}.log`);
+
+  console.log("Starting build " + myBuildId);
+  console.log("Writing logs to " + logPath);
+
+  const logStream = createRotatingWriteStream(logPath, {
+    size: "10M", // rotate every 10 MegaBytes written
+    interval: "1d", // rotate daily
+    compress: "gzip", // compress rotated files
+  });
+
+  function logEvent(name: string, event: any) {
+    const time = Date.now();
+    if (process.env.VERBOSE) {
+      console.log(`${name} event (${time}): `, JSON.stringify(event, null, 2));
+    }
+    logStream.write(JSON.stringify({ name, time, event }));
+    logStream.write("\n");
+  }
+
+  function logServerEvent(name: string, event: any) {
+    let overriddenEvent = event;
+    const { path, body } = event;
+    // we MUST strip plaintext passwords to prevent them from appearing in the logs!
+    // other than plaintext pw, all user data is already accessible for somebody who has read access on the dataDir
+    // because we have a deep understanding of the Auth module and client UI, we know these are the only two situations where the user should provide plaintext pw to the server
+    if (path === "/Auth/createSessionWithPassword") {
+      overriddenEvent = {
+        ...event,
+        body: { ...body, password: !!body.password },
+      };
+    }
+    if (path === "/Auth/user/setPassword") {
+      overriddenEvent = {
+        ...event,
+        body: { ...body, newPassword: !!body.newPassword },
+      };
+    }
+    logEvent(name, overriddenEvent);
+  }
+
+  logEvent("WillStartServer", {
+    port,
+    dataDir,
+    secretsFile, // this is just the path. we should avoid logging real secrets if possible
+    logPath,
+    buildData: myBuildData,
+  });
 
   const secrets = await ReadJSON.call(secretsFile);
   function requireSecret(secretKey: string): string {
@@ -421,7 +477,15 @@ export async function startApp() {
     Auth: zAuth,
   });
 
-  await startZedServer(port, zRoot);
+  await startZedServer(port, zRoot, logServerEvent);
+
+  logEvent("DidStartServer", {
+    port,
+    dataDir,
+    secretsFile, // this is just the path. we should avoid logging real secrets if possible
+    logPath,
+    buildData: myBuildData,
+  });
 }
 
 startApp().catch((e) => {

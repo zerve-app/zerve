@@ -70,7 +70,11 @@ export type HeaderStuffs = {
   auth?: Readonly<[string, string]>;
 };
 
-export async function startZedServer(port: number, zed: AnyZed) {
+export async function startZedServer(
+  port: number,
+  zed: AnyZed,
+  onEvent: (name: string, event: any) => void,
+) {
   const app = express();
 
   const connectedClients: Map<string, Client> = new Map();
@@ -260,7 +264,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
   ) {
     await promisedValue
       .then((resolved) => {
-        console.log("YUP!", resolved);
         const [response, cacheOptions] = resolved;
         const responseValue = stringify(response);
         const [cacheHeader, etag] = getCacheControl(
@@ -618,7 +621,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new NotFoundError("NotFound", "Not found", { path });
   }
 
-  const jsonHandler = json({
+  const parseJSON = json({
     //   strict: true, // considered false here (thanks to _$RAW_VALUE for edge case and https://github.com/expressjs/body-parser/issues/461)
     strict: true,
   });
@@ -634,14 +637,67 @@ export async function startZedServer(port: number, zed: AnyZed) {
       const pair = decoded.split(":");
       headers.auth = [pair[0], pair[1]] as const;
     }
+    function handleReqWithBody(body?: any) {
+      const handled = handleZRequest(
+        zed,
+        pathSegments,
+        req.query,
+        req.method,
+        [],
+        headers,
+        body,
+        {},
+      )
+        .then((resolved) => {
+          const [resolvedValue, resolvedOptions] = resolved;
+          onEvent("Request", {
+            resolvedValue,
+            resolvedOptions,
+            path: req.path,
+            query: req.query,
+            method: req.method,
+            body,
+            headers,
+          });
+          return resolved;
+        })
+        .catch((e) => {
+          onEvent("RequestError", {
+            error: {
+              message: e.message,
+              code: e.code,
+              details: e.details,
+            },
+            path: req.path,
+            query: req.query,
+            method: req.method,
+            body,
+            headers,
+          });
+          throw e;
+        });
+      handleJSONPromise(req, res, handled);
+    }
+
     if (
       (req.method === "POST" ||
         req.method === "PATCH" ||
         req.method === "PUT") &&
       req.headers["content-type"] === "application/json"
     ) {
-      jsonHandler(req, res, (err) => {
+      parseJSON(req, res, (err) => {
         if (err) {
+          onEvent("RequestError", {
+            error: {
+              message: err.message,
+              code: "BodyParseError",
+              details: {},
+            },
+            path: req.path,
+            query: req.query,
+            method: req.method,
+            headers,
+          });
           // todo, probably wrap with RequestError so more metadata will flow
           handleJSONPromise(req, res, Promise.reject(err));
           return;
@@ -650,36 +706,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
         if (body._$RAW_VALUE !== undefined) {
           body = body._$RAW_VALUE;
         }
-        handleJSONPromise(
-          req,
-          res,
-          handleZRequest(
-            zed,
-            pathSegments,
-            req.query,
-            req.method,
-            [],
-            headers,
-            body,
-            {},
-          ),
-        );
+        handleReqWithBody(body);
       });
     } else {
-      handleJSONPromise(
-        req,
-        res,
-        handleZRequest(
-          zed,
-          pathSegments,
-          req.query,
-          req.method,
-          [],
-          headers,
-          undefined,
-          {},
-        ),
-      );
+      handleReqWithBody(undefined);
     }
   }
 
