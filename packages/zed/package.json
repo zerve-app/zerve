@@ -9,8 +9,7 @@
   },
   "devDependencies": {
     "@zerve/config": "*",
-    "tsconfig": "*",
-    "typescript": "^4.7.4"
+    "tsconfig": "*"
   },
   "dependencies": {
     "immer": "^9.0.12",

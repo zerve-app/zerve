@@ -10,8 +10,7 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@zerve/config": "*",
-    "tsconfig": "*",
-    "typescript": "^4.7.4"
+    "tsconfig": "*"
   },
   "dependencies": {
     "buffer": "^6.0.3"

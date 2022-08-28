@@ -60,7 +60,6 @@
     "@types/react": "~18.0.0",
     "@types/react-native": "~0.69.1",
     "eas-cli": "^0.60.0",
-    "tsconfig": "*",
-    "typescript": "^4.7.4"
+    "tsconfig": "*"
   }
 }

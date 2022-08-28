@@ -12,8 +12,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/react-native": "^0.69.1",
     "@zerve/config": "*",
-    "tsconfig": "*",
-    "typescript": "^4.7.4"
+    "tsconfig": "*"
   },
   "peerDependencies": {
     "@expo/vector-icons": "13.0.0",
