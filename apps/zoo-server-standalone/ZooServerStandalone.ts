@@ -1,5 +1,5 @@
 import { startZedServer } from "@zerve/node";
-import { createZContainer } from "@zerve/core";
+import { createZContainer } from "@zerve/zed";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore } from "@zerve/store";
 import { joinPath } from "@zerve/system-files";

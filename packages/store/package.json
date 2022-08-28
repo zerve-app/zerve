@@ -9,7 +9,7 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@zerve/core": "*",
+    "@zerve/zed": "*",
     "@zerve/chain": "*",
     "@zerve/system-files": "*",
     "@zerve/data": "*"

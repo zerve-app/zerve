@@ -13,7 +13,7 @@ import {
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
 import { showToast } from "@zerve/zen/Toast";
-import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
+import { displayStoreFileName, prepareStoreFileName } from "@zerve/zed";
 import { JSONSchemaForm, useActionsSheet } from "@zerve/zen";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 

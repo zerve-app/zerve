@@ -1,4 +1,4 @@
-import { createZAction, RequestError } from "@zerve/core";
+import { createZAction, RequestError } from "@zerve/zed";
 
 import sgMail from "@sendgrid/mail";
 

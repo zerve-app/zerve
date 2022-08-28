@@ -1,4 +1,4 @@
-import { createZAction, createZContainer, createZGettable } from "@zerve/core";
+import { createZAction, createZContainer, createZGettable } from "@zerve/zed";
 import { readFile } from "fs-extra";
 import { join } from "path";
 import SSHConfig from "ssh-config";

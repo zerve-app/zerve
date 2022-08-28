@@ -1,7 +1,7 @@
 import { AuthStrategy } from "./AuthStrategy";
 import { ZMessageSMS } from "@zerve/message-sms-twilio";
 import { createGenericMessageAuthStrategy } from "./AuthMessageStrategy";
-import { FromSchema, PhoneSchema } from "@zerve/core";
+import { FromSchema, PhoneSchema } from "@zerve/zed";
 
 export async function createSMSAuthStrategy(
   sms: ZMessageSMS,

@@ -4,7 +4,7 @@ import {
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useConnection } from "@zerve/client/Connection";
-import { GenericError } from "@zerve/core";
+import { GenericError } from "@zerve/zed";
 import { useMemo } from "react";
 import { RootStackParamList } from "./Links";
 

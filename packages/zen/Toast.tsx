@@ -1,4 +1,4 @@
-import { defineKeySource } from "@zerve/core";
+import { defineKeySource } from "@zerve/zed";
 import { useAllColors } from "./useColors";
 import { AbsoluteFill, bigShadow } from "@zerve/zen/Style";
 import React, { ReactNode, useEffect, useState } from "react";

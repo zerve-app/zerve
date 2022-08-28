@@ -12,7 +12,7 @@ import { View } from "react-native";
 import BottomSheet, {
   useBottomSheetDynamicSnapPoints,
 } from "@gorhom/bottom-sheet";
-import { defineKeySource } from "@zerve/core";
+import { defineKeySource } from "@zerve/zed";
 import { Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,

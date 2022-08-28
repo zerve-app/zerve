@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { BLOCK_ID_FORMATS, JSONBlock } from "@zerve/core";
+import { BLOCK_ID_FORMATS, JSONBlock } from "@zerve/zed";
 
 import stringify from "json-stable-stringify";
 

@@ -9,7 +9,7 @@ import {
   Paragraph,
 } from "@zerve/zen";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
-import { EmptySchemaStore, JSONSchema } from "@zerve/core";
+import { EmptySchemaStore, JSONSchema } from "@zerve/zed";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";

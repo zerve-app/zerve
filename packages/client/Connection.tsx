@@ -1,5 +1,5 @@
 import React from "react";
-import { NotFoundError, GenericError } from "@zerve/core";
+import { NotFoundError, GenericError } from "@zerve/zed";
 import { createContext, ReactNode, useContext } from "react";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { Buffer } from "buffer";

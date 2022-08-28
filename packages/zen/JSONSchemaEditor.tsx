@@ -9,7 +9,7 @@ import {
   JSONSchemaPluck,
   LeafSchema,
   SchemaStore,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { Pressable, TextStyle, View } from "react-native";
 import { setStringAsync } from "expo-clipboard";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";

@@ -1,4 +1,4 @@
-import { FromSchema, GenericError } from "@zerve/core";
+import { FromSchema, GenericError } from "@zerve/zed";
 import { createZChainStateCalculator } from "@zerve/chain";
 
 const LedgerStateSchema = {

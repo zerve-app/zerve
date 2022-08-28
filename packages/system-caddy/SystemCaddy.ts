@@ -1,4 +1,4 @@
-import { createZAction, createZContainer, FromSchema } from "@zerve/core";
+import { createZAction, createZContainer, FromSchema } from "@zerve/zed";
 
 const CaddySpecSchema = {
   type: "object",

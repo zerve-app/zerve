@@ -9,7 +9,7 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@zerve/core": "*",
+    "@zerve/zed": "*",
     "@zerve/system-commands": "*",
     "@expo/spawn-async": "^1.6.0",
     "ssh-config": "*",

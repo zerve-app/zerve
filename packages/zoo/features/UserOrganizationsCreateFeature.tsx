@@ -6,7 +6,7 @@ import { UserFeatureProps } from "../context/UserDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
-import { EmptySchemaStore } from "@zerve/core";
+import { EmptySchemaStore } from "@zerve/zed";
 
 const OrgNameSchema = {
   type: "string",

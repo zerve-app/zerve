@@ -8,7 +8,7 @@ import {
   lookUpValue,
   mergeValue,
   prepareStoreFileName,
-} from "@zerve/core";
+} from "@zerve/zed";
 import {
   Button,
   HStack,

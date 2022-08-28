@@ -13,7 +13,7 @@ import {
   ajv,
   RequestError,
   ZGroup,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { createJSONBlock } from "@zerve/crypto";
 import { CoreDataModule } from "@zerve/data";
 import { joinPath, MakeDir, ReadJSON, WriteJSON } from "@zerve/system-files";

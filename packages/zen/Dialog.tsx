@@ -7,7 +7,7 @@ import {
   isEmptySchema,
   SchemaStore,
   GenericError,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { useState } from "react";
 import { View } from "react-native";
 import { Button } from "./Button";

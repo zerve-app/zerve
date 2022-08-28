@@ -13,7 +13,7 @@ import {
   validateWithSchema,
   ZAuthContainer,
   UnauthorizedError,
-} from "@zerve/core";
+} from "@zerve/zed";
 import express, { Request, Response } from "express";
 import { createJSONHandler } from "./Server";
 import { json } from "body-parser";

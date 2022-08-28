@@ -33,7 +33,7 @@ import {
   JSONSchema,
   lookUpValue,
   mergeValue,
-} from "@zerve/core";
+} from "@zerve/zed";
 
 function StoreEntriesSchema({
   storePath,

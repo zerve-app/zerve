@@ -1,6 +1,6 @@
 import { ZMessageEmail } from "@zerve/message-email-sendgrid";
 import { createGenericMessageAuthStrategy } from "./AuthMessageStrategy";
-import { ServerError, RequestError, EmailSchema } from "@zerve/core";
+import { ServerError, RequestError, EmailSchema } from "@zerve/zed";
 
 const DEV = process.env.NODE_ENV === "dev";
 

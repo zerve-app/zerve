@@ -5,7 +5,7 @@ import {
 import * as Linking from "expo-linking";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { GenericError } from "@zerve/core";
+import { GenericError } from "@zerve/zed";
 
 declare global {
   namespace ReactNavigation {

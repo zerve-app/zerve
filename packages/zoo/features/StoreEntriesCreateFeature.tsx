@@ -1,4 +1,4 @@
-import { EmptySchemaStore, prepareStoreFileName } from "@zerve/core";
+import { EmptySchemaStore, prepareStoreFileName } from "@zerve/zed";
 import { memo, useCallback } from "react";
 import { FeaturePane } from "../web/Dashboard";
 import { useCreateEntry } from "@zerve/client/Mutation";

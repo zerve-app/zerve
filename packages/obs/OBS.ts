@@ -5,7 +5,7 @@ import {
   createZService,
   createZState,
   NullSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import ObsWebSocket from "obs-websocket-js";
 
 export const ZOBSService = createZService(async () => {

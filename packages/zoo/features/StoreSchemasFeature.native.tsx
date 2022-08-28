@@ -13,7 +13,7 @@ import {
   useStoreNavigation,
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
-import { displayStoreFileName, prepareStoreFileName } from "@zerve/core";
+import { displayStoreFileName, prepareStoreFileName } from "@zerve/zed";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 
 function CreateSchemaButton({ storePath }: { storePath: string[] }) {

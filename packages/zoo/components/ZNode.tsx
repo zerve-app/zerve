@@ -35,7 +35,7 @@ import {
   EmptySchemaStore,
   GenericError,
   getDefaultSchemaValue,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { View } from "react-native";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 import { isSeeminglyAnonUser, LoginForm, LogoutButton } from "./Auth";

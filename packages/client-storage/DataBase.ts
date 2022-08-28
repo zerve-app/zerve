@@ -8,7 +8,7 @@
 //   Commit,
 //   JSONBlock,
 //   NotFoundError,
-// } from "@zerve/core";
+// } from "@zerve/zed";
 // import stringify from "json-stable-stringify";
 // import { createStorage } from "./Storage";
 

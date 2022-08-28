@@ -6,7 +6,7 @@ import {
   createZStatic,
   NullSchema,
   StringSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { createAuth, createEmailAuthStrategy } from "@zerve/auth";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore, GeneralStoreModule } from "@zerve/store";

@@ -3,7 +3,7 @@ import { Switch, TextInput, View } from "react-native";
 import { useColors } from "./useColors";
 import { Label } from "./Label";
 import { getRowStyles, marginHInset, marginVInset } from "./Row";
-import { ZTextInputType } from "@zerve/core";
+import { ZTextInputType } from "@zerve/zed";
 
 export function Input({
   value,

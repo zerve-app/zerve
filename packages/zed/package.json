@@ -1,5 +1,5 @@
 {
-  "name": "@zerve/core",
+  "name": "@zerve/zed",
   "version": "0.0.0",
   "license": "Apache-2.0",
   "main": "./index.ts",

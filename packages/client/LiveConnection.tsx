@@ -2,7 +2,7 @@
 // WE WILL BRING BACK LIVE CONNECTIONS AT SOME POINT
 // LET @ERICVICENTI KNOW IF THIS SHOULD BE PRIORITIZED
 
-import { createZState, ZObservable, ZBooleanSchema } from "@zerve/core";
+import { createZState, ZObservable, ZBooleanSchema } from "@zerve/zed";
 import { useEffect, useMemo } from "react";
 import { QueryClient, useQueryClient } from "react-query";
 import ReconnectingWebSocket from "reconnecting-websocket";

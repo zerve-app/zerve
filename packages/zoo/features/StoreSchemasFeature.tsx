@@ -1,5 +1,5 @@
 import { useZNode } from "@zerve/client/Query";
-import { displayStoreFileName } from "@zerve/core";
+import { displayStoreFileName } from "@zerve/zed";
 import { VStack } from "@zerve/zen";
 import { memo, useMemo } from "react";
 import {

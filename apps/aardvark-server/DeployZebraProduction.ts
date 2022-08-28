@@ -1,4 +1,4 @@
-import { createZAction, FromSchema, NullSchema } from "@zerve/core";
+import { createZAction, FromSchema, NullSchema } from "@zerve/zed";
 import { Command } from "@zerve/system-commands";
 import { ensureServerTextFile, serverCommand } from "./Servers";
 import { getSystemdServiceFile } from "./Systemd";

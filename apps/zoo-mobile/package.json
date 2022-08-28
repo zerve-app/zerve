@@ -19,7 +19,7 @@
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
     "@zerve/client": "*",
-    "@zerve/core": "*",
+    "@zerve/zed": "*",
     "@zerve/zen": "*",
     "@zerve/zoo": "*",
     "date-fns": "^2.29.2",

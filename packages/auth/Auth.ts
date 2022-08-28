@@ -12,7 +12,7 @@ import {
   createZGettable,
   StringSchema,
   BooleanSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { randomBytes, createHash } from "crypto";
 import {
   ensureNoPathEscape,

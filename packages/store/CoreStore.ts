@@ -7,7 +7,7 @@ import {
   EmptySchemaStore,
   JSONSchema,
   EntryNameSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
 

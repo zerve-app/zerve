@@ -1,4 +1,4 @@
-import { FromSchema, JSONSchema } from "@zerve/core";
+import { FromSchema, JSONSchema } from "@zerve/zed";
 
 type StrategyAuthentication<AuthenticationDetails extends Object = {}> = {
   strategyKey: string;

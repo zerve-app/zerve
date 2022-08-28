@@ -1,4 +1,4 @@
-import { createZGettable, StringSchema } from "@zerve/core";
+import { createZGettable, StringSchema } from "@zerve/zed";
 import { Command } from "@zerve/system-commands";
 
 export const DiskUsage = createZGettable(

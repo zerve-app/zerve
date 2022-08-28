@@ -4,7 +4,7 @@ import { useConnection } from "@zerve/client/Connection";
 import { WEB_PRIMARY_CONN } from "./ConnectionStorage";
 import { Title, useModal } from "@zerve/zen";
 import { JSONSchemaEditor } from "@zerve/zen";
-import { EmptySchemaStore, SchemaStore } from "@zerve/core";
+import { EmptySchemaStore, SchemaStore } from "@zerve/zed";
 import { useFragmentNavigate } from "../web/Fragment";
 import {
   StoreDashboardContext,

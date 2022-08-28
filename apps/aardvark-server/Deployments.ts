@@ -9,7 +9,7 @@ import {
   validateWithSchema,
   NotFoundError,
   createZStatic,
-} from "@zerve/core";
+} from "@zerve/zed";
 import {
   DeleteRecursive,
   joinPath,

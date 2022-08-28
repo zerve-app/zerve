@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, ButtonProps } from "@zerve/zen";
-import { GenericError } from "@zerve/core";
+import { GenericError } from "@zerve/zed";
 import { useGlobalNavigation } from "../app/useNavigation";
 
 export function AsyncButton<PromiseValue>({

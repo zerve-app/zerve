@@ -1,4 +1,4 @@
-import { createZAction, FromSchema, NullSchema } from "@zerve/core";
+import { createZAction, FromSchema, NullSchema } from "@zerve/zed";
 import { Command } from "@zerve/system-commands";
 import { DeleteRecursive, joinPath, MakeDir, Move } from "@zerve/system-files";
 import { applyCaddyfile } from "./Caddy";

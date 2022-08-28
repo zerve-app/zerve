@@ -8,7 +8,7 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@zerve/core": "*",
+    "@zerve/zed": "*",
     "@zerve/system-caddy": "*",
     "@zerve/system-files": "*",
     "@zerve/system-commands": "*",

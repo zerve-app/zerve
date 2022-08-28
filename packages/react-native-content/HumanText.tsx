@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from "react";
 import { Linking, Platform, Text, TextStyle } from "react-native";
-import type { HumanText as HumanTextValue } from "@zerve/core";
+import type { HumanText as HumanTextValue } from "@zerve/zed";
 
 export type HumanTextNode = HumanTextValue[number];
 export type LinkPressHandler = (href: string, textNode: HumanTextNode) => void;

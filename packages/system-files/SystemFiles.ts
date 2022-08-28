@@ -4,7 +4,7 @@ import {
   StringSchema,
   BooleanSchema,
   NullSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import {
   writeFile,
   stat,

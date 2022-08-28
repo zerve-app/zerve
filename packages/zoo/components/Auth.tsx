@@ -9,7 +9,7 @@ import {
   EmptySchemaStore,
   PhoneSchema,
   ZSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import {
   AsyncButton,
   Button,

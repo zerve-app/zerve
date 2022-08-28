@@ -1,5 +1,5 @@
 import spawn from "@expo/spawn-async";
-import { createZAction, FromSchema, NullSchema } from "@zerve/core";
+import { createZAction, FromSchema, NullSchema } from "@zerve/zed";
 import { unlink, readFile } from "fs-extra";
 import { join } from "path";
 

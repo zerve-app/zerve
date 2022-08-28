@@ -5,7 +5,7 @@ import {
   createZGettableGroup,
   createZStatic,
   NullSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { Command } from "@zerve/system-commands";
 import { ReadDir, ReadJSON } from "@zerve/system-files";
 import { DeployZebraProduction } from "./DeployZebraProduction";

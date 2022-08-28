@@ -1,5 +1,5 @@
 import { useCreateSchema } from "@zerve/client/Mutation";
-import { EmptySchemaStore, prepareStoreFileName } from "@zerve/core";
+import { EmptySchemaStore, prepareStoreFileName } from "@zerve/zed";
 import { JSONSchemaForm } from "@zerve/zen";
 import { memo, useCallback } from "react";
 import { useStoreNavigation } from "../app/useNavigation";

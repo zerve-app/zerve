@@ -9,7 +9,7 @@ import {
   NotFoundError,
   NullSchema,
   ChildrenList,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { createJSONBlock } from "@zerve/crypto";
 import {
   mkdirp,

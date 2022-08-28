@@ -3,7 +3,7 @@ import { useSaveEntrySchema } from "@zerve/client/Mutation";
 import { useZStoreSchemas, useZNodeValue } from "@zerve/client/Query";
 import { useNavigation } from "@react-navigation/native";
 import { OptionsButton } from "../components/OptionsButton";
-import { displayStoreFileName } from "@zerve/core";
+import { displayStoreFileName } from "@zerve/zed";
 import { showToast } from "@zerve/zen/Toast";
 import { useMemo } from "react";
 import {

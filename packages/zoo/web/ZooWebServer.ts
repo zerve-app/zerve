@@ -1,6 +1,6 @@
 import { SavedSession, serverGet } from "@zerve/client/Connection";
 import { extractSessionAuth } from "@zerve/client/ServerCalls";
-import { UnauthorizedError } from "@zerve/core";
+import { UnauthorizedError } from "@zerve/zed";
 import { SiteConfig } from "../app/SiteConfig";
 
 export type WebPathRootServerProps = {

@@ -13,7 +13,7 @@ import {
   GenericError,
   ZSchema,
   ZSchemaSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 
 export type QueryOptions = {
   skipLoading?: boolean;

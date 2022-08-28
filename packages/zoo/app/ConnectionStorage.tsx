@@ -1,4 +1,4 @@
-import { defineKeySource } from "@zerve/core";
+import { defineKeySource } from "@zerve/zed";
 import { createStorage } from "@zerve/client-storage/Storage";
 import { postZAction } from "@zerve/client/ServerCalls";
 import {

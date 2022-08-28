@@ -3,7 +3,7 @@ import {
   FromSchema,
   JSONSchema,
   SchemaStore,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { createContext, useContext, useMemo } from "react";
 
 export type FieldComponent<

@@ -1,4 +1,4 @@
-import { createZAction } from "@zerve/core";
+import { createZAction } from "@zerve/zed";
 
 const Fetch = createZAction(
   {

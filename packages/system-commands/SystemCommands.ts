@@ -1,4 +1,4 @@
-import { createZAction, NumberSchema, StringSchema } from "@zerve/core";
+import { createZAction, NumberSchema, StringSchema } from "@zerve/zed";
 import { execFile } from "child_process";
 
 const CommandPayloadSchema = {

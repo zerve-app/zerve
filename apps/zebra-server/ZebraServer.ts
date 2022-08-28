@@ -23,7 +23,7 @@ import {
   StoreSettings,
   StoreSettingsSchema,
   IDSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
   createAuth,

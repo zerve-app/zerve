@@ -1,4 +1,4 @@
-import { FieldComponentProps, FromSchema, HumanTextSchema } from "@zerve/core";
+import { FieldComponentProps, FromSchema, HumanTextSchema } from "@zerve/zed";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { View } from "react-native";
 import Bold from "@tiptap/extension-bold";

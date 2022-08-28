@@ -21,7 +21,7 @@ import {
   IDSchema,
   StoreSettings,
   StringSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { useZNode, useZNodeValue } from "@zerve/client/Query";
 
 function RenameStoreDialog({

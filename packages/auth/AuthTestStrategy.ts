@@ -1,6 +1,6 @@
 import { AuthStrategy } from "./AuthStrategy";
 import { createGenericMessageAuthStrategy } from "./AuthMessageStrategy";
-import { NullSchema } from "@zerve/core";
+import { NullSchema } from "@zerve/zed";
 
 export function createTestAuthStrategy(
   tag: string,

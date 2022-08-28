@@ -1,4 +1,4 @@
-import { FromSchema, JSONSchema } from "@zerve/core";
+import { FromSchema, JSONSchema } from "@zerve/zed";
 import { joinPath, ReadJSON, WriteJSON } from "@zerve/system-files";
 import stringify from "json-stable-stringify";
 import { AuthStrategy } from "./AuthStrategy";

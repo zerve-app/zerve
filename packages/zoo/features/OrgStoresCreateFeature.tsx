@@ -1,6 +1,6 @@
 import { useRequiredConnection } from "@zerve/client/Connection";
 import { postZAction } from "@zerve/client/ServerCalls";
-import { EmptySchemaStore, IDSchema } from "@zerve/core";
+import { EmptySchemaStore, IDSchema } from "@zerve/zed";
 import { JSONSchemaForm, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { FeaturePane } from "../web/Dashboard";

@@ -1,4 +1,4 @@
-import { FromSchema, ZObservable } from "@zerve/core";
+import { FromSchema, ZObservable } from "@zerve/zed";
 import React, { useEffect, useState } from "react";
 
 export function useZObservable<Schema>(

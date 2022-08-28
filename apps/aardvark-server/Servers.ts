@@ -3,7 +3,7 @@ import {
   createZAction,
   NullSchema,
   StringSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { TryCommand } from "@zerve/system-commands";
 import { joinPath, ReadJSON } from "@zerve/system-files";
 

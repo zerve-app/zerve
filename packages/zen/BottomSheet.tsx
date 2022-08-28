@@ -5,7 +5,7 @@ import React, {
   useContext,
   useMemo,
 } from "react";
-import { defineKeySource } from "@zerve/core";
+import { defineKeySource } from "@zerve/zed";
 
 export type BottomSheetContext = {
   open: <O>(

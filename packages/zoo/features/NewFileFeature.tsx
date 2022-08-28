@@ -4,7 +4,7 @@ import { Input, VStack, Form } from "@zerve/zen";
 import { AsyncButton } from "../components/Button";
 import ScreenHeader from "../components/ScreenHeader";
 import { useCreateEntry } from "@zerve/client/Mutation";
-import { prepareStoreFileName } from "@zerve/core";
+import { prepareStoreFileName } from "@zerve/zed";
 import {
   useConnectionNavigation,
   useStoreNavigation,

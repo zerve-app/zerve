@@ -1,4 +1,4 @@
-import { displayStoreFileName, mergeValue } from "@zerve/core";
+import { displayStoreFileName, mergeValue } from "@zerve/zed";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   StoreDashboardContext,

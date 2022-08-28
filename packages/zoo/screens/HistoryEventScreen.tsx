@@ -6,7 +6,7 @@ import { useHistoryEvent } from "../app/History";
 import { format } from "date-fns";
 import NotFoundScreen from "./NotFoundScreen";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
-import { EmptySchemaStore } from "@zerve/core";
+import { EmptySchemaStore } from "@zerve/zed";
 
 export default function HistoryEventScreen({
   navigation,

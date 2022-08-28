@@ -27,7 +27,7 @@ There are a number of apps/packages/projects in the [Zerve Monorepo](https://git
 
 All of the `@zerve/x` references can be found in [`packages/x`](https://github.com/zerve-app/zerve/tree/main/packages). These are the most important:
 
-- [packages/core](https://github.com/zerve-app/zerve/tree/main/packages/core) - API Logic shared on the full stack
+- [packages/zed](https://github.com/zerve-app/zerve/tree/main/packages/zed) - API Logic shared on the full stack
 - [packages/zoo](https://github.com/zerve-app/zerve/tree/main/packages/zoo) - Code shared between the web and native apps
 - [packages/zen](https://github.com/zerve-app/zerve/tree/main/packages/zen) - UI library for web and native apps
 

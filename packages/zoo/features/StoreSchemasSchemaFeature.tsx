@@ -34,7 +34,7 @@ import {
   lookUpValue,
   mergeValue,
   prepareStoreFileName,
-} from "@zerve/core";
+} from "@zerve/zed";
 
 function StoreSchemasSchema({
   storePath,

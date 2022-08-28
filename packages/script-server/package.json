@@ -8,7 +8,7 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@zerve/core": "*",
+    "@zerve/zed": "*",
     "@apexearth/egrep": "^1.0.9",
     "axios": "^0.26.0",
     "fs-extra": "^10.0.0"

@@ -9,7 +9,7 @@ import {
   useStoreSchemaNavigation,
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
-import { displayStoreFileName } from "@zerve/core";
+import { displayStoreFileName } from "@zerve/zed";
 import { showToast } from "@zerve/zen/Toast";
 
 export function StoreSchemaFeature({

@@ -4,7 +4,7 @@ import {
   NullSchema,
   NumberSchema,
   StringSchema,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { Command } from "@zerve/system-commands";
 import {
   Copy,

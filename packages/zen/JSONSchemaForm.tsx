@@ -5,7 +5,7 @@ import {
   EmptySchemaStore,
   getDefaultSchemaValue,
   SchemaStore,
-} from "@zerve/core";
+} from "@zerve/zed";
 import {
   getValueExport,
   getValueImport,

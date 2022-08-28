@@ -5,7 +5,7 @@ import {
   createZStatic,
   StringSchema,
   RequestError,
-} from "@zerve/core";
+} from "@zerve/zed";
 import { DigitalOcean } from "digitalocean-js";
 
 export type ZDigitalOcean = ReturnType<typeof createZDigitalOcean>;
