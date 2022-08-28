@@ -73,7 +73,7 @@ export type HeaderStuffs = {
 export async function startZedServer(
   port: number,
   zed: AnyZed,
-  onEvent: (name: string, event: any) => void,
+  onEvent?: (name: string, event: any) => void,
 ) {
   const app = express();
 
@@ -650,7 +650,7 @@ export async function startZedServer(
       )
         .then((resolved) => {
           const [resolvedValue, resolvedOptions] = resolved;
-          onEvent("Request", {
+          onEvent?.("Request", {
             resolvedValue,
             resolvedOptions,
             path: req.path,
@@ -662,7 +662,7 @@ export async function startZedServer(
           return resolved;
         })
         .catch((e) => {
-          onEvent("RequestError", {
+          onEvent?.("RequestError", {
             error: {
               message: e.message,
               code: e.code,
@@ -687,7 +687,7 @@ export async function startZedServer(
     ) {
       parseJSON(req, res, (err) => {
         if (err) {
-          onEvent("RequestError", {
+          onEvent?.("RequestError", {
             error: {
               message: err.message,
               code: "BodyParseError",
