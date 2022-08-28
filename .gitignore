@@ -35,5 +35,6 @@ yarn-error.log*
 .expo
 
 secrets.json
+build.json
 
 dev-data

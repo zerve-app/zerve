@@ -259,7 +259,9 @@ export async function startZedServer(port: number, zed: AnyZed) {
     promisedValue: Promise<any>,
   ) {
     await promisedValue
-      .then(([response, cacheOptions]) => {
+      .then((resolved) => {
+        console.log("YUP!", resolved);
+        const [response, cacheOptions] = resolved;
         const responseValue = stringify(response);
         const [cacheHeader, etag] = getCacheControl(
           cacheOptions,
@@ -429,18 +431,25 @@ export async function startZedServer(port: number, zed: AnyZed) {
     throw new Error("unknown zed.t: " + zed.zType);
   }
 
-  async function handleZNodeTypeRequest(zed: AnyZed, headers: HeaderStuffs) {
+  async function handleZNodeTypeRequest(
+    zed: AnyZed,
+    headers: HeaderStuffs,
+    cacheOptions: CacheOptions,
+  ) {
     if (zed.zType === "Container") {
-      return {
-        ...serviceInfo,
-        ".t": "Container",
-        meta: zed.meta,
-        children: Object.fromEntries(
-          Object.entries(zed.z).map(([childKey, childZed]) => {
-            return [childKey, handleZNodeTypeSummaryRequest(childZed)];
-          }),
-        ),
-      };
+      return [
+        {
+          ...serviceInfo,
+          ".t": "Container",
+          meta: zed.meta,
+          children: Object.fromEntries(
+            Object.entries(zed.z).map(([childKey, childZed]) => {
+              return [childKey, handleZNodeTypeSummaryRequest(childZed)];
+            }),
+          ),
+        },
+        cacheOptions,
+      ];
     }
     if (zed.zType === "AuthContainer") {
       const { auth } = headers;
@@ -448,13 +457,21 @@ export async function startZedServer(port: number, zed: AnyZed) {
       if (!authZed)
         throw new UnauthorizedError("Unauthorized", "Unauthorized", {});
 
-      return {
-        ...serviceInfo,
-        ".t": "AuthContainer",
-        authType: await handleZNodeTypeRequest(authZed, headers),
-      };
+      const [authType, nodeCacheOptions] = await handleZNodeTypeRequest(
+        authZed,
+        headers,
+        cacheOptions,
+      );
+      return [
+        {
+          ...serviceInfo,
+          ".t": "AuthContainer",
+          authType,
+        },
+        nodeCacheOptions,
+      ];
     }
-    return handleZNodeTypeSummaryRequest(zed);
+    return [handleZNodeTypeSummaryRequest(zed), cacheOptions];
   }
 
   async function handleZRequest<Z extends AnyZed>(
@@ -495,7 +512,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     }
 
     if (path.length === 1 && path[0] === ".type") {
-      return await handleZNodeTypeRequest(zed, headers);
+      return await handleZNodeTypeRequest(zed, headers, cacheOptions);
     }
 
     if (zed.zType === "Gettable") {
