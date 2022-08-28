@@ -1,18 +1,63 @@
 import { StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Link } from "./Link";
 import { ScrollView } from "react-native-gesture-handler";
+import { Spinner } from "./Spinner";
+import { useRouter } from "next/router";
+
+function NavBarRoutingIndicator() {
+  const router = useRouter();
+  const [isRouting, setIsRouting] = useState(false);
+  const timeout = useRef<null | number>(null);
+  useEffect(() => {
+    const handleStart = (url: string) => {
+      timeout.current = setTimeout(() => {
+        setIsRouting(true);
+      }, 350);
+    };
+    const handleStop = () => {
+      clearTimeout(timeout.current);
+      setIsRouting(false);
+    };
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleStop);
+    router.events.on("routeChangeError", handleStop);
+    return () => {
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", handleStop);
+      router.events.off("routeChangeError", handleStop);
+    };
+  }, [router]);
+  return (
+    <View
+      style={{
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: "center",
+        backgroundColor: "transparent",
+      }}
+      pointerEvents="none"
+    >
+      {isRouting ? <Spinner size="large" /> : null}
+    </View>
+  );
+}
 
 export function NavBar({ children }: { children: ReactNode }) {
   return (
     <ScrollView
       horizontal
-      contentContainerStyle={{ flexDirection: "row", height: 60, flex: 1 }}
+      contentContainerStyle={{
+        flexDirection: "row",
+        height: 60,
+        flex: 1,
+        alignItems: "center",
+      }}
       style={{ backgroundColor: "#decdec", maxHeight: 60 }}
     >
       {children}
+      <NavBarRoutingIndicator />
     </ScrollView>
   );
 }

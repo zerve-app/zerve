@@ -27,6 +27,7 @@ function DashboardHeaderItem({
           alignItems: "center",
           paddingLeft: 28,
           paddingRight: 10,
+          minHeight: 60,
           zIndex,
         }}
       >
