@@ -1,6 +1,7 @@
 {
   "name": "@zerve/data",
   "version": "0.0.0",
+  "license": "Apache-2.0",
   "private": true,
   "main": "./CoreData.ts",
   "types": "./CoreData.ts",

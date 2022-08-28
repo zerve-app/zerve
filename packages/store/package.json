@@ -1,6 +1,7 @@
 {
   "name": "@zerve/store",
   "version": "0.0.0",
+  "license": "Apache-2.0",
   "private": true,
   "main": "./CoreStore.ts",
   "types": "./CoreStore.ts",

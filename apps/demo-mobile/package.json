@@ -28,7 +28,7 @@
   "private": true,
   "zerve": {
     "dynamicSync": {
-      "DemoStore": "https://staging.zerve.dev/.z/store/ev/demo"
+      "DemoStore": "https://alpha.zerve.app/.z/store/ev/zerve"
     }
   }
 }

@@ -35,7 +35,7 @@ For this example, we can create an `AllowNewUsers` entry in our store, with the 
 ```json
   "zerve": {
     "dynamicSync": {
-      "my-zerve-store": "https://zerve.app/.z/store/my-user/my-store"
+      "my-zerve-store": "https://alpha.zerve.app/.z/store/my-user/my-store"
     }
   }
 ```

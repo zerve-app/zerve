@@ -150,27 +150,30 @@ Promise.all(
                 },
               ];
             }
+
+            const interfaceValue = await compile(
+              { ...fileSchema, title: interfaceName },
+              interfaceName,
+              {
+                bannerComment: "",
+                declareExternallyReferenced: false,
+                $refOptions: {
+                  resolve: {
+                    http: {
+                      read({ url, extension }, callback?) {
+                        callback?.(null, JSON.stringify(refStoreSchemas[url]));
+                      },
+                    },
+                    external: true,
+                  },
+                },
+              },
+            );
             return [
               entryName,
               {
                 label: interfaceName,
-                value: await compile(fileSchema, interfaceName, {
-                  bannerComment: "",
-                  declareExternallyReferenced: false,
-                  $refOptions: {
-                    resolve: {
-                      http: {
-                        read({ url, extension }, callback?) {
-                          callback?.(
-                            null,
-                            JSON.stringify(refStoreSchemas[url]),
-                          );
-                        },
-                      },
-                      external: true,
-                    },
-                  },
-                }),
+                value: interfaceValue,
               },
             ];
           }),

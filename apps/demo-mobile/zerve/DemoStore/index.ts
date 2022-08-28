@@ -6,28 +6,11 @@ import * as zStoreSchema from './schema-sync.json';
 import { createZStoreClient } from '@zerve/client/StoreClient';
 
 const zStoreProtocol = "https://";
-const zStoreOrigin = "staging.zerve.dev";
-const zStorePath = ".z/store/ev/demo";
+const zStoreOrigin = "alpha.zerve.app";
+const zStorePath = ".z/store/ev/zerve";
 
-export interface QuestionAnswer {
-  Answer?: HumanText;
-  Question?: string;
-}
 
-export type HumanText = {
-  text: string;
-  bold?: boolean;
-  italic?: boolean;
-  strike?: boolean;
-  underline?: boolean;
-  code?: boolean;
-  linkHref?: string;
-}[];
-
-export type FAQEntriesFileSchema = QuestionAnswer[];
-
-export type BigQuestionFileSchema = QuestionAnswer;
-export type FFileSchema = null;
+export type BannerFileSchema = string;
 
 
 export const zClient = createZStoreClient(
@@ -39,12 +22,8 @@ export const zClient = createZStoreClient(
 );
 
 export const zAccessors = {
-  FAQEntries: zClient.createAccessor<FAQEntriesFileSchema>("FAQEntries"),
-  BigQuestion: zClient.createAccessor<BigQuestionFileSchema>("BigQuestion"),
-  F: zClient.createAccessor<FFileSchema>("f"),
+  Banner: zClient.createAccessor<BannerFileSchema>("Banner"),
 }
 
-export const useFAQEntries = zAccessors.FAQEntries.use;
-export const useBigQuestion = zAccessors.BigQuestion.use;
-export const useF = zAccessors.F.use;
+export const useBanner = zAccessors.Banner.use;
 

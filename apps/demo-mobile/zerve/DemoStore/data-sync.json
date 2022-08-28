@@ -1,16 +1,3 @@
 {
-  "FAQEntries": [
-    {
-      "Answer": "B",
-      "Question": "A"
-    },
-    {
-      "Answer": "D",
-      "Question": "C"
-    }
-  ],
-  "BigQuestion": {
-    "Question": "hello?"
-  },
-  "f": null
+  "Banner": "Alpha Banner"
 }
