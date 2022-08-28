@@ -13,8 +13,8 @@ import { memo, useContext } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
 import { useMutation, useQueryClient } from "react-query";
-import { useRequiredConnection } from "@zerve/client/Connection";
-import { postZAction } from "@zerve/client/ServerCalls";
+import { useRequiredConnection } from "@zerve/zoo-client/Connection";
+import { postZAction } from "@zerve/zoo-client/ServerCalls";
 import { useRouter } from "next/router";
 import {
   AllExperimentalSchemas,
@@ -22,7 +22,7 @@ import {
   StoreSettings,
   StringSchema,
 } from "@zerve/zed";
-import { useZNode, useZNodeValue } from "@zerve/client/Query";
+import { useZNode, useZNodeValue } from "@zerve/zoo-client/Query";
 
 function RenameStoreDialog({
   onClose,

@@ -1,4 +1,4 @@
-import { useConnection } from "@zerve/client/Connection";
+import { useConnection } from "@zerve/zoo-client/Connection";
 import { VStack } from "@zerve/zen";
 import { LogoutButton } from "../components/Auth";
 import {

@@ -4,7 +4,7 @@ import { HomeStackScreenProps } from "../app/Links";
 import { useActionsSheet } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
-import { useZNodeValue } from "@zerve/client/Query";
+import { useZNodeValue } from "@zerve/zoo-client/Query";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import { OptionsButton } from "../components/OptionsButton";
 

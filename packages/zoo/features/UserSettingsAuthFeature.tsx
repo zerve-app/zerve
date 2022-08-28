@@ -1,5 +1,5 @@
-import { useRequiredConnection } from "@zerve/client/Connection";
-import { useZNodeValue } from "@zerve/client/Query";
+import { useRequiredConnection } from "@zerve/zoo-client/Connection";
+import { useZNodeValue } from "@zerve/zoo-client/Query";
 import { InfoRow, Title, VStack } from "@zerve/zen";
 import { memo } from "react";
 import { ChangePasswordButton } from "../components/ZNode";

@@ -1,4 +1,4 @@
-import { SavedSession } from "@zerve/client/Connection";
+import { SavedSession } from "@zerve/zoo-client/Connection";
 
 export type SiteConfig = {
   name?: string;

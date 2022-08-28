@@ -1,4 +1,4 @@
-import { useZNode } from "@zerve/client/Query";
+import { useZNode } from "@zerve/zoo-client/Query";
 import { displayStoreFileName } from "@zerve/zed";
 import { VStack } from "@zerve/zen";
 import { memo, useMemo } from "react";

@@ -12,7 +12,7 @@ import {
 } from "@zerve/zen";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { FeaturePane } from "../web/Dashboard";
-import { useSaveEntry, useSaveEntrySchema } from "@zerve/client/Mutation";
+import { useSaveEntry, useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
 import {
   StoreFeatureLink,
   StoreFeatureProps,
@@ -23,7 +23,7 @@ import {
   useZStoreEntrySchema,
   useZStoreSchema,
   useZStoreSchemas,
-} from "@zerve/client/Query";
+} from "@zerve/zoo-client/Query";
 import { useStoreNavigation } from "../app/useNavigation";
 import {
   AnyError,

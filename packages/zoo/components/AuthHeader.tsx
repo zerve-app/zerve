@@ -1,4 +1,4 @@
-import { useConnection } from "@zerve/client/Connection";
+import { useConnection } from "@zerve/zoo-client/Connection";
 import { Button, HStack, Link, ThemedText, useModal } from "@zerve/zen";
 import { Text, View } from "react-native";
 import { isSeeminglyAnonUser, LoginForm } from "./Auth";

@@ -1,5 +1,5 @@
-import { useRequiredConnection } from "@zerve/client/Connection";
-import { postZAction } from "@zerve/client/ServerCalls";
+import { useRequiredConnection } from "@zerve/zoo-client/Connection";
+import { postZAction } from "@zerve/zoo-client/ServerCalls";
 import { JSONSchemaForm, Title, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { UserFeatureProps } from "../context/UserDashboardContext";

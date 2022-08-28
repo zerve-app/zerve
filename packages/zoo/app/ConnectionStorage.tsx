@@ -1,11 +1,11 @@
 import { defineKeySource } from "@zerve/zed";
-import { createStorage } from "@zerve/client-storage/Storage";
-import { postZAction } from "@zerve/client/ServerCalls";
+import { createStorage } from "@zerve/zoo-client-storage/Storage";
+import { postZAction } from "@zerve/zoo-client/ServerCalls";
 import {
   Connection,
   ConnectionProvider,
   SavedSession,
-} from "@zerve/client/Connection";
+} from "@zerve/zoo-client/Connection";
 import { Platform } from "react-native";
 import { SiteConfig } from "./SiteConfig";
 import { useEffect, useMemo, useState } from "react";

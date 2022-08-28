@@ -1,4 +1,4 @@
-import { useZNodeValue } from "@zerve/client/Query";
+import { useZNodeValue } from "@zerve/zoo-client/Query";
 import { Button, HStack, Icon, Link } from "@zerve/zen";
 import { memo, useContext } from "react";
 import {

@@ -6,7 +6,7 @@ import {
   getWebRootServerProps,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
-import { ConnectionProvider } from "@zerve/client/Connection";
+import { ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { Provider } from "@zerve/zoo/provider";
 
 function HomeScreen() {

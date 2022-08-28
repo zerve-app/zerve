@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from "react-query";
-import { Connection, serverGet } from "./Connection";
+import { Connection, serverGet } from "./ClientConnection";
 
 export function createZStoreClient(
   zStoreProtocol: string,

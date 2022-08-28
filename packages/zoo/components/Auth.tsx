@@ -2,8 +2,8 @@ import {
   Connection,
   SavedSession,
   useConnection,
-} from "@zerve/client/Connection";
-import { postZAction } from "@zerve/client/ServerCalls";
+} from "@zerve/zoo-client/Connection";
+import { postZAction } from "@zerve/zoo-client/ServerCalls";
 import {
   EmailSchema,
   EmptySchemaStore,

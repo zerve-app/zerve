@@ -72,8 +72,8 @@ Great, now the app supports React Native Web and TypeScript! You're ready to ins
 
 ### Set up Zerve
 
-yarn add @zerve/client
-yarn add -D @zerve/client
+yarn add @zerve/zoo-client
+yarn add -D @zerve/zoo-client
 
 ### Zerve Content
 

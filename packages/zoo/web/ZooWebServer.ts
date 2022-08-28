@@ -1,5 +1,5 @@
-import { SavedSession, serverGet } from "@zerve/client/Connection";
-import { extractSessionAuth } from "@zerve/client/ServerCalls";
+import { SavedSession, serverGet } from "@zerve/zoo-client/Connection";
+import { extractSessionAuth } from "@zerve/zoo-client/ServerCalls";
 import { UnauthorizedError } from "@zerve/zed";
 import { SiteConfig } from "../app/SiteConfig";
 

@@ -16,7 +16,7 @@ import {
   useDeleteSchema,
   useRenameSchema,
   useSaveSchema,
-} from "@zerve/client/Mutation";
+} from "@zerve/zoo-client/Mutation";
 import {
   StoreFeatureLink,
   StoreFeatureProps,
@@ -26,7 +26,7 @@ import {
   useZNodeValue,
   useZStoreSchema,
   useZStoreSchemaSchema,
-} from "@zerve/client/Query";
+} from "@zerve/zoo-client/Query";
 import { useStoreNavigation } from "../app/useNavigation";
 import {
   AnyError,

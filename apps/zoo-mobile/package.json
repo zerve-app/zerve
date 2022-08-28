@@ -18,7 +18,7 @@
     "@react-navigation/bottom-tabs": "^6.3.2",
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
-    "@zerve/client": "*",
+    "@zerve/zoo-client": "*",
     "@zerve/zed": "*",
     "@zerve/zen": "*",
     "@zerve/zoo": "*",

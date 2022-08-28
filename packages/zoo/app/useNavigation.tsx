@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { useConnection } from "@zerve/client/Connection";
+import { useConnection } from "@zerve/zoo-client/Connection";
 import { WEB_PRIMARY_CONN } from "./ConnectionStorage";
 import { Title, useModal } from "@zerve/zen";
 import { JSONSchemaEditor } from "@zerve/zen";

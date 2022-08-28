@@ -10,15 +10,15 @@ import {
   Spinner,
   VStack,
 } from "@zerve/zen";
-import { pathStartsWith, postZAction } from "@zerve/client/ServerCalls";
-import { useZNode, useConnectionProjects } from "@zerve/client/Query";
-import { useZNodeStateWrite } from "@zerve/client/Mutation";
+import { pathStartsWith, postZAction } from "@zerve/zoo-client/ServerCalls";
+import { useZNode, useConnectionProjects } from "@zerve/zoo-client/Query";
+import { useZNodeStateWrite } from "@zerve/zoo-client/Mutation";
 import {
   useConnection,
   SavedSession,
   Connection,
   UnauthorizedSymbol,
-} from "@zerve/client/Connection";
+} from "@zerve/zoo-client/Connection";
 import { setSessionUserId } from "../app/ConnectionStorage";
 import {
   useConnectionNavigation,

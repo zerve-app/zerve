@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { DemoPageContainer, Title } from "@zerve/zen";
 import { Text, View } from "react-native";
-import { useBigQuestion, useFAQEntries } from "../zerve/DemoStore";
+import { useBanner } from "../zerve/DemoStore";
 import { HumanText } from "@zerve/react-native-content/HumanText";
 
 function QuestionAnswerRow({
@@ -30,11 +30,11 @@ function QuestionAnswerRow({
 
 export default function FAQPage() {
   // const { data, isLoading, error } = useFAQEntries();
-  const { data, isLoading, error } = useBigQuestion();
+  const { data, isLoading, error } = useBanner();
   console.log(data);
   return (
     <DemoPageContainer isLoading={isLoading} error={error}>
-      <Title title="Frequently Asked Questions" />
+      <Title title={data} />
       {/* {data?.map((faqEntry) => (
         <QuestionAnswerRow
           question={faqEntry.Question}

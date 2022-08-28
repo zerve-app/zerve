@@ -5,8 +5,8 @@ import {
   useDeleteEntry,
   useRenameEntry,
   useSaveEntry,
-} from "@zerve/client/Mutation";
-import { useZStoreSchemas, useZNodeValue } from "@zerve/client/Query";
+} from "@zerve/zoo-client/Mutation";
+import { useZStoreSchemas, useZNodeValue } from "@zerve/zoo-client/Query";
 import {
   useGlobalNavigation,
   useStoreFileNavigation,

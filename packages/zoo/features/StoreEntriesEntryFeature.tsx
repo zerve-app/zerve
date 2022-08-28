@@ -30,7 +30,7 @@ import {
   useDeleteEntry,
   useRenameEntry,
   useSaveEntry,
-} from "@zerve/client/Mutation";
+} from "@zerve/zoo-client/Mutation";
 import {
   StoreFeatureLink,
   StoreFeatureLinkButton,
@@ -38,7 +38,7 @@ import {
   useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
-import { useZNodeValue, useZStoreSchemas } from "@zerve/client/Query";
+import { useZNodeValue, useZStoreSchemas } from "@zerve/zoo-client/Query";
 import { Notice } from "@zerve/zen/Notice";
 
 function extractErrorMessage(error: AnyError) {

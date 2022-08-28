@@ -1,4 +1,4 @@
-import { useCreateSchema } from "@zerve/client/Mutation";
+import { useCreateSchema } from "@zerve/zoo-client/Mutation";
 import { EmptySchemaStore, prepareStoreFileName } from "@zerve/zed";
 import { JSONSchemaForm } from "@zerve/zen";
 import { memo, useCallback } from "react";

@@ -1,6 +1,6 @@
 import React from "react";
 import { StoreDashboard } from "@zerve/zoo/web/StoreDashboard";
-import { ConnectionProvider } from "@zerve/client/Connection";
+import { ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import {
   getSiteConfig,

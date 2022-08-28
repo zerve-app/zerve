@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 
 import { IconButton, useActionsSheet, VStack } from "@zerve/zen";
-import { useZNode } from "@zerve/client/Query";
-import { UnauthorizedSymbol } from "@zerve/client/Connection";
+import { useZNode } from "@zerve/zoo-client/Query";
+import { UnauthorizedSymbol } from "@zerve/zoo-client/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import ScreenHeader from "../components/ScreenHeader";
 import { ErrorBox, ZNode } from "../components/ZNode";

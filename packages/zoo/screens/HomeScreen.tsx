@@ -20,7 +20,7 @@ import {
   setConnectionDisclosed,
 } from "../app/ConnectionStorage";
 import { ZerveLogo } from "../components/ZerveLogo";
-import { Connection, ConnectionProvider } from "@zerve/client/Connection";
+import { Connection, ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { Icon } from "@zerve/zen/Icon";
 import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen";

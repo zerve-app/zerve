@@ -1,4 +1,4 @@
-import { ConnectionProvider } from "@zerve/client/Connection";
+import { ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { FileFeature } from "../features/StoreFileFeature";
 import { PageLayout } from "../components/PageLayout";
 import { ZFeature } from "../features/ZFeature";

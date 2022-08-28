@@ -1,5 +1,5 @@
 import { defineKeySource } from "@zerve/zed";
-import { createStorage } from "@zerve/client-storage/Storage";
+import { createStorage } from "@zerve/zoo-client-storage/Storage";
 import { useEffect, useMemo, useState } from "react";
 
 export type InternalHistoryEvent = {

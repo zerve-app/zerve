@@ -1,5 +1,5 @@
 import React, { ReactNode, useState } from "react";
-import { ConnectionProvider, serverGet } from "@zerve/client/Connection";
+import { ConnectionProvider, serverGet } from "@zerve/zoo-client/Connection";
 import { setSession, useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import { UserDashboard } from "@zerve/zoo/web/UserDashboard";
 import { OrgDashboard } from "@zerve/zoo/web/OrgDashboard";
