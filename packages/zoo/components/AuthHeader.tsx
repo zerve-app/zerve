@@ -22,7 +22,7 @@ export function AuthHeader() {
   const { push } = useRouter();
   const openLogin = useModal<void>(({ onClose }) => (
     <LoginForm
-      path={["Auth"]}
+      path={["auth"]}
       authMeta={{}}
       onComplete={(userId) => {
         onClose();
