@@ -9,6 +9,7 @@ import {
   NotFoundError,
   NullSchema,
   ChildrenList,
+  zAnnotateCache,
 } from "@zerve/zed";
 import { createJSONBlock } from "@zerve/crypto";
 import {
@@ -74,10 +75,13 @@ export async function createCoreData(dataDir: string) {
     void
   >(
     async (id: string) => {
-      return createZGettable({}, async () => {
-        const blockValue = await GetBlockJSON.call({ id });
-        return blockValue;
-      });
+      return zAnnotateCache(
+        createZGettable({}, async () => {
+          const blockValue = await GetBlockJSON.call({ id });
+          return blockValue;
+        }),
+        { immutable: true },
+      );
     },
     async () => {
       return await _listBlocks();

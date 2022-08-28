@@ -23,6 +23,7 @@ import {
   StoreSettings,
   StoreSettingsSchema,
   IDSchema,
+  zAnnotateCache,
 } from "@zerve/zed";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
@@ -406,15 +407,17 @@ export async function startApp() {
   }
 
   const zRoot = createZContainer({
-    store: createZGroup(async (userId: string) => {
-      return createZGroup(async (storeId: string) => {
-        const memStore = await getMemoryStore(userId, storeId);
-        return createZContainer({
-          state: memStore.store.z.State,
+    store: zAnnotateCache(
+      createZGroup(async (userId: string) => {
+        return createZGroup(async (storeId: string) => {
+          const memStore = await getMemoryStore(userId, storeId);
+          return createZContainer({
+            state: memStore.store.z.State,
+          });
         });
-      });
-    }),
-
+      }),
+      { isPrivate: false },
+    ),
     Auth: zAuth,
   });
 

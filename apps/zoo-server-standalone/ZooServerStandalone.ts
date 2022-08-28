@@ -1,5 +1,5 @@
 import { startZedServer } from "@zerve/node";
-import { createZContainer } from "@zerve/zed";
+import { createZContainer, zAnnotateCache } from "@zerve/zed";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore } from "@zerve/store";
 import { joinPath } from "@zerve/system-files";
@@ -27,8 +27,8 @@ export async function startApp() {
   );
 
   const zRoot = createZContainer({
-    PublicStoreData: PublicStore.z.State,
-    PublicStore,
+    state: zAnnotateCache(PublicStore.z.State, { isPrivate: false }),
+    store: PublicStore,
   });
 
   await startZedServer(port, zRoot);

@@ -13,6 +13,7 @@ import {
   validateWithSchema,
   ZAuthContainer,
   UnauthorizedError,
+  CacheOptions,
 } from "@zerve/zed";
 import express, { Request, Response } from "express";
 import { createJSONHandler } from "./Server";
@@ -23,6 +24,26 @@ import { createHash } from "crypto";
 import { createServer } from "http";
 
 const DEV = process.env.NODE_ENV === "dev";
+
+function getCacheControl(cacheOptions: CacheOptions, responseValue: string) {
+  let cacheHeader = "";
+  if (cacheOptions.isPrivate === false) {
+    cacheHeader = "public";
+  } else {
+    // default to private when isPrivate is undefined
+    cacheHeader = "private";
+  }
+  if (cacheOptions.isImmutable) {
+    cacheHeader += ", immutable";
+  } else {
+    cacheHeader += ", max-age=10";
+  }
+  const etag = createHash("md5")
+    .update(responseValue, "utf8")
+    .digest()
+    .toString("hex");
+  return [cacheHeader, etag];
+}
 
 function stringify(json: any) {
   return JSON.stringify(json, null, DEV ? 2 : 0);
@@ -70,7 +91,6 @@ export async function startZedServer(port: number, zed: AnyZed) {
       "Access-Control-Allow-Headers",
       "X-Requested-With, Content-Type, Authorization",
     );
-    res.header("Cache-Control", "no-cache, no-store, must-revalidate");
     if (req.method === "OPTIONS") {
       res.send();
       return;
@@ -93,10 +113,11 @@ export async function startZedServer(port: number, zed: AnyZed) {
     method: Request["method"],
     headers: HeaderStuffs,
     query: GetOptions,
+    cacheOptions: CacheOptions,
   ) {
     if (method === "GET") {
       const value = await zed.get(query);
-      return value;
+      return [value, cacheOptions];
     }
     throw new WrongMethodError("WrongMethod", "Method not available", {});
   }
@@ -112,6 +133,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     query?: {
       zClientSubscribe?: string;
     },
+    cacheOptions: CacheOptions,
   ) {
     if (method === "GET") {
       if (query?.zClientSubscribe) {
@@ -127,7 +149,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         }
       }
       const value = await zed.get();
-      return value;
+      return [value, cacheOptions];
     }
     throw new WrongMethodError("WrongMethod", "Method not available", {});
   }
@@ -140,16 +162,25 @@ export async function startZedServer(port: number, zed: AnyZed) {
     method: Request["method"],
     headers: HeaderStuffs,
     body: any,
+    cacheOptions: CacheOptions,
   ) {
     if (method === "GET") {
-      return {
-        requestSchema: zed.payloadSchema,
-        responseSchema: zed.responseSchema,
-      };
+      return [
+        {
+          requestSchema: zed.payloadSchema,
+          responseSchema: zed.responseSchema,
+        },
+        cacheOptions,
+      ];
     } else if (method === "POST") {
       const validBody = validateWithSchema(zed.payloadSchema, body);
       const result = await zed.call(validBody);
-      return result || null;
+      return [
+        result || null,
+        {
+          // ignore cacheOptions intentionally because this is a post request...
+        },
+      ];
     } else {
       throw new WrongMethodError("WrongMethod", "Method not available", {});
     }
@@ -159,9 +190,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
     zed: ZContainer<Z>,
     method: Request["method"],
     headers: HeaderStuffs,
+    cacheOptions: CacheOptions,
   ) {
     if (method === "GET") {
-      return { children: Object.keys(zed.z) };
+      return [{ children: Object.keys(zed.z) }, cacheOptions];
     }
     throw new WrongMethodError(
       "WrongMethod",
@@ -179,6 +211,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     contextPath: string[],
     headers: HeaderStuffs,
     body: any,
+    cacheOptions: CacheOptions,
   ) {
     if (!headers.auth)
       throw new UnauthorizedError("Unauthorized", "Unauthorized", {});
@@ -191,6 +224,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
       contextPath,
       headers,
       body,
+      { ...cacheOptions, isPrivate: true },
     );
   }
 
@@ -199,10 +233,11 @@ export async function startZedServer(port: number, zed: AnyZed) {
     method: Request["method"],
     headers: HeaderStuffs,
     query: O,
+    cacheOptions: CacheOptions,
   ) {
     if (method === "GET") {
       const getValue = await zed.get(query);
-      return getValue;
+      return [getValue, cacheOptions];
     }
     throw new WrongMethodError(
       "WrongMethod",
@@ -211,14 +246,31 @@ export async function startZedServer(port: number, zed: AnyZed) {
     );
   }
 
-  async function handleZStaticRequest<V>(zed: ZStatic<V>) {
-    return zed.value;
+  async function handleZStaticRequest<V>(
+    zed: ZStatic<V>,
+    cacheOptions: CacheOptions,
+  ) {
+    return [zed.value, cacheOptions];
   }
 
-  async function handleJSONPromise(res: Response, promisedValue: Promise<any>) {
+  async function handleJSONPromise(
+    req: Request,
+    res: Response,
+    promisedValue: Promise<any>,
+  ) {
     await promisedValue
-      .then((response) => {
+      .then(([response, cacheOptions]) => {
         const responseValue = stringify(response);
+        const [cacheHeader, etag] = getCacheControl(
+          cacheOptions,
+          responseValue,
+        );
+        if (req.headers["If-None-Match"] === etag) {
+          res.status(304).send();
+        }
+        res.header("ETag", etag);
+        res.header("Cache-Control", cacheHeader);
+
         res.status(200).send(responseValue);
       })
       .catch((e) => {
@@ -243,9 +295,30 @@ export async function startZedServer(port: number, zed: AnyZed) {
     contextPath: string[],
     headers: HeaderStuffs,
     body: any,
+    cacheOptions: CacheOptions,
   ) {
+    if (zed.zType === "ZAnnotateCache") {
+      return await handleZNodeRequest(
+        zed.z,
+        query,
+        method,
+        contextPath,
+        headers,
+        body,
+        {
+          ...cacheOptions,
+          ...zed.cacheOptions,
+        },
+      );
+    }
     if (zed.zType === "Gettable") {
-      return await handleGetZedRequest(zed, method, headers, query);
+      return await handleGetZedRequest(
+        zed,
+        method,
+        headers,
+        query,
+        cacheOptions,
+      );
     }
     if (zed.zType === "Observable") {
       return await handleObserveZedRequest(
@@ -254,16 +327,29 @@ export async function startZedServer(port: number, zed: AnyZed) {
         headers,
         contextPath,
         query,
+        cacheOptions,
       );
     }
     if (zed.zType === "Action") {
-      return await handleActionZedRequest(zed, method, headers, body);
+      return await handleActionZedRequest(
+        zed,
+        method,
+        headers,
+        body,
+        cacheOptions,
+      );
     }
     if (zed.zType === "Group") {
-      return await handleZGroupRequest(zed, method, headers, query);
+      return await handleZGroupRequest(
+        zed,
+        method,
+        headers,
+        query,
+        cacheOptions,
+      );
     }
     if (zed.zType === "Container") {
-      return await handleZContainerRequest(zed, method, headers);
+      return await handleZContainerRequest(zed, method, headers, cacheOptions);
     }
     if (zed.zType === "AuthContainer") {
       return await handleZAuthContainerRequest(
@@ -273,10 +359,11 @@ export async function startZedServer(port: number, zed: AnyZed) {
         contextPath,
         headers,
         body,
+        cacheOptions,
       );
     }
     if (zed.zType === "Static") {
-      return await handleZStaticRequest(zed);
+      return await handleZStaticRequest(zed, cacheOptions);
     }
     throw new Error("unknown zed: " + zed.zType);
   }
@@ -336,6 +423,9 @@ export async function startZedServer(port: number, zed: AnyZed) {
         ".t": "Static",
       };
     }
+    if (zed.zType === "ZAnnotateCache") {
+      return handleZNodeTypeSummaryRequest(zed.z);
+    }
     throw new Error("unknown zed.t: " + zed.zType);
   }
 
@@ -375,6 +465,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
     contextPath: string[],
     headers: HeaderStuffs,
     body: any,
+    cacheOptions: CacheOptions,
   ): Promise<any> {
     if (path.length === 0)
       return await handleZNodeRequest(
@@ -384,7 +475,24 @@ export async function startZedServer(port: number, zed: AnyZed) {
         contextPath,
         headers,
         body,
+        cacheOptions,
       );
+
+    if (zed.zType === "ZAnnotateCache") {
+      return await handleZRequest(
+        zed.z,
+        path,
+        query,
+        method,
+        contextPath,
+        headers,
+        body,
+        {
+          ...cacheOptions,
+          ...zed.cacheOptions,
+        },
+      );
+    }
 
     if (path.length === 1 && path[0] === ".type") {
       return await handleZNodeTypeRequest(zed, headers);
@@ -426,7 +534,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         resultingValue = v;
         resultingSubPath.push(pathTerm);
       }
-      return resultingValue;
+      return [resultingValue, cacheOptions];
     }
 
     if (zed.zType === "Container") {
@@ -446,6 +554,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         [...contextPath, pathTerm],
         headers,
         body,
+        cacheOptions,
       );
     }
 
@@ -462,6 +571,10 @@ export async function startZedServer(port: number, zed: AnyZed) {
         contextPath,
         headers,
         body,
+        {
+          ...cacheOptions,
+          isPrivate: true,
+        },
       );
     }
 
@@ -481,6 +594,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
         [...contextPath, pathTerm],
         headers,
         body,
+        cacheOptions,
       );
     }
 
@@ -512,7 +626,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
       jsonHandler(req, res, (err) => {
         if (err) {
           // todo, probably wrap with RequestError so more metadata will flow
-          handleJSONPromise(res, Promise.reject(err));
+          handleJSONPromise(req, res, Promise.reject(err));
           return;
         }
         let body = req.body;
@@ -520,6 +634,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
           body = body._$RAW_VALUE;
         }
         handleJSONPromise(
+          req,
           res,
           handleZRequest(
             zed,
@@ -529,11 +644,13 @@ export async function startZedServer(port: number, zed: AnyZed) {
             [],
             headers,
             body,
+            {},
           ),
         );
       });
     } else {
       handleJSONPromise(
+        req,
         res,
         handleZRequest(
           zed,
@@ -543,6 +660,7 @@ export async function startZedServer(port: number, zed: AnyZed) {
           [],
           headers,
           undefined,
+          {},
         ),
       );
     }

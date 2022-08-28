@@ -1,4 +1,5 @@
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
+import { CacheOptions } from "./Cache";
 import { NullSchema } from "./JSONSchema";
 import { ZObservable } from "./Observable";
 
@@ -71,6 +72,14 @@ export type ZStatic<Value> = {
   zType: "Static";
   value: Value;
 };
+
+export function zAnnotateCache<AnyZed>(z: AnyZed, cacheOptions: CacheOptions) {
+  return {
+    zType: "ZAnnotateCache",
+    z,
+    cacheOptions,
+  };
+}
 
 export const AnySchema = {} as const;
 
