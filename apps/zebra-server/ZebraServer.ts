@@ -96,13 +96,13 @@ export async function startApp() {
     // we MUST strip plaintext passwords to prevent them from appearing in the logs!
     // other than plaintext pw, all user data is already accessible for somebody who has read access on the dataDir
     // because we have a deep understanding of the Auth module and client UI, we know these are the only two situations where the user should provide plaintext pw to the server
-    if (path === "/Auth/createSessionWithPassword") {
+    if (path === "/auth/createSessionWithPassword") {
       overriddenEvent = {
         ...event,
         body: { ...body, password: !!body.password },
       };
     }
-    if (path === "/Auth/user/setPassword") {
+    if (path === "/auth/user/setPassword") {
       overriddenEvent = {
         ...event,
         body: { ...body, newPassword: !!body.newPassword },
@@ -474,7 +474,8 @@ export async function startApp() {
       }),
       { isPrivate: false },
     ),
-    Auth: zAuth,
+    auth: zAuth,
+    buildId: createZStatic(myBuildId),
   });
 
   await startZedServer(port, zRoot, logServerEvent);

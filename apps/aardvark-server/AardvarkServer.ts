@@ -132,9 +132,9 @@ export async function startApp() {
   });
 
   const zRoot = createZContainer({
-    Info: createZStatic("Aardvark"),
-    Zerve: Store.z.State,
-    Auth: zAuth,
+    info: createZStatic("Aardvark"),
+    zerve: Store.z.State,
+    auth: zAuth,
   });
 
   await startZedServer(port, zRoot);

@@ -110,7 +110,7 @@ export const Deployments = createZGettableGroup(
       Destroy: getDeploymentDestroy(deploymentName),
       Build: createZStatic({
         zContract: "Link",
-        destination: `/Auth/user/CompletedBuilds/${buildId}`,
+        destination: `/auth/user/CompletedBuilds/${buildId}`,
         details: { buildId },
       }),
     } as const);
