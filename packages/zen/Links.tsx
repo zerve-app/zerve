@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { ButtonContent, ButtonContentProps } from "./Button";
 import { Link } from "./Link";
 import { ThemedText } from "./Themed";
 
@@ -21,6 +22,19 @@ export function ExternalLinkButton({
       >
         {children}
       </ThemedText>
+    </Link>
+  );
+}
+
+export function LinkButton({
+  href,
+  ...buttonContentProps
+}: {
+  href: string;
+} & ButtonContentProps) {
+  return (
+    <Link href={href}>
+      <ButtonContent {...buttonContentProps} />
     </Link>
   );
 }

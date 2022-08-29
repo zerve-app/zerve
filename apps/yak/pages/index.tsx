@@ -1,6 +1,6 @@
 import { GetStaticProps } from "next";
 import React, { ReactNode } from "react";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import {
   PageContainer,
   NavBar,
@@ -10,7 +10,10 @@ import {
   ExternalLinkButton,
   Link,
   Icon,
+  LinkButton,
 } from "@zerve/zen";
+import { LinearGradient } from "expo-linear-gradient";
+import Image from "next/image";
 
 function FooterLink({
   title,
@@ -137,10 +140,24 @@ export default function HomeScreen() {
           Blog
         </ExternalLinkButton>
         <NavBarSpacer />
-        <ExternalLinkButton href="https://alpha.zerve.app">
-          Alpha App
-        </ExternalLinkButton>
+        <LinkButton
+          href="https://alpha.zerve.app"
+          title="Launch App"
+          primary
+          small
+        />
       </NavBar>
+      <View style={{ minHeight: 500, justifyContent: "center" }}>
+        <LinearGradient
+          colors={["#6144b8", "#9f4ab5"]}
+          start={{ x: 0.5, y: 0.0 }}
+          style={StyleSheet.absoluteFill}
+        />
+        <Image
+          src={require("../assets/ZContentSystemLight.svg")}
+          alt="Zerve Content System – Alpha"
+        />
+      </View>
       <View
         style={{
           backgroundColor: "white",

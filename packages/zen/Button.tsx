@@ -182,3 +182,58 @@ export function AsyncButton({ onPress, onCatch, ...props }: AsyncButtonProps) {
     />
   );
 }
+
+export type ButtonContentProps = {
+  title: string;
+  small?: boolean;
+  chromeless?: boolean;
+  danger?: boolean;
+  primary?: boolean;
+};
+export function ButtonContent({
+  title,
+  small,
+  chromeless,
+  danger,
+  primary,
+}: ButtonContentProps) {
+  const colors = useColors();
+  const color = danger
+    ? colors.dangerText
+    : primary
+    ? colors.tint
+    : colors.text;
+  return (
+    <View
+      style={{
+        backgroundColor: chromeless ? "transparent" : `${colors.background}88`,
+        borderWidth: chromeless ? 0 : danger || primary ? 4 : 1,
+        borderColor: danger
+          ? colors.dangerText
+          : primary
+          ? colors.tint
+          : `${colors.secondaryText}33`,
+        borderRadius: Layout.borderRadius,
+        padding: small ? 8 : 12,
+        paddingHorizontal: small ? 12 : 18,
+        minHeight: small ? 30 : 50,
+        flexDirection: "row",
+        alignItems: "center",
+        overflow: "hidden",
+      }}
+    >
+      <Text
+        style={{
+          color,
+          paddingHorizontal: 12,
+          fontSize: 16,
+          fontWeight: primary ? "bold" : "normal",
+          flex: 1,
+          textAlign: "center",
+        }}
+      >
+        {title}
+      </Text>
+    </View>
+  );
+}

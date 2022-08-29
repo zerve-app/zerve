@@ -54,7 +54,7 @@ export function NavBar({ children }: { children: ReactNode }) {
         flex: 1,
         alignItems: "center",
       }}
-      style={{ backgroundColor: "#decdec", maxHeight: 60 }}
+      style={{ backgroundColor: "#ececec", maxHeight: 60 }}
     >
       {children}
       <NavBarRoutingIndicator />
@@ -72,6 +72,7 @@ export function NavBarZLogo() {
       <View style={{ height: 60, width: 60, backgroundColor: "green" }}>
         <LinearGradient
           colors={["#6144b8", "#9f4ab5"]}
+          start={{ x: 0.5, y: 0.0 }}
           style={StyleSheet.absoluteFill}
         />
         <Svg
