@@ -51,7 +51,7 @@ export function UserDashboard({ entityId }: { entityId: string }) {
         }
         if (feature?.key === "stores") {
           if (feature?.child === "create") return "Create Store";
-          return "Your Stores";
+          return "Personal Stores";
         }
         if (feature?.key === "settings") {
           const settingsFeature = feature?.child;

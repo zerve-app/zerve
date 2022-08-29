@@ -19,7 +19,8 @@ import { useRouter } from "next/router";
 import { NavigateInterceptContext, useModal } from "@zerve/zen";
 import { Dialog } from "@zerve/zen/Dialog";
 
-function parseFeatureFragment(fragment: string): null | StoreNavigationState {
+function parseFeatureFragment(fragment?: string): null | StoreNavigationState {
+  if (!fragment) return null;
   if (fragment.startsWith("entries")) {
     const restFragment = fragment.split("entries").slice(1).join("entries");
     if (restFragment === "--create") {
@@ -164,7 +165,7 @@ export function StoreDashboard({
   useEffect(() => {
     beforePopState((state) => {
       // dear god why doesnt next provide the real query params...
-      const fragmentString = state.as.split("_=")[1].split("&")[0];
+      const fragmentString = state.as.split("_=")[1]?.split("&")[0];
       const fragment = parseFeatureFragment(fragmentString);
       if (
         fragment &&
