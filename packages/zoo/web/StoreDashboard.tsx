@@ -298,8 +298,8 @@ export function StoreDashboard({
               location: [entityId, storeId],
               storeId,
               storePath: entityIsOrg
-                ? ["Auth", "user", "Orgs", entityId, "Stores", storeId]
-                : ["Auth", "user", "Stores", storeId],
+                ? ["auth", "user", "Orgs", entityId, "Stores", storeId]
+                : ["auth", "user", "Stores", storeId],
               ...props,
             };
             if (feature?.key === "entries") {

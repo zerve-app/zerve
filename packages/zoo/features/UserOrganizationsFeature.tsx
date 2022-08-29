@@ -28,7 +28,7 @@ function NewOrganizationButton() {
 
 function UserOrganizations({ entityId, title }: UserFeatureProps) {
   const { data, isLoading, isFetching } = useZNodeValue([
-    "Auth",
+    "auth",
     "user",
     "Orgs",
   ]);

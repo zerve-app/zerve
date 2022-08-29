@@ -21,8 +21,8 @@ function UserStoresCreate({ entityId, title }: UserFeatureProps) {
   const queryClient = useQueryClient();
   const { push } = useRouter();
   const { handle, isLoading } = useAsyncHandler(async (value) => {
-    await postZAction(conn, ["Auth", "user", "CreateStore"], value);
-    queryClient.invalidateQueries([conn.key, "z", "Auth", "user", "Stores"]);
+    await postZAction(conn, ["auth", "user", "CreateStore"], value);
+    queryClient.invalidateQueries([conn.key, "z", "auth", "user", "Stores"]);
     push(`/${entityId}/${value}`);
   });
   return (

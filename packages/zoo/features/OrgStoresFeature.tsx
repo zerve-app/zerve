@@ -25,7 +25,7 @@ function NewStoreButton() {
 
 function OrgStores({ entityId, title }: OrgFeatureProps) {
   const { data, isLoading, isFetching } = useZNodeValue([
-    "Auth",
+    "auth",
     "user",
     "Orgs",
     entityId,

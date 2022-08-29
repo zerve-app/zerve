@@ -18,7 +18,7 @@ function UserSettingsProfile({
 }) {
   const conn = useRequiredConnection();
   const { data, isLoading, isFetching, refetch } = useZNodeValue([
-    "Auth",
+    "auth",
     "user",
     "profile",
   ]);

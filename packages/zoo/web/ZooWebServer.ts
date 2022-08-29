@@ -16,7 +16,7 @@ export async function validateUserCanAccessOrg(
       config.origin,
       `.z/auth/user/Orgs/${orgId}/role`,
       undefined,
-      extractSessionAuth(["Auth"], config.session),
+      extractSessionAuth(["auth"], config.session),
     );
     // console.log("Users role is", userRoleInOrg);
     return true;
@@ -47,7 +47,7 @@ export async function verifyStoreExists(
       config.origin,
       storePath,
       undefined,
-      extractSessionAuth(["Auth"], config.session),
+      extractSessionAuth(["auth"], config.session),
     );
     return true;
   } catch (e) {
@@ -62,7 +62,7 @@ async function validateSession(origin: string, session: SavedSession | null) {
       origin,
       ".z/auth/user",
       undefined,
-      extractSessionAuth(["Auth"], session),
+      extractSessionAuth(["auth"], session),
     );
     if (userNode && userNode !== UnauthorizedError) return session;
   } catch (e) {

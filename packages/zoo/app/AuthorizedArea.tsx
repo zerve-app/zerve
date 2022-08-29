@@ -9,7 +9,7 @@ export function AuthorizedArea({ children }: { children: ReactNode }) {
   const conn = useConnection();
   const openLogin = useModal<void>(({ onClose }) => (
     <LoginForm
-      path={["Auth"]}
+      path={["auth"]}
       authMeta={{}}
       onComplete={(userId) => {
         onClose();
