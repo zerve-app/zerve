@@ -8,16 +8,20 @@ export const NavigateInterceptContext = createContext<
 export function Link({
   href,
   children,
+  external,
 }: {
   href: string;
   children: ReactNode;
+  external?: boolean;
 }) {
   const { push } = useRouter();
   const navigateIntercept = useContext(NavigateInterceptContext);
   return (
     <a
       href={href}
+      target={external ? "_blank" : undefined}
       onClick={(e) => {
+        if (external) return;
         e.preventDefault();
         if (navigateIntercept) {
           const shouldAllow = navigateIntercept(href);

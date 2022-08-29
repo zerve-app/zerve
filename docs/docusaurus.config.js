@@ -59,6 +59,7 @@ const config = {
         logo: {
           alt: "Zerve",
           src: "img/ZerveIconSquare.png",
+          href: "https://zerve.app",
         },
         items: [
           {
@@ -122,6 +123,10 @@ const config = {
               {
                 label: "GitHub",
                 href: "https://github.com/zerve-app/zerve",
+              },
+              {
+                label: "Service Status",
+                href: "https://status.zerve.app",
               },
             ],
           },

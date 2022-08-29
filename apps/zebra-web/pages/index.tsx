@@ -1,4 +1,5 @@
 import {
+  ExternalLinkButton,
   Icon,
   Link,
   NavBar,
@@ -18,31 +19,6 @@ import { ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { Provider } from "@zerve/zoo/provider";
 import Image from "next/image";
 import { Text, View } from "react-native";
-import Colors from "@zerve/zen/Colors";
-
-function ExternalLinkButton({
-  href,
-  children,
-}: {
-  href: string;
-  children: ReactNode;
-}) {
-  const colors = useColors();
-  return (
-    <Link href={href}>
-      <Text
-        style={{
-          textDecorationLine: "underline",
-          color: colors.tint,
-          fontSize: 24,
-          margin: 32,
-        }}
-      >
-        {children}
-      </Text>
-    </Link>
-  );
-}
 
 function HomeScreen() {
   const colors = useColors();
