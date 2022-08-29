@@ -338,7 +338,14 @@ export function DashboardPage<Feature>({
         <NavBarSpacer />
         <AuthHeader />
       </NavBar>
-      <View style={{ flex: 1, flexDirection: "row" }}>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          borderTopWidth: 1,
+          borderColor: "#ddd",
+        }}
+      >
         <Context.Provider value={fragmentContext}>
           {displayNavSidebar ? (
             <NavigationSidebar

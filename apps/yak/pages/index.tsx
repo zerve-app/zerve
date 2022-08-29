@@ -11,6 +11,8 @@ import {
   Link,
   Icon,
   LinkButton,
+  HStack,
+  useColors,
 } from "@zerve/zen";
 import { LinearGradient } from "expo-linear-gradient";
 import Image from "next/image";
@@ -128,26 +130,52 @@ function SiteFooter() {
   );
 }
 
+function NavBarLink({ title, href }) {
+  const colors = useColors();
+  return (
+    <Link href={href}>
+      <Text
+        style={{
+          color: colors.secondaryText,
+          fontSize: 18,
+          fontWeight: "bold",
+          padding: 10,
+        }}
+      >
+        {title}
+      </Text>
+    </Link>
+  );
+}
+
 export default function HomeScreen() {
   return (
     <PageContainer>
       <NavBar>
         <NavBarZLogo />
-        <ExternalLinkButton href="https://docs.zerve.app/docs/intro">
-          Docs
-        </ExternalLinkButton>
-        <ExternalLinkButton href="https://docs.zerve.app/blog">
-          Blog
-        </ExternalLinkButton>
+        <HStack>
+          <NavBarLink href="https://docs.zerve.app/docs/intro" title="Docs" />
+          <NavBarLink href="https://docs.zerve.app/blog" title="Blog" />
+        </HStack>
         <NavBarSpacer />
-        <LinkButton
-          href="https://alpha.zerve.app"
-          title="Launch App"
-          primary
-          small
-        />
+        <HStack>
+          <LinkButton
+            href="https://alpha.zerve.app"
+            title="Launch App"
+            primary
+            small
+            right={(props) => <Icon name="arrow-right" {...props} />}
+          />
+        </HStack>
       </NavBar>
-      <View style={{ minHeight: 500, justifyContent: "center" }}>
+      <View
+        style={{
+          minHeight: 500,
+          justifyContent: "center",
+          borderTopWidth: 1,
+          borderColor: "#eee",
+        }}
+      >
         <LinearGradient
           colors={["#6144b8", "#9f4ab5"]}
           start={{ x: 0.5, y: 0.0 }}

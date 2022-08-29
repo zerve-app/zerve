@@ -35,13 +35,15 @@ function HomeScreen() {
           flex: 1,
           padding: 20,
           justifyContent: "center",
+          borderTopWidth: 1,
+          borderColor: "#eee",
         }}
       >
         <View
           style={{
             position: "absolute",
             top: 10,
-            right: 10,
+            right: 20,
             flexDirection: "row",
           }}
         >

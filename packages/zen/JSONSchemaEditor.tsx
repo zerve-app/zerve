@@ -208,7 +208,6 @@ export function ObjectEditor({
           });
         }
         const isLastKey = propertyIndex === allKeys.length - 1;
-        console.log("HUH " + propertyName, !!onValue, value);
         return (
           <FormField
             id={`${id}-${propertyName}`}
@@ -551,6 +550,7 @@ function FieldHeader({
   actions?: ActionButtonDef[];
 }) {
   const { tint } = useColors();
+  const { enableValueCopy } = useContext(JSONSchemaEditorContext);
   const [labelView] = useActionsSheet(
     (onOpen) => (
       <View
@@ -571,10 +571,34 @@ function FieldHeader({
     () => labelActions || [],
     !labelActions || labelActions.length == 0,
   );
+  const fieldActions = useMemo(() => {
+    const fieldActions = actions ? [...actions] : [];
+    if (enableValueCopy && value !== null && typeof value !== "boolean") {
+      fieldActions.push({
+        key: "clipboard",
+        title: label ? `Copy ${label} Value` : "Copy Value",
+        icon: "clipboard",
+        onPress: async () => {
+          await setStringAsync(
+            typeof value === "string" ? value : JSON.stringify(value),
+          );
+        },
+      });
+    }
+    return fieldActions;
+  }, [
+    actions,
+    label,
+    enableValueCopy,
+    value !== null,
+    typeof value !== "boolean",
+  ]);
   const [typeLabelView] = useActionsSheet(
     (onOpen) => (
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Icon name="chevron-down" color={tint} size={12} />
+        {fieldActions.length ? (
+          <Icon name="chevron-down" color={tint} size={12} />
+        ) : null}
         {typeLabel ? (
           <Label tint style={{ marginLeft: 8, textAlign: "right" }}>
             {typeLabel}
@@ -582,22 +606,8 @@ function FieldHeader({
         ) : null}
       </View>
     ),
-    () => {
-      const fieldActions = actions ? [...actions] : [];
-      if (value !== null && typeof value !== "boolean") {
-        fieldActions.push({
-          key: "clipboard",
-          title: label ? `Copy ${label} Value` : "Copy Value",
-          icon: "clipboard",
-          onPress: async () => {
-            await setStringAsync(
-              typeof value === "string" ? value : JSON.stringify(value),
-            );
-          },
-        });
-      }
-      return fieldActions;
-    },
+    () => fieldActions,
+    fieldActions.length === 0,
   );
 
   return (

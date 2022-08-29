@@ -52,7 +52,6 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: "Zerve",
         logo: {
           alt: "Zerve",
           src: "img/ZerveIconSquare.png",

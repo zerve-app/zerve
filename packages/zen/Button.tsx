@@ -184,6 +184,8 @@ export function AsyncButton({ onPress, onCatch, ...props }: AsyncButtonProps) {
 }
 
 export type ButtonContentProps = {
+  left?: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
+  right?: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
   title: string;
   small?: boolean;
   chromeless?: boolean;
@@ -196,6 +198,8 @@ export function ButtonContent({
   chromeless,
   danger,
   primary,
+  left,
+  right,
 }: ButtonContentProps) {
   const colors = useColors();
   const color = danger
@@ -203,6 +207,7 @@ export function ButtonContent({
     : primary
     ? colors.tint
     : colors.text;
+  const appendageProps = { color, size: small ? 18 : 24 };
   return (
     <View
       style={{
@@ -222,6 +227,7 @@ export function ButtonContent({
         overflow: "hidden",
       }}
     >
+      {typeof left === "function" ? left(appendageProps) : left}
       <Text
         style={{
           color,
@@ -234,6 +240,7 @@ export function ButtonContent({
       >
         {title}
       </Text>
+      {typeof right === "function" ? right(appendageProps) : right}
     </View>
   );
 }

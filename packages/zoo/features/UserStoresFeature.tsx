@@ -36,7 +36,7 @@ function UserStores({ entityId, title }: UserFeatureProps) {
           <NavLinkContent title={storeName} icon="briefcase" />
         </Link>
       ))}
-      <HStack>
+      <HStack padded>
         <NewStoreButton />
       </HStack>
     </FeaturePane>

@@ -23,16 +23,16 @@ import { useState } from "react";
 import { forceLocalLogout, logout, setSession } from "../app/ConnectionStorage";
 
 const LoginStrategies = [
-  {
-    icon: "mobile-phone",
-    label: "Phone",
-    key: "Phone",
-    schema: PhoneSchema,
-    title: "Log In / Register with SMS code",
-  },
+  // {
+  //   icon: "mobile-phone",
+  //   label: "Phone",
+  //   key: "Phone",
+  //   schema: PhoneSchema,
+  //   title: "Log In / Register with SMS code",
+  // },
   {
     icon: "envelope",
-    label: "Email",
+    label: "Email Address",
     key: "Email",
     schema: EmailSchema,
     title: "Log In / Register with Email",

@@ -19,6 +19,7 @@ export type OverrideFieldComponents = Record<string, FieldComponent<any, any>>;
 export type JSONSchemaEditorContext = {
   OverrideFieldComponents?: OverrideFieldComponents;
   openChildEditor?: (key: string) => void;
+  enableValueCopy?: boolean;
 };
 export const JSONSchemaEditorContext = createContext<JSONSchemaEditorContext>(
   {},

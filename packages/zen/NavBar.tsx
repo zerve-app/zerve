@@ -6,6 +6,7 @@ import { Link } from "./Link";
 import { ScrollView } from "react-native-gesture-handler";
 import { Spinner } from "./Spinner";
 import { useRouter } from "next/router";
+import { useColors } from "./useColors";
 
 function NavBarRoutingIndicator() {
   const router = useRouter();
@@ -45,6 +46,7 @@ function NavBarRoutingIndicator() {
 }
 
 export function NavBar({ children }: { children: ReactNode }) {
+  const colors = useColors();
   return (
     <ScrollView
       horizontal
@@ -54,7 +56,7 @@ export function NavBar({ children }: { children: ReactNode }) {
         flex: 1,
         alignItems: "center",
       }}
-      style={{ backgroundColor: "#ececec", maxHeight: 60 }}
+      style={{ backgroundColor: colors.backgroundDim, maxHeight: 60 }}
     >
       {children}
       <NavBarRoutingIndicator />
