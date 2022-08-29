@@ -149,7 +149,8 @@ function StoreEntriesEntry({
 
   const storeValueId = `entry-${entryName}`;
   const fullSchema = useMemo(() => {
-    return entrySchema && expandSchema(entrySchema, schemaStore);
+    const expanded = entrySchema && expandSchema(entrySchema, schemaStore);
+    return expanded;
   }, [entrySchema, schemaStore]);
   const { schema: pathSchema, value: savedPathValue } = useMemo(() => {
     const importedValue =
@@ -166,7 +167,8 @@ function StoreEntriesEntry({
     isDirty ? lookUpValue(getDirtyValue(storeValueId), path) : undefined,
   );
   const doSave = useAsyncHandler<void, AnyError>(async () => {
-    const exportedValue = exportValue(getDirtyValue(storeValueId), entrySchema);
+    const internalValue = getDirtyValue(storeValueId);
+    const exportedValue = exportValue(internalValue, fullSchema);
     await saveEntry.mutateAsync({
       name: entryName,
       value: exportedValue,

@@ -317,7 +317,7 @@ export function expandSchema(
     return schemaObj;
   }
   if (type == null) {
-    // any!
+    // any! this is sad
     return {
       oneOf: allTypesList.map((subType) => ({ type: subType })),
     };
@@ -328,6 +328,35 @@ export function expandSchema(
     }
     return {
       oneOf: type.map((subType) => extractTypeSchema(subType, schemaObj)),
+    };
+  }
+
+  if (type === "object") {
+    const properties = schemaObj.properties
+      ? Object.fromEntries(
+          Object.entries(schemaObj.properties).map(([propName, propSchema]) => [
+            propName,
+            expandSchema(propSchema, schemaStore),
+          ]),
+        )
+      : schemaObj.properties;
+    const additionalProperties = schemaObj.additionalProperties
+      ? expandSchema(schemaObj.additionalProperties, schemaStore)
+      : schemaObj.additionalProperties;
+    return {
+      ...schemaObj,
+      properties,
+      additionalProperties,
+    };
+  }
+
+  if (type === "array") {
+    const items = schemaObj.items
+      ? expandSchema(schemaObj.items, schemaStore)
+      : schemaObj.items;
+    return {
+      ...schemaObj,
+      items,
     };
   }
 
