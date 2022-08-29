@@ -243,19 +243,6 @@ export function HumanTextInput(
   );
 }
 HumanTextInput.import = (value: FromSchema<typeof HumanTextSchema>) => {
-  // const lol = {
-  //   type: "doc",
-  //   content: [
-  //     {
-  //       type: "paragraph",
-  //       content: [
-  //         { type: "text", text: "aa" },
-  //         { type: "text", marks: [{ type: "bold" }], text: "s" },
-  //         { type: "text", text: "df" },
-  //       ],
-  //     },
-  //   ],
-  // };
   const paragraphContent: any[] = [];
   value.forEach((valueNode) => {
     const marks: any[] = [];
@@ -296,7 +283,6 @@ type ExportTextNode = {
 const RETURN = `
 `;
 HumanTextInput.export = (value) => {
-  console.log("== EXPORTING HTEXTVALUE:", value);
   const output: FromSchema<typeof HumanTextSchema> = [];
   if (value.type !== "doc")
     throw new Error("Unexpected export condition: not a doc node");

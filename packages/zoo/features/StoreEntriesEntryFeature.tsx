@@ -11,6 +11,8 @@ import {
 } from "@zerve/zed";
 import {
   Button,
+  getValueExport,
+  getValueImport,
   HStack,
   HumanTextInput,
   JSONSchemaEditor,
@@ -138,11 +140,24 @@ function StoreEntriesEntry({
   const savedEntryValue = entryQuery.data?.value;
   const schemaStore = schemasQuery.data || EmptySchemaStore;
 
+  const [importValue, exportValue] = useMemo(() => {
+    return [
+      getValueImport(editorContext.OverrideFieldComponents),
+      getValueExport(editorContext.OverrideFieldComponents),
+    ];
+  }, [editorContext.OverrideFieldComponents]);
+
   const storeValueId = `entry-${entryName}`;
+  const fullSchema = useMemo(() => {
+    return entrySchema && expandSchema(entrySchema, schemaStore);
+  }, [entrySchema, schemaStore]);
   const { schema: pathSchema, value: savedPathValue } = useMemo(() => {
-    const fullSchema = entrySchema && expandSchema(entrySchema, schemaStore);
-    return drillSchemaValue(fullSchema, savedEntryValue, path);
-  }, [entrySchema, savedEntryValue, path, schemaStore]);
+    const importedValue =
+      savedEntryValue === undefined
+        ? undefined
+        : importValue(savedEntryValue, fullSchema);
+    return drillSchemaValue(fullSchema, importedValue, path);
+  }, [fullSchema, savedEntryValue, path, schemaStore]);
 
   const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
     useUnsavedContext();
@@ -151,9 +166,10 @@ function StoreEntriesEntry({
     isDirty ? lookUpValue(getDirtyValue(storeValueId), path) : undefined,
   );
   const doSave = useAsyncHandler<void, AnyError>(async () => {
+    const exportedValue = exportValue(getDirtyValue(storeValueId), entrySchema);
     await saveEntry.mutateAsync({
       name: entryName,
-      value: getDirtyValue(storeValueId),
+      value: exportedValue,
     });
     releaseDirty(storeValueId);
   });
