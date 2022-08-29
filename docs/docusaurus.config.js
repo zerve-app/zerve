@@ -51,6 +51,10 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      colorMode: {
+        respectPrefersColorScheme: true,
+        disableSwitch: true,
+      },
       navbar: {
         logo: {
           alt: "Zerve",
