@@ -6,7 +6,7 @@ export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   useEffect(() => {
     // there must be a better way to redirect, LOL
-    global.window.location = "https://zerve.app";
+    global.window.location = "/docs/intro";
   }, []);
   return <Layout description=""></Layout>;
 }
