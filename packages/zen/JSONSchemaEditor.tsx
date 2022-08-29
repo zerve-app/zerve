@@ -106,23 +106,7 @@ export function ObjectEditor({
     properties == null ? [] : Object.keys(properties),
   );
   const otherKeys = value ? valueKeys.filter((p) => !propertyKeys.has(p)) : [];
-  const expandedPropertiesSchema = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(properties || {}).map(([propName, propSchema]) => [
-          propName,
-          expandSchema(propSchema || defaultObjectItemsSchema, schemaStore),
-        ]),
-      ),
-    [properties],
-  );
-  const expandedAdditionalPropertiesSchema = useMemo(
-    () =>
-      additionalProperties
-        ? expandSchema(additionalProperties, schemaStore)
-        : false,
-    [additionalProperties],
-  );
+
   const importValue = useValueImporter(schemaStore);
 
   const propertyNameInput = useTextInputFormModal<null | string>(
@@ -185,8 +169,7 @@ export function ObjectEditor({
                 <LabelButton
                   title={`Add ${fieldLabel}`}
                   onPress={() => {
-                    const propertySchema =
-                      expandedPropertiesSchema[propertyName];
+                    const propertySchema = schema.properties?.[propertyName];
                     if (!propertySchema)
                       throw new Error(
                         `Can not find valid schema for "${propertyName}" property`,
@@ -225,6 +208,7 @@ export function ObjectEditor({
           });
         }
         const isLastKey = propertyIndex === allKeys.length - 1;
+        console.log("HUH " + propertyName, !!onValue, value);
         return (
           <FormField
             id={`${id}-${propertyName}`}
@@ -244,8 +228,17 @@ export function ObjectEditor({
             actions={actions}
             onValue={
               onValue
-                ? (propertyValue) =>
-                    onValue({ ...value, [propertyName]: propertyValue })
+                ? (propertyValue) => {
+                    const newValue = Object.fromEntries(
+                      Object.entries(value).map(([pKey, pValue]) => {
+                        if (pKey === propertyName) {
+                          return [pKey, propertyValue];
+                        }
+                        return [pKey, pValue];
+                      }),
+                    );
+                    onValue(newValue);
+                  }
                 : undefined
             }
           />
@@ -282,8 +275,17 @@ export function ObjectEditor({
           ]}
           onValue={
             onValue
-              ? (propertyValue) =>
-                  onValue({ ...value, [itemName]: propertyValue })
+              ? (propertyValue) => {
+                  const newValue = Object.fromEntries(
+                    Object.entries(value).map(([pKey, pValue]) => {
+                      if (pKey === itemName) {
+                        return [pKey, propertyValue];
+                      }
+                      return [pKey, pValue];
+                    }),
+                  );
+                  onValue(newValue);
+                }
               : undefined
           }
         />

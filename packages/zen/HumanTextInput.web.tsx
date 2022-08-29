@@ -39,7 +39,6 @@ export function HumanTextInput(
     editable: !!props?.onValue,
     onUpdate: ({ editor }) => {
       const editorJSON = editor.getJSON();
-      // debugger;
       props?.onValue(editorJSON);
     },
   });
