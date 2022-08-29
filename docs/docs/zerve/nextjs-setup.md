@@ -32,7 +32,7 @@ yarn add --dev @types/react @types/node @types/react-native
 
 rename pages/index.js to index.tsx
 
-import React from 'react'
+`import React from 'react'`
 
 next sees that you're using TS, so it auto-creates the tsconfig.json with the following:
 
