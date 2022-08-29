@@ -68,7 +68,7 @@ function HomeScreen() {
           <ExternalLinkButton href="https://zerve.app">
             Public Home
           </ExternalLinkButton>
-          <ExternalLinkButton href="https://docs.zerve.app">
+          <ExternalLinkButton href="https://docs.zerve.app/docs/intro">
             Documentation
           </ExternalLinkButton>
         </View>

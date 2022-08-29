@@ -130,7 +130,7 @@ export default function HomeScreen() {
     <PageContainer>
       <NavBar>
         <NavBarZLogo />
-        <ExternalLinkButton href="https://docs.zerve.app">
+        <ExternalLinkButton href="https://docs.zerve.app/docs/intro">
           Docs
         </ExternalLinkButton>
         <ExternalLinkButton href="https://docs.zerve.app/blog">
