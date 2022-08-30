@@ -35,6 +35,8 @@ function getCacheControl(cacheOptions: CacheOptions, responseValue: string) {
   }
   if (cacheOptions.isImmutable) {
     cacheHeader += ", immutable";
+  } else if (cacheOptions.isVolatile) {
+    cacheHeader += ", no-cache";
   } else {
     cacheHeader += ", max-age=10";
   }

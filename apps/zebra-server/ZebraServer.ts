@@ -235,7 +235,7 @@ export async function startApp() {
     await WriteJSON.call({ path: settingsPath, value: settings });
     if (alreadyInMemoryStore) {
       // this will re-instansiate the store in memory with new settings
-      getMemoryStore(entityId, storeId, settings);
+      await getMemoryStore(entityId, storeId, settings);
       // its a bit unintuitive that getMemoryStore has side effects, sorry.
     }
   }
@@ -252,7 +252,8 @@ export async function startApp() {
     const Stores = createZGettableGroup(
       async (storeId: string) => {
         const memStore = await getMemoryStore(entityId, storeId);
-        return memStore.store;
+        // avoid aggressive cache policy for private stores
+        return zAnnotateCache(memStore.store, { isVolatile: true });
       },
       async (getOptions: ChildrenListOptions) => {
         const userStorePath = joinPath(getUserDir(entityId), "stores");
@@ -305,10 +306,13 @@ export async function startApp() {
       },
     );
     const StoreSettings = createZGroup(async (storeId) =>
-      createZGettable(StoreSettingsSchema, async () => {
-        const memStore = await getMemoryStore(entityId, storeId);
-        return memStore.settings;
-      }),
+      zAnnotateCache(
+        createZGettable(StoreSettingsSchema, async () => {
+          const memStore = await getMemoryStore(entityId, storeId);
+          return memStore.settings;
+        }),
+        { isVolatile: true },
+      ),
     );
     const WriteStoreSettings = createZAction(
       {
@@ -328,7 +332,7 @@ export async function startApp() {
         settings: StoreSettings;
         storeId: string;
       }) => {
-        writeStoreSettings(entityId, storeId, settings);
+        await writeStoreSettings(entityId, storeId, settings);
         return null;
       },
     );
