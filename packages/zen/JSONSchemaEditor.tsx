@@ -1,4 +1,10 @@
-import React, { ReactNode, useContext, useMemo } from "react";
+import React, {
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import {
   CapitalizeSchema,
   expandSchema,
@@ -109,6 +115,8 @@ export function ObjectEditor({
 
   const importValue = useValueImporter(schemaStore);
 
+  console.log("ObjectEditor v: " + JSON.stringify(value), !!onValue);
+
   const propertyNameInput = useTextInputFormModal<null | string>(
     (propertyEditKey) => ({
       onValue: (propertyName) => {
@@ -149,6 +157,13 @@ export function ObjectEditor({
       inputLabel: "New Property Name",
     }),
   );
+  // @*@#$ DRAGON ALERT
+  // &%$^* vvvvvvv beware. here be dragons
+  const refOfRegret = useRef(value);
+  refOfRegret.current = value;
+  // @#$&* ^^^^^^^
+  // *#Y$% there is some binding issue that prevents the correct value from flowing through to the property onValue callback in certain cases
+  // )@#Y@ DRAGON ALERT
   const { tint } = useColors();
   return (
     <VStack>
@@ -228,8 +243,14 @@ export function ObjectEditor({
             onValue={
               onValue
                 ? (propertyValue) => {
+                    // !^@#*^!@*#!(@*#!^*@(!))
+                    // BE AWARE. HERE BE DRAGONS:
+                    // we should be able to use "value" here instead of the refOfRegret. but for some reason, react is not updating this callback.
+                    // OR js binding is failing here (the "arrow fn" we are in should always bind to the `value` in this ObjectEditor fn component)
+                    const $DRAGON_VALUE = refOfRegret.current;
+                    // !^@#*^!@*#!(@*#!^*@(!))
                     const newValue = Object.fromEntries(
-                      Object.entries(value).map(([pKey, pValue]) => {
+                      Object.entries($DRAGON_VALUE).map(([pKey, pValue]) => {
                         if (pKey === propertyName) {
                           return [pKey, propertyValue];
                         }
