@@ -146,7 +146,6 @@ export function schemaStoreToSchema(
       };
     });
   const finalSchema = {
-    uhg: true,
     oneOf: [
       ...ZSchemaSchema.oneOf.map((zSubSchema) => {
         if (zSubSchema.title === "List Schema") {

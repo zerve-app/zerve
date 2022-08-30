@@ -158,7 +158,7 @@ function StoreEntriesEntry({
         ? undefined
         : importValue(savedEntryValue, fullSchema);
     return drillSchemaValue(fullSchema, importedValue, path);
-  }, [fullSchema, savedEntryValue, path, schemaStore]);
+  }, [fullSchema, savedEntryValue, path]);
 
   const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
     useUnsavedContext();
@@ -175,7 +175,7 @@ function StoreEntriesEntry({
     });
     releaseDirty(storeValueId);
   });
-
+  const displayValue = draftValue === undefined ? savedPathValue : draftValue;
   return (
     <FeaturePane
       title={title}
@@ -248,7 +248,7 @@ function StoreEntriesEntry({
                   claimDirty(storeValueId, path, value);
                 }
               }}
-              value={draftValue === undefined ? savedPathValue : draftValue}
+              value={displayValue}
               schema={pathSchema}
               schemaStore={schemaStore}
             />

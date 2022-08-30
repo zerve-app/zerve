@@ -44,12 +44,14 @@ function StoreSchemasSchema({
   path,
 }: StoreFeatureProps & { schema: string; path: string[] }) {
   const schemaSchemaQuery = useZStoreSchemaSchema(storePath, schemaName);
-  const schemaStore = schemaSchemaQuery.data?.$schemaStore;
   const schemaQuery = useZStoreSchema(storePath, schemaName);
+  const schemaStore = schemaSchemaQuery.data?.$schemaStore;
+
   const deleteSchema = useDeleteSchema(storePath);
+  const saveSchema = useSaveSchema(storePath);
+
   const { openSchema, replaceToSchemas, replaceToSchema } =
     useStoreNavigation(location);
-  const saveSchema = useSaveSchema(storePath);
   const editorContext = useMemo(() => {
     const ctx: JSONSchemaEditorContext = {
       openChildEditor: (key: string) => {
@@ -58,8 +60,7 @@ function StoreSchemasSchema({
     };
     return ctx;
   }, []);
-  const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
-    useUnsavedContext();
+
   const renameSchema = useRenameSchema(storePath);
   const renameSchemaPrompt = useTextInputFormModal<string>(
     (prevName: string) => {
@@ -100,19 +101,21 @@ function StoreSchemasSchema({
     ];
   }, [schemaName]);
 
+  const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
+    useUnsavedContext();
   const dirtyId = `schema-${schemaName}`;
   const isDirty = dirtyIds.has(dirtyId);
+  const currentDirtyValue = getDirtyValue(dirtyId);
   const [draftValue, setDraftValue] = useState(
-    isDirty ? lookUpValue(getDirtyValue(dirtyId), path) : undefined,
+    isDirty ? lookUpValue(currentDirtyValue, path) : undefined,
   );
-  const savedSchemaValue = schemaQuery.data;
-
+  const currentValue = currentDirtyValue || schemaQuery.data;
   const { schema: pathSchema, value: savedPathValue } = useMemo(
     () =>
       schemaSchemaQuery.data
-        ? drillSchemaValue(schemaSchemaQuery.data, savedSchemaValue, path)
+        ? drillSchemaValue(schemaSchemaQuery.data, currentValue, path)
         : { schema: undefined, value: undefined },
-    [schemaSchemaQuery.data, savedSchemaValue, path],
+    [schemaSchemaQuery.data, currentValue, path],
   );
 
   const doSave = useAsyncHandler<void, AnyError>(async () => {
@@ -145,7 +148,7 @@ function StoreSchemasSchema({
                     claimDirty(
                       dirtyId,
                       [],
-                      mergeValue(savedSchemaValue, path, value),
+                      mergeValue(currentValue, path, value),
                     );
                   } else {
                     claimDirty(dirtyId, path, value);

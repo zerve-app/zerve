@@ -3,34 +3,23 @@ import {
   HStack,
   JSONSchemaEditor,
   JSONSchemaEditorContext,
-  JSONSchemaForm,
-  showToast,
   Spacer,
-  Title,
   useAsyncHandler,
   VStack,
 } from "@zerve/zen";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { FeaturePane } from "../web/Dashboard";
-import { useSaveEntry, useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
+import { useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
 import {
   StoreFeatureLink,
   StoreFeatureProps,
   useUnsavedContext,
 } from "../context/StoreDashboardContext";
-import {
-  useZNodeValue,
-  useZStoreEntrySchema,
-  useZStoreSchema,
-  useZStoreSchemas,
-} from "@zerve/zoo-client/Query";
+import { useZNodeValue, useZStoreEntrySchema } from "@zerve/zoo-client/Query";
 import { useStoreNavigation } from "../app/useNavigation";
 import {
   AnyError,
   drillSchemaValue,
-  EmptySchemaStore,
-  exploreUnionSchema,
-  JSONSchema,
   lookUpValue,
   mergeValue,
 } from "@zerve/zed";
@@ -43,22 +32,17 @@ function StoreEntriesSchema({
   title,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const schemaSchemaQuery = useZStoreEntrySchema(storePath);
-  const schemaStore = schemaSchemaQuery.data?.$schemaStore;
-  const saveSchema = useSaveEntrySchema(storePath, schemaStore);
   const entrySchemaQuery = useZNodeValue([
     ...storePath,
     "State",
     entryName,
     "schema",
   ]);
-  const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
-    useUnsavedContext();
+  const schemaStore = schemaSchemaQuery.data?.$schemaStore;
+
+  const saveSchema = useSaveEntrySchema(storePath, schemaStore);
+
   const { openEntrySchema } = useStoreNavigation(location);
-  const dirtyId = `entry-schema-${entryName}`;
-  const isDirty = dirtyIds.has(dirtyId);
-  const [draftValue, setDraftValue] = useState(
-    isDirty ? lookUpValue(getDirtyValue(dirtyId), path) : undefined,
-  );
   const editorContext = useMemo(() => {
     const ctx: JSONSchemaEditorContext = {
       openChildEditor: (key: string) => {
@@ -67,11 +51,21 @@ function StoreEntriesSchema({
     };
     return ctx;
   }, []);
-  const savedSchemaValue = entrySchemaQuery.data;
-  const { schema: pathSchema, value: savedPathValue } = useMemo(
-    () => drillSchemaValue(schemaSchemaQuery.data, savedSchemaValue, path),
-    [schemaSchemaQuery.data, savedSchemaValue, path],
+
+  const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
+    useUnsavedContext();
+  const dirtyId = `entry-schema-${entryName}`;
+  const isDirty = dirtyIds.has(dirtyId);
+  const currentDirtyValue = getDirtyValue(dirtyId);
+  const [draftValue, setDraftValue] = useState(
+    isDirty ? lookUpValue(currentDirtyValue, path) : undefined,
   );
+  const currentValue = currentDirtyValue || entrySchemaQuery.data;
+  const { schema: pathSchema, value: savedPathValue } = useMemo(
+    () => drillSchemaValue(schemaSchemaQuery.data, currentValue, path),
+    [schemaSchemaQuery.data, currentValue, path],
+  );
+
   const doSave = useAsyncHandler<void, AnyError>(async () => {
     await saveSchema.mutateAsync({
       name: entryName,
@@ -100,7 +94,7 @@ function StoreEntriesSchema({
                     claimDirty(
                       dirtyId,
                       [],
-                      mergeValue(savedSchemaValue, path, value),
+                      mergeValue(currentValue, path, value),
                     );
                   } else {
                     claimDirty(dirtyId, path, value);
