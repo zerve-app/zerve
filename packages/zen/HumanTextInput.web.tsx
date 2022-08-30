@@ -14,7 +14,7 @@ import { IconButton } from "./Button";
 import { Icon } from "./Icon";
 import { useAllColors, useColors } from "./useColors";
 import Layout from "./Layout";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTextInputFormModal } from "./TextInputFormModal";
 
 export function HumanTextInput(
@@ -42,6 +42,15 @@ export function HumanTextInput(
       props?.onValue(editorJSON);
     },
   });
+  useEffect(() => {
+    if (!editor) return;
+    const value = props.value;
+    const editorValue = editor.getJSON();
+    // this is so embarassing. enough consoling log, please console.Eric for this travesty
+    if (JSON.stringify(value) !== JSON.stringify(editorValue)) {
+      editor.commands.setContent(value);
+    }
+  }, [props.value]);
   const colors = useAllColors();
   const editHref = useTextInputFormModal<string>((defaultValue: string) => ({
     defaultValue,
