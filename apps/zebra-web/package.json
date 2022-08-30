@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env Z_ORIGIN=\"http://localhost:4888\" next dev --port=4000",
     "build": "next build",
-    "start": "next start",
+    "start": "cross-env Z_ORIGIN=\"http://localhost:4888\" next start --port=4000",
     "lint": "next lint",
     "clean": "rimraf node_modules .next .expo"
   },
