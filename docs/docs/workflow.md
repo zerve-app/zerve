@@ -72,7 +72,13 @@ const isAllowed = await AllowNewUsers.get();
 
 ### 4. Your App can Present Content from the Store
 
-Coming soon.
+React Native apps can install `@zerve/react-native-content` to utilize the built-in views.
+
+Within your Store Settings on the dashboard, enable the schema that you want to use, for example `Human Text`. Then create an entry or schema using the `HumanText` schema.
+
+Run `zerve-sync` again, or just run `yarn` if you have the "prepare" script set up.
+
+...HumanText...
 
 ## Deploy your App
 

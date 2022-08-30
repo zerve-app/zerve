@@ -1,3 +1,7 @@
+---
+title: Next.js Setup
+---
+
 Guided setup for Zerve + Typescript + React Native Web in a Next app
 
 This is the manual guide. Alternatively you can:
@@ -88,7 +92,7 @@ now run `yarn zerve-sync`
 
 `yarn add react-query @zerve/client`
 
-```
+```tsx
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }) {
@@ -107,4 +111,54 @@ function MyApp({ Component, pageProps }) {
 
 ### Zerve Content
 
+To set up the content views, you need to use `next-transpile-modules`. This allows the internal reference of "react-native" to be converted to "react-native-web"
+
+First, install it:
+
+```
 yarn add @zerve/react-native-content
+```
+
+Then, run:
+
+```
+yarn add -D next-transpile-modules
+```
+
+Finally, transpile the content module from your `next.config.js`.
+
+```
+require("next-transpile-modules")([ "@zerve/react-native-content" ])(nextConfig)
+```
+
+Your final `next.config.js` should look like this:
+
+```
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      // Transform all direct `react-native` imports to `react-native-web`
+      "react-native$": "react-native-web",
+    };
+    config.resolve.extensions = [
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ...config.resolve.extensions,
+    ];
+    return config;
+  },
+};
+
+const withTM = require("next-transpile-modules")([
+  "@zerve/react-native-content",
+]);
+
+module.exports = withTM(nextConfig);
+```
+
+For a more complicated example that includes `next-compose-plugins` and `@expo/next-adapter` see the [web app next.config.js](https://github.com/zerve-app/zerve/blob/main/apps/zoo-web/next.config.js) in the Zerve repo.

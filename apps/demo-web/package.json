@@ -19,7 +19,7 @@
     "@expo/config-types": "^46.0.2",
     "@expo/next-adapter": "^4.0.12",
     "@zerve/zen": "*",
-    "@zerve/react-native-content": "*",
+    "@zerve/react-native-content": "0.1.0-alpha.3",
     "@zerve/zoo-client": "*",
     "@zerve/cli": "0.1.0-alpha.4",
     "react-query": "^3.39.2",

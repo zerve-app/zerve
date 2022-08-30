@@ -36,7 +36,18 @@ packPackage.files = [
   ...pkgFiles.map((srcFile) => `${parse(srcFile).name}.js`),
   ...pkgFiles.map((srcFile) => `${parse(srcFile).name}.d.ts`),
 ];
-// delete packPackage.scripts; // not doing this because the postpack script gets wiped out before usage. the distributed package should not need scripts but here we are
+packPackage.exports = Object.fromEntries(
+  pkgFiles.map((srcFile) => {
+    const distEntry = `./${parse(srcFile).name}.js`;
+    return [`./${parse(srcFile).name}`, distEntry];
+  }),
+);
+packPackage.repository = {
+  type: "git",
+  url: "https://github.com/zerve-app/zerve.git",
+  directory: `packages/${pkgPath}`,
+};
+delete packPackage.scripts;
 writeFileSync(pkgJsonPath, JSON.stringify(packPackage, null, 2));
 
 pkgFiles.forEach((srcFile) => {

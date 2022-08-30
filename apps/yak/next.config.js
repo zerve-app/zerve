@@ -20,6 +20,11 @@ const localPackageNames = packageJsons.map((p) => p?.name).filter(Boolean);
 const nextConfig = {
   reactStrictMode: true,
   webpack5: true,
+  experimental: {
+    images: {
+      unoptimized: true,
+    },
+  },
   webpack: (config, options) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
