@@ -17,7 +17,6 @@ import {
   NotFoundError,
   ChildrenListOptions,
   BooleanSchema,
-  HumanTextSchema,
   FromSchema,
   JSONSchema,
   StoreSettings,
@@ -43,6 +42,7 @@ import { createGeneralStore, GeneralStoreModule } from "@zerve/store";
 import { createZMessageSMS } from "@zerve/message-sms-twilio";
 import { createZMessageEmail } from "@zerve/message-email-sendgrid";
 import { createStream as createRotatingWriteStream } from "rotating-file-stream";
+import { HumanTextSchema } from "@zerve/react-native-content/Schema";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3888;
 

@@ -1,9 +1,7 @@
 {
   "name": "@zerve/client",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.3",
   "license": "Apache-2.0",
-  "main": "./index.tsx",
-  "types": "./index.tsx",
   "scripts": {
     "clean": "rimraf node_modules"
   },

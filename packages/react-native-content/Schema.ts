@@ -1,5 +1,12 @@
 import { FromSchema } from "json-schema-to-ts";
-import { BooleanSchema, StringSchema } from "./JSONSchema";
+
+export const BooleanSchema = {
+  type: "boolean",
+} as const;
+
+export const StringSchema = {
+  type: "string",
+} as const;
 
 export const HumanTextSchema = {
   $id: "https://type.zerve.link/HumanText",

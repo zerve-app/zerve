@@ -16,6 +16,7 @@
   "emmet.showExpandedAbbreviation": "never",
   "emmet.triggerExpansionOnTab": false,
   "files.exclude": {
+    "node_modules/": true,
     "**/.git": true,
     "**/.DS_Store": true
   },

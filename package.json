@@ -43,7 +43,9 @@
     "aardvark:logs": "ssh aardvark -t \"journalctl -u AardvarkServer -n 150 --follow\"",
     "aardvark:reset": "ssh aardvark -t \"systemctl restart AardvarkServer\"",
     "zebra:reset": "ssh zebra -t \"systemctl restart ZebraServer\"",
-    "docs": "yarn workspace @zerve/docs start"
+    "docs": "yarn workspace @zerve/docs start",
+    "pkg:publish": "node ./scripts/publish.js",
+    "pkg:pack": "node ./scripts/pack.js"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

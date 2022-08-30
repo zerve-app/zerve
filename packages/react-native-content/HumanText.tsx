@@ -1,8 +1,8 @@
 import React, { createContext, useContext } from "react";
 import { Linking, Platform, Text, TextStyle } from "react-native";
-import type { HumanText as HumanTextValue } from "@zerve/zed";
+import { HumanText } from "./Schema";
 
-export type HumanTextNode = HumanTextValue[number];
+export type HumanTextNode = HumanText[number];
 export type LinkPressHandler = (href: string, textNode: HumanTextNode) => void;
 export type HumanTextOptions = {
   style?: TextStyle;
@@ -39,7 +39,7 @@ export function HumanText({
   options,
   style,
 }: {
-  value: HumanTextValue;
+  value: HumanText;
   options?: HumanTextOptions;
   style?: TextStyle;
 }) {

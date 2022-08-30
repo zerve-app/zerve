@@ -16,7 +16,6 @@ export * from "./StoreFile";
 export * from "./State";
 export * from "./Workflow";
 export * from "./JSONSchemaComponents";
-export * from "./HumanText";
 export * from "./StoreSettings";
 export * from "./Cache";
 

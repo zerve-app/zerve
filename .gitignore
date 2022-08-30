@@ -13,6 +13,9 @@ coverage
 out/
 build
 
+# from pack workflow
+dist
+
 # misc
 .DS_Store
 *.pem
