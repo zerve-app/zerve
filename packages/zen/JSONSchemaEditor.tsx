@@ -23,13 +23,13 @@ import {
   JSONSchemaEditorContext,
   useValueImporter,
 } from "./JSONSchemaEditorUtilities";
-import { Button } from "./Button";
+import { Button, ContentButton } from "./Button";
 import { Icon } from "./Icon";
 import { Label } from "./Label";
 import { useColors } from "./useColors";
 import { VStack } from "./Stack";
 import { Paragraph } from "./Text";
-import { ThemedText } from "./Themed";
+import { TextProps, ThemedText } from "./Themed";
 import { ActionButtonDef } from "./ActionButton";
 import { InfoRow } from "./Row";
 import { Dropdown } from "./Dropdown";
@@ -169,10 +169,10 @@ export function ObjectEditor({
       {!!errors.length && (
         <Paragraph>Errors: {errors.map((e) => e.message).join(". ")}</Paragraph>
       )}
-      {valueKeys.length === 0 && <ThemedText>Object is Empty.</ThemedText>}
-      {valueKeys.length === 0 && additionalProperties === false ? (
-        <ThemedText>Schema disallows additional keys.</ThemedText>
-      ) : null}
+      {valueKeys.length === 0 && propertyKeyList.length === 0 && (
+        <ThemedText>Object is Empty.</ThemedText>
+      )}
+
       {propertyKeyList.map((propertyName, propertyIndex, allKeys) => {
         const fieldLabel = propertyTitles?.[propertyName] || propertyName;
         if (value?.[propertyName] === undefined) {
@@ -262,6 +262,11 @@ export function ObjectEditor({
           />
         );
       })}
+      {valueKeys.length === 0 &&
+      propertyKeyList.length === 0 &&
+      additionalProperties === false ? (
+        <ThemedText>Schema disallows additional keys.</ThemedText>
+      ) : null}
       {otherKeys.map((itemName) => (
         <FormField
           id={`${id}-${itemName}`}
@@ -419,6 +424,98 @@ function getHumanLabelOfSchema(schema: JSONSchema) {
   return "?";
 }
 
+function ValueLine({ value }: { value: any }) {
+  const lineProps: TextProps = {
+    numberOfLines: 1,
+  };
+  if (typeof value === "object") {
+    if (typeof value.title === "string")
+      return <ThemedText {...lineProps}>{value.title}</ThemedText>;
+    return <ThemedText {...lineProps}>{JSON.stringify(value)}</ThemedText>;
+  }
+  if (value === true) return <ThemedText {...lineProps}>True</ThemedText>;
+  if (value === false) return <ThemedText {...lineProps}>False</ThemedText>;
+  if (value == null) return <ThemedText {...lineProps}>Empty</ThemedText>;
+  if (typeof value === "string" || typeof value === "number")
+    return <ThemedText {...lineProps}>{value}</ThemedText>;
+  return <ThemedText {...lineProps}>{JSON.stringify(value)}</ThemedText>;
+}
+
+function limitList<A = any>(list: Array<A>, rowCount: number) {
+  if (list.length <= rowCount) return { visible: list, remainder: [] };
+  return {
+    visible: list.slice(0, rowCount - 2),
+    remainder: list.slice(rowCount - 1),
+  };
+}
+
+function ValueView({ value }: { value: any }) {
+  // const { openRef } = useContext(JSONSchemaEditorContext);
+  if (Array.isArray(value)) {
+    const { visible, remainder } = limitList(value, 5);
+    return (
+      <View style={{}}>
+        {visible.length === 0 ? (
+          <ThemedText secondary>Empty List</ThemedText>
+        ) : null}
+        {visible.map((value, index) => (
+          <View style={{ flexDirection: "row", marginVertical: 2 }} key={index}>
+            <ValueLine value={value} />
+          </View>
+        ))}
+        {remainder.length > 0 ? (
+          <View style={{ flexDirection: "row", marginVertical: 2 }}>
+            <ThemedText secondary>+ {remainder.length} more</ThemedText>
+          </View>
+        ) : null}
+      </View>
+    );
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    const { visible, remainder } = limitList(
+      entries.filter((entry) => {
+        return entry[0] !== "title" && entry[0][0] !== "$";
+      }),
+      5,
+    );
+    return (
+      <View style={{}}>
+        {value.title ? (
+          <ThemedText style={{ fontWeight: "bold" }}>{value.title}</ThemedText>
+        ) : null}
+        {entries.length === 0 ? (
+          <ThemedText secondary>Empty Object</ThemedText>
+        ) : visible.length === 0 && !value.title ? (
+          <ThemedText secondary>Object</ThemedText>
+        ) : null}
+        {/* {value.$ref ? (
+          <ThemedText style={{ alignSelf: "flex-end" }} tint>
+            Open {value.title} Schema
+          </ThemedText>
+        ) : null} */}
+        {visible.map(([propName, propValue]) => (
+          <View
+            style={{ flexDirection: "row", marginVertical: 2 }}
+            key={propName}
+          >
+            <ThemedText style={{ fontWeight: "bold" }}>{propName}: </ThemedText>
+            <ValueLine value={propValue} />
+          </View>
+        ))}
+        {remainder.length > 0 ? (
+          <View style={{ flexDirection: "row", marginVertical: 2 }}>
+            <ThemedText secondary>
+              + {remainder.map((entry) => entry[0]).join(", ")}
+            </ThemedText>
+          </View>
+        ) : null}
+      </View>
+    );
+  }
+  return <ValueLine value={value} />;
+}
+
 function ObjectField({
   label,
   labelActions,
@@ -450,8 +547,7 @@ function ObjectField({
         value={value}
         actions={actions}
       />
-      <Button
-        title={(JSON.stringify(value) || "").slice(0, 60)}
+      <ContentButton
         disabled={!openChildEditor}
         onPress={
           openChildEditor
@@ -460,7 +556,9 @@ function ObjectField({
               }
             : null
         }
-      />
+      >
+        <ValueView value={value} />
+      </ContentButton>
     </>
   );
 }
@@ -495,8 +593,7 @@ function ArrayField({
         value={value}
         actions={actions}
       />
-      <Button
-        title={(JSON.stringify(value) || "").slice(0, 60)}
+      <ContentButton
         disabled={!openChildEditor}
         onPress={
           openChildEditor
@@ -505,7 +602,9 @@ function ArrayField({
               }
             : null
         }
-      />
+      >
+        <ValueView value={value} />
+      </ContentButton>
     </>
   );
 }

@@ -31,13 +31,14 @@ export function getDefaultSchemaValue(
   if (usableSchema.type === "string") return "";
   if (usableSchema.type === "array") return []; // todo: handle tuples..
   if (usableSchema.type === "object") {
+    const required = new Set(usableSchema.required || []);
     return Object.fromEntries(
-      Object.entries(usableSchema.properties || {}).map(
-        ([propertyName, propertySchema]) => [
+      Object.entries(usableSchema.properties || {})
+        .filter(([propertyName]) => required.has(propertyName))
+        .map(([propertyName, propertySchema]) => [
           propertyName,
           getDefaultSchemaValue(propertySchema, schemaStore),
-        ],
-      ),
+        ]),
     );
   }
   if (usableSchema.oneOf) {

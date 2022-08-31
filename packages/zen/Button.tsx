@@ -244,3 +244,34 @@ export function ButtonContent({
     </View>
   );
 }
+
+export function ContentButton({
+  children,
+  onPress,
+  disabled,
+}: {
+  children: ReactNode;
+  onPress?: (() => void) | null;
+  disabled?: boolean;
+}) {
+  const colors = useColors();
+  return (
+    <Pressable onPress={onPress} disabled={!!disabled || !onPress}>
+      <View
+        style={{
+          backgroundColor: `${colors.background}88`,
+          borderWidth: 1,
+          borderColor: `${colors.secondaryText}33`,
+          borderRadius: Layout.borderRadius,
+          padding: 12,
+          paddingHorizontal: 18,
+          minHeight: 50,
+          overflow: "hidden",
+          justifyContent: "center",
+        }}
+      >
+        {children}
+      </View>
+    </Pressable>
+  );
+}

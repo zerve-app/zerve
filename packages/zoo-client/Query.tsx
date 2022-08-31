@@ -142,7 +142,7 @@ export function schemaStoreToSchema(
           $ref: { const: $id },
         },
         additionalProperties: false,
-        required: ["$ref"],
+        required: ["$ref", "title"],
       };
     });
   const finalSchema = {
