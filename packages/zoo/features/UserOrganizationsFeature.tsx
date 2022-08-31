@@ -39,7 +39,7 @@ function UserOrganizations({ entityId, title }: UserFeatureProps) {
           <NavLinkContent title={orgId} icon="building" />
         </Link>
       ))}
-      <HStack>
+      <HStack padded>
         <NewOrganizationButton />
       </HStack>
     </FeaturePane>

@@ -1,5 +1,8 @@
 import React from "react";
-import { StoreDashboard } from "@zerve/zoo/web/StoreDashboard";
+import {
+  StoreDashboard,
+  StoreDashboardProps,
+} from "@zerve/zoo/web/StoreDashboard";
 import { ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import {
@@ -12,20 +15,16 @@ import { Provider } from "@zerve/zoo/provider";
 import { GetServerSideProps } from "next";
 import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
 
-type StoreDashboardProps = WebPathRootServerProps & {
-  entityId: string;
-  entityIsOrg: boolean;
-  storeId: string;
-};
+type PageProps = WebPathRootServerProps & StoreDashboardProps;
 
-export default function StorePage(props: StoreDashboardProps) {
+export default function StorePage(props: PageProps) {
+  const { config, ...dashProps } = props;
   const conn = useWebConnection(props.config);
-
   return (
     <ConnectionProvider value={conn}>
       <Provider>
         <AuthorizedArea>
-          <StoreDashboard {...props} />
+          <StoreDashboard {...dashProps} />
         </AuthorizedArea>
       </Provider>
     </ConnectionProvider>
@@ -50,11 +49,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       redirect: { destination: `/${entityId}`, permanent: false },
     };
   }
-  const props: StoreDashboardProps = {
+  const props: PageProps = {
     entityId,
     storeId,
     config,
     entityIsOrg,
+    storePath: entityIsOrg
+      ? ["auth", "user", "Orgs", entityId, "Stores", storeId]
+      : ["auth", "user", "Stores", storeId],
+    href: `/${entityId}/${storeId}`,
   };
   return { props };
 };

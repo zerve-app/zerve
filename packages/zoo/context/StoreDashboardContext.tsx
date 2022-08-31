@@ -6,7 +6,6 @@ export type StoreFeatureProps = {
   title: string;
   storeId: string;
   storePath: Array<string>;
-  location: Array<string>;
 };
 
 export type StoreNavigationState =

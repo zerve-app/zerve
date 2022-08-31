@@ -3,8 +3,9 @@ import { createZContainer, zAnnotateCache } from "@zerve/zed";
 import { createCoreData } from "@zerve/data";
 import { createGeneralStore } from "@zerve/store";
 import { joinPath } from "@zerve/system-files";
+import { HumanTextSchema } from "@zerve/react-native-content/Schema";
 
-const port = process.env.PORT ? Number(process.env.PORT) : 3888;
+const port = process.env.PORT ? Number(process.env.PORT) : 9888;
 
 const homeDir = process.env.HOME;
 const defaultZDataDir = `${homeDir}/.zerve`;
@@ -24,6 +25,7 @@ export async function startApp() {
     Data,
     joinPath(dataDir, "PublicStoreCache"),
     "PublicStore",
+    { HumanText: HumanTextSchema },
   );
 
   const zRoot = createZContainer({

@@ -335,8 +335,6 @@ export function DashboardPage<Feature>({
       <NavBar>
         <NavBarZLogo />
         {header}
-        <NavBarSpacer />
-        <AuthHeader />
       </NavBar>
       <View
         style={{

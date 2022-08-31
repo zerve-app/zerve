@@ -15,6 +15,7 @@ export function createZStoreClient(
   };
 
   function createAccessor<EntryType>(name: string) {
+    type OptionalEntryType = EntryType | undefined;
     async function get(): Promise<EntryType> {
       const resp = await serverGet(
         connection.url,
@@ -25,13 +26,13 @@ export function createZStoreClient(
     function use(
       queryOptions?: UseQueryOptions<
         // union with undefined here is not desirable. but otherwise RQ data type does not indicate that the value is undefined during loading.. wtf?
-        EntryType | undefined,
+        OptionalEntryType,
         string | undefined,
         EntryType | undefined,
         any
       >,
     ) {
-      return useQuery<EntryType | undefined, string | undefined>(
+      return useQuery<OptionalEntryType, string | undefined>(
         [".zerve-store", zStorePath, name],
         get,
         queryOptions,

@@ -11,9 +11,9 @@ const SchemaNameSchema = {
   title: "Schema Name",
 } as const;
 
-function StoreSchemasCreate({ storePath, location, title }: StoreFeatureProps) {
+function StoreSchemasCreate({ storePath, title }: StoreFeatureProps) {
   const createSchema = useCreateSchema(storePath);
-  const { replaceToSchema } = useStoreNavigation(location);
+  const { replaceToSchema } = useStoreNavigation();
   const handleSubmit = useCallback(async (name) => {
     const actualName = prepareStoreFileName(name);
     await createSchema.mutateAsync(actualName);

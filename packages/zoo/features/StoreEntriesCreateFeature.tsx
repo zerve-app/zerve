@@ -11,9 +11,9 @@ const EntryNameSchema = {
   title: "Entry Name",
 } as const;
 
-function StoreEntriesCreate({ storePath, location, title }: StoreFeatureProps) {
+function StoreEntriesCreate({ storePath, title }: StoreFeatureProps) {
   const createEntry = useCreateEntry(storePath);
-  const { replaceToEntrySchema } = useStoreNavigation(location);
+  const { replaceToEntrySchema } = useStoreNavigation();
   const handleSubmit = useCallback(async (name) => {
     const actualName = prepareStoreFileName(name);
     await createEntry.mutateAsync(actualName);

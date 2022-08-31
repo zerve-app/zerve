@@ -1,4 +1,5 @@
-import { useConnection } from "@zerve/zoo-client/Connection";
+import { NavBarSpacer } from "@zerve/zen";
+import { AuthHeader } from "../components/AuthHeader";
 import {
   OrgDashboardContext,
   OrgNavigationState,
@@ -12,7 +13,13 @@ export function OrgDashboard({ entityId }: { entityId: string }) {
   return (
     <DashboardPage<OrgNavigationState>
       Context={OrgDashboardContext}
-      header={<OrgHeader orgId={entityId} />}
+      header={
+        <>
+          <OrgHeader orgId={entityId} />
+          <NavBarSpacer />
+          <AuthHeader />
+        </>
+      }
       navigation={[{ key: "stores" }, { key: "members" }, { key: "settings" }]}
       defaultFeature={{ key: "stores" }}
       navigationFooter={null}

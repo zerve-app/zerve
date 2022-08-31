@@ -91,7 +91,6 @@ function EmptyEntryContent({
 
 function StoreEntriesEntry({
   storePath,
-  location,
   entryName,
   path,
   title,
@@ -99,8 +98,8 @@ function StoreEntriesEntry({
   const saveEntry = useSaveEntry(storePath);
   const schemasQuery = useZStoreSchemas(storePath);
   const entryQuery = useZNodeValue([...storePath, "State", entryName]);
-  const { openEntrySchema, replaceToEntries, replaceToEntry } =
-    useStoreNavigation(location);
+  const { openEntry, openEntrySchema, replaceToEntries, replaceToEntry } =
+    useStoreNavigation();
   const deleteFile = useDeleteEntry(
     storePath,
     useMemo(
@@ -125,7 +124,6 @@ function StoreEntriesEntry({
       };
     },
   );
-  const { openEntry } = useStoreNavigation(location);
   const editorContext = useMemo(() => {
     return {
       OverrideFieldComponents: {

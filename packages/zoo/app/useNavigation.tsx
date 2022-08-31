@@ -105,7 +105,7 @@ export function useConnectionNavigation() {
   );
 }
 
-export function useStoreNavigation(location: string[]) {
+export function useStoreNavigation() {
   const navigate = useFragmentNavigate<StoreNavigationState>(
     StoreDashboardContext,
   );

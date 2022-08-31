@@ -144,7 +144,7 @@ export async function startApp() {
 
   const Email = createZMessageEmail({
     sendgridKey: requireSecret("SendgridKey"),
-    fromEmail: `Zerve Admin <admin@zerve.app>`,
+    fromEmail: process.env.FROM_EMAIL || `Zerve Admin <admin@zerve.app>`,
   });
 
   const [zAuth, { createEntity, getEntity, writeEntity }] = await createAuth({

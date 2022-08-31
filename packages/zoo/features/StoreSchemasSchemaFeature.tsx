@@ -38,7 +38,6 @@ import {
 
 function StoreSchemasSchema({
   storePath,
-  location,
   schema: schemaName,
   title,
   path,
@@ -51,7 +50,7 @@ function StoreSchemasSchema({
   const saveSchema = useSaveSchema(storePath);
 
   const { openSchema, replaceToSchemas, replaceToSchema } =
-    useStoreNavigation(location);
+    useStoreNavigation();
   const editorContext = useMemo(() => {
     const ctx: JSONSchemaEditorContext = {
       openChildEditor: (key: string) => {

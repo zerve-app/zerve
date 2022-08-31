@@ -16,8 +16,9 @@ import { StoreSettingsFeature } from "../features/StoreSettingsFeature";
 import { DashboardPage } from "./Dashboard";
 import { OrgHeader, ProjectHeader, UserHeader } from "./DashboardHeader";
 import { useRouter } from "next/router";
-import { NavigateInterceptContext, useModal } from "@zerve/zen";
+import { NavBarSpacer, NavigateInterceptContext, useModal } from "@zerve/zen";
 import { Dialog } from "@zerve/zen/Dialog";
+import { AuthHeader } from "../components/AuthHeader";
 
 function parseFeatureFragment(fragment?: string): null | StoreNavigationState {
   if (!fragment) return null;
@@ -95,15 +96,21 @@ function allowedToNavigateToFeature(
   return false;
 }
 
+export type StoreDashboardProps = {
+  href: string;
+  storeId: string;
+  entityId: string | null;
+  entityIsOrg: boolean;
+  storePath: string[];
+};
+
 export function StoreDashboard({
+  href,
   storeId,
   entityId,
   entityIsOrg,
-}: {
-  storeId: string;
-  entityId: string;
-  entityIsOrg: boolean;
-}) {
+  storePath,
+}: StoreDashboardProps) {
   const { beforePopState, push } = useRouter();
   const dirtyIdsRef = useRef<Set<string>>(new Set());
   const latestFeatureRef = useRef<null | string>(null);
@@ -201,6 +208,10 @@ export function StoreDashboard({
       }
     };
   }, []);
+  const sidebarFeatures = [{ key: "entries" }, { key: "schemas" }];
+  if (entityId) {
+    sidebarFeatures.push({ key: "settings" });
+  }
   return (
     <UnsavedContext.Provider value={unsavedCtx}>
       <NavigateInterceptContext.Provider value={navigateInterrupt}>
@@ -227,19 +238,18 @@ export function StoreDashboard({
           }}
           header={
             <>
-              {entityIsOrg ? (
+              {!!entityId && entityIsOrg ? (
                 <OrgHeader orgId={entityId} />
-              ) : (
+              ) : null}
+              {!!entityId && !entityIsOrg ? (
                 <UserHeader userId={entityId} />
-              )}
-              <ProjectHeader entityId={entityId} storeId={storeId} />
+              ) : null}
+              <ProjectHeader href={href} label={storeId} />
+              <NavBarSpacer />
+              {!!entityId ? <AuthHeader /> : null}
             </>
           }
-          navigation={[
-            { key: "entries" },
-            { key: "schemas" },
-            { key: "settings" },
-          ]}
+          navigation={sidebarFeatures}
           defaultFeature={{ key: "entries" }}
           getFeatureTitle={(feature: StoreNavigationState) => {
             if (feature.key === "settings") {
@@ -296,11 +306,8 @@ export function StoreDashboard({
           renderFeature={({ feature, key, ...props }) => {
             const storeFeatureProps = {
               key,
-              location: [entityId, storeId],
               storeId,
-              storePath: entityIsOrg
-                ? ["auth", "user", "Orgs", entityId, "Stores", storeId]
-                : ["auth", "user", "Stores", storeId],
+              storePath,
               ...props,
             };
             if (feature?.key === "entries") {

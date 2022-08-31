@@ -31,7 +31,6 @@ function OrgStores({ entityId, title }: OrgFeatureProps) {
     entityId,
     "Stores",
   ]);
-  console.log("OrgStores", data);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
       {data?.children.map((storeName) => (
@@ -39,7 +38,7 @@ function OrgStores({ entityId, title }: OrgFeatureProps) {
           <NavLinkContent title={storeName} icon="briefcase" />
         </Link>
       ))}
-      <HStack>
+      <HStack padded>
         <NewStoreButton />
       </HStack>
     </FeaturePane>

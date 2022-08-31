@@ -26,7 +26,6 @@ import {
 
 function StoreEntriesSchema({
   storePath,
-  location,
   entryName,
   path,
   title,
@@ -42,7 +41,7 @@ function StoreEntriesSchema({
 
   const saveSchema = useSaveEntrySchema(storePath, schemaStore);
 
-  const { openEntrySchema } = useStoreNavigation(location);
+  const { openEntrySchema } = useStoreNavigation();
   const editorContext = useMemo(() => {
     const ctx: JSONSchemaEditorContext = {
       openChildEditor: (key: string) => {

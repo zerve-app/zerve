@@ -28,6 +28,7 @@
     "@zerve/system-fetch": "*",
     "@zerve/system-files": "*",
     "@zerve/system-ssh": "*",
+    "@zerve/react-native-content": "0.1.0-alpha.3",
     "ajv": "^8.10.0",
     "body-parser": "^1.19.1",
     "express": "^4.18.1",

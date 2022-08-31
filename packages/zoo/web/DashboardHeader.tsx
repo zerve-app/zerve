@@ -56,17 +56,17 @@ function DashboardHeaderItem({
 }
 
 export function ProjectHeader({
-  storeId,
-  entityId,
+  label,
+  href,
 }: {
-  entityId: string;
-  storeId: string;
+  href: string;
+  label: string;
 }) {
   return (
     <DashboardHeaderItem
-      label={storeId}
+      label={label}
       color={"#ad47b1"}
-      href={`/${entityId}/${storeId}`}
+      href={href}
       icon="briefcase"
       zIndex={0}
     />
