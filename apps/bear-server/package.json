@@ -1,13 +1,13 @@
 {
-  "name": "zoo-server-standalone",
+  "name": "bear-server",
   "private": true,
   "version": "0.0.0",
   "types": "index.ts",
   "main": "index.ts",
   "scripts": {
-    "start": "node ./build/ZooServerStandalone.js",
-    "start:dev": "cross-env NODE_ENV=dev nodemon --ignore dev-data/ ./build/ZooServerStandalone.js",
-    "build": "esbuild ./ZooServerStandalone.ts --bundle --platform=node --outfile=build/ZooServerStandalone.js",
+    "start": "node ./build/BearServer.js",
+    "start:dev": "cross-env NODE_ENV=dev nodemon --ignore dev-data/ ./build/BearServer.js",
+    "build": "esbuild ./BearServer.ts --bundle --platform=node --outfile=build/BearServer.js",
     "build:dev": "yarn build --watch",
     "dev": "yarn build && concurrently \"yarn start:dev\" \"yarn build:dev\"",
     "typecheck": "tsc",

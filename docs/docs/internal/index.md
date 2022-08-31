@@ -12,7 +12,7 @@ You will need GitHub ssh setup, yarn 1.x, and NodeJS 16 LTS.
 2. Install dependencies: `yarn`
 3. Run the (simple) web app + server: `yarn dev`
 
-This should launch the API server from `apps/zoo-server-standalone` on localhost:3888 and the NextJS `apps/zoo-web` on localhost:3000
+This should launch the API server from `apps/bear-server` on localhost:3888 and the NextJS `apps/zoo-web` on localhost:3000
 
 ## Show me the Code!
 
@@ -20,7 +20,7 @@ There are a number of apps/packages/projects in the [Zerve Monorepo](https://git
 
 - [apps/zoo-mobile](https://github.com/zerve-app/zerve/tree/main/apps/zoo-mobile) - Zerve's main React Native (Expo) mobile app
 - [apps/zoo-web](https://github.com/zerve-app/zerve/tree/main/apps/zoo-web) - Zerve's default NextJS web app
-- [apps/zoo-server-standalone](https://github.com/zerve-app/zerve/tree/main/apps/zoo-server-standalone) - The "starter" API server with no auth, and one Store
+- [apps/bear-server](https://github.com/zerve-app/zerve/tree/main/apps/bear-server) - The "starter" API server with no auth, and one Store
 - [apps/zebra-web](https://github.com/zerve-app/zerve/tree/main/apps/zebra-web) - The Zerve.app NextJS app
 - [apps/zebra-server](https://github.com/zerve-app/zerve/tree/main/apps/zebra-server) - The Zerve.app API server
 - [apps/aardvark-server](https://github.com/zerve-app/zerve/tree/main/apps/aardvark-server) - The Internal Zerve API server

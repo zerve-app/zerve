@@ -12,11 +12,11 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "dev": "cross-env Z_ORIGIN=\"http://localhost:9888\" concurrently \"yarn workspace zoo-server-standalone dev\" \"yarn workspace zoo-web dev --port 9000\"",
+    "dev": "cross-env Z_ORIGIN=\"http://localhost:9888\" concurrently \"yarn workspace bear-server dev\" \"yarn workspace zoo-web dev --port 9000\"",
     "dev:yak": "yarn workspace yak dev",
     "dev:zebra": "concurrently \"yarn workspace zebra-server dev\" \"yarn workspace zebra-web dev\"",
     "dev:aardvark": "cross-env Z_ORIGIN=\"http://localhost:3988\" concurrently \"yarn workspace aardvark-server dev\" \"yarn workspace zoo-web dev\"",
-    "dev:server": "concurrently \"yarn workspace zoo-server-standalone dev\"",
+    "dev:server": "concurrently \"yarn workspace bear-server dev\"",
     "dev:web": "concurrently \"yarn workspace zoo-web dev\"",
     "dev:mobile": "watchman watch-del-all && yarn workspace zoo-mobile start",
     "dev:android": "yarn workspace zoo-mobile expo run:android",

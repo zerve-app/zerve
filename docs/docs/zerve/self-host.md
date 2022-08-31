@@ -46,13 +46,13 @@ The standalone server with no Authentication and a single Store.
 
 ```
 cd z-build-dir
-yarn workspace zoo-server-standalone build
+yarn workspace bear-server build
 yarn workspace zoo-web build
 ```
 
 ### Env Variables
 
-`zoo-server-standalone` env variables:
+`bear-server` env variables:
 
 - `NODE_ENV` - mode: "dev" or "production"
 - `HOME` - user's home directory (only used as a default for $ZERVE_DATA_DIR)
@@ -63,17 +63,17 @@ yarn workspace zoo-web build
 `zoo-web` env variables:
 
 - `NODE_ENV` - mode: "dev" or "production"
-- `Z_ORIGIN` - the URL to access the zoo-server-standalone (eg "http://localhost:3888")
+- `Z_ORIGIN` - the URL to access the bear-server (eg "http://localhost:3888")
 - `PORT` - what port to bind to
 - `Z_STORE_TITLE` - title to display for the single store
 
 ### Run Bear
 
-The `zoo-server-standalone` only handles paths under `/.z`. To start it:
+The `bear-server` only handles paths under `/.z`. To start it:
 
 ```
 cd z-build-dir
-node apps/zoo-server-standalone/build/ZooServerStandalone.js
+node apps/bear-server/build/ZooServerStandalone.js
 ```
 
 And `zoo-web` handles the rest of public web paths. To start it:
