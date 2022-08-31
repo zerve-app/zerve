@@ -64,12 +64,19 @@ const secretsFile =
 type MemoryStore = { store: GeneralStoreModule; settings: StoreSettings };
 
 export async function startApp() {
-  console.log("Starting Data Dir", dataDir);
+  console.log("Starting Zebra with Data Dir", dataDir);
 
-  const myBuildData = await ReadJSON.call(
-    joinPath(process.cwd(), "../../build.json"),
-  );
-  const myBuildId = myBuildData?.buildId || "unknown";
+  let publicBuildInfo = null;
+  try {
+    publicBuildInfo = await ReadJSON.call(
+      joinPath(process.cwd(), "../../build.json"),
+    );
+  } catch (e) {
+    console.warn(
+      "Public build data (build.json) not found in the project directory. It will be null",
+    );
+  }
+  const myBuildId = publicBuildInfo?.buildId || "unknown";
   const logPath = joinPath(loggingDir, `${myBuildId}.log`);
 
   console.log("Starting build " + myBuildId);
@@ -116,7 +123,7 @@ export async function startApp() {
     dataDir,
     secretsFile, // this is just the path. we should avoid logging real secrets if possible
     logPath,
-    buildData: myBuildData,
+    publicBuildInfo,
   });
 
   const secrets = await ReadJSON.call(secretsFile);
@@ -479,7 +486,7 @@ export async function startApp() {
       { isPrivate: false },
     ),
     auth: zAuth,
-    buildId: createZStatic(myBuildId),
+    buildInfo: createZStatic(publicBuildInfo),
   });
 
   await startZedServer(port, zRoot, logServerEvent);
@@ -489,7 +496,7 @@ export async function startApp() {
     dataDir,
     secretsFile, // this is just the path. we should avoid logging real secrets if possible
     logPath,
-    buildData: myBuildData,
+    publicBuildInfo,
   });
 }
 

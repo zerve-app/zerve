@@ -170,6 +170,7 @@ export const BuildZebra = createZAction(
       writeJSONFile(joinPath(buildDir, "build.json"), {
         buildTime,
         buildId,
+        commit: commitHash,
       });
 
       // run build commands
