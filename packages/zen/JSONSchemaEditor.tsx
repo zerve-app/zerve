@@ -108,14 +108,12 @@ export function ObjectEditor({
   } else {
     valueKeys = Object.keys(value);
   }
-  const propertyKeys = new Set(
-    properties == null ? [] : Object.keys(properties),
-  );
+  const propertyKeyList = properties == null ? [] : Object.keys(properties);
+
+  const propertyKeys = new Set(propertyKeyList);
   const otherKeys = value ? valueKeys.filter((p) => !propertyKeys.has(p)) : [];
 
   const importValue = useValueImporter(schemaStore);
-
-  console.log("ObjectEditor v: " + JSON.stringify(value), !!onValue);
 
   const propertyNameInput = useTextInputFormModal<null | string>(
     (propertyEditKey) => ({
@@ -175,7 +173,7 @@ export function ObjectEditor({
       {valueKeys.length === 0 && additionalProperties === false ? (
         <ThemedText>Schema disallows additional keys.</ThemedText>
       ) : null}
-      {[...propertyKeys].map((propertyName, propertyIndex, allKeys) => {
+      {propertyKeyList.map((propertyName, propertyIndex, allKeys) => {
         const fieldLabel = propertyTitles?.[propertyName] || propertyName;
         if (value?.[propertyName] === undefined) {
           if (onValue)
@@ -416,6 +414,7 @@ function getHumanLabelOfSchema(schema: JSONSchema) {
   if (schema.type === "object") return "Object";
   if (schema.type === "number") return "Number";
   if (schema.type === "string") return "Text";
+  if (schema.type === "boolean") return "Switch";
   if (schema.const !== undefined) return ""; // constant does not need a human label
   return "?";
 }
