@@ -262,7 +262,10 @@ export async function createGeneralStore(
           const newSchemas: typeof state["$schemas"] = { ...state.$schemas };
           const value = newSchemas[prevName];
           delete newSchemas[prevName];
-          newSchemas[newName] = value;
+          newSchemas[newName] = {
+            ...value,
+            $id: `https://type.zerve.link/${newName}`,
+          };
           return { ...state, $schemas: newSchemas };
         },
       },
