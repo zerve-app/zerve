@@ -47,7 +47,11 @@ export function HumanText({
   if (!value) return null;
   return (
     <Text style={style}>
-      {value.map((t) => {
+      {value.map((t, index) => {
+        // hack to suppress react keys warning for now, until the schema supports $keys
+        const nodeKey = index;
+        // sorry and also you're welcome.
+
         const textStyle: TextStyle = {
           textDecorationLine: t.underline
             ? t.strike
@@ -78,6 +82,7 @@ export function HumanText({
         const { linkHref } = t;
         const textNode = (
           <Text
+            key={nodeKey}
             style={[textStyle, codeTextStyle, linkTextStyle]}
             onPress={
               typeof linkHref === "string" && (!!linkPressOverride || !IS_WEB)
@@ -99,6 +104,7 @@ export function HumanText({
               : "_blank";
           return (
             <a
+              key={nodeKey}
               href={t.linkHref}
               style={WebAStyleReset}
               target={linkWebTarget}
