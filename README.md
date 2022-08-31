@@ -1,18 +1,18 @@
-# Zerve
+![Zerve Content System Alpha](https://raw.githubusercontent.com/zerve-app/zerve/main/docs/static/img/ZGithubBanner.png)
 
-An experimental structured knowledge app for React Native and the web.
+A [Re-Headed CMS](https://docs.zerve.app/docs/intro#z-future-a-re-headed-content-management-system) for React Native and the web.
 
-## Web App
+- 📚 [Read the Docs](https://docs.zerve.app)
+- 🐤 [Follow Zerve on Twitter](https://docs.zerve.app)
+- 💬 [Join our Discord](https://discord.gg/UDBJZRMQTp)
+- 🎥 [Watch along on YouTube](https://www.youtube.com/channel/UC2H16-XPP4IWrFl54ADOU3w)
+- ⭐️ Star this repo if you think Zerve is cool 😎
 
-To run the
+## Dev App
 
 `yarn dev` will spawn the following:
 
 - API Server in "apps/bear-server" (`yarn workspace bear-server dev`)
 - Next Web App "apps/zoo-web" (`yarn workspace z-web dev`)
 
-## Mobile (Expo) App
-
-Run the native app within `apps/zoo-mobile/ios` or `apps/zoo-mobile/android`
-
-Then start the server with `yarn dev:mobile` or `yarn workspace zoo-mobile start`
+Learn more from the [internal contributors doc](https://docs.zerve.app/docs/internal/).
