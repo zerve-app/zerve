@@ -12,7 +12,7 @@ The Client is automatically created by the [Zerve CLI](./cli). But you can also 
 yarn add @zerve/client
 ```
 
-This library depends on [React Query](https://tanstack.com/query/v4/docs/adapters/react-query) as a required peer dependency. This means you need to install it yourself:
+This library depends on [React Query](https://www.npmjs.com/package/react-query) as a required peer dependency. This means you need to install it yourself:
 
 ```
 yarn add react-query

@@ -27,7 +27,7 @@ For this example, we can create an `AllowNewUsers` entry in our store, with the 
 
 ### 1. Add Zerve Dependencies
 
-- Install the client with `yarn add @zerve/zoo-client`
+- Install the client with `yarn add @zerve/client`
 - Install the dev tools with `yarn add -D @zerve/cli`
 
 ### 2. Set Up your App's package.json:
