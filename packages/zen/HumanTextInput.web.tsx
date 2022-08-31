@@ -267,7 +267,6 @@ HumanTextInput.import = (value: FromSchema<typeof HumanTextSchema>) => {
       marks,
     });
   });
-  console.log("== IMPORTED HTEXTVALUE:", paragraphContent);
   const jsonValue = {
     type: "doc",
     content: [

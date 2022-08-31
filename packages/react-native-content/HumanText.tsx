@@ -39,11 +39,12 @@ export function HumanText({
   options,
   style,
 }: {
-  value: HumanText;
+  value?: HumanText;
   options?: HumanTextOptions;
   style?: TextStyle;
 }) {
   const contextualOptions = useContext(HumanTextContext);
+  if (!value) return null;
   return (
     <Text style={style}>
       {value.map((t) => {
