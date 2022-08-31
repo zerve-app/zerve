@@ -16,6 +16,7 @@ import { useAllColors, useColors } from "./useColors";
 import Layout from "./Layout";
 import { useEffect, useRef, useState } from "react";
 import { useTextInputFormModal } from "./TextInputFormModal";
+import { ThemedText } from "./Themed";
 
 export function HumanTextInput(
   props: FieldComponentProps<typeof HumanTextSchema>,
@@ -319,4 +320,21 @@ HumanTextInput.export = (value) => {
   });
   console.log("== EXPORTED HTEXTVALUE:", output);
   return output;
+};
+HumanTextInput.renderAsText = (value) => {
+  let outputString = "";
+  if (value.type !== "doc")
+    throw new Error("Unexpected export condition: not a doc node");
+  value.content.forEach((docChild, paragraphIndex) => {
+    if (docChild.type !== "paragraph")
+      throw new Error("Unexpected export condition: not a paragraph node");
+    if (paragraphIndex > 0) output.push({ text: RETURN });
+    docChild.content.forEach((paragraphChild) => {
+      if (paragraphChild.type !== "text")
+        throw new Error("Unexpected export condition: not a text node");
+      outputString += paragraphChild.text;
+      // todo maybe, render marks in output text
+    });
+  });
+  return outputString;
 };

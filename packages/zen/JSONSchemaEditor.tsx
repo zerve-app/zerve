@@ -424,10 +424,20 @@ function getHumanLabelOfSchema(schema: JSONSchema) {
   return "?";
 }
 
-function ValueLine({ value }: { value: any }) {
+function ValueLine({ value, schema }: { value: any; schema: any }) {
   const lineProps: TextProps = {
     numberOfLines: 1,
   };
+  const { OverrideFieldComponents } = useContext(JSONSchemaEditorContext);
+  if (schema.$id || schema.$ref) {
+    const OverrideComponent =
+      OverrideFieldComponents?.[schema.$id] ||
+      OverrideFieldComponents?.[schema.$ref];
+    const overrideAsText = OverrideComponent?.renderAsText;
+    if (overrideAsText)
+      return <ThemedText {...lineProps}>{overrideAsText(value)}</ThemedText>;
+  }
+
   if (typeof value === "object") {
     if (typeof value.title === "string")
       return <ThemedText {...lineProps}>{value.title}</ThemedText>;
@@ -449,8 +459,17 @@ function limitList<A = any>(list: Array<A>, rowCount: number) {
   };
 }
 
-function ValueView({ value }: { value: any }) {
+function ValueView({ value, schema }: { value: any; schema: any }) {
   // const { openRef } = useContext(JSONSchemaEditorContext);
+  const { OverrideFieldComponents } = useContext(JSONSchemaEditorContext);
+  if (schema.$id || schema.$ref) {
+    const OverrideComponent =
+      OverrideFieldComponents?.[schema.$id] ||
+      OverrideFieldComponents?.[schema.$ref];
+    if (OverrideComponent?.renderAsText) {
+      return <ValueLine value={value} schema={schema} />;
+    }
+  }
   if (Array.isArray(value)) {
     const { visible, remainder } = limitList(value, 5);
     return (
@@ -460,7 +479,7 @@ function ValueView({ value }: { value: any }) {
         ) : null}
         {visible.map((value, index) => (
           <View style={{ flexDirection: "row", marginVertical: 2 }} key={index}>
-            <ValueLine value={value} />
+            <ValueLine value={value} schema={schema.items} />
           </View>
         ))}
         {remainder.length > 0 ? (
@@ -494,15 +513,24 @@ function ValueView({ value }: { value: any }) {
             Open {value.title} Schema
           </ThemedText>
         ) : null} */}
-        {visible.map(([propName, propValue]) => (
-          <View
-            style={{ flexDirection: "row", marginVertical: 2 }}
-            key={propName}
-          >
-            <ThemedText style={{ fontWeight: "bold" }}>{propName}: </ThemedText>
-            <ValueLine value={propValue} />
-          </View>
-        ))}
+        {visible.map(([propName, propValue]) => {
+          return (
+            <View
+              style={{ flexDirection: "row", marginVertical: 2 }}
+              key={propName}
+            >
+              <ThemedText style={{ fontWeight: "bold" }}>
+                {propName}:{" "}
+              </ThemedText>
+              <ValueLine
+                value={propValue}
+                schema={
+                  schema.properties[propName] || schema.additionalProperties
+                }
+              />
+            </View>
+          );
+        })}
         {remainder.length > 0 ? (
           <View style={{ flexDirection: "row", marginVertical: 2 }}>
             <ThemedText secondary>
@@ -513,7 +541,7 @@ function ValueView({ value }: { value: any }) {
       </View>
     );
   }
-  return <ValueLine value={value} />;
+  return <ValueLine value={value} schema={schema} />;
 }
 
 function ObjectField({
@@ -537,6 +565,7 @@ function ObjectField({
 }) {
   const { openChildEditor } = useContext(JSONSchemaEditorContext);
   const typeLabel = getHumanLabelOfSchema(schema);
+  console.log("HEYEYY", label, { value, schema });
   return (
     <>
       <FieldHeader
@@ -557,7 +586,7 @@ function ObjectField({
             : null
         }
       >
-        <ValueView value={value} />
+        <ValueView value={value} schema={schema} />
       </ContentButton>
     </>
   );
@@ -603,7 +632,7 @@ function ArrayField({
             : null
         }
       >
-        <ValueView value={value} />
+        <ValueView value={value} schema={schema} />
       </ContentButton>
     </>
   );

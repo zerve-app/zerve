@@ -12,6 +12,7 @@ export type FieldComponent<
 > = React.FC<FieldComponentProps<FieldSchema>> & {
   import?: (value: FromSchema<FieldSchema>) => InternalValue;
   export?: (internalValue: InternalValue) => FromSchema<FieldSchema>;
+  renderAsText?: (internalValue: InternalValue) => string;
 };
 
 export type OverrideFieldComponents = Record<string, FieldComponent<any, any>>;
