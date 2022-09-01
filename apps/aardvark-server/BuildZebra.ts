@@ -120,11 +120,12 @@ export const BuildZebra = createZAction(
       await cmd("git", ["fetch"], "/root/zerve.git");
 
       // gather a bit of info that will be included in the result log
-      const { out: commitHash } = await cmd(
+      const { out: commitHashOut } = await cmd(
         "git",
         ["rev-parse", "main"],
         "/root/zerve.git",
       );
+      const commitHash = commitHashOut?.split("\n")?.[0];
       if (!commitHash)
         throw new Error("Cannot identify the current git commit hash");
       await cmd("node", ["--version"], "/");
