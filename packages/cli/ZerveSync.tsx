@@ -9,7 +9,7 @@ import {
 } from "fs-extra";
 import { join } from "path";
 import fetch from "node-fetch";
-import { compile } from "json-schema-to-typescript";
+import { compile, JSONSchema } from "json-schema-to-typescript";
 
 const projectPath = process.cwd();
 const packagePath = join(projectPath, "package.json");
@@ -49,6 +49,32 @@ if (!existsSync(join(projectPath, Z_GENERATED_CONST))) {
 }
 
 let hasChangedAny = false;
+
+function stripSchemaTitles(schema?: JSONSchema): undefined | JSONSchema {
+  if (!schema) return schema;
+  if (typeof schema !== "object") return schema;
+  if (schema.type === "object") {
+    return {
+      ...schema,
+      additionalProperties: stripSchemaTitles(schema.additionalProperties),
+      properties: Object.fromEntries(
+        Object.entries(schema.properties).map(([key, childSchema]) => [
+          key,
+          stripSchemaTitles(childSchema),
+        ]),
+      ),
+      title: undefined,
+    };
+  }
+  if (schema.type === "array") {
+    return {
+      ...schema,
+      items: stripSchemaTitles(schema.items),
+      title: undefined,
+    };
+  }
+  return { ...schema, title: undefined };
+}
 
 function writeFileIfNeeded(
   basePath: string,
@@ -105,8 +131,9 @@ Promise.all(
       const schemaSchemas = Object.fromEntries(
         await Promise.all(
           Object.entries(zStoreSchemas).map(async ([schemaName, schema]) => {
+            const strippedSchema = stripSchemaTitles(schema);
             const compiledSchema = await compile(
-              { ...schema, $id: schemaName },
+              { ...strippedSchema, $id: schemaName },
               schemaName,
               {
                 bannerComment: "",
@@ -150,7 +177,6 @@ Promise.all(
                 },
               ];
             }
-
             const interfaceValue = await compile(
               { ...fileSchema, title: interfaceName },
               interfaceName,
