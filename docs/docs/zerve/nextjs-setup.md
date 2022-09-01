@@ -99,7 +99,7 @@ Now, your `tsconfig.json` should look like this:
 
 Great, now the app supports React Native Web and TypeScript! You're ready to install Zerve.
 
-## Set up Zerve
+## Set up Zerve CLI
 
 Get started by installing the [Zerve CLI](./cli):
 
@@ -119,6 +119,19 @@ Now, add the following to your package:
 
 If you have an account on the [Zerve Alpha](https://alpha.zerve.app), you should replace "ev/demo" above with "my-user/my-store". You can rename "DemoStore" to anything you prefer– it is only used in this codebase.
 
+```
+yarn zerve-sync
+```
+
+The CLI creates `zerve/DemoStore` for you, with relevant code and types. You may also add the `prepare` script to your package, so that the sync happens automatically when you run `yarn`.
+
+```json title="package.json"
+  "scripts": {
+    "prepare": "yarn zerve-sync",
+```
+
+## Set up Zerve Client
+
 Now install the client-side libraries. [Zerve Client](./client) relies on [React Query](https://www.npmjs.com/package/react-query), so you should install that as well:
 
 ```
@@ -127,12 +140,6 @@ yarn add react-query
 ```
 
 You're ready to run `zerve-sync` to auto-generate your app's client code.
-
-```
-yarn zerve-sync
-```
-
-The CLI creates `zerve/DemoStore` for you, with relevant code and types.
 
 Before we use the client, we need to set up the QueryClient for React Query. Here we add it to `_app.js`, but the provider can also be added on each page:
 
@@ -268,6 +275,6 @@ export default function Home() {
 }
 ```
 
-Run the next app with `yarn dev` and you should see the text content loaded from the [demo store API](https://alpha.zerve.app/.z/store/ev/demo/state/Headline/value).
+Run the next app with `yarn dev` and you should see the "Headline" content loaded from the [demo store API](https://alpha.zerve.app/.z/store/ev/demo/state/Headline/value).
 
 See [HumanText](./human-text) for more details on this component.

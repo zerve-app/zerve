@@ -27,8 +27,8 @@ For this example, we can create an `AllowNewUsers` entry in our store, with the 
 
 ### 1. Add Zerve Dependencies
 
-- Install the client with `yarn add @zerve/client`
 - Install the dev tools with `yarn add -D @zerve/cli`
+- Install the client with `yarn add @zerve/client`. This also requires React Query `yarn add react-query`
 
 ### 2. Set Up your App's package.json:
 
