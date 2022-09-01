@@ -437,7 +437,7 @@ function ValueLine({ value, schema }: { value: any; schema: any }) {
     if (overrideAsText)
       return <ThemedText {...lineProps}>{overrideAsText(value)}</ThemedText>;
   }
-
+  if (value === null) return <ThemedText>Empty</ThemedText>;
   if (typeof value === "object") {
     if (typeof value.title === "string")
       return <ThemedText {...lineProps}>{value.title}</ThemedText>;
@@ -525,7 +525,7 @@ function ValueView({ value, schema }: { value: any; schema: any }) {
               <ValueLine
                 value={propValue}
                 schema={
-                  schema.properties[propName] || schema.additionalProperties
+                  schema.properties?.[propName] || schema.additionalProperties
                 }
               />
             </View>
