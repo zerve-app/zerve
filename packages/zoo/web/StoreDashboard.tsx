@@ -308,6 +308,7 @@ export function StoreDashboard({
               key,
               storeId,
               storePath,
+              href,
               ...props,
             };
             if (feature?.key === "entries") {

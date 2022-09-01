@@ -27,11 +27,11 @@ import { useZNode, useZNodeValue } from "@zerve/zoo-client/Query";
 function RenameStoreDialog({
   onClose,
   storePath,
-  location,
+  href,
 }: {
   onClose: () => void;
   storePath: string[];
-  location: string[];
+  href: string;
 }) {
   const conn = useRequiredConnection();
   const queryClient = useQueryClient();
@@ -50,7 +50,7 @@ function RenameStoreDialog({
       },
     },
   );
-  const parentLocation = location.slice(0, -1);
+  const parentLocation = href.split("/").slice(0, -1);
   const { push } = useRouter();
   return (
     <Dialog
@@ -68,7 +68,7 @@ function RenameStoreDialog({
       onConfirm={async (storeId: string) => {
         await moveStore.mutateAsync(storeId);
         onClose();
-        push(`/${[...parentLocation, storeId].join("/")}`);
+        push(`${[...parentLocation, storeId].join("/")}`);
       }}
     />
   );
@@ -77,27 +77,35 @@ function RenameStoreDialog({
 function DeleteStoreDialog({
   onClose,
   storePath,
-  location,
+  href,
 }: {
   onClose: () => void;
   storePath: string[];
-  location: string[];
+  href: string;
 }) {
   const conn = useRequiredConnection();
   const queryClient = useQueryClient();
-  const parentPath = storePath.slice(0, -2); // trim off 'Stores/${storeId}' from storePath
   const storeId = storePath.at(-1);
   const deleteStore = useMutation(
     async () => {
-      await postZAction(conn, [...parentPath, "DestroyStore"], storeId);
+      await postZAction(
+        conn,
+        [...storePath.slice(0, -2), "DestroyStore"],
+        storeId,
+      );
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([conn?.key, "z", ...parentPath]);
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          ...storePath.slice(0, -1),
+        ]);
       },
     },
   );
-  const parentLocation = location.slice(0, -1);
+  const parentLocation = href.split("/").slice(0, -1);
+  const afterDeleteHref = parentLocation.join("/");
   const { push } = useRouter();
   return (
     <Dialog
@@ -110,29 +118,21 @@ function DeleteStoreDialog({
       onConfirm={async () => {
         await deleteStore.mutateAsync();
         onClose();
-        push(`/${parentLocation.join("/")}`);
+        push(afterDeleteHref);
       }}
     />
   );
 }
 
-function useDeleteStoreDialog(storePath: string[], location: string[]) {
+function useDeleteStoreDialog(storePath: string[], href: string) {
   return useModal<void>(({ onClose }) => (
-    <DeleteStoreDialog
-      onClose={onClose}
-      storePath={storePath}
-      location={location}
-    />
+    <DeleteStoreDialog onClose={onClose} storePath={storePath} href={href} />
   ));
 }
 
-function useRenameStoreDialog(storePath: string[], location: string[]) {
+function useRenameStoreDialog(storePath: string[], href: string) {
   return useModal<void>(({ onClose }) => (
-    <RenameStoreDialog
-      onClose={onClose}
-      storePath={storePath}
-      location={location}
-    />
+    <RenameStoreDialog onClose={onClose} storePath={storePath} href={href} />
   ));
 }
 
@@ -205,9 +205,9 @@ function ExperimentalSchemas({
   // return <ThemedText>{JSON.stringify(settings.data)}</ThemedText>;
 }
 
-function StoreSettings({ storePath, location, title }: StoreFeatureProps) {
-  const onDeleteStoreDialog = useDeleteStoreDialog(storePath, location);
-  const onRenameStoreDialog = useRenameStoreDialog(storePath, location);
+function StoreSettings({ storePath, href, title }: StoreFeatureProps) {
+  const onDeleteStoreDialog = useDeleteStoreDialog(storePath, href);
+  const onRenameStoreDialog = useRenameStoreDialog(storePath, href);
   const settingsQuery = useStoreSettings(storePath);
   const setSettings = useSetStoreSettings(storePath);
   return (
