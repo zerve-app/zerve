@@ -565,7 +565,6 @@ function ObjectField({
 }) {
   const { openChildEditor } = useContext(JSONSchemaEditorContext);
   const typeLabel = getHumanLabelOfSchema(schema);
-  console.log("HEYEYY", label, { value, schema });
   return (
     <>
       <FieldHeader
