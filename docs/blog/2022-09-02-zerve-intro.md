@@ -3,7 +3,7 @@ slug: zerve-intro
 title: Introducing the Zerve Content System
 authors: [evicenti]
 tags: []
-image: https://docs.zerve.app/assets/images/ZGithubBanner-cf87939fb2b561bf761b65ebf4b6d983.png
+image: ../static/img/ZGithubBanner.png
 ---
 
 Today I’m excited to introduce a preview of the flagship Zerve Content System, a full-stack service that enables your non-technical team to manage JSON content and configuration in your app.
