@@ -24,12 +24,13 @@ Rename `App.js` to `App.tsx`. At the top of the file, add `import React from "re
 
 Run the app using `yarn ios` or `yarn android`, and Expo will automatically create a `tsconfig.js` for you.
 
-## Set up Zerve CLI
+## Install Zerve with CLI
 
-Get started by installing the [Zerve CLI](./cli):
+Get started by installing the [Zerve CLI](./cli), the [Client](./client), and the [React Query](https://www.npmjs.com/package/react-query) peer dependency.
 
 ```
 yarn add -D @zerve/cli
+yarn add @zerve/client react-query
 ```
 
 Now, add the following to your package:
@@ -44,7 +45,7 @@ Now, add the following to your package:
 
 If you have an account on the [Zerve Alpha](https://alpha.zerve.app), you can create your own store. You should replace "ev/demo" above with "my-user/my-store". You can rename "DemoStore" to anything you prefer– it is only used in this codebase.
 
-Then run `zerve-sync`. This will create `./zerve/DemoStore/*` Typescript code in your project, which you should check in to your codebase:
+Then run `zerve-sync`. This will create `./zerve/DemoStore/*` Typescript client code in your project, which you should check in to your codebase:
 
 ```
 yarn zerve-sync
@@ -58,13 +59,6 @@ You may also add the `prepare` script to your package, so that the sync happens 
 ```
 
 ## Set up Zerve Client
-
-Now install the client-side libraries. [Zerve Client](./client) relies on [React Query](https://www.npmjs.com/package/react-query), so you should install that as well:
-
-```
-yarn add @zerve/client
-yarn add react-query
-```
 
 Before we use the client, we need to set up the QueryClient for React Query.
 
