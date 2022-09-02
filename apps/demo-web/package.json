@@ -21,7 +21,7 @@
     "@zerve/zen": "*",
     "@zerve/react-native-content": "0.1.0-alpha.4",
     "@zerve/zoo-client": "*",
-    "@zerve/cli": "0.1.0-alpha.4",
+    "@zerve/cli": "0.1.0-alpha.5",
     "react-query": "^3.39.2",
     "node-fetch": "^3.2.10",
     "raf": "^3.4.1",

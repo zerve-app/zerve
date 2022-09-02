@@ -11,7 +11,7 @@
     "sync": "../../packages/cli/dist/ZerveSync.js"
   },
   "dependencies": {
-    "@zerve/cli": "0.1.0-alpha.4",
+    "@zerve/cli": "0.1.0-alpha.5",
     "@zerve/zoo-client": "*",
     "@zerve/react-native-content": "0.1.0-alpha.4",
     "@zerve/zen": "*",
