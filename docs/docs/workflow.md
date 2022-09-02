@@ -51,18 +51,19 @@ You may also want to include `"prepare": "zerve-sync"` within your `package.json
 ### 4. Your App can Query from the Store
 
 ```tsx
-import { AllowNewUsers } from "../zerve/my-zerve-store";
+import { useAllowNewUsers } from "../zerve/my-zerve-store";
 
 export default function MyComponent() {
-  // uses react-query under the hood, and you can configure it as such.
-  const { data: allowSignUp } = AllowNewUsers.use();
+  const { data: allowSignUp } = useAllowNewUsers({
+    // uses react-query under the hood, and you can configure it as such.
+  });
   return <>
     {allowSignUp && <SignUpButton />}
 ```
 
 Because the CLI syncronized the schemas, TypeScript knows that `allowSignUp` is a boolean.
 
-Or you can manually "get" the value from your database:
+Or you can manually "get" the value from your Store:
 
 ```tsx
 import { AllowNewUsers } from "../zerve/my-zerve-store";
@@ -74,11 +75,19 @@ const isAllowed = await AllowNewUsers.get();
 
 React Native apps can install `@zerve/react-native-content` to utilize the built-in views.
 
-Within your Store Settings on the dashboard, enable the schema that you want to use, for example `Human Text`. Then create an entry or schema using the `HumanText` schema.
+Within your Store Settings on the dashboard, enable the schema that you want to use, for example `HumanText`. Then you may create an entry or schema called "Banner", for example, using the `HumanText` schema.
 
 Run `zerve-sync` again, or just run `yarn` if you have the "prepare" script set up.
 
-...HumanText...
+```tsx
+import { HumanText } from "@zerve/react-native-content/HumanText";
+import { useBanner } from "../zerve/my-zerve-store";
+
+function App() {
+  const { data } = useBanner();
+  return <HumanText value={data} />;
+}
+```
 
 ## Deploy your App
 
@@ -86,6 +95,6 @@ Build and deploy the app with your normal deployment workflow. This should inclu
 
 ## Problem solved! (Mostly!)
 
-Now your non-technical team can log into the Zerve app and modify the 'AllowNewUsers' value in your store, to allow or disallow new sign-ups without waiting for the technical team or waiting for a deployment.
+Now your non-technical team can log into the Zerve app and modify the 'AllowNewUsers' or 'Banner' values.
 
 Soon we will add the capability of locking the schema in your Zerve store, to prevent breaking changes in your data.
