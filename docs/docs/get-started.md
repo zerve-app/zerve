@@ -1,9 +1,12 @@
 ---
-title: Developer Workflow
+title: Get Started
 sidebar_position: 2
 ---
 
 Zerve is a Content System which [aims to address the common shortfalls of the Headless CMS](intro). The following workflow details the way you can use Zerve to define a schema for your Store, so your non-technical team can manage app data according to your specification. Then the Zerve client can give you a type-safe interface using TypeScript.
+
+- [React Native Getting Started Guide](./zerve/nextjs-setup)
+- [Next.js Getting Started Guide](./zerve/react-native-setup)
 
 # The Zerve Workflow
 
@@ -15,7 +18,7 @@ Most likely, your organization will only need one Store, which will be shared ac
 
 ## Set up a Zerve Server + Store
 
-You will need a host for your Store, and you can use the Zerve service directly to create your own Store, or you may choose to self-host Zerve on your own server.
+You will need a host for your Store, and you can use the [Zerve service](https://alpha.zerve.app) directly to create your own Store, or you may choose to [self-host](./zerve/self-host) Zerve on your own server.
 
 ## Add Initial Data and Schema
 

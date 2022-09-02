@@ -13,7 +13,7 @@ Your stores will define their own schema, (powered by [JSON-Schema](https://json
 
 You can use Zerve as a [headless CMS](https://docs.zerve.app/docs/intro#the-now-the-headless-content-management-system), but we are introducing components (such as [HumanText](https://docs.zerve.app/docs/zerve/human-text)) for use with React Native, which allow developers to quickly integrate flexible content in their apps.
 
-## [Technical Workflow](https://docs.zerve.app/docs/workflow)
+## [Technical Workflow](https://docs.zerve.app/docs/get-started)
 
 To integrate Zerve in your app, you:
 
@@ -28,7 +28,7 @@ To integrate Zerve in your app, you:
 
 Now, invite your non-technical team to your Zerve organization, and they can safely modify content in your app according to the schema you have defined. Your app will query from the Content System to display the latest data.
 
-Learn more about the [developer workflow here](https://docs.zerve.app/docs/workflow).
+Learn more about the [developer workflow here](https://docs.zerve.app/docs/get-started).
 
 ## Open Source
 

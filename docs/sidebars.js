@@ -5,7 +5,7 @@ const sidebars = {
   docs: [
     "intro",
     "vision",
-    "workflow",
+    "get-started",
     {
       type: "category",
       label: "Content System",

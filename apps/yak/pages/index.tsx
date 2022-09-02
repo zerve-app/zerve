@@ -92,8 +92,8 @@ function SiteFooter() {
             href="https://docs.zerve.app/docs/vision"
           />
           <FooterLink
-            title="Developer Workflow"
-            href="https://docs.zerve.app/docs/workflow"
+            title="Get Started"
+            href="https://docs.zerve.app/docs/get-started"
           />
         </FooterSection>
         <FooterSection title="Community">
@@ -148,6 +148,23 @@ function NavBarLink({ title, href }) {
   );
 }
 
+function HomeLink({ href, children }: { href: string; children: ReactNode }) {
+  const colors = useColors();
+  return (
+    <Link href={href}>
+      <Text
+        style={{
+          color: colors.tint,
+          fontSize: 18,
+          fontWeight: "bold",
+          padding: 10,
+        }}
+      >
+        {children}
+      </Text>
+    </Link>
+  );
+}
 export default function HomeScreen() {
   return (
     <PageContainer>
@@ -192,9 +209,25 @@ export default function HomeScreen() {
           flex: 1,
           padding: 20,
           justifyContent: "center",
+          alignItems: "center",
+          paddingVertical: 60,
         }}
       >
-        <ThemedText>Coming Soon</ThemedText>
+        <View style={{ maxWidth: 500 }}>
+          <HomeLink href="https://docs.zerve.app">📚 Get Started</HomeLink>
+          <HomeLink href="https://twitter.com/ZerveApp">
+            🐤 Follow Zerve on Twitter
+          </HomeLink>
+          <HomeLink href="https://discord.gg/UDBJZRMQTp">
+            💬 Join our Discord
+          </HomeLink>
+          <HomeLink href="https://www.youtube.com/channel/UC2H16-XPP4IWrFl54ADOU3w">
+            🎥 Watch along on YouTube
+          </HomeLink>
+          <HomeLink href="https://github.com/zerve-app/zerve">
+            ⭐️ Star this repo 😎
+          </HomeLink>
+        </View>
       </View>
       <SiteFooter />
     </PageContainer>

@@ -3,7 +3,7 @@
 A [Re-Headed CMS](https://docs.zerve.app/docs/intro#z-future-a-re-headed-content-management-system) for React Native and the web.
 
 - 📚 [Read the Docs](https://docs.zerve.app)
-- 🐤 [Follow Zerve on Twitter](https://docs.zerve.app)
+- 🐤 [Follow Zerve on Twitter](https://twitter.com/ZerveApp)
 - 💬 [Join our Discord](https://discord.gg/UDBJZRMQTp)
 - 🎥 [Watch along on YouTube](https://www.youtube.com/channel/UC2H16-XPP4IWrFl54ADOU3w)
 - ⭐️ Star this repo if you think Zerve is cool 😎

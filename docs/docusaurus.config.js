@@ -91,8 +91,8 @@ const config = {
                 to: "/docs/vision",
               },
               {
-                label: "Developer Workflow",
-                to: "/docs/workflow",
+                label: "Get Started",
+                to: "/docs/get-started",
               },
             ],
           },

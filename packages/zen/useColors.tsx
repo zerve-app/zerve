@@ -15,7 +15,9 @@ export function Invert({ children }: { children: ReactNode }) {
 
 function useInvertableColorScheme(): "light" | "dark" {
   const isInverted = useContext(ColorInversionContext);
-  const wouldBeDark = useColorScheme() === "dark";
+  // const wouldBeDark = useColorScheme() === "dark";
+  // SORRYFIXME! DARK MODE LOOKS UGLY NOW, OK?!
+  const wouldBeDark = false;
   const isDark = isInverted ? !wouldBeDark : wouldBeDark;
   const scheme = isDark ? "dark" : "light";
   return scheme;
