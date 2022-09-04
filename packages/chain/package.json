@@ -9,9 +9,9 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@zerve/zed": "*",
-    "@zerve/data": "*",
     "@zerve/crypto": "*",
-    "@zerve/system-files": "*"
+    "@zerve/data": "*",
+    "@zerve/system-files": "*",
+    "@zerve/zed": "*"
   }
 }

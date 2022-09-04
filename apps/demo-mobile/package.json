@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "@zerve/cli": "0.1.0-alpha.5",
-    "@zerve/zoo-client": "*",
     "@zerve/react-native-content": "0.1.0-alpha.4",
     "@zerve/zen": "*",
+    "@zerve/zoo-client": "*",
     "expo": "~46.0.8",
     "expo-status-bar": "~1.4.0",
-    "react": "18.0.0",
+    "react": "18.2.0",
     "react-native": "0.69.4",
     "react-native-safe-area-context": "^4.3.3",
     "react-query": "^3.39.2"

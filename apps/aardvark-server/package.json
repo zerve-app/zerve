@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./build/AardvarkServer.js",
     "start:dev": "cross-env NODE_ENV=dev nodemon --ignore dev-data/ ./build/AardvarkServer.js",
-    "build": "esbuild ./AardvarkServer.ts --bundle --platform=node --outfile=build/AardvarkServer.js",
+    "build": "esbuild ./AardvarkServer.ts --bundle --platform=node --outfile=build/AardvarkServer.js --log-level=error",
     "build:dev": "yarn build --watch",
     "dev": "yarn build && concurrently \"yarn start:dev\" \"yarn build:dev\"",
     "typecheck": "tsc",
@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@zerve/auth": "*",
-    "@zerve/zed": "*",
     "@zerve/data": "*",
     "@zerve/ledger": "*",
     "@zerve/message-email-sendgrid": "*",
@@ -28,6 +27,7 @@
     "@zerve/system-fetch": "*",
     "@zerve/system-files": "*",
     "@zerve/system-ssh": "*",
+    "@zerve/zed": "*",
     "ajv": "^8.11.0",
     "body-parser": "^1.20.0",
     "express": "^4.18.1",

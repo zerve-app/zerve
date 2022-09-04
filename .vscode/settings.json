@@ -17,6 +17,7 @@
   "emmet.triggerExpansionOnTab": false,
   "files.exclude": {
     "node_modules/": true,
+    ".yarn/": true,
     "**/.git": true,
     "**/.DS_Store": true
   },

@@ -3,7 +3,7 @@ import { FromSchema, JSONSchema } from "json-schema-to-ts";
 import { ZSchema } from "./JSONSchema";
 import { RequestError } from "./Errors";
 
-export const ajv = new Ajv();
+export const ajv = new Ajv({ strict: false });
 
 const rareNonObjectSchemaValidatorMap = new Map();
 const schemaValidatorMap = new WeakMap<ZSchema, Ajv.ValidateFunction>();
@@ -56,7 +56,7 @@ function getSchemaStoreValidator(
   validatorMap: WeakMap<ZSchema, Ajv.ValidateFunction>,
   schemaStore: SchemaStore,
 ) {
-  const schemasAjv = new Ajv();
+  const schemasAjv = new Ajv({ strict: false });
   Object.entries(schemaStore).forEach(([schemaName, schema]) => {
     schemasAjv.addSchema(
       {

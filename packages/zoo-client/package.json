@@ -18,12 +18,12 @@
     "buffer": "^6.0.3"
   },
   "peerDependencies": {
-    "react-query": "3.39.2",
-    "reconnecting-websocket": "^4.4.0",
-    "ws": "^8.8.1",
     "expo-crypto": "*",
     "react": "*",
     "react-native": "*",
-    "react-native-mmkv": "^2.4.3"
+    "react-native-mmkv": "^2.4.3",
+    "react-query": "3.39.2",
+    "reconnecting-websocket": "^4.4.0",
+    "ws": "^8.8.1"
   }
 }

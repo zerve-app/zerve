@@ -8,9 +8,8 @@
   "devDependencies": {
     "tsconfig": "*"
   },
-  "dependencies": {},
   "peerDependencies": {
-    "react-query": "3.39.2",
-    "react": "*"
+    "react": "*",
+    "react-query": "3.39.2"
   }
 }

@@ -2,14 +2,11 @@
   "name": "@zerve/monorepo",
   "version": "0.0.0",
   "private": true,
-  "workspaces": {
-    "packages": [
-      "apps/*",
-      "packages/*",
-      "docs"
-    ],
-    "nohoist": []
-  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "docs"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "cross-env Z_ORIGIN=\"http://localhost:9888\" concurrently \"yarn workspace bear-server dev\" \"yarn workspace zoo-web dev --port 9000\"",
@@ -34,7 +31,7 @@
     "build:docs": "yarn workspace @zerve/docs build",
     "build:yak": "yarn workspace yak build",
     "lint": "turbo run lint",
-    "clean": "yarn workspaces run clean",
+    "clean": "yarn workspaces foreach run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "start:yak": "serve apps/yak/out",
     "aardvark:update": "ssh aardvark /root/aardvark-script.sh UpdateAardvark",
@@ -48,12 +45,13 @@
     "pkg:pack": "node ./scripts/pack.js"
   },
   "devDependencies": {
+    "concurrently": "^7.3.0",
     "cross-env": "^7.0.3",
     "expo-modules-core": "0.11.4",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
-    "turbo": "latest",
-    "serve": "^14.0.1"
+    "serve": "^14.0.1",
+    "turbo": "latest"
   },
   "turbo": {
     "pipeline": {
@@ -90,6 +88,5 @@
     "react-dom": "18.2.0",
     "react-refresh": "^0.14.0",
     "react-native-web": "0.18.6"
-  },
-  "dependencies": {}
+  }
 }

@@ -11,22 +11,22 @@
     "sync": "../../packages/cli/dist/ZerveSync.js"
   },
   "dependencies": {
+    "@expo/config-types": "^46.0.2",
+    "@expo/next-adapter": "^4.0.12",
+    "@zerve/cli": "0.1.0-alpha.5",
+    "@zerve/react-native-content": "0.1.0-alpha.4",
+    "@zerve/zen": "*",
+    "@zerve/zoo-client": "*",
+    "expo": "^46.0.8",
     "next": "12.2.5",
+    "node-fetch": "^3.2.10",
+    "raf": "^3.4.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.69.4",
-    "expo": "^46.0.8",
-    "@expo/config-types": "^46.0.2",
-    "@expo/next-adapter": "^4.0.12",
-    "@zerve/zen": "*",
-    "@zerve/react-native-content": "0.1.0-alpha.4",
-    "@zerve/zoo-client": "*",
-    "@zerve/cli": "0.1.0-alpha.5",
-    "react-query": "^3.39.2",
-    "node-fetch": "^3.2.10",
-    "raf": "^3.4.1",
     "react-native-safe-area-context": "^4.3.3",
-    "react-native-web": "~0.18.7"
+    "react-native-web": "~0.18.7",
+    "react-query": "^3.39.2"
   },
   "devDependencies": {
     "@types/node": "^16.11.51",

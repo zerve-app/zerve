@@ -9,10 +9,10 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@zerve/zed": "*",
     "@zerve/message-email-sendgrid": "*",
     "@zerve/message-sms-twilio": "*",
     "@zerve/system-files": "*",
+    "@zerve/zed": "*",
     "json-stable-stringify": "^1.0.1"
   }
 }

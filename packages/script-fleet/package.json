@@ -4,15 +4,15 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "scripts": {
-    "apply": "esbuild ./ApplyFleet.ts --bundle --platform=node --outfile=build/ApplyFleet.js && node ./build/ApplyFleet.js",
+    "apply": "esbuild ./ApplyFleet.ts --bundle --platform=node --outfile=build/ApplyFleet.js && node ./build/ApplyFleet.js --log-level=error",
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@zerve/zed": "*",
-    "@zerve/system-caddy": "*",
-    "@zerve/system-files": "*",
-    "@zerve/system-commands": "*",
     "@apexearth/egrep": "^1.0.9",
+    "@zerve/system-caddy": "*",
+    "@zerve/system-commands": "*",
+    "@zerve/system-files": "*",
+    "@zerve/zed": "*",
     "axios": "^0.26.0",
     "fs-extra": "^10.0.0"
   },

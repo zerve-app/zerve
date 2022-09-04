@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "scripts": {
-    "setup": "esbuild ./SetupServer.ts --bundle --platform=node --outfile=build/SetupServer.js && node ./build/SetupServer.js",
+    "setup": "esbuild ./SetupServer.ts --bundle --platform=node --outfile=build/SetupServer.js && node ./build/SetupServer.js --log-level=error",
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@zerve/zed": "*",
     "@apexearth/egrep": "^1.0.9",
+    "@zerve/zed": "*",
     "axios": "^0.26.0",
     "fs-extra": "^10.0.0"
   },
