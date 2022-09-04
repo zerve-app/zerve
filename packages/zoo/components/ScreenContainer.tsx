@@ -4,7 +4,6 @@ import { bigShadow } from "@zerve/zen/Style";
 import React, { ReactNode } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ToastContainer } from "@zerve/zen/Toast";
 
 export default function ScreenContainer({
   children,
@@ -30,9 +29,5 @@ export default function ScreenContainer({
   ) : (
     children
   );
-  return (
-    <ToastContainer>
-      <BottomSheetProvider>{childrenWithScroll}</BottomSheetProvider>
-    </ToastContainer>
-  );
+  return <BottomSheetProvider>{childrenWithScroll}</BottomSheetProvider>;
 }

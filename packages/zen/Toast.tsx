@@ -90,7 +90,7 @@ function ToastRow({ toast }: { toast: Toast }) {
   );
 }
 
-export function ToastContainer({ children }: { children: ReactNode }) {
+export function ToastPresenter() {
   const [internalToasts, setInternalToasts] = useState(toasts);
   useEffect(() => {
     function updateToasts(t: Toast[]) {
@@ -103,7 +103,6 @@ export function ToastContainer({ children }: { children: ReactNode }) {
   }, []);
   return (
     <View style={{ flex: 1 }}>
-      {children}
       <View style={{ ...AbsoluteFill }} pointerEvents="box-none">
         <SafeAreaView pointerEvents="box-none">
           {internalToasts.map((t) => (
