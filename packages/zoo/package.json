@@ -7,27 +7,28 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-    "@react-navigation/native": "^6.0.8",
-    "@react-navigation/native-stack": "^6.5.0",
     "@zerve/react": "*",
     "@zerve/zed": "*",
     "@zerve/zen": "*",
     "@zerve/zoo-client": "*",
-    "@zerve/zoo-client-storage": "*",
-    "expo-clipboard": "~3.1.0",
-    "expo-font": "~10.2.0",
-    "expo-linear-gradient": "^11.4.0",
-    "expo-linking": "^3.0.0",
-    "react-native": "0.69.4",
-    "react-native-reanimated": "~2.9.1",
-    "react-query": "^3.39.2"
+    "@zerve/zoo-client-storage": "*"
   },
   "devDependencies": {
     "tsconfig": "*"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native-safe-area-context": "*"
+    "@react-navigation/native": "^6.0.11",
+    "@react-navigation/native-stack": "^6.7.0",
+    "expo-clipboard": "~3.1.0",
+    "expo-font": "~10.2.0",
+    "expo-linear-gradient": "~11.4.0",
+    "expo-linking": "~3.2.2",
+    "react": "18.2.0",
+    "react-native": "0.69.5",
+    "react-native-reanimated": "~2.9.1",
+    "react-native-safe-area-context": "*",
+    "react-native-screens": "~3.16.0",
+    "react-query": "^3.39.2"
   },
   "sideEffects": false
 }

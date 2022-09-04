@@ -1,7 +1,7 @@
-import { Card, LinkRow, ThemedText } from "@zerve/zen";
-import React, { useState } from "react";
+import { Card, ThemedText } from "@zerve/zen";
+import { useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
-import { HistoryEvent, useHistory } from "../app/History";
+import { useHistory } from "../app/History";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { format } from "date-fns";

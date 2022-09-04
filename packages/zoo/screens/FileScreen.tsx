@@ -1,5 +1,3 @@
-import React, { useMemo } from "react";
-
 import {
   HomeStackParamList,
   HomeStackScreenProps,

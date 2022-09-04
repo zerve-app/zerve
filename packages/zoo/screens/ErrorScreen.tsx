@@ -1,5 +1,3 @@
-import React from "react";
-
 import { RootStackScreenProps } from "../app/Links";
 import { Paragraph } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";

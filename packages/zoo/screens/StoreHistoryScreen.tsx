@@ -1,5 +1,3 @@
-import React from "react";
-
 import { HomeStackScreenProps } from "../app/Links";
 import { useActionsSheet } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";

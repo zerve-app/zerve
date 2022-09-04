@@ -1,7 +1,5 @@
-import React from "react";
-
 import { SettingsStackScreenProps } from "../app/Links";
-import { LinkRow, LinkRowGroup, PageTitle, VStack } from "@zerve/zen";
+import { LinkRowGroup, VStack } from "@zerve/zen";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 

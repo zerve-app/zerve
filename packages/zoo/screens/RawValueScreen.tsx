@@ -1,9 +1,4 @@
-import React from "react";
-import {
-  HomeStackScreenProps,
-  RootStackParamList,
-  RootStackScreenProps,
-} from "../app/Links";
+import { HomeStackScreenProps, RootStackScreenProps } from "../app/Links";
 import { Button, IconButton, Paragraph, VStack } from "@zerve/zen";
 import { useBottomSheet } from "@zerve/zen";
 import { FontAwesome } from "@expo/vector-icons";

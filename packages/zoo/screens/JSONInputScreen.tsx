@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import { useState } from "react";
 import { RootStackScreenProps } from "../app/Links";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import ScreenContainer from "../components/ScreenContainer";
@@ -16,6 +15,7 @@ export default function JSONInputScreen({
         id={`${route.key}-jsoninput`}
         value={value}
         schema={route.params.schema}
+        schemaStore={{}}
         onValue={
           onValue
             ? (v) => {

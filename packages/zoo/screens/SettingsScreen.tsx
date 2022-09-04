@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
 import { Button, PageSection, VStack, LinkRow, AsyncButton } from "@zerve/zen";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-  checkForUpdateAsync,
   fetchUpdateAsync,
   manifest,
   releaseChannel,

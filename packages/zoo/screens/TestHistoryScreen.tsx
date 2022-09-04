@@ -1,9 +1,7 @@
-import React from "react";
 import {
   Button,
   DisclosureSection,
   Label,
-  LinkRow,
   ThemedText,
   VStack,
 } from "@zerve/zen";

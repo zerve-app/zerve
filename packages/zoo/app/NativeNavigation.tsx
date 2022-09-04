@@ -145,12 +145,12 @@ function SettingsNavigator() {
         component={ConnectionsScreen}
         options={DefaultScreenOptions}
       />
-      <HomeStack.Screen
+      <SettingsStack.Screen
         name="NewConnection"
         component={NewConnectionScreen}
         options={DefaultScreenOptions}
       />
-      <HomeStack.Screen
+      <SettingsStack.Screen
         name="ConnectionInfo"
         component={ConnectionInfoScreen}
         options={DefaultScreenOptions}

@@ -1,5 +1,3 @@
-import React from "react";
-
 import { HomeStackScreenProps } from "../app/Links";
 import ScreenContainer from "../components/ScreenContainer";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
