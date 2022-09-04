@@ -45,7 +45,7 @@ Zerve’s hosted offering will be a paid service. This is essential for validati
 
 To welcome early adopters, the alpha service will be entirely free while we iron out the kinks and make Zerve ready for production.
 
-The [free alpha service](https://alpha.zerve.dev) is available today for you to experiment with and use in your hobby apps, although it is not yet recommended for professional production applications. The service is freely available through Q1 2023.
+The [free alpha service](https://alpha.zerve.app) is available today for you to experiment with and use in your hobby apps, although it is not yet recommended for professional production applications. The service is freely available through Q1 2023.
 
 Early next year, the paid service will launch, and we will notify you with at least 60 days notice to transition your app before the free service ends. Of course, you may download your data and self-host Zerve at any time.
 
@@ -61,7 +61,7 @@ Eventually Zerve may grow into a complete no-code solution for real-world app de
 
 ## About
 
-Zerve is a [lean startup](https://github.com/zerve-app/zerve/blob/main/LICENSE.md) created by Eric Vicenti, a software developer with over a decade of experience in the industry.
+Zerve is a [lean startup](https://docs.zerve.app/docs/about#lean-startup) created by Eric Vicenti, a software developer with over a decade of experience in the industry.
 
 Eric helped with the development and launch of popular open source projects including React Native, Docusaurus, and React Navigation.
 

@@ -9,9 +9,9 @@
   },
   "sideEffects": false,
   "devDependencies": {
-    "@types/react": "~17.0.21",
+    "@types/react": "~18.0.18",
     "@types/react-dom": "^18.0.6",
-    "@types/react-native": "^0.69.1",
+    "@types/react-native": "^0.69.6",
     "@zerve/config": "*",
     "tsconfig": "*"
   },
@@ -20,7 +20,7 @@
     "@gorhom/bottom-sheet": "^4.4.3",
     "react": "*",
     "react-native": "*",
-    "react-native-reanimated": "~2.9.1",
+    "react-native-reanimated": "~2.10.0",
     "react-native-web": "~0.18.7"
   },
   "dependencies": {
@@ -40,7 +40,7 @@
     "@tiptap/react": "^2.0.0-beta.114",
     "@tiptap/starter-kit": "^2.0.0-beta.191",
     "quill-delta": "^5.0.0",
-    "react-native-gesture-handler": "~2.5.0",
+    "react-native-gesture-handler": "~2.6.0",
     "react-native-safe-area-context": "^4.3.3",
     "react-native-svg": "12.3.0"
   }

@@ -1,6 +1,3 @@
-# avoid uploading this huge cache:
-yarn-package-cache
-
 # the following mirrors our gitignore
 
 # dependencies
@@ -38,6 +35,17 @@ yarn-error.log*
 .expo
 
 secrets.json
+
+build.json
+
+dev-data
+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 dev-data
 

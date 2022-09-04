@@ -1,3 +1,4 @@
+import React from "react";
 import { Provider } from "@zerve/zoo/provider";
 import { RootNavigator } from "@zerve/zoo/app/NativeNavigation";
 

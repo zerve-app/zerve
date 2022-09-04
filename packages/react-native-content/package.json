@@ -6,8 +6,8 @@
     "clean": "rimraf node_modules"
   },
   "devDependencies": {
-    "@types/react": "~17.0.21",
-    "@types/react-native": "^0.69.1",
+    "@types/react": "~18.0.18",
+    "@types/react-native": "^0.69.6",
     "@zerve/config": "*",
     "json-schema-to-ts": "^2.5.5",
     "tsconfig": "*"

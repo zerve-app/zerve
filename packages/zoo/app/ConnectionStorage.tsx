@@ -31,8 +31,8 @@ const NativeDefaultConnections: Connection[] = [
     : []),
   {
     key: "main",
-    name: "Zerve Public Server",
-    url: "https://zerve.app",
+    name: "Zerve Alpha Service",
+    url: "https://alpha.zerve.app",
   },
 ];
 

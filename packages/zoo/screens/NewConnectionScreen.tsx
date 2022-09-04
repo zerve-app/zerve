@@ -3,12 +3,13 @@ import { SettingsStackScreenProps } from "../app/Links";
 import { createConnection } from "../app/ConnectionStorage";
 import ScreenHeader from "../components/ScreenHeader";
 import ScreenContainer from "../components/ScreenContainer";
+import { useState } from "react";
 
 export default function NewConnectionScreen({
   navigation,
 }: SettingsStackScreenProps<"NewConnection">) {
-  const [name, setName] = React.useState("");
-  const [url, setUrl] = React.useState("https://zerve.app");
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
   return (
     <ScreenContainer scroll>
       <ScreenHeader title="New Connection" />
@@ -26,7 +27,7 @@ export default function NewConnectionScreen({
           onValue={setUrl}
           autoCapitalize="none"
           keyboardType="url"
-          placeholder="https://zerve.app"
+          placeholder="https://alpha.zerve.app"
           autoComplete="off"
         />
         <Button

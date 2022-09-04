@@ -47,7 +47,7 @@
   "devDependencies": {
     "concurrently": "^7.3.0",
     "cross-env": "^7.0.3",
-    "expo-modules-core": "0.11.4",
+    "expo-modules-core": "0.11.5",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "serve": "^14.0.1",
@@ -83,7 +83,7 @@
     "node": ">=16.14.0 <19.0.0"
   },
   "resolutions": {
-    "@types/react": "17.0.21",
+    "@types/react": "18.0.18",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-refresh": "^0.14.0",

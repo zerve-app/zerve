@@ -43,7 +43,7 @@ For this example, we can create an `AllowNewUsers` entry in our store, with the 
   }
 ```
 
-You may replace `https://zerve.app/my-user/my-store` with the host and path of your Zerve server and store path. You can rename `my-zerve-store` to anything– your code will refer to this value.
+You may replace `https://alpha.zerve.app/my-user/my-store` with the host and path of your Zerve server and store path. You can rename `my-zerve-store` to anything– your code will refer to this value.
 
 ### 3. Run `yarn zerve-sync`
 
