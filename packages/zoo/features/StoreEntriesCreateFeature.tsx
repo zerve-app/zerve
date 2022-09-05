@@ -4,7 +4,7 @@ import { FeaturePane } from "../web/Dashboard";
 import { useCreateEntry } from "@zerve/zoo-client/Mutation";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useNavigation";
-import { JSONSchemaForm } from "@zerve/zen";
+import { JSONSchemaForm, showToast } from "@zerve/zen";
 
 const EntryNameSchema = {
   type: "string",
@@ -17,6 +17,7 @@ function StoreEntriesCreate({ storePath, title }: StoreFeatureProps) {
   const handleSubmit = useCallback(async (name) => {
     const actualName = prepareStoreFileName(name);
     await createEntry.mutateAsync(actualName);
+    showToast("aa");
     replaceToEntrySchema(actualName);
   }, []);
   return (

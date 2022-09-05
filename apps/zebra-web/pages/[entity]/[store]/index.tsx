@@ -14,6 +14,7 @@ import {
 import { Provider } from "@zerve/zoo/provider";
 import { GetServerSideProps } from "next";
 import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
+import { ToastPresenter } from "@zerve/zen";
 
 type PageProps = WebPathRootServerProps & StoreDashboardProps;
 
@@ -25,6 +26,7 @@ export default function StorePage(props: PageProps) {
       <Provider>
         <AuthorizedArea>
           <StoreDashboard {...dashProps} />
+          <ToastPresenter />
         </AuthorizedArea>
       </Provider>
     </ConnectionProvider>

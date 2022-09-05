@@ -11,6 +11,7 @@ import {
 import { Provider } from "@zerve/zoo/provider";
 import { GetServerSideProps } from "next";
 import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
+import { ToastPresenter } from "@zerve/zen";
 
 type EntityIdProps = WebPathRootServerProps & {
   entityId: string;
@@ -27,7 +28,10 @@ export default function EntityPage(props: EntityIdProps) {
   return (
     <ConnectionProvider value={conn}>
       <Provider>
-        <AuthorizedArea>{dashboard}</AuthorizedArea>
+        <AuthorizedArea>
+          {dashboard}
+          <ToastPresenter />
+        </AuthorizedArea>
       </Provider>
     </ConnectionProvider>
   );

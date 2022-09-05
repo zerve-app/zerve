@@ -50,9 +50,9 @@ function ToastRow({ toast }: { toast: Toast }) {
 
   return (
     <Animated.View
-      entering={FadeInUp.duration(250)}
-      exiting={FadeOutUp.duration(250)}
-      layout={Layout.delay(250).duration(250)}
+      // entering={FadeInUp.duration(250)}
+      // exiting={FadeOutUp.duration(250)}
+      // layout={Layout.delay(250).duration(250)}
       pointerEvents="box-none"
       style={{
         justifyContent: "center",
@@ -102,14 +102,12 @@ export function ToastPresenter() {
     };
   }, []);
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ ...AbsoluteFill }} pointerEvents="box-none">
-        <SafeAreaView pointerEvents="box-none">
-          {internalToasts.map((t) => (
-            <ToastRow toast={t} key={t.key} />
-          ))}
-        </SafeAreaView>
-      </View>
+    <View style={{ ...AbsoluteFill }} pointerEvents="box-none">
+      <SafeAreaView pointerEvents="box-none">
+        {internalToasts.map((t) => (
+          <ToastRow toast={t} key={t.key} />
+        ))}
+      </SafeAreaView>
     </View>
   );
 }

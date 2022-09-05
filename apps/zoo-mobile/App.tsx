@@ -11,7 +11,7 @@ function ToastArea() {
     <FullWindowOverlay
       style={{
         position: "absolute",
-        height: 200,
+        height: 100,
         left: 0,
         right: 0,
         top,

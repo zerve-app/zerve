@@ -4,7 +4,7 @@ import {
 } from "@zerve/zoo-client/Connection";
 import { postZAction } from "@zerve/zoo-client/ServerCalls";
 import { EmptySchemaStore, IDSchema } from "@zerve/zed";
-import { JSONSchemaForm, Title, useAsyncHandler } from "@zerve/zen";
+import { JSONSchemaForm, showToast, Title, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { UserFeatureProps } from "../context/UserDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
@@ -24,6 +24,7 @@ function UserStoresCreate({ entityId, title }: UserFeatureProps) {
     await postZAction(conn, ["auth", "user", "CreateStore"], value);
     queryClient.invalidateQueries([conn.key, "z", "auth", "user", "Stores"]);
     push(`/${entityId}/${value}`);
+    showToast("Created Store");
   });
   return (
     <FeaturePane title={title} spinner={isLoading}>

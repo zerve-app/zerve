@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { Input, VStack, Form } from "@zerve/zen";
+import { Input, VStack, Form, showToast } from "@zerve/zen";
 import { AsyncButton } from "../components/Button";
 import ScreenHeader from "../components/ScreenHeader";
 import { useCreateEntry } from "@zerve/zoo-client/Mutation";
@@ -17,7 +17,8 @@ export function NewFileFeature({ storePath }: { storePath: string[] }) {
   const [name, setName] = React.useState("");
   const handleSubmit = useCallback(async () => {
     const actualName = prepareStoreFileName(name);
-    await createEntry.mutate(actualName);
+    await createEntry.mutateAsync(actualName);
+    showToast("Entry Created");
     replaceToEntry(actualName);
   }, [name]);
   return (
