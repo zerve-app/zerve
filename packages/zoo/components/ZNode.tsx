@@ -39,6 +39,7 @@ import {
 import { View } from "react-native";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 import { isSeeminglyAnonUser, LoginForm, LogoutButton } from "./Auth";
+import { Notice } from "@zerve/zen/Notice";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -56,30 +57,21 @@ export function ZContainerNode({
 }) {
   const { openZ } = useConnectionNavigation();
   const childNames = Object.keys(type.children);
-  const main = type?.meta?.main && type.children[type?.meta?.main];
-  const index = type?.meta?.index && type.children[type?.meta?.index];
-
-  const indexOrMain = main ? (
-    <ZInlineNode path={[...path, type.meta.main]} />
-  ) : index ? (
-    <ZInlineNode path={[...path, type.meta.index]} />
-  ) : null;
+  console.log("cont childNames", childNames);
+  console.log("metaaaa", type?.meta);
 
   return (
     <VStack>
-      {indexOrMain}
-      {!main && (
-        <LinkRowGroup
-          links={childNames.map((childName) => ({
-            key: childName,
-            title: childName,
-            icon: getZIcon(type.children[childName]),
-            onPress: () => {
-              openZ([...path, childName]);
-            },
-          }))}
-        />
-      )}
+      <LinkRowGroup
+        links={childNames.map((childName) => ({
+          key: childName,
+          title: childName,
+          icon: getZIcon(type.children[childName]),
+          onPress: () => {
+            openZ([...path, childName]);
+          },
+        }))}
+      />
     </VStack>
   );
 }
@@ -358,6 +350,8 @@ export function ZAuthNode({
         />
       );
     }
+    console.log("Your path: ", path);
+    console.log("Session Path: ", conn.session.authPath);
     return (
       <Paragraph>
         You are logged in at {conn.session.authPath.join("/")}. Log out first
@@ -542,7 +536,7 @@ export function ZStaticNode({
   return (
     <JSONSchemaEditor
       value={value}
-      schema={{}}
+      schema={true}
       schemaStore={EmptySchemaStore}
     />
   );
@@ -574,7 +568,9 @@ export function ZNode({
   }
   if (typeName === "Container") {
     const zContract = typeMeta?.zContract;
-    if (zContract === "State") {
+    if (typeMeta?.zIndex) {
+      body = <ZInlineNode path={[...path, ...typeMeta?.zIndex]} />;
+    } else if (zContract === "State") {
       body = (
         <ZStateNode
           path={path}
@@ -694,10 +690,9 @@ export function ZLoadedNode({
       {isLoading && <Spinner />}
       {(data?.node === UnauthorizedSymbol ||
         data?.type === UnauthorizedSymbol) && (
-        <ErrorBox
-          error={
-            "You are not authorized to view this. Please log out and log back in."
-          }
+        <Notice
+          danger
+          message="You are not authorized to view this. Please log out and log back in."
         />
       )}
       {isError && <ErrorBox error={error} />}

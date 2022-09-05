@@ -23,6 +23,7 @@ import {
   StoreSettingsSchema,
   IDSchema,
   zAnnotateCache,
+  createZMetaContainer,
 } from "@zerve/zed";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
@@ -465,6 +466,27 @@ export async function startApp() {
       CreateOrg,
       Orgs,
       OrgInvites,
+      Index: createZStatic({
+        zContract: "ReferenceList",
+        items: [
+          {
+            name: "Personal Stores",
+            path: ["Stores"],
+          },
+          {
+            name: "Organizations",
+            path: ["Orgs"],
+          },
+          {
+            name: "User Settings",
+            path: ["UserSettings"],
+          },
+        ],
+      }),
+      UserSettings: createZStatic({
+        zContract: "ReferenceList",
+        items: [],
+      }),
       ...StoreGroup,
     };
   }
@@ -473,21 +495,26 @@ export async function startApp() {
     return await pathExists(storePath);
   }
 
-  const zRoot = createZContainer({
-    store: zAnnotateCache(
-      createZGroup(async (userId: string) => {
-        return createZGroup(async (storeId: string) => {
-          const memStore = await getMemoryStore(userId, storeId);
-          return createZContainer({
-            state: memStore.store.z.State,
+  const zRoot = createZMetaContainer(
+    {
+      store: zAnnotateCache(
+        createZGroup(async (userId: string) => {
+          return createZGroup(async (storeId: string) => {
+            const memStore = await getMemoryStore(userId, storeId);
+            return createZContainer({
+              state: memStore.store.z.State,
+            });
           });
-        });
-      }),
-      { isPrivate: false },
-    ),
-    auth: zAuth,
-    buildInfo: createZStatic(publicBuildInfo),
-  });
+        }),
+        { isPrivate: false },
+      ),
+      auth: zAuth,
+      buildInfo: createZStatic(publicBuildInfo),
+    },
+    {
+      zIndex: ["auth"],
+    },
+  );
 
   await startZedServer(port, zRoot, logServerEvent);
 

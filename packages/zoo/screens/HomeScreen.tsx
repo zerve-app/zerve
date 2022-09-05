@@ -26,6 +26,8 @@ import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen";
 import { ZLoadedNode } from "../components/ZNode";
 import { useGlobalNavigation } from "../app/useNavigation";
+import ScreenHeader from "../components/ScreenHeader";
+import { OptionsButton } from "../components/OptionsButton";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -86,6 +88,56 @@ function ConnectionSection({ connection }: { connection: Connection }) {
   );
 }
 
+function AllConnections({ connections }: { connections: Connection[] }) {
+  return (
+    <>
+      {connections.map((connection) => {
+        return (
+          <ConnectionProvider key={connection.key} value={connection}>
+            <ConnectionSection connection={connection} />
+          </ConnectionProvider>
+        );
+      })}
+    </>
+  );
+}
+
+function SingleConnection({ connection }: { connection: Connection }) {
+  const [actions, setActions] = useState<ActionButtonDef[]>([]);
+  const navigation = useNavigation<NavigationProp>();
+  const [optionsButton, openOptions] = useActionsSheet(
+    (onOpen) => <OptionsButton onOptions={onOpen} />,
+    () => [
+      ...actions,
+      {
+        title: "Connection Info",
+        key: "connInfo",
+        icon: "link",
+        onPress: () => {
+          navigation.navigate("SettingsStack", {
+            screen: "ConnectionInfo",
+            params: { connection: connection.key },
+          });
+        },
+      },
+    ],
+  );
+  return (
+    <>
+      <ScreenHeader
+        title={connection.name}
+        corner={optionsButton}
+        onLongPress={openOptions}
+      />
+      <VStack padded>
+        <ConnectionProvider key={connection.key} value={connection}>
+          <ZLoadedNode path={[]} onActions={setActions} />
+        </ConnectionProvider>
+      </VStack>
+    </>
+  );
+}
+
 export default function HomeScreen({
   navigation,
 }: {
@@ -96,13 +148,11 @@ export default function HomeScreen({
   return (
     <ScreenContainer scroll>
       <ZerveLogo />
-      {connections.map((connection) => {
-        return (
-          <ConnectionProvider key={connection.key} value={connection}>
-            <ConnectionSection connection={connection} />
-          </ConnectionProvider>
-        );
-      })}
+      {connections.length === 1 ? (
+        <SingleConnection connection={connections[0]} />
+      ) : (
+        <AllConnections connections={connections} />
+      )}
 
       <VStack padded>
         <LinkRowGroup
