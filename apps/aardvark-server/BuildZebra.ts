@@ -142,14 +142,17 @@ export const BuildZebra = createZAction(
 
       // clone the build repo
       await cmd("git", ["clone", "--depth=1", "/root/zerve.git", buildDir]);
+
+      // DISABLED this step for now because it causes yarn to think the lockfile should change
       // delete unrelated apps
-      const allApps = await ReadDir.call(joinPath(buildDir, "apps"));
-      const nonDeployedApps = allApps.filter(
-        (appName) => appName !== "zebra-web" && appName !== "zebra-server",
-      );
-      await DeleteRecursive.call(
-        nonDeployedApps.map((appName) => joinPath(buildDir, "apps", appName)),
-      );
+      // const allApps = await ReadDir.call(joinPath(buildDir, "apps"));
+      // const nonDeployedApps = allApps.filter(
+      //   (appName) => appName !== "zebra-web" && appName !== "zebra-server",
+      // );
+      // await DeleteRecursive.call(
+      //   nonDeployedApps.map((appName) => joinPath(buildDir, "apps", appName)),
+      // );
+
       // install dependencies
       await cmd("yarn", ["--immutable"], buildDir, {});
 
