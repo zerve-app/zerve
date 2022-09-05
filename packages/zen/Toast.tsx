@@ -50,21 +50,11 @@ function ToastRow({ toast }: { toast: Toast }) {
   const colors = useAllColors();
   return (
     <MotiView
-      from={
-        Platform.OS === "web"
-          ? {
-              // why this, you ask? well, the toast opening animation doesn't appear to work on web...
-              scale: 1,
-              opacity: 1,
-              height: 50,
-              // don't ask me why, presumably this is an issue with Moti
-            }
-          : {
-              scale: 1,
-              opacity: 0,
-              height: 0,
-            }
-      }
+      from={{
+        scale: 0.2,
+        opacity: 0,
+        height: 0,
+      }}
       animate={{
         scale: 1,
         opacity: 1,
