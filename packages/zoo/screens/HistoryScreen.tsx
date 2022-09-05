@@ -6,6 +6,8 @@ import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { format } from "date-fns";
 import { HomeStackScreenProps } from "../app/Links";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { insetsPadding } from "@zerve/zen/InsetUtils";
 
 function HistoryScreenHeader() {
   return <ScreenHeader title="Local Event History" />;
@@ -16,10 +18,12 @@ export default function HistoryScreen({
 }: HomeStackScreenProps<"History">) {
   const [queryCount, setQueryCount] = useState(15);
   const events = useHistory(queryCount);
+  const insets = useSafeAreaInsets();
   return (
     <ScreenContainer>
       <FlatList
         data={events}
+        contentContainerStyle={insetsPadding(insets)}
         ListHeaderComponent={HistoryScreenHeader}
         renderItem={(item) => (
           <Card

@@ -1,14 +1,12 @@
-import React, { ReactNode } from "react";
-import { Spinner, Title } from "@zerve/zen";
+import { ReactNode } from "react";
+import { Spacer, Spinner, Title, useColors } from "@zerve/zen";
 import { View } from "react-native";
 import { BackButton } from "./BackButton";
 import { Pressable } from "react-native";
-import { useSafeArea } from "@zerve/zen";
 
 export default function ScreenHeader({
   title,
   isLoading,
-  hideBackButton,
   backButtonCancelStyle,
   corner,
   onLongPress,
@@ -21,41 +19,32 @@ export default function ScreenHeader({
   onLongPress?: () => void;
   onBack?: (() => void) | null;
 }) {
-  const { top, left, right } = useSafeArea();
+  const colors = useColors();
   return (
-    <View
-      style={{
-        paddingTop: top,
-        paddingLeft: left,
-        paddingRight: right,
-      }}
-    >
-      <View style={{}}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          {!!onBack && (
-            <BackButton cancelButton={backButtonCancelStyle} onPress={onBack} />
-          )}
-          {isLoading && <Spinner style={{ marginHorizontal: 12 }} />}
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            paddingLeft: 12,
-            alignItems: "flex-end",
-            justifyContent: "space-between",
-            paddingBottom: 12,
-          }}
-        >
-          <Pressable onLongPress={onLongPress}>
-            <Title title={title} style={{ flex: 1 }} />
-          </Pressable>
-          {corner}
-        </View>
+    <View style={{}}>
+      <View
+        style={{
+          backgroundColor: colors.background,
+          flexDirection: "row",
+          paddingLeft: 12,
+          alignItems: "center",
+          paddingBottom: 12,
+          minHeight: 80,
+        }}
+      >
+        {!!onBack && (
+          <BackButton cancelButton={backButtonCancelStyle} onPress={onBack} />
+        )}
+        <Pressable onLongPress={onLongPress}>
+          <Title
+            title={title}
+            secondary
+            style={{ flex: 1, marginVertical: 20 }}
+          />
+        </Pressable>
+        <Spacer />
+        {isLoading && <Spinner style={{ marginHorizontal: 12 }} size="large" />}
+        {corner}
       </View>
     </View>
   );

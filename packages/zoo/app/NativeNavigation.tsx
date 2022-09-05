@@ -5,10 +5,11 @@ import NotFoundScreen from "../screens/NotFoundScreen";
 import {
   HomeStackParamList,
   RootStackParamList,
+  RootStackScreenProps,
   SettingsStackParamList,
 } from "./Links";
 import HomeScreen from "../screens/HomeScreen";
-import FileScreen from "../screens/FileScreen";
+import EntryScreen from "../screens/EntryScreen";
 import KitchenSinkScreen from "../screens/KitchenSinkScreen";
 import NewConnectionScreen from "../screens/NewConnectionScreen";
 import ConnectionInfoScreen from "../screens/ConnectionInfoScreen";
@@ -29,7 +30,13 @@ import StoreHistoryScreen from "../screens/StoreHistoryScreen";
 import StoreSchemasScreen from "../screens/StoreSchemasScreen";
 import HistoryEventScreen from "../screens/HistoryEventScreen";
 import StoreSchemaScreen from "../screens/StoreSchemaScreen";
-import { LogBox } from "react-native";
+import { LogBox, Platform } from "react-native";
+import {
+  SafeAreaInsetsContext,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import React, { FC, ReactNode } from "react";
+import { NativeStackNavigatorProps } from "@react-navigation/native-stack/lib/typescript/src/types";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
@@ -57,8 +64,8 @@ function HomeNavigator() {
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
-        name="File"
-        component={FileScreen}
+        name="Entry"
+        component={EntryScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen
@@ -105,7 +112,12 @@ const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 const DefaultScreenOptions = {
   headerShown: false,
   fullScreenGestureEnabled: true,
-};
+} as const;
+const ModalScreenOptions = {
+  presentation: "modal",
+  statusBarStyle: "light",
+  statusBarAnimation: "fade",
+} as const;
 
 function SettingsNavigator() {
   return (
@@ -161,6 +173,30 @@ function SettingsNavigator() {
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
+function ModalInsetsContext({ children }: { children: ReactNode }) {
+  const insets = useSafeAreaInsets();
+  return (
+    <SafeAreaInsetsContext.Provider
+      value={{
+        ...insets,
+        top: Platform.select({ ios: 0, default: insets.top }),
+      }}
+    >
+      {children}
+    </SafeAreaInsetsContext.Provider>
+  );
+}
+
+function rootStackModalContextScreen<
+  ScreenKey extends keyof RootStackParamList,
+>(Component: FC<RootStackScreenProps<ScreenKey>>) {
+  return (props: RootStackScreenProps<ScreenKey>) => (
+    <ModalInsetsContext>
+      <Component {...props} />
+    </ModalInsetsContext>
+  );
+}
+
 export function RootNavigator() {
   return (
     <RootStack.Navigator>
@@ -179,34 +215,31 @@ export function RootNavigator() {
         component={ErrorScreen}
         options={DefaultScreenOptions}
       />
+
       <RootStack.Screen
         name="JSONInput"
-        component={JSONInputScreen}
+        component={rootStackModalContextScreen<"JSONInput">(JSONInputScreen)}
         options={{
           ...DefaultScreenOptions,
-          presentation: "modal",
-          statusBarStyle: "light",
-          statusBarAnimation: "fade",
+          ...ModalScreenOptions,
         }}
       />
       <RootStack.Screen
         name="SettingsStack"
-        component={SettingsNavigator}
+        component={rootStackModalContextScreen<"SettingsStack">(
+          SettingsNavigator,
+        )}
         options={{
           ...DefaultScreenOptions,
-          presentation: "modal",
-          statusBarStyle: "light",
-          statusBarAnimation: "fade",
+          ...ModalScreenOptions,
         }}
       />
       <RootStack.Screen
         name="RawValue"
-        component={RawValueScreen}
+        component={rootStackModalContextScreen<"RawValue">(RawValueScreen)}
         options={{
           ...DefaultScreenOptions,
-          presentation: "modal",
-          statusBarStyle: "light",
-          statusBarAnimation: "fade",
+          ...ModalScreenOptions,
         }}
       />
     </RootStack.Navigator>

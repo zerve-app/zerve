@@ -7,7 +7,7 @@ export function Spinner({
   size = "small",
 }: {
   style?: StyleProp<ViewStyle>;
-  size: "small" | "large";
+  size?: "small" | "large";
 }) {
   const colors = useColors();
   return <ActivityIndicator size={size} color={colors.text} style={style} />;

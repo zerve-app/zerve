@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { insetsPadding } from "@zerve/zen/InsetUtils";
 
 export default function ScreenContainer({
   children,
@@ -15,29 +16,37 @@ export default function ScreenContainer({
 }) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const childrenWithScroll = scroll ? (
+  const containedChildren = scroll ? (
     <ScrollView
       style={{
         flex: 1,
         backgroundColor: colors.backgroundDim,
+        // ...bigShadow, // disabled because it does not seem to actually appear on ScreenContainer's ScrollView (when swiping back on iOS)
+        borderLeftWidth: 1,
+        borderColor: "#ccc",
         shadowColor: colors.text,
-        ...bigShadow,
       }}
-      contentContainerStyle={{
-        paddingTop: insets.top,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
-        paddingBottom: insets.bottom,
-      }}
+      contentContainerStyle={insetsPadding(insets)}
     >
       {children}
     </ScrollView>
   ) : (
-    <View style={{}}>{children}</View>
+    <View
+      style={{
+        flex: 1,
+        // ...bigShadow, // disabled because it does not seem to actually appear on ScreenContainer's ScrollView (when swiping back on iOS)
+        backgroundColor: colors.backgroundDim,
+        borderLeftWidth: 1,
+        marginLeft: -1,
+        borderColor: "#ccc",
+      }}
+    >
+      {children}
+    </View>
   );
   return (
     <BottomSheetProvider>
-      {childrenWithScroll}
+      {containedChildren}
       {Platform.OS === "android" ? <ToastPresenter /> : null}
     </BottomSheetProvider>
   );

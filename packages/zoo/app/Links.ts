@@ -38,7 +38,7 @@ export type HomeStackParamList = {
     schema: string;
   };
   Connection: { connection: string };
-  File: { connection: null | string; storePath: string[]; name: string };
+  Entry: { connection: null | string; storePath: string[]; name: string };
   FileSchema: { connection: null | string; storePath: string[]; name: string };
   ZNode: { connection: null | string; path: string[] };
 };

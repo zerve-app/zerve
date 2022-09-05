@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { View } from "react-native";
+import { BackHandler, View } from "react-native";
 import BottomSheet, {
   useBottomSheetDynamicSnapPoints,
 } from "@gorhom/bottom-sheet";
@@ -19,7 +19,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColors } from "./useColors";
 import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
@@ -42,23 +41,27 @@ type SheetConfig = {
 const getBottomSheetKey = defineKeySource("BottomSheet");
 
 export function BottomSheetProvider({ children }: { children: ReactNode }) {
+  const [isOpen, setIsOpen] = useState<boolean>();
   const [sheetConfig, setSheetConfig] = useState<null | SheetConfig>();
 
   const colors = useColors();
   const layerVisibility = useSharedValue(0);
   const layerStyles = useAnimatedStyle(() => ({
     ...AbsoluteFill,
-    opacity: layerVisibility.value * 0.5,
+    opacity: layerVisibility.value * 0.7,
     backgroundColor: colors.background,
   }));
   const bottomSheetRef = useRef<BottomSheet>(null);
   const handleSheetChanges = useCallback((index: number) => {
-    if (index === -1) setSheetConfig(null);
+    if (index === -1) {
+      setIsOpen(false);
+      setSheetConfig(null);
+    }
   }, []);
   const close = useCallback(() => {
-    // setSheetConfig(null);
-    layerVisibility.value = withTiming(0, { duration: 25 });
+    setIsOpen(false);
     bottomSheetRef.current?.close();
+    return true;
   }, []);
   const context = useMemo(
     () => ({
@@ -66,6 +69,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
         options: any,
         renderNode: (opts: { onClose: () => void; options: any }) => ReactNode,
       ) => {
+        setIsOpen(true);
         setSheetConfig({
           children: renderNode({ onClose: close, options }),
           key: getBottomSheetKey(),
@@ -81,22 +85,38 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
     animatedContentHeight,
     handleContentLayout,
   } = useBottomSheetDynamicSnapPoints(useMemo(() => ["CONTENT_HEIGHT"], []));
-
   useEffect(() => {
-    if (sheetConfig) {
-      layerVisibility.value = withTiming(1, { duration: 25 });
-    } else {
-      layerVisibility.value = withTiming(0, { duration: 25 });
+    if (isOpen) {
+      BackHandler.addEventListener("hardwareBackPress", context.close);
+      return () => {
+        BackHandler.removeEventListener("hardwareBackPress", context.close);
+      };
     }
-  }, [sheetConfig]);
+  }, [isOpen, context.close]);
+  useEffect(() => {
+    if (isOpen) {
+      layerVisibility.value = withTiming(1, { duration: 250 });
+    } else {
+      layerVisibility.value = withTiming(0, { duration: 250 });
+    }
+  }, [isOpen]);
   return (
     <BottomSheetCtx.Provider value={context}>
       <View style={{ flex: 1 }}>
         {children}
-        {sheetConfig && (
-          <Pressable style={AbsoluteFill} onPress={context.close}></Pressable>
-        )}
         <Animated.View style={layerStyles} pointerEvents="none" />
+        {isOpen ? (
+          <Pressable style={{ ...AbsoluteFill }} onPress={context.close}>
+            <View
+              style={{
+                ...AbsoluteFill,
+                // why do we need a background color here? good question! if not for this bg color, android allows touches through to the underlying content O_o
+                backgroundColor: "#ffffff01",
+                // I guess RN "optimizes" this and removes the view if not for the bg color. so we make it very subtle
+              }}
+            />
+          </Pressable>
+        ) : null}
         {sheetConfig && (
           <BottomSheet
             style={[bigShadow, { elevation: 12 }]}
@@ -119,8 +139,6 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
             <View
               onLayout={handleContentLayout}
               style={{
-                backgroundColor: colors.backgroundDim,
-                marginTop: 10,
                 backgroundColor: colors.backgroundDim,
                 ...smallShadow,
               }}

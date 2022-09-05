@@ -192,19 +192,6 @@ export function ZStoreNode({
       });
   }, [data]);
 
-  // useEffect(() => {
-  //   const actions: ActionButtonDef[] = [];
-  //   if (refetch && !isLoading) {
-  //     actions.push({
-  //       key: "refresh",
-  //       icon: "refresh",
-  //       title: "Refresh",
-  //       onPress: refetch,
-  //     });
-  //   }
-  //   onActions(actions);
-  // }, [isLoading, refetch]);
-
   if (!connection) return <Paragraph danger>Connection unavailable.</Paragraph>;
 
   return (
@@ -436,9 +423,10 @@ export function ZActionNode({
   if (!conn) throw new Error("connection");
 
   return (
-    <>
+    <VStack>
       {error && <Paragraph>{error.message}</Paragraph>}
       <JSONSchemaEditor
+        id={`action-${path.join("-")}`}
         value={actionValue}
         onValue={setActionValue}
         schema={type.payload}
@@ -463,7 +451,7 @@ export function ZActionNode({
           openHistoryEvent(eventId);
         }}
       />
-    </>
+    </VStack>
   );
 }
 
@@ -482,6 +470,7 @@ export function ZGettableNode({
     throw new Error("Unexpected z type for ZGettableNode");
   return (
     <JSONSchemaEditor
+      id={`gettable-${path.join("-")}`}
       value={value}
       schema={type.value}
       schemaStore={EmptySchemaStore}
@@ -504,6 +493,7 @@ export function ZObservableNode({
     throw new Error("Unexpected z type for ZObservableNode");
   return (
     <JSONSchemaEditor
+      id={`observable-${path.join("-")}`}
       value={value}
       schema={type.value}
       schemaStore={EmptySchemaStore}

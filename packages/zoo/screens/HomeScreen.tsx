@@ -40,7 +40,7 @@ function ConnectionSection({ connection }: { connection: Connection }) {
       <IconButton
         altTitle="Options"
         onPress={onOpen}
-        icon={(p) => <Icon name="ellipsis-h" {...p} />}
+        icon={(p) => <Icon name="ellipsis-v" {...p} />}
       />
     ),
     () => [

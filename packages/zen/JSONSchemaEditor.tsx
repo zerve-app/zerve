@@ -267,52 +267,56 @@ export function ObjectEditor({
       additionalProperties === false ? (
         <ThemedText>Schema disallows additional keys.</ThemedText>
       ) : null}
-      {otherKeys.map((itemName) => (
-        <FormField
-          id={`${id}-${itemName}`}
-          key={itemName}
-          value={value?.[itemName]}
-          valueKey={itemName}
-          schema={schema.additionalProperties}
-          schemaStore={schemaStore}
-          label={itemName}
-          actions={[
-            {
-              key: "Delete",
-              title: "Delete",
-              icon: "trash",
-              onPress: () => {
-                const newValue = { ...value };
-                delete newValue[itemName];
-                onValue(newValue);
-              },
+      {otherKeys.map((itemName) => {
+        const actions: ActionButtonDef[] = [];
+        if (onValue) {
+          actions.push({
+            key: "Delete",
+            title: "Delete",
+            icon: "trash",
+            onPress: () => {
+              const newValue = { ...value };
+              delete newValue[itemName];
+              onValue(newValue);
             },
-            {
-              key: "Rename",
-              title: "Rename",
-              icon: "edit",
-              onPress: () => {
-                propertyNameInput(itemName);
-              },
+          });
+          actions.push({
+            key: "Rename",
+            title: "Rename",
+            icon: "edit",
+            onPress: () => {
+              propertyNameInput(itemName);
             },
-          ]}
-          onValue={
-            onValue
-              ? (propertyValue) => {
-                  const newValue = Object.fromEntries(
-                    Object.entries(value).map(([pKey, pValue]) => {
-                      if (pKey === itemName) {
-                        return [pKey, propertyValue];
-                      }
-                      return [pKey, pValue];
-                    }),
-                  );
-                  onValue(newValue);
-                }
-              : undefined
-          }
-        />
-      ))}
+          });
+        }
+        return (
+          <FormField
+            id={`${id}-${itemName}`}
+            key={itemName}
+            value={value?.[itemName]}
+            valueKey={itemName}
+            schema={schema.additionalProperties}
+            schemaStore={schemaStore}
+            label={itemName}
+            actions={actions}
+            onValue={
+              onValue
+                ? (propertyValue) => {
+                    const newValue = Object.fromEntries(
+                      Object.entries(value).map(([pKey, pValue]) => {
+                        if (pKey === itemName) {
+                          return [pKey, propertyValue];
+                        }
+                        return [pKey, pValue];
+                      }),
+                    );
+                    onValue(newValue);
+                  }
+                : undefined
+            }
+          />
+        );
+      })}
       {additionalProperties !== false && !!onValue && (
         <AddButton
           label="Add Property"
@@ -928,6 +932,7 @@ export function FormField({
   if (!schema) {
     if (valueKey[0] === "$") return null;
     const deleteAction = actions?.find((a) => a.key === "Delete");
+    console.log(actions?.map((action) => action.key));
     return (
       <Notice
         danger
@@ -935,7 +940,7 @@ export function FormField({
           value,
         )}`}
       >
-        {deleteAction && (
+        {!!deleteAction && (
           <Button
             small
             title={`Delete ${label}`}

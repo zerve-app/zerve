@@ -72,7 +72,7 @@ export function useStoreNavigation(storePath: string[]) {
     () => ({
       openEntry: (name: string) => {
         navigate("HomeStack", {
-          screen: "File",
+          screen: "Entry",
           params: { connection, storePath, name },
         });
       },
@@ -103,7 +103,7 @@ export function useStoreNavigation(storePath: string[]) {
 
       replaceToEntry: (name: string) => {
         dispatch(
-          StackActions.replace("File", {
+          StackActions.replace("Entry", {
             connection,
             storePath,
             name,

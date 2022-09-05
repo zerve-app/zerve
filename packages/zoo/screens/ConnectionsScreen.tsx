@@ -1,7 +1,18 @@
 import { ComponentFactory, ReactNode, useMemo } from "react";
-import { AbsoluteFill, Button, LinkRow, Padding, VStack } from "@zerve/zen";
+import {
+  AbsoluteFill,
+  Button,
+  LinkRow,
+  Padding,
+  useColors,
+  VStack,
+} from "@zerve/zen";
 
-import { RootStackParamList, SettingsStackParamList } from "../app/Links";
+import {
+  RootStackParamList,
+  SettingsStackParamList,
+  SettingsStackScreenProps,
+} from "../app/Links";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -20,13 +31,23 @@ import DraggableFlatList, {
 } from "react-native-draggable-flatlist";
 import { useSafeArea } from "@zerve/zen";
 import { Connection } from "@zerve/zoo-client/Connection";
+import {
+  useSafeAreaFrame,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { insetsPadding } from "@zerve/zen/InsetUtils";
 
 function ConnectionsScreenHeader() {
   return <ScreenHeader title="Connections" />;
 }
 
+type NavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<RootStackParamList, "SettingsStack">,
+  NativeStackNavigationProp<SettingsStackParamList, "Connections">
+>;
+
 function ConnectionsScreenFooter() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   return (
     <Padding>
       <Button
@@ -57,7 +78,8 @@ function OrderScreenContainer<Item extends KeyedObject>({
   renderItem: (params: RenderItemParams<Item>) => ReactNode;
   onMove: (fromIndex: number, toIndex: number) => void;
 }) {
-  const safeAreaInsets = useSafeArea();
+  const insets = useSafeAreaInsets();
+  const colors = useColors();
   const renderInsideItem = useMemo(
     () => (item) => {
       return (
@@ -70,8 +92,14 @@ function OrderScreenContainer<Item extends KeyedObject>({
   );
   return (
     <DraggableFlatList
+      style={{
+        backgroundColor: colors.backgroundDim,
+      }}
       ListHeaderComponent={ConnectionsScreenHeader}
-      contentInset={safeAreaInsets}
+      contentContainerStyle={{
+        flex: 1,
+        ...insetsPadding(insets),
+      }}
       data={data}
       activationDistance={10}
       containerStyle={{ flex: 1 }}
@@ -88,14 +116,7 @@ function OrderScreenContainer<Item extends KeyedObject>({
 }
 
 export default function ConnectionsScreen() {
-  const navigation =
-    useNavigation<
-      CompositeNavigationProp<
-        NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-        NativeStackNavigationProp<SettingsStackParamList, "Connections">
-      >
-    >();
-
+  const navigation = useNavigation<NavigationProp>();
   const connections = useSavedConnections();
   return (
     <OrderScreenContainer<Connection>
