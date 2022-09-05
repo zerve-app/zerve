@@ -21,6 +21,7 @@ import { setStringAsync } from "expo-clipboard";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 import {
   JSONSchemaEditorContext,
+  OverrideFieldComponents,
   useValueImporter,
 } from "./JSONSchemaEditorUtilities";
 import { Button, ContentButton } from "./Button";
@@ -295,7 +296,11 @@ export function ObjectEditor({
             key={itemName}
             value={value?.[itemName]}
             valueKey={itemName}
-            schema={schema.additionalProperties}
+            schema={
+              schema.additionalProperties == null
+                ? true
+                : schema.additionalProperties
+            }
             schemaStore={schemaStore}
             label={itemName}
             actions={actions}
@@ -433,10 +438,11 @@ function ValueLine({ value, schema }: { value: any; schema: any }) {
     numberOfLines: 1,
   };
   const { OverrideFieldComponents } = useContext(JSONSchemaEditorContext);
-  if (schema.$id || schema.$ref) {
-    const OverrideComponent =
-      OverrideFieldComponents?.[schema.$id] ||
-      OverrideFieldComponents?.[schema.$ref];
+  const OverrideComponent = getOverrideComponent(
+    schema,
+    OverrideFieldComponents,
+  );
+  if (OverrideComponent) {
     const overrideAsText = OverrideComponent?.renderAsText;
     if (overrideAsText)
       return <ThemedText {...lineProps}>{overrideAsText(value)}</ThemedText>;
@@ -467,9 +473,10 @@ function ValueView({ value, schema }: { value: any; schema: any }) {
   // const { openRef } = useContext(JSONSchemaEditorContext);
   const { OverrideFieldComponents } = useContext(JSONSchemaEditorContext);
   if (schema.$id || schema.$ref) {
-    const OverrideComponent =
-      OverrideFieldComponents?.[schema.$id] ||
-      OverrideFieldComponents?.[schema.$ref];
+    const OverrideComponent = getOverrideComponent(
+      schema,
+      OverrideFieldComponents,
+    );
     if (OverrideComponent?.renderAsText) {
       return <ValueLine value={value} schema={schema} />;
     }
@@ -878,20 +885,7 @@ export function OneOfField({
     </>
   );
 }
-
-export function FormField({
-  label,
-  labelActions,
-  value,
-  onValue,
-  id,
-  schema,
-  schemaStore,
-  typeLabel,
-  actions,
-  onSubmitEditing,
-  valueKey,
-}: {
+type FormFieldProps = {
   label: string;
   labelActions?: ActionButtonDef[];
   value: any;
@@ -903,11 +897,52 @@ export function FormField({
   actions?: ActionButtonDef[];
   onSubmitEditing?: () => void;
   valueKey: string;
-}) {
+  stopDangerousRecursion?: boolean;
+};
+export function UnexpandedFormField(fieldProps: FormFieldProps) {
+  const { schema, schemaStore } = fieldProps;
+  const expandedSchema = useMemo(() => {
+    return expandSchema(schema, schemaStore);
+  }, [schema, schemaStore]);
+  return (
+    <FormField {...fieldProps} schema={expandedSchema} stopDangerousRecursion />
+  );
+}
+
+function getOverrideComponent(
+  schema: JSONSchema,
+  OverrideFieldComponents: OverrideFieldComponents | undefined,
+) {
+  const override =
+    schema !== true &&
+    schema !== false &&
+    schema != null &&
+    ((schema?.$id && OverrideFieldComponents?.[schema?.$id]) ||
+      (schema?.$ref && OverrideFieldComponents?.[schema?.$ref]));
+  if (override) return override;
+  return null;
+}
+
+export function FormField(fieldProps: FormFieldProps) {
+  const {
+    label,
+    labelActions,
+    value,
+    onValue,
+    id,
+    schema,
+    schemaStore,
+    typeLabel,
+    actions,
+    onSubmitEditing,
+    valueKey,
+    stopDangerousRecursion,
+  } = fieldProps;
   const { OverrideFieldComponents } = useContext(JSONSchemaEditorContext);
-  const OverrideComponent =
-    OverrideFieldComponents?.[schema.$id] ||
-    OverrideFieldComponents?.[schema.$ref];
+  const OverrideComponent = getOverrideComponent(
+    schema,
+    OverrideFieldComponents,
+  );
   if (OverrideComponent) {
     return (
       <>
@@ -1023,12 +1058,11 @@ export function FormField({
       />
     );
   }
+  if (stopDangerousRecursion) {
+    return <Notice danger message="Failed to present this value" />;
+  }
 
-  return (
-    <ThemedText>
-      {label}:: Unhandled Child Schema: {JSON.stringify(schema)}
-    </ThemedText>
-  );
+  return <UnexpandedFormField {...fieldProps} />;
 }
 
 export function LeafField({
@@ -1195,6 +1229,7 @@ export function JSONSchemaEditor({
   onSubmitEditing?: () => void;
   id: string;
 }) {
+  console.log("JSONSCHEMAEDITOR", JSON.stringify(schema));
   const expandedSchema = useMemo(
     () => expandSchema(schema, schemaStore),
     [schema, schemaStore],
