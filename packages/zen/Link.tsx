@@ -9,10 +9,12 @@ export function Link({
   href,
   children,
   external,
+  inline,
 }: {
   href: string;
   children: ReactNode;
   external?: boolean;
+  inline?: boolean;
 }) {
   const { push } = useRouter();
   const navigateIntercept = useContext(NavigateInterceptContext);
@@ -22,6 +24,7 @@ export function Link({
       target={external ? "_blank" : undefined}
       onClick={(e) => {
         if (external) return;
+        if (e.metaKey) return; // user is *probably* pressing this key to open the link in a new tab
         e.preventDefault();
         if (navigateIntercept) {
           const shouldAllow = navigateIntercept(href);
@@ -30,7 +33,7 @@ export function Link({
           push(href);
         }
       }}
-      style={{ textDecoration: "none", display: "flex" }}
+      style={{ textDecoration: "none", display: inline ? "inline" : "flex" }}
     >
       {children}
     </a>
