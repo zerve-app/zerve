@@ -6,7 +6,7 @@ import {
 import { ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import { WebPathRootServerProps } from "@zerve/zoo/web/ZooWebServer";
-import { Provider } from "@zerve/zoo/provider";
+import { PageProvider } from "@zerve/zoo/provider/PageProvider";
 import { GetServerSideProps } from "next";
 import { SiteConfig } from "@zerve/zoo/app/SiteConfig";
 
@@ -16,9 +16,9 @@ export default function StorePage(props: PageProps) {
   const conn = useWebConnection(props.config);
   return (
     <ConnectionProvider value={conn}>
-      <Provider>
+      <PageProvider>
         <StoreDashboard {...dashProps} />
-      </Provider>
+      </PageProvider>
     </ConnectionProvider>
   );
 }

@@ -49,13 +49,21 @@ function ToastSection() {
   );
 }
 
-export default function TestUIScreen() {
+export function TestUIFeature() {
   return (
-    <ScreenContainer scroll>
+    <>
       <ScreenHeader title="UI Examples" />
       <ButtonSection />
       <ToastSection />
       <BottomSheetSection />
+    </>
+  );
+}
+
+export default function TestUIScreen() {
+  return (
+    <ScreenContainer scroll>
+      <TestUIFeature />
     </ScreenContainer>
   );
 }

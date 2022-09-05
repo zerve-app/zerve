@@ -1,3 +1,11 @@
+import { ReactElement } from "react";
+
+export function SafeArea({ children }: { children: ReactElement }) {
+  return children;
+}
+
+// via @nandorojo from the solito starter:
+
 // I don't use the real useSafeAreaInsets() hook, since
 // 1) the SafeAreaProvider forces you to render null on Web until it measures
 // 2) you might not need to support it, unless you're doing landscape stuff
@@ -7,7 +15,7 @@
 // after all, safe area code is few-and-far-between, so if you have to write some platform-speciifc code for it,
 // that is probably better than a massive bundle size for little benefit
 
-import type { useSafeArea as nativeHook } from "./useSafeArea";
+import type { useSafeArea as nativeHook } from "./SafeArea";
 
 const area = {
   bottom: 0,

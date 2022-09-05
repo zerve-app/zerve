@@ -17,7 +17,7 @@ function HistoryList() {
 export function TestHistoryScreen() {
   const { navigate } = useNavigation();
   return (
-    <ScreenContainer scroll safe>
+    <ScreenContainer scroll>
       <DisclosureSection header={<Label>History Events</Label>}>
         <VStack>
           <Button

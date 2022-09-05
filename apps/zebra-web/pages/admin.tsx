@@ -1,11 +1,16 @@
 import {
+  ExternalLinkButton,
+  Icon,
+  Link,
   NavBar,
   NavBarSpacer,
   NavBarZLogo,
   PageContainer,
-  Title,
+  ToastPresenter,
+  useColors,
 } from "@zerve/zen";
-import React from "react";
+import React, { ReactNode } from "react";
+import { AuthHeader } from "@zerve/zoo/components/AuthHeader";
 import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import {
   getWebRootServerProps,
@@ -13,23 +18,29 @@ import {
 } from "@zerve/zoo/web/ZooWebServer";
 import { ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { PageProvider } from "@zerve/zoo/provider/PageProvider";
+import { TestUIFeature } from "@zerve/zoo/screens/TestUIScreen";
 
-function HomeScreen() {
+function AdminScreen() {
+  const colors = useColors();
   return (
     <PageContainer>
-      <NavBar>{null}</NavBar>
-      <Title title="Hello, world!" />
+      <NavBar>
+        <NavBarZLogo />
+        <NavBarSpacer />
+        <AuthHeader />
+      </NavBar>
+      <TestUIFeature />
     </PageContainer>
   );
 }
 
-export default function HomePage(props: WebPathRootServerProps) {
+export default function AdminPage(props: WebPathRootServerProps) {
   const conn = useWebConnection(props.config);
 
   return (
     <ConnectionProvider value={conn}>
       <PageProvider>
-        <HomeScreen />
+        <AdminScreen />
       </PageProvider>
     </ConnectionProvider>
   );

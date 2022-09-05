@@ -1,31 +1,26 @@
 import React from "react";
-import { Provider } from "@zerve/zoo/provider";
 import { RootNavigator } from "@zerve/zoo/app/NativeNavigation";
-import { ToastPresenter } from "@zerve/zen";
-import { FullWindowOverlay } from "react-native-screens";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ToastArea, ZenProvider } from "@zerve/zen";
+import { NavigationContainer } from "@react-navigation/native";
+import { SafeAreaContextProvider } from "@zerve/zen";
 
-function ToastArea() {
-  const { top } = useSafeAreaInsets();
-  return (
-    <FullWindowOverlay
-      style={{
-        position: "absolute",
-        height: 100,
-        left: 0,
-        right: 0,
-        top,
-      }}
-    >
-      <ToastPresenter />
-    </FullWindowOverlay>
-  );
+// it appears that android doesn't have this built-in function
+if (!String.prototype.replaceAll) {
+  // can you keep this hack a secret, between you and me?
+  String.prototype.replaceAll = function (find, replace) {
+    return this.split(find).join(replace);
+  };
 }
+
 export default function App() {
   return (
-    <Provider>
-      {/* <ToastArea /> */}
-      <RootNavigator />
-    </Provider>
+    <SafeAreaContextProvider>
+      <ZenProvider>
+        <NavigationContainer>
+          <ToastArea />
+          <RootNavigator />
+        </NavigationContainer>
+      </ZenProvider>
+    </SafeAreaContextProvider>
   );
 }

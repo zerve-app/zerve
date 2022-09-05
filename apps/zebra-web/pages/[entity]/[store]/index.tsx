@@ -11,10 +11,8 @@ import {
   verifyStoreExists,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
-import { Provider } from "@zerve/zoo/provider";
 import { GetServerSideProps } from "next";
 import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
-import { ToastPresenter } from "@zerve/zen";
 
 type PageProps = WebPathRootServerProps & StoreDashboardProps;
 
@@ -23,12 +21,9 @@ export default function StorePage(props: PageProps) {
   const conn = useWebConnection(props.config);
   return (
     <ConnectionProvider value={conn}>
-      <Provider>
-        <AuthorizedArea>
-          <StoreDashboard {...dashProps} />
-          <ToastPresenter />
-        </AuthorizedArea>
-      </Provider>
+      <AuthorizedArea>
+        <StoreDashboard {...dashProps} />
+      </AuthorizedArea>
     </ConnectionProvider>
   );
 }

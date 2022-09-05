@@ -3,7 +3,7 @@ import { Spinner, Title } from "@zerve/zen";
 import { View } from "react-native";
 import { BackButton } from "./BackButton";
 import { Pressable } from "react-native";
-import { useSafeArea } from "../provider/SafeArea/useSafeArea";
+import { useSafeArea } from "@zerve/zen";
 
 export default function ScreenHeader({
   title,

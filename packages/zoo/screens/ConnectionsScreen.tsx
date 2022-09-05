@@ -18,7 +18,7 @@ import DraggableFlatList, {
   ShadowDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import { useSafeArea } from "../provider/SafeArea/useSafeArea";
+import { useSafeArea } from "@zerve/zen";
 import { Connection } from "@zerve/zoo-client/Connection";
 
 function ConnectionsScreenHeader() {

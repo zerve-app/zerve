@@ -16,7 +16,7 @@ export default function HistoryEventScreen({
   const event = useHistoryEvent(eventId);
   if (!event) return <NotFoundScreen />;
   return (
-    <ScreenContainer scroll safe>
+    <ScreenContainer scroll>
       <ScreenHeader title={event.title} />
       <VStack padded>
         <ThemedText>{format(new Date(event.time), "p P")}</ThemedText>

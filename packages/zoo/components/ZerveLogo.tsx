@@ -7,17 +7,11 @@ export function ZerveLogo() {
     <View
       style={{
         padding: 24,
-        transform: [
-          {
-            scale: 0.6,
-          },
-          {
-            translateX: -115,
-          },
-        ],
+        maxWidth: 300,
+        aspectRatio: 346 / 92,
       }}
     >
-      <Svg width={346} height={92} xmlns="http://www.w3.org/2000/svg">
+      <Svg width="100%" height="100%" viewBox="0 0 346 92">
         <Defs>
           <LinearGradient
             x1="5.314%"

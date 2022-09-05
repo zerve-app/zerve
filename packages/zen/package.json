@@ -20,6 +20,7 @@
     "@gorhom/bottom-sheet": "^4.4.3",
     "react": "*",
     "react-native": "*",
+    "moti": "*",
     "react-native-reanimated": "~2.10.0",
     "react-native-web": "~0.18.7"
   },

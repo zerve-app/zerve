@@ -94,7 +94,7 @@ export default function HomeScreen({
   const { openHistory } = useGlobalNavigation();
   const connections = useSavedConnections();
   return (
-    <ScreenContainer scroll safe>
+    <ScreenContainer scroll>
       <ZerveLogo />
       {connections.map((connection) => {
         return (

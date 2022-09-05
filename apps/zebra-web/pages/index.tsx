@@ -1,14 +1,13 @@
 import {
   ExternalLinkButton,
   Icon,
-  Link,
   NavBar,
   NavBarSpacer,
   NavBarZLogo,
   PageContainer,
   useColors,
 } from "@zerve/zen";
-import React, { ReactNode } from "react";
+import React from "react";
 import { AuthHeader } from "@zerve/zoo/components/AuthHeader";
 import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import {
@@ -16,7 +15,7 @@ import {
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
 import { ConnectionProvider } from "@zerve/zoo-client/Connection";
-import { Provider } from "@zerve/zoo/provider";
+import { PageProvider } from "@zerve/zoo/provider/PageProvider";
 import Image from "next/image";
 import { Text, View } from "react-native";
 
@@ -84,9 +83,9 @@ export default function HomePage(props: WebPathRootServerProps) {
 
   return (
     <ConnectionProvider value={conn}>
-      <Provider>
+      <PageProvider>
         <HomeScreen />
-      </Provider>
+      </PageProvider>
     </ConnectionProvider>
   );
 }

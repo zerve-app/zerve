@@ -8,7 +8,7 @@ const packageJsons = packageDirNames.map((pkgName) => {
     return JSON.parse(
       readFileSync(`../../packages/${pkgName}/package.json`, {
         encoding: "utf-8",
-      })
+      }),
     );
   } catch (e) {
     return null;
@@ -63,10 +63,13 @@ const { withExpo } = require("@expo/next-adapter");
 const withTM = require("next-transpile-modules")([
   "react-native",
   "react-native-web",
+  "moti",
+  "@motify/core",
+  "@motify/components",
   ...localPackageNames,
 ]);
 
 module.exports = withPlugins(
   [withTM, [withExpo, { projectRoot: __dirname }]],
-  nextConfig
+  nextConfig,
 );
