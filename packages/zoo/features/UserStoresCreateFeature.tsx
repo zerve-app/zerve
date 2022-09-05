@@ -24,7 +24,7 @@ function UserStoresCreate({ entityId, title }: UserFeatureProps) {
     await postZAction(conn, ["auth", "user", "CreateStore"], value);
     queryClient.invalidateQueries([conn.key, "z", "auth", "user", "Stores"]);
     push(`/${entityId}/${value}`);
-    showToast("Created Store");
+    showToast(`Created "${value}" Store`);
   });
   return (
     <FeaturePane title={title} spinner={isLoading}>

@@ -17,7 +17,7 @@ function StoreEntriesCreate({ storePath, title }: StoreFeatureProps) {
   const handleSubmit = useCallback(async (name) => {
     const actualName = prepareStoreFileName(name);
     await createEntry.mutateAsync(actualName);
-    showToast("aa");
+    showToast(`Created "${name}"`);
     replaceToEntrySchema(actualName);
   }, []);
   return (
