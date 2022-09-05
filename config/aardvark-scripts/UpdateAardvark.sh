@@ -19,7 +19,7 @@ echo "====================="
 
 # We are in /root/aardvark-build
 
-yarn --frozen-lockfile
+yarn --immutable
 
 rm -rf yarn-package-cache ./.git
 git init

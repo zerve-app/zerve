@@ -6245,6 +6245,7 @@ __metadata:
   peerDependencies:
     "@expo/vector-icons": 13.0.0
     "@gorhom/bottom-sheet": ^4.4.3
+    moti: "*"
     react: "*"
     react-native: "*"
     react-native-reanimated: ~2.10.0

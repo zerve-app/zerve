@@ -151,7 +151,7 @@ export const BuildZebra = createZAction(
         nonDeployedApps.map((appName) => joinPath(buildDir, "apps", appName)),
       );
       // install dependencies
-      await cmd("yarn", ["--frozen-lockfile"], buildDir, {});
+      await cmd("yarn", ["--immutable"], buildDir, {});
 
       // clean up heavy and unused stuff from build directory
       await DeleteRecursive.call([

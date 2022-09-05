@@ -31,7 +31,7 @@ Start by checking out the repo and installing dependencies via yarn.
 ```
 git clone --depth=1 /root/zerve.git z-build-dir
 cd z-build-dir
-yarn --frozen-lockfile
+yarn --immutable
 ```
 
 Copy the secrets file from `secrets.template.json` into `secrets.json` and change the secrets that your services require.
