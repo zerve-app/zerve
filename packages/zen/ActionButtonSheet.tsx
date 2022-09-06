@@ -24,7 +24,7 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
     : colors.active.tint;
   const textColor = isFocused ? colors.inverted.text : color;
   return (
-    <Pressable onPress={handlePress} onLongPress={handleLongPress}>
+    <Pressable onLongPress={handleLongPress}>
       <DropdownMenu.Item
         onSelect={handlePress}
         onFocus={() => {
