@@ -52,8 +52,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     config,
     entityIsOrg,
     storePath: entityIsOrg
-      ? ["auth", "user", "Orgs", entityId, "Stores", storeId]
-      : ["auth", "user", "Stores", storeId],
+      ? ["auth", "user", "orgs", entityId, "stores", storeId]
+      : ["auth", "user", "stores", storeId],
     href: `/${entityId}/${storeId}`,
   };
   return { props };

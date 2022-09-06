@@ -18,8 +18,8 @@ function UserOrganizationsCreate({ entityId, title }: UserFeatureProps) {
   const queryClient = useQueryClient();
   const { push } = useRouter();
   const { handle, isLoading } = useAsyncHandler(async (value) => {
-    await postZAction(conn, ["auth", "user", "CreateOrg"], value);
-    queryClient.invalidateQueries([conn.key, "z", "auth", "user", "Orgs"]);
+    await postZAction(conn, ["auth", "user", "createOrg"], value);
+    queryClient.invalidateQueries([conn.key, "z", "auth", "user", "orgs"]);
     push(`/${value}`);
   });
   return (

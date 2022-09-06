@@ -12,6 +12,7 @@ import {
   createZGettable,
   StringSchema,
   BooleanSchema,
+  ZContainerMeta,
 } from "@zerve/zed";
 import { randomBytes, createHash } from "crypto";
 import {
@@ -325,11 +326,13 @@ export async function createAuth<
   authFilesPath,
   getUserZeds,
   handleUserIdChange,
+  userContainerMeta,
 }: {
   strategies: Strategies;
   authFilesPath: string;
   getUserZeds: (user: UserAdminZeds, userInfo: { userId: string }) => UserZeds;
   handleUserIdChange?: (prevUserId: string, userId: string) => Promise<void>;
+  userContainerMeta: ZContainerMeta;
 }) {
   const zContainerMeta = {
     ...AuthContainerContractMeta,
@@ -675,7 +678,10 @@ export async function createAuth<
           const session = await getValidatedSession(userId, authPassword);
 
           const loggedInUser = getZLoggedInUser(userId, session);
-          return createZContainer(await getUserZeds(loggedInUser, { userId }));
+          return createZMetaContainer(
+            await getUserZeds(loggedInUser, { userId }),
+            userContainerMeta,
+          );
         },
       ),
     },

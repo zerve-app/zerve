@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import { Spacer, Spinner, Title, useColors } from "@zerve/zen";
+import { ComponentProps, ReactNode } from "react";
+import { Icon, Spacer, Spinner, Title, useColors } from "@zerve/zen";
 import { View } from "react-native";
 import { BackButton } from "./BackButton";
 import { Pressable } from "react-native";
@@ -9,6 +9,7 @@ export default function ScreenHeader({
   isLoading,
   backButtonCancelStyle,
   corner,
+  icon,
   onLongPress,
   onBack,
 }: {
@@ -16,6 +17,7 @@ export default function ScreenHeader({
   backButtonCancelStyle?: boolean;
   isLoading?: boolean;
   corner?: ReactNode;
+  icon?: null | ComponentProps<typeof Icon>["name"];
   onLongPress?: () => void;
   onBack?: (() => void) | null;
 }) {
@@ -28,18 +30,28 @@ export default function ScreenHeader({
           flexDirection: "row",
           paddingLeft: 12,
           alignItems: "center",
+          justifyContent: "space-between",
           paddingBottom: 12,
           minHeight: 80,
+          flexWrap: "wrap",
         }}
       >
         {!!onBack && (
           <BackButton cancelButton={backButtonCancelStyle} onPress={onBack} />
         )}
-        <Pressable onLongPress={onLongPress}>
+        <Pressable
+          onLongPress={onLongPress}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginHorizontal: 10,
+          }}
+        >
+          {icon ? <Icon name={icon} color={colors.secondaryText} /> : null}
           <Title
             title={title}
             secondary
-            style={{ flex: 1, marginVertical: 20 }}
+            style={{ marginVertical: 20, marginHorizontal: 10 }}
           />
         </Pressable>
         <Spacer />

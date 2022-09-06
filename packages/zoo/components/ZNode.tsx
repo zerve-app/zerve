@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { ComponentProps, useCallback, useMemo, useState } from "react";
 
 import {
   ActionButtonDef,
@@ -31,15 +31,19 @@ import { Icon } from "@zerve/zen/Icon";
 import { getZIcon } from "../app/ZIcon";
 import { storeHistoryEvent } from "../app/History";
 import {
+  ActionResponseSchema,
   displayStoreFileName,
   EmptySchemaStore,
+  FromSchema,
   GenericError,
   getDefaultSchemaValue,
+  RedirectSchema,
 } from "@zerve/zed";
 import { View } from "react-native";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 import { isSeeminglyAnonUser, LoginForm, LogoutButton } from "./Auth";
 import { Notice } from "@zerve/zen/Notice";
+import { useQueryClient } from "react-query";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -57,7 +61,6 @@ export function ZContainerNode({
 }) {
   const { openZ } = useConnectionNavigation();
   const childNames = Object.keys(type.children);
-  console.log("cont childNames", childNames);
   console.log("metaaaa", type?.meta);
 
   return (
@@ -307,16 +310,10 @@ export function LoggedInAuthNode({
   return (
     <VStack>
       <Paragraph>Welcome, {session.userLabel}.</Paragraph>
-      <ZLoadedNode
-        path={[...path, "user"]}
-
-        // map={(z) => {
-        //   // filter out setUsername, setPassword
-        // }}
-      />
+      <ZLoadedNode path={[...path, "user"]} />
       <LogoutButton connection={connection} session={session} />
-      <ChangeUsernameButton connection={connection} session={session} />
-      <ChangePasswordButton connection={connection} session={session} />
+      {/* <ChangeUsernameButton connection={connection} session={session} />
+      <ChangePasswordButton connection={connection} session={session} /> */}
     </VStack>
   );
 }
@@ -378,7 +375,7 @@ export function ZGroupNode({
 }) {
   const childNames = value?.children || [];
   const { openZ } = useConnectionNavigation();
-
+  const staticMetaValue = type.meta?.zStatic;
   return (
     <VStack>
       {childNames.length === 0 ? <Paragraph>Nothing here</Paragraph> : null}
@@ -392,8 +389,46 @@ export function ZGroupNode({
           }}
         />
       ))}
+      {staticMetaValue && (
+        <ZStaticNode
+          value={staticMetaValue}
+          connection={connection}
+          path={path}
+        />
+      )}
     </VStack>
   );
+}
+
+function useZActionResponse(connectionKey: string) {
+  const { openZ, replaceZ } = useConnectionNavigation();
+  const { openHistoryEvent } = useGlobalNavigation();
+  const queryClient = useQueryClient();
+  return useCallback((response: any, eventId: string) => {
+    if (extractZContract(response) === "Response") {
+      const { redirect, invalidate } = response as FromSchema<
+        typeof ActionResponseSchema
+      >;
+      if (invalidate) {
+        if (extractZContract(invalidate) === "Invalidate") {
+          invalidate.paths.forEach((path) => {
+            queryClient.invalidateQueries([connectionKey, "z", ...path]);
+          });
+        }
+      }
+      if (redirect) {
+        if (extractZContract(redirect) === "Redirect") {
+          if (redirect.replace) {
+            replaceZ(redirect.path);
+            return;
+          }
+          openZ(redirect.path);
+          return;
+        }
+      }
+    }
+    openHistoryEvent(eventId);
+  }, []);
 }
 
 export function ZActionNode({
@@ -413,7 +448,7 @@ export function ZActionNode({
   const [error, setError] = useState<null | GenericError>(null);
   const conn = useConnection();
 
-  const { openHistoryEvent } = useGlobalNavigation();
+  const handleResponse = useZActionResponse(connection);
   if (!conn) throw new Error("connection");
 
   return (
@@ -442,7 +477,7 @@ export function ZActionNode({
             connection,
             path,
           });
-          openHistoryEvent(eventId);
+          handleResponse(response, eventId);
         }}
       />
     </VStack>
@@ -495,37 +530,35 @@ export function ZObservableNode({
   );
 }
 
+function extractZContract(value: any) {
+  if (value == null) return null;
+  if (typeof value === "object") return value.zContract;
+  return null;
+}
+
 export function ZStaticNode({
-  type,
   value,
   connection,
   path,
 }: {
-  type: any;
   value: any;
   connection: string;
   path: string[];
 }) {
-  const zStatic = value?.[".z"];
-  const zStaticType = zStatic?.z;
-  if (zStaticType === "Reference" && zStatic.path) {
-    return <ZInlineNode path={[...path.slice(0, -1), ...zStatic.path]} />;
-  } else if (Array.isArray(value)) {
+  if (extractZContract(value) === "ReferenceList") {
+    return (
+      <ZReferenceListNode path={path} value={value} connection={connection} />
+    );
+  }
+  if (Array.isArray(value)) {
     return (
       <>
         {value.map((childValue, childIndex) => {
-          const zStatic = childValue?.[".z"];
-          const zStaticType = zStatic?.z;
-          if (zStaticType === "Reference" && zStatic.path) {
-            return (
-              <ZInlineNode path={[...path.slice(0, -1), ...zStatic.path]} />
-            );
-          }
           return (
             <JSONSchemaEditor
               key={childIndex}
               value={childValue}
-              schema={{}}
+              schema={true}
               schemaStore={EmptySchemaStore}
             />
           );
@@ -538,6 +571,30 @@ export function ZStaticNode({
       value={value}
       schema={true}
       schemaStore={EmptySchemaStore}
+    />
+  );
+}
+
+export function ZReferenceListNode({
+  path,
+  connection,
+  value,
+}: {
+  path: string[];
+  connection: string;
+  value: any;
+}) {
+  const { openZ } = useConnectionNavigation();
+  return (
+    <LinkRowGroup
+      links={value.items.map((item) => ({
+        key: item.key,
+        title: item.name,
+        icon: item.icon,
+        onPress: () => {
+          openZ(item.path);
+        },
+      }))}
     />
   );
 }
@@ -704,4 +761,24 @@ export function ZLoadedNode({
       />
     </>
   );
+}
+
+export function extractNodeTitle(
+  path: string[],
+  type: any,
+  value: any,
+): string {
+  const metaTitle = type?.meta?.title;
+  if (metaTitle) return metaTitle;
+  return path.length ? path.join("/") : "Zerve";
+}
+
+export function extractNodeIcon(
+  path: string[],
+  type: any,
+  value: any,
+): ComponentProps<typeof Icon>["name"] | null {
+  const metaTitle = type?.meta?.icon;
+  if (metaTitle) return metaTitle;
+  return null;
 }

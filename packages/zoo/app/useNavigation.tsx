@@ -82,7 +82,7 @@ export function useGlobalNavigation() {
 }
 
 export function useConnectionNavigation() {
-  const { push, pop } = useRouter();
+  const { push, pop, replace } = useRouter();
   const conn = useConnection();
   const connection = conn?.key;
   if (!connection) throw new Error("needs connection here ok");
@@ -92,6 +92,9 @@ export function useConnectionNavigation() {
     () => ({
       openZ: (path: string[]) => {
         push(path.join("/"));
+      },
+      replaceZ: (path: string[]) => {
+        replace(path.join("/"));
       },
       closeZ: (path: string[]) => {
         const parent = path.slice(0, -1);

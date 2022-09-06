@@ -122,6 +122,7 @@ export async function createGeneralStore(
   cacheFilesPath: string,
   docName: string,
   inputSolidSchemas?: Record<string, JSONSchema>,
+  meta?: ZContainerMeta,
 ) {
   const solidSchemas = Object.fromEntries(
     Object.entries(inputSolidSchemas || {}).map(([schemaName, schema]) => [
@@ -356,6 +357,7 @@ export async function createGeneralStore(
       Dispatch,
     },
     {
+      ...(meta || {}),
       zContract: "Store",
     },
   );

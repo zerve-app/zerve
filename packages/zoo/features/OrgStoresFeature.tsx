@@ -27,9 +27,9 @@ function OrgStores({ entityId, title }: OrgFeatureProps) {
   const { data, isLoading, isFetching } = useZNodeValue([
     "auth",
     "user",
-    "Orgs",
+    "orgs",
     entityId,
-    "Stores",
+    "stores",
   ]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>

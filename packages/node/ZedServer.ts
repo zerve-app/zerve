@@ -386,6 +386,7 @@ export async function startZedServer(
         ...serviceInfo,
         ".t": "Gettable",
         value: zed.valueSchema,
+        meta: zed.meta,
       };
     }
     if (zed.zType === "Observable") {
@@ -401,6 +402,7 @@ export async function startZedServer(
         ".t": "Action",
         payload: zed.payloadSchema,
         response: zed.responseSchema,
+        meta: zed.meta,
       };
     }
     if (zed.zType === "Group") {
@@ -408,6 +410,7 @@ export async function startZedServer(
         ...serviceInfo,
         ".t": "Group",
         value: zed.valueSchema,
+        meta: zed.meta,
       };
     }
     if (zed.zType === "Container") {
@@ -428,6 +431,7 @@ export async function startZedServer(
       return {
         ...serviceInfo,
         ".t": "Static",
+        meta: zed.value?.meta,
       };
     }
     if (zed.zType === "ZAnnotateCache") {

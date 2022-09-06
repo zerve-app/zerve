@@ -27,7 +27,7 @@ function UserStores({ entityId, title }: UserFeatureProps) {
   const { data, isLoading, isFetching } = useZNodeValue([
     "auth",
     "user",
-    "Stores",
+    "stores",
   ]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>

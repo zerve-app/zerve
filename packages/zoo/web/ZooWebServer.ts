@@ -14,7 +14,7 @@ export async function validateUserCanAccessOrg(
   try {
     const userRoleInOrg = await serverGet(
       config.origin,
-      `.z/auth/user/Orgs/${orgId}/role`,
+      `.z/auth/user/orgs/${orgId}/role`,
       undefined,
       extractSessionAuth(["auth"], config.session),
     );
@@ -40,8 +40,8 @@ export async function verifyStoreExists(
     );
   }
   const storePath = entityIsOrg
-    ? `.z/auth/user/Orgs/${entityId}/Stores/${storeId}`
-    : `.z/auth/user/Stores/${storeId}`;
+    ? `.z/auth/user/orgs/${entityId}/stores/${storeId}`
+    : `.z/auth/user/stores/${storeId}`;
   try {
     const storeStuff = await serverGet(
       config.origin,

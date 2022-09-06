@@ -1229,7 +1229,6 @@ export function JSONSchemaEditor({
   onSubmitEditing?: () => void;
   id: string;
 }) {
-  console.log("JSONSCHEMAEDITOR", JSON.stringify(schema));
   const expandedSchema = useMemo(
     () => expandSchema(schema, schemaStore),
     [schema, schemaStore],

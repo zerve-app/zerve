@@ -24,6 +24,7 @@ import {
   IDSchema,
   zAnnotateCache,
   createZMetaContainer,
+  ActionResponseSchema,
 } from "@zerve/zed";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
@@ -188,6 +189,9 @@ export async function startApp() {
       }
     },
     getUserZeds,
+    userContainerMeta: {
+      zIndex: ["index"],
+    },
   });
 
   const memoryStores: Record<string, Record<string, MemoryStore>> = {};
@@ -227,25 +231,14 @@ export async function startApp() {
       joinPath(getEntityStoreDir(entityId, storeId), `StoreCache`),
       `Store`,
       enabledSchemas,
+      {
+        title: storeId,
+        icon: "folder-open",
+      },
     );
     const newMemoryStore = { store, settings: storeSettings };
     userMemoryStores[storeId] = newMemoryStore;
     return newMemoryStore;
-  }
-  async function writeStoreSettings(
-    entityId: string,
-    storeId: string,
-    settings: StoreSettings,
-  ) {
-    const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
-    const storePath = getEntityStoreDir(entityId, storeId);
-    const settingsPath = joinPath(storePath, "settings.json");
-    await WriteJSON.call({ path: settingsPath, value: settings });
-    if (alreadyInMemoryStore) {
-      // this will re-instansiate the store in memory with new settings
-      await getMemoryStore(entityId, storeId, settings);
-      // its a bit unintuitive that getMemoryStore has side effects, sorry.
-    }
   }
 
   function getUserDir(userId: string): string {
@@ -256,8 +249,8 @@ export async function startApp() {
     return joinPath(getUserDir(userId), "stores", storeId);
   }
 
-  function getStoreGroup(entityId: string) {
-    const Stores = createZGettableGroup(
+  function getStoreGroup(entityId: string, contextPath: string[]) {
+    const stores = createZGettableGroup(
       async (storeId: string) => {
         const memStore = await getMemoryStore(entityId, storeId);
         // avoid aggressive cache policy for private stores
@@ -274,10 +267,25 @@ export async function startApp() {
         }
         return { children, more: false, cursor: "" };
       },
+      {
+        title: "Stores",
+        icon: "folder-open",
+        zStatic: {
+          zContract: "ReferenceList",
+          items: [
+            {
+              key: "create",
+              name: "Create Store",
+              icon: "plus-circle",
+              path: [...contextPath, "createStore"],
+            },
+          ],
+        },
+      },
     );
-    const DestroyStore = createZAction(
+    const destroyStore = createZAction(
       StringSchema,
-      NullSchema,
+      ActionResponseSchema,
       async (storeId) => {
         if (!doesEntityStoreExist(entityId, storeId)) {
           throw new Error("Store does not exist.");
@@ -287,10 +295,21 @@ export async function startApp() {
           delete memoryStores[entityId]?.[storeId];
         }
         await new Promise((resolve) => setTimeout(resolve, 2000)); // lol
-        return null;
+        return {
+          zContract: "Response",
+          redirect: {
+            zContract: "Redirect",
+            replace: true,
+            path: [...contextPath, "stores"],
+          },
+          invalidate: {
+            zContract: "Invalidate",
+            paths: [[...contextPath, "stores"]],
+          },
+        };
       },
     );
-    const MoveStore = createZAction(
+    const moveStore = createZAction(
       {
         type: "object",
         properties: { from: IDSchema, to: IDSchema },
@@ -313,7 +332,7 @@ export async function startApp() {
         return null;
       },
     );
-    const StoreSettings = createZGroup(async (storeId) =>
+    const storeSettings = createZGroup(async (storeId) =>
       zAnnotateCache(
         createZGettable(StoreSettingsSchema, async () => {
           const memStore = await getMemoryStore(entityId, storeId);
@@ -322,7 +341,7 @@ export async function startApp() {
         { isVolatile: true },
       ),
     );
-    const WriteStoreSettings = createZAction(
+    const writeStoreSettings = createZAction(
       {
         type: "object",
         additionalProperties: false,
@@ -340,49 +359,75 @@ export async function startApp() {
         settings: StoreSettings;
         storeId: string;
       }) => {
-        await writeStoreSettings(entityId, storeId, settings);
+        const alreadyInMemoryStore = memoryStores[entityId]?.[storeId];
+        const storePath = getEntityStoreDir(entityId, storeId);
+        const settingsPath = joinPath(storePath, "settings.json");
+        await WriteJSON.call({ path: settingsPath, value: settings });
+        if (alreadyInMemoryStore) {
+          // this will re-instansiate the store in memory with new settings
+          await getMemoryStore(entityId, storeId, settings);
+          // its a bit unintuitive that getMemoryStore has side effects, sorry.
+        }
         return null;
       },
     );
+    const createStore = createZAction(
+      IDSchema,
+      ActionResponseSchema,
+      async (storeId: string) => {
+        if (await doesEntityStoreExist(entityId, storeId))
+          throw new RequestError(
+            "AlreadyExists",
+            `The "${storeId}" store already exists.`,
+            { storeId },
+          );
+        const storePath = getEntityStoreDir(entityId, storeId);
+        await mkdirp(storePath);
+        return {
+          zContract: "Response",
+          redirect: {
+            zContract: "Redirect",
+            replace: true,
+            path: [...contextPath, "stores", storeId],
+          },
+          invalidate: {
+            zContract: "Invalidate",
+            paths: [[...contextPath, "stores"]],
+          },
+        };
+      },
+      {
+        title: "Create Store",
+        icon: "plus-circle",
+      },
+    );
     return {
-      Stores,
-      DestroyStore,
-      MoveStore,
-      StoreSettings,
-      WriteStoreSettings,
+      stores,
+      createStore,
+      destroyStore,
+      moveStore,
+      storeSettings,
+      writeStoreSettings,
     };
-  }
-
-  function getStoreCreatorAction(entityId: string) {
-    return createZAction(IDSchema, NullSchema, async (storeId: string) => {
-      if (await doesEntityStoreExist(entityId, storeId))
-        throw new RequestError(
-          "AlreadyExists",
-          `The "${storeId}" store already exists.`,
-          { storeId },
-        );
-      const storePath = getEntityStoreDir(entityId, storeId);
-      await mkdirp(storePath);
-      return null;
-    });
   }
 
   function getOrgOwnerAbilities(userId: string, ownerId: string) {
     return {
       role: createZStatic("owner"),
-      inviteMember: createZAction(() => {}),
+      // inviteMember: createZAction(() => {}),
     };
   }
+
+  const authUserPath = ["auth", "user"];
 
   async function getUserZeds(
     user,
     { userId },
   ): Promise<Record<string, AnyZed>> {
-    const CreateStore = getStoreCreatorAction(userId);
-    const StoreGroup = getStoreGroup(userId);
-    const CreateOrg = createZAction(
+    const storeGroup = getStoreGroup(userId, authUserPath);
+    const createOrg = createZAction(
       StringSchema,
-      NullSchema,
+      ActionResponseSchema,
       async (orgId: string) => {
         const userEntityData = await getEntity(userId);
         await createEntity(orgId, {
@@ -393,11 +438,26 @@ export async function startApp() {
           affiliatedOrgs: [...(userEntityData.affiliatedOrgs || []), orgId],
         });
 
-        return null;
+        return {
+          zContract: "Response",
+          redirect: {
+            zContract: "Redirect",
+            replace: true,
+            path: [...authUserPath, "orgs", orgId],
+          },
+          invalidate: {
+            zContract: "Invalidate",
+            paths: [[...authUserPath, "orgs"]],
+          },
+        };
+      },
+      {
+        title: "Create Org",
+        icon: "plus-circle",
       },
     );
 
-    const Orgs = createZGettableGroup(
+    const orgs = createZGettableGroup(
       async (orgId: string) => {
         const orgEntity = await getEntity(orgId);
         const isUserOwner = !!orgEntity && orgEntity.ownerUserId === userId;
@@ -407,25 +467,59 @@ export async function startApp() {
             `You do not have access to the "${orgId}" org.`,
             { orgId, userId },
           );
-        return createZContainer({
-          orgId: createZStatic(orgId),
-          CreateStore: getStoreCreatorAction(orgId),
-          ...getStoreGroup(orgId),
-          Members: createZGettableGroup(
-            async (memberId: string) => {
-              return createZStatic({});
-            },
-            async (getOptions: ChildrenListOptions) => {
-              return {
-                children: orgEntity.members || [],
-                cursor: "",
-                more: false,
-              };
-            },
-          ),
-          role: createZStatic("member"),
-          ...(isUserOwner ? getOrgOwnerAbilities(userId, orgId) : {}),
-        });
+        const orgPath = [...authUserPath, "orgs", orgId];
+        return createZMetaContainer(
+          {
+            orgId: createZStatic(orgId),
+            ...getStoreGroup(orgId, [...authUserPath, "orgs", orgId]),
+            index: createZStatic({
+              zContract: "ReferenceList",
+              items: [
+                {
+                  key: "stores",
+                  name: "Stores",
+                  path: [...orgPath, "stores"],
+                  icon: "folder-open",
+                },
+                {
+                  key: "members",
+                  name: "Members",
+                  path: [...orgPath, "members"],
+                  icon: "building",
+                },
+                {
+                  key: "org-settings",
+                  name: "Org Settings",
+                  path: [...orgPath, "orgSettings"],
+                  icon: "gear",
+                },
+              ],
+            }),
+            orgSettings: createZStatic({
+              zContract: "ReferenceList",
+              items: [],
+            }),
+            members: createZGettableGroup(
+              async (memberId: string) => {
+                return createZStatic({});
+              },
+              async (getOptions: ChildrenListOptions) => {
+                return {
+                  children: orgEntity.members || [],
+                  cursor: "",
+                  more: false,
+                };
+              },
+            ),
+            role: createZStatic("member"),
+            ...(isUserOwner ? getOrgOwnerAbilities(userId, orgId) : {}),
+          },
+          {
+            title: orgId,
+            icon: "building",
+            zIndex: ["index"],
+          },
+        );
       },
       async (getOptions: ChildrenListOptions) => {
         const userEntity = await getEntity(userId);
@@ -436,9 +530,24 @@ export async function startApp() {
           cursor: "",
         };
       },
+      {
+        title: "Organizations",
+        icon: "building",
+        zStatic: {
+          zContract: "ReferenceList",
+          items: [
+            {
+              key: "create",
+              name: "Create Org",
+              icon: "plus-circle",
+              path: [...authUserPath, "createOrg"],
+            },
+          ],
+        },
+      },
     );
 
-    const OrgInvites = createZGettableGroup(
+    const orgInvites = createZGettableGroup(
       async (orgId: string) => {
         return createZContainer({
           orgId: createZStatic(orgId),
@@ -462,32 +571,70 @@ export async function startApp() {
     );
     return {
       ...user,
-      CreateStore,
-      CreateOrg,
-      Orgs,
-      OrgInvites,
-      Index: createZStatic({
+      createOrg,
+      orgs,
+      orgInvites,
+      index: createZStatic({
         zContract: "ReferenceList",
         items: [
           {
+            key: "stores",
             name: "Personal Stores",
-            path: ["Stores"],
+            path: ["auth", "user", "stores"],
+            icon: "folder-open",
           },
           {
+            key: "organizations",
             name: "Organizations",
-            path: ["Orgs"],
+            path: ["auth", "user", "orgs"],
+            icon: "building",
           },
           {
-            name: "User Settings",
-            path: ["UserSettings"],
+            key: "user-settings",
+            name: "Account Settings",
+            path: ["auth", "user", "accountSettings"],
+            icon: "gear",
           },
         ],
       }),
-      UserSettings: createZStatic({
+      accountSettings: createZStatic({
+        zContract: "ReferenceList",
+        items: [
+          {
+            key: "profile",
+            name: "Profile",
+            path: ["auth", "user", "accountSettingsProfile"],
+            icon: "user",
+          },
+          {
+            key: "auth",
+            name: "Auth",
+            path: ["auth", "user", "accountSettingsAuth"],
+            icon: "lock",
+          },
+        ],
+        meta: {
+          title: "Account Settings",
+          icon: "user",
+        },
+      }),
+      accountSettingsProfile: createZStatic({
         zContract: "ReferenceList",
         items: [],
+        meta: {
+          title: "User Profile",
+          icon: "user",
+        },
       }),
-      ...StoreGroup,
+      accountSettingsAuth: createZStatic({
+        zContract: "ReferenceList",
+        items: [],
+        meta: {
+          title: "Auth Settings",
+          icon: "lock",
+        },
+      }),
+      ...storeGroup,
     };
   }
   async function doesEntityStoreExist(entityId: string, storeId: string) {

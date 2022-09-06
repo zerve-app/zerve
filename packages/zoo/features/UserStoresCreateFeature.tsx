@@ -22,7 +22,7 @@ function UserStoresCreate({ entityId, title }: UserFeatureProps) {
   const { push } = useRouter();
   const { handle, isLoading } = useAsyncHandler(async (value) => {
     await postZAction(conn, ["auth", "user", "CreateStore"], value);
-    queryClient.invalidateQueries([conn.key, "z", "auth", "user", "Stores"]);
+    queryClient.invalidateQueries([conn.key, "z", "auth", "user", "stores"]);
     push(`/${entityId}/${value}`);
     showToast(`Created "${value}" Store`);
   });

@@ -20,7 +20,7 @@ function OrgStoresCreate({ entityId, title }: OrgFeatureProps) {
   const { handle, isLoading } = useAsyncHandler(async (value) => {
     await postZAction(
       conn,
-      ["auth", "user", "Orgs", entityId, "CreateStore"],
+      ["auth", "user", "orgs", entityId, "CreateStore"],
       value,
     );
     queryClient.invalidateQueries([
@@ -28,9 +28,9 @@ function OrgStoresCreate({ entityId, title }: OrgFeatureProps) {
       "z",
       "auth",
       "user",
-      "Orgs",
+      "orgs",
       entityId,
-      "Stores",
+      "stores",
     ]);
     push(`/${entityId}/${value}`);
   });

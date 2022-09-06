@@ -30,7 +30,7 @@ function UserOrganizations({ entityId, title }: UserFeatureProps) {
   const { data, isLoading, isFetching } = useZNodeValue([
     "auth",
     "user",
-    "Orgs",
+    "orgs",
   ]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>

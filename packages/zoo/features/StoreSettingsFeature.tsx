@@ -39,7 +39,7 @@ function RenameStoreDialog({
   const storeId = storePath.at(-1);
   const moveStore = useMutation(
     async (newStoreId: string) => {
-      await postZAction(conn, [...parentPath, "MoveStore"], {
+      await postZAction(conn, [...parentPath, "moveStore"], {
         from: storeId,
         to: newStoreId,
       });
@@ -90,7 +90,7 @@ function DeleteStoreDialog({
     async () => {
       await postZAction(
         conn,
-        [...storePath.slice(0, -2), "DestroyStore"],
+        [...storePath.slice(0, -2), "destroyStore"],
         storeId,
       );
     },
@@ -139,7 +139,7 @@ function useRenameStoreDialog(storePath: string[], href: string) {
 function useStoreSettings(storePath: string[]) {
   const storeId = storePath.at(-1);
   const parentPath = storePath.slice(0, -2);
-  return useZNodeValue([...parentPath, "StoreSettings", storeId]);
+  return useZNodeValue([...parentPath, "storeSettings", storeId]);
 }
 function useSetStoreSettings(storePath: string[]) {
   const conn = useRequiredConnection();
@@ -148,7 +148,7 @@ function useSetStoreSettings(storePath: string[]) {
   const parentPath = storePath.slice(0, -2);
   return useMutation(
     async (settings: StoreSettings) => {
-      await postZAction(conn, [...parentPath, "WriteStoreSettings"], {
+      await postZAction(conn, [...parentPath, "writeStoreSettings"], {
         storeId,
         settings,
       });
@@ -159,14 +159,14 @@ function useSetStoreSettings(storePath: string[]) {
           conn?.key,
           "z",
           ...parentPath,
-          "Stores",
+          "stores",
           storeId,
         ]);
         queryClient.invalidateQueries([
           conn?.key,
           "z",
           ...parentPath,
-          "StoreSettings",
+          "storeSettings",
           storeId,
         ]);
       },

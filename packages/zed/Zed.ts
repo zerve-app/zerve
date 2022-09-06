@@ -8,6 +8,13 @@ export type ModuleSpec = {
   npmDependencies?: Record<string, string>;
 };
 
+export type ZCommonMeta = {
+  title: string;
+  icon: string;
+};
+
+export type ZActionMeta = ZCommonMeta & {};
+
 export type ZAction<
   ActionSchema extends JSONSchema,
   ResponseSchema extends JSONSchema,
@@ -18,19 +25,20 @@ export type ZAction<
   call: (
     payload: FromSchema<ActionSchema>,
   ) => Promise<FromSchema<ResponseSchema>>;
+  meta: ZActionMeta | undefined;
 };
 
-export type ZContainer<Zeds extends Record<string, any>, Meta> = {
+export type ZContainer<Zeds extends Record<string, any>> = {
   zType: "Container";
   z: Zeds;
-  meta: Meta;
+  meta: ZContainerMeta | undefined;
   get: <S extends keyof Zeds>(zedKey: S) => Promise<Zeds[S]>;
 };
 
 export type AnyZContainer = {
   zType: "Container";
   z: Record<string, any>;
-  meta: any;
+  meta: ZContainerMeta;
   get: (zedKey: any) => Promise<any>;
 };
 
@@ -44,6 +52,8 @@ export type AnyZAuthContainer = {
   getAuthZed: (authId: string, authKey: string) => Promise<Record<string, any>>;
 };
 
+export type ZGroupMeta = ZCommonMeta & {};
+
 export type ZGroup<
   ChildZed extends AnyZed,
   GetOptions,
@@ -53,6 +63,7 @@ export type ZGroup<
   getChild: (zedKey: string) => Promise<ChildZed | undefined>;
   get: (options: GetOptions) => Promise<FromSchema<GetSchema>>;
   valueSchema: GetSchema;
+  meta: ZGroupMeta | undefined;
 };
 
 export type AnyZGroup = {
@@ -60,12 +71,14 @@ export type AnyZGroup = {
   getChild: (zedKey: string) => Promise<any | undefined>;
   get: (options: any) => Promise<any>;
   valueSchema: JSONSchema;
+  meta: ZGroupMeta | undefined;
 };
 
 export type ZGettable<GetSchema extends JSONSchema, GetOptions> = {
   zType: "Gettable";
   valueSchema: GetSchema;
   get: (options: GetOptions) => Promise<FromSchema<GetSchema>>;
+  meta: ZGettableMeta | undefined;
 };
 
 export type ZStatic<Value> = {
@@ -101,20 +114,24 @@ export function createZAction<
   call: (
     payload: FromSchema<ActionSchema>,
   ) => Promise<FromSchema<ResponseSchema>>,
+  meta?: ZActionMeta,
 ): ZAction<ActionSchema, ResponseSchema> {
-  return { zType: "Action", payloadSchema, responseSchema, call };
+  return { zType: "Action", payloadSchema, responseSchema, call, meta };
 }
+
+export type ZGettableMeta = {};
 
 export function createZGettable<StateSchema extends JSONSchema, GetOptions>(
   valueSchema: StateSchema,
   get: (o: GetOptions) => Promise<FromSchema<StateSchema>>,
+  meta?: ZGettableMeta,
 ): ZGettable<StateSchema, GetOptions> {
-  return { zType: "Gettable", get, valueSchema };
+  return { zType: "Gettable", get, valueSchema, meta };
 }
 
 export function createZContainer<Zeds extends Record<string, any>>(
   z: Zeds,
-): ZContainer<Zeds, undefined> {
+): ZContainer<Zeds> {
   return {
     zType: "Container",
     z,
@@ -131,16 +148,16 @@ export function createZContainer<Zeds extends Record<string, any>>(
   };
 }
 
-type ContainerMeta = {
-  zContract?: string;
-  index?: string;
-  main?: string;
+export type ZContainerMeta = ZCommonMeta & {
+  zContract?: "Auth" | "State" | "Store";
+  zIndex?: string[];
+  zMain?: string[];
 };
 
-export function createZMetaContainer<
-  Zeds extends Record<string, AnyZed>,
-  Meta extends ContainerMeta,
->(z: Zeds, meta: Meta): ZContainer<Zeds, Meta> {
+export function createZMetaContainer<Zeds extends Record<string, AnyZed>>(
+  z: Zeds,
+  meta: Meta,
+): ZContainer<Zeds> {
   return {
     zType: "Container",
     z,
@@ -170,8 +187,48 @@ export function createZGroup<ChildZType extends AnyZed>(
     valueSchema: NullSchema,
     getChild,
     get: async () => null,
+    meta: undefined,
   };
 }
+
+export const RedirectSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    zContract: { const: "Redirect" },
+    replace: { type: "boolean" },
+    path: { type: "array", items: { type: "string" } },
+  },
+  required: ["zContract", "path"],
+} as const;
+
+export const PathSchema = {
+  type: "array",
+  items: {
+    type: "string",
+  },
+} as const;
+
+export const InvalidateSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    zContract: { const: "Invalidate" },
+    paths: { type: "array", items: PathSchema },
+  },
+  required: ["zContract", "paths"],
+} as const;
+
+export const ActionResponseSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    zContract: { const: "Response" },
+    redirect: RedirectSchema,
+    invalidate: InvalidateSchema,
+  },
+  required: ["zContract"],
+} as const;
 
 export const ChildrenListSchema = {
   type: "object",
@@ -206,12 +263,14 @@ export type ZGettableGroup<ChildZType extends AnyZed> = ZGroup<
 export function createZGettableGroup<ChildZType extends AnyZed>(
   getChild: (key: string) => Promise<ChildZType | undefined>,
   get: (getOptions: ChildrenListOptions) => Promise<ChildrenList>,
+  meta?: ZGroupMeta,
 ): ZGettableGroup<ChildZType> {
   return {
     zType: "Group",
     valueSchema: ChildrenListSchema,
     getChild,
     get,
+    meta,
   };
 }
 

@@ -5,6 +5,7 @@ import ScreenHeader from "../components/ScreenHeader";
 import { useZNodeValue } from "@zerve/zoo-client/Query";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import { OptionsButton } from "../components/OptionsButton";
+import { useNavigation } from "@react-navigation/native";
 
 function StoreHistoryPage({
   connection,
@@ -14,6 +15,7 @@ function StoreHistoryPage({
   storePath: string[];
 }) {
   const { data, isLoading } = useZNodeValue([...storePath, "State"]);
+  const { goBack } = useNavigation();
   const [optionsButton, openOptions] = useActionsSheet(
     (onOpen) => <OptionsButton onOptions={onOpen} />,
     () => [],
@@ -21,7 +23,11 @@ function StoreHistoryPage({
   return (
     <>
       <ScreenHeader
-        title={"Chain History"}
+        title={"Change History"}
+        icon="history"
+        onBack={() => {
+          goBack();
+        }}
         isLoading={isLoading}
         corner={optionsButton}
         onLongPress={openOptions}

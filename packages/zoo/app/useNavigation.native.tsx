@@ -52,6 +52,16 @@ export function useConnectionNavigation() {
           params: { connection, path },
         });
       },
+      replaceZ: (path: string[]) => {
+        const connection = conn?.key;
+        if (!connection) throw new Error("Connection required to navigate");
+        nav.dispatch(
+          StackActions.replace("ZNode", {
+            connection,
+            path,
+          }),
+        );
+      },
       closeZ: (path: string[]) => {
         nav.goBack();
       },

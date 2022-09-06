@@ -5,7 +5,12 @@ import { useZNode } from "@zerve/zoo-client/Query";
 import { UnauthorizedSymbol } from "@zerve/zoo-client/Connection";
 import { FontAwesome } from "@expo/vector-icons";
 import ScreenHeader from "../components/ScreenHeader";
-import { ErrorBox, ZNode } from "../components/ZNode";
+import {
+  ErrorBox,
+  extractNodeIcon,
+  extractNodeTitle,
+  ZNode,
+} from "../components/ZNode";
 import {
   useConnectionNavigation,
   useGlobalNavigation,
@@ -65,7 +70,8 @@ export function ZFeature({
       )}
       <ScreenHeader
         isLoading={isLoading || isRefetching}
-        title={path.length ? path.join("/") : "Zerve"}
+        title={extractNodeTitle(path, data?.type, data?.node)}
+        icon={extractNodeIcon(path, data?.type, data?.node)}
         onLongPress={onOptions}
         corner={sheetContent}
         onBack={!!path.length ? () => closeZ(path) : undefined}
