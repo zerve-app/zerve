@@ -145,7 +145,7 @@ function StoreEntriesEntry({
     ];
   }, [editorContext.OverrideFieldComponents]);
 
-  const storeValueId = `entry-${entryName}`;
+  const dirtyId = `entry-${entryName}`;
   const fullSchema = useMemo(() => {
     const expanded = entrySchema && expandSchema(entrySchema, schemaStore);
     return expanded;
@@ -158,20 +158,24 @@ function StoreEntriesEntry({
     return drillSchemaValue(fullSchema, importedValue, path);
   }, [fullSchema, savedEntryValue, path]);
 
-  const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
-    useUnsavedContext();
-  const isDirty = dirtyIds.has(storeValueId);
+  const {
+    claimDirty,
+    releaseDirty,
+    dirtyId: currentDirtyId,
+    getDirtyValue,
+  } = useUnsavedContext();
+  const isDirty = currentDirtyId === dirtyId;
   const [draftValue, setDraftValue] = useState(
-    isDirty ? lookUpValue(getDirtyValue(storeValueId), path) : undefined,
+    isDirty ? lookUpValue(getDirtyValue(dirtyId), path) : undefined,
   );
   const doSave = useAsyncHandler<void, AnyError>(async () => {
-    const internalValue = getDirtyValue(storeValueId);
+    const internalValue = getDirtyValue(dirtyId);
     const exportedValue = exportValue(internalValue, fullSchema);
     await saveEntry.mutateAsync({
       name: entryName,
       value: exportedValue,
     });
-    releaseDirty(storeValueId);
+    releaseDirty(dirtyId);
   });
   const displayValue = draftValue === undefined ? savedPathValue : draftValue;
   return (
@@ -236,15 +240,14 @@ function StoreEntriesEntry({
               id={`entry-${entryName}-${path.join("-")}`}
               onValue={(value: any) => {
                 setDraftValue(value);
-                if (path.length && !dirtyIds.has(storeValueId)) {
-                  claimDirty(
-                    storeValueId,
-                    [],
-                    mergeValue(savedEntryValue, path, value),
-                  );
-                } else {
-                  claimDirty(storeValueId, path, value);
-                }
+                const prevEntryValue =
+                  currentDirtyId === dirtyId
+                    ? getDirtyValue(dirtyId)
+                    : savedEntryValue;
+                const updatedValue = path.length
+                  ? mergeValue(prevEntryValue, path, value)
+                  : value;
+                claimDirty(dirtyId, updatedValue);
               }}
               value={displayValue}
               schema={pathSchema}
@@ -271,7 +274,7 @@ function StoreEntriesEntry({
                   onPress={() => {
                     doSave.reset();
                     setDraftValue(undefined);
-                    releaseDirty(storeValueId);
+                    releaseDirty(dirtyId);
                   }}
                 />
                 <Button primary title="Save Changes" onPress={doSave.handle} />

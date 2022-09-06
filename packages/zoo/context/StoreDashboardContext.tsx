@@ -53,9 +53,9 @@ export const StoreDashboardContext =
 
 export type UnsavedCtx = {
   getDirtyValue: (id: string) => any;
-  claimDirty: (id: string, path: string[], value: any) => void;
+  claimDirty: (id: string, value: any) => void;
   releaseDirty: (id: string) => void;
-  dirtyIds: Set<string>;
+  dirtyId: null | string;
 };
 export const UnsavedContext = createContext<null | UnsavedCtx>(null);
 

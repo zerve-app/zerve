@@ -100,10 +100,14 @@ function StoreSchemasSchema({
     ];
   }, [schemaName]);
 
-  const { claimDirty, releaseDirty, dirtyIds, getDirtyValue } =
-    useUnsavedContext();
+  const {
+    claimDirty,
+    releaseDirty,
+    dirtyId: currentDirtyId,
+    getDirtyValue,
+  } = useUnsavedContext();
   const dirtyId = `schema-${schemaName}`;
-  const isDirty = dirtyIds.has(dirtyId);
+  const isDirty = currentDirtyId === dirtyId;
   const currentDirtyValue = getDirtyValue(dirtyId);
   const [draftValue, setDraftValue] = useState(
     isDirty ? lookUpValue(currentDirtyValue, path) : undefined,
@@ -143,15 +147,14 @@ function StoreSchemasSchema({
                 id={`schema-${schemaName}-${path.join("-")}`}
                 onValue={(value: any) => {
                   setDraftValue(value);
-                  if (path.length && !dirtyIds.has(dirtyId)) {
-                    claimDirty(
-                      dirtyId,
-                      [],
-                      mergeValue(currentValue, path, value),
-                    );
-                  } else {
-                    claimDirty(dirtyId, path, value);
-                  }
+                  const prevSchemaValue =
+                    dirtyId === currentDirtyId
+                      ? getDirtyValue(dirtyId)
+                      : schemaQuery.data;
+                  const updatedValue = path.length
+                    ? mergeValue(prevSchemaValue, path, value)
+                    : value;
+                  claimDirty(dirtyId, updatedValue);
                 }}
                 value={draftValue === undefined ? savedPathValue : draftValue}
                 schema={pathSchema}

@@ -290,7 +290,7 @@ export function DashboardPage<Feature>({
     title: string;
     icon: ComponentProps<typeof FontAwesome>["name"] | null;
   }) => ReactNode;
-  navigation: Array<Feature>;
+  navigation: ReadonlyArray<Feature>;
   onIntercept?: (
     feature: Feature,
     navigateFeature: (feature: Feature) => void,

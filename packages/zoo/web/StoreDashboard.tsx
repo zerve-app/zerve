@@ -71,28 +71,25 @@ function parseFeatureFragment(fragment?: string): null | StoreNavigationState {
 
 function allowedToNavigateToFeature(
   feature: StoreNavigationState,
-  currentDirtyIds: Set<string>,
+  dirtyId: null | string,
 ) {
-  if (currentDirtyIds.size === 0) return true;
+  if (!dirtyId) return true;
   if (feature.key === "entries" && feature.child === "schema") {
-    const destDirtyId = `entry-schema-${feature.entryName}`;
-    if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
+    if (dirtyId === `entry-schema-${feature.entryName}`) {
       return true;
     }
   }
   if (feature.key === "entries") {
-    const destDirtyId = `entry-${feature.entryName}`;
-    if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
+    if (dirtyId === `entry-${feature.entryName}`) {
       if (!feature.child) return true;
     }
   }
   if (feature.key === "schemas") {
-    const destDirtyId = `schema-${feature.schema}`;
-    if (currentDirtyIds.size === 1 && currentDirtyIds.has(destDirtyId)) {
+    if (dirtyId === `schema-${feature.schema}`) {
       return true;
     }
   }
-  console.warn("Refusing to exit with dirty ids", currentDirtyIds);
+  console.warn("Refusing to exit with dirty id", dirtyId);
   return false;
 }
 
@@ -112,10 +109,35 @@ export function StoreDashboard({
   storePath,
 }: StoreDashboardProps) {
   const { beforePopState, push } = useRouter();
-  const dirtyIdsRef = useRef<Set<string>>(new Set());
+  const dirtyIdRef = useRef<null | string>(null);
+  const dirtyValue = useRef<null | any>(null);
+  const [dirtyId, setDirtyId] = useState<null | string>(null);
   const latestFeatureRef = useRef<null | string>(null);
+  const unsavedCtx = useMemo(() => {
+    return {
+      releaseDirty: (id: string) => {
+        console.log("RELEASEDIRTY", id);
+        dirtyValue.current = null;
+        dirtyIdRef.current = null;
+        setDirtyId(null);
+      },
+      claimDirty: (id: string, value: any) => {
+        console.log("CLAIMDIRTY", id, value);
+        dirtyValue.current = value;
+        dirtyIdRef.current = id;
+        if (dirtyId !== id) {
+          setDirtyId(id);
+        }
+      },
+      getDirtyValue: (id: string) => {
+        if (id === dirtyIdRef.current) return dirtyValue.current;
+        return undefined;
+      },
+      dirtyId,
+    };
+  }, [dirtyId]);
   const openModal = useModal<() => void>(
-    ({ onClose, options: discardChangesAndNavigate }) => (
+    ({ onClose, options: followThroughNavigate }) => (
       <Dialog
         onClose={onClose}
         title="Discard Unsaved Changes?"
@@ -123,47 +145,18 @@ export function StoreDashboard({
         confirmLabel="Discard Changes"
         closeLabel="Cancel"
         onConfirm={async () => {
+          dirtyValue.current = null;
+          dirtyIdRef.current = null;
+          setDirtyId(null);
           onClose();
-          discardChangesAndNavigate();
+          followThroughNavigate();
         }}
       />
     ),
   );
-  const dirtyValues = useMemo(() => new Map<string, any>(), []);
-  const [dirtyIds, setDirtyIds] = useState(new Set<string>());
-  const unsavedCtx = useMemo(() => {
-    return {
-      releaseDirty: (id: string) => {
-        dirtyValues.delete(id);
-        const newDirtyIds = new Set(dirtyIdsRef.current);
-        newDirtyIds.delete(id);
-        setDirtyIds(newDirtyIds);
-        dirtyIdsRef.current = newDirtyIds;
-      },
-      claimDirty: (id: string, path: string[], value: any) => {
-        if (dirtyIds.has(id)) {
-          dirtyValues.set(id, mergeValue(dirtyValues.get(id), path, value));
-          return;
-        }
-        if (path.length) {
-          throw new Error(
-            "May not set dirty with a path for an ID that is not already dirty",
-          );
-        }
-        const newDirtyIds = new Set([...dirtyIds, id]);
-        dirtyIdsRef.current = newDirtyIds;
-        dirtyValues.set(id, value);
-        setDirtyIds(newDirtyIds);
-      },
-      getDirtyValue: (id: string) => {
-        return dirtyValues.get(id);
-      },
-      dirtyIds,
-    };
-  }, [dirtyIds]);
   useEffect(() => {
     window.onbeforeunload = (e) => {
-      if (dirtyIdsRef.current.size) {
+      if (dirtyIdRef.current) {
         return "Unsaved changes will be lost.";
       }
       return undefined;
@@ -176,18 +169,17 @@ export function StoreDashboard({
       const fragment = parseFeatureFragment(fragmentString);
       if (
         fragment &&
-        allowedToNavigateToFeature(fragment, dirtyIdsRef.current)
+        allowedToNavigateToFeature(fragment, dirtyIdRef.current)
       ) {
         return true;
       }
-      if (dirtyIdsRef.current.size) {
+      if (dirtyIdRef.current) {
         window.history.pushState(
           { pushId: Date.now() }, // maybe this is not needed?
           "unused",
           `?_=${latestFeatureRef.current}`,
         );
         openModal(() => {
-          dirtyIdsRef.current = new Set();
           push(state.as);
         });
         return false;
@@ -197,9 +189,8 @@ export function StoreDashboard({
   }, []);
   const navigateInterrupt = useMemo(() => {
     return (href: string) => {
-      if (dirtyIdsRef.current.size) {
+      if (dirtyIdRef.current) {
         openModal(() => {
-          dirtyIdsRef.current = new Set();
           push(href);
         });
         return false;
@@ -208,7 +199,10 @@ export function StoreDashboard({
       }
     };
   }, []);
-  const sidebarFeatures = [{ key: "entries" }, { key: "schemas" }];
+  const sidebarFeatures: StoreNavigationState[] = [
+    { key: "entries" },
+    { key: "schemas" },
+  ];
   if (entityId) {
     sidebarFeatures.push({ key: "settings" });
   }
@@ -221,12 +215,11 @@ export function StoreDashboard({
             feature: StoreNavigationState,
             navigateFeature: (feature: StoreNavigationState) => void,
           ) => {
-            if (allowedToNavigateToFeature(feature, dirtyIdsRef.current)) {
+            if (allowedToNavigateToFeature(feature, dirtyIdRef.current)) {
               return true;
             }
-            if (dirtyIdsRef.current.size) {
+            if (dirtyIdRef.current) {
               openModal(() => {
-                dirtyIdsRef.current = new Set();
                 navigateFeature(feature);
               });
               return false;
