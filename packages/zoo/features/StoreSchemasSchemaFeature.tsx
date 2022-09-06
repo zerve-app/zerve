@@ -27,7 +27,6 @@ import {
   useZStoreSchema,
   useZStoreSchemaSchema,
 } from "@zerve/zoo-client/Query";
-import { useStoreNavigation } from "../app/useNavigation";
 import {
   AnyError,
   drillSchemaValue,
@@ -35,6 +34,7 @@ import {
   mergeValue,
   prepareStoreFileName,
 } from "@zerve/zed";
+import { useStoreNavigation } from "../app/useStoreNavigation";
 
 function StoreSchemasSchema({
   storePath,

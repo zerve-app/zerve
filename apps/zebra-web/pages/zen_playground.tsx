@@ -1,33 +1,25 @@
 import {
   Button,
-  ExternalLinkButton,
-  Icon,
   Link,
-  NavBar,
   NavBarSpacer,
-  NavBarZLogo,
   PageContainer,
   PageSection,
   Paragraph,
   showErrorToast,
   showToast,
   Spinner,
-  ToastPresenter,
   useColors,
   VStack,
 } from "@zerve/zen";
-import React, { createContext, ReactNode } from "react";
+import React, { createContext } from "react";
 import { AuthHeader } from "@zerve/zoo/components/AuthHeader";
-import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import {
   getWebRootServerProps,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
-import { ConnectionProvider } from "@zerve/zoo-client/Connection";
-import { PageProvider } from "@zerve/zoo/provider/PageProvider";
-import { TestUIFeature } from "@zerve/zoo/screens/TestUIScreen";
 import { DashboardPage, FeaturePane } from "@zerve/zoo/web/Dashboard";
 import { FragmentContext } from "@zerve/zoo/web/Fragment";
+import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
 
 type PlaygroundState = "home" | "toast" | "button" | "spinner";
 
@@ -148,14 +140,10 @@ function PlaygroundScreen() {
 }
 
 export default function AdminPage(props: WebPathRootServerProps) {
-  const conn = useWebConnection(props.config);
-
   return (
-    <ConnectionProvider value={conn}>
-      <PageProvider>
-        <PlaygroundScreen />
-      </PageProvider>
-    </ConnectionProvider>
+    <WebPageProvider config={props.config}>
+      <PlaygroundScreen />
+    </WebPageProvider>
   );
 }
 

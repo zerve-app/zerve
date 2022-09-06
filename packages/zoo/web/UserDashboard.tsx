@@ -1,5 +1,5 @@
 import { useConnection } from "@zerve/zoo-client/Connection";
-import { VStack } from "@zerve/zen";
+import { Spacer, VStack } from "@zerve/zen";
 import { LogoutButton } from "../components/Auth";
 import {
   UserDashboardContext,
@@ -15,6 +15,7 @@ import { UserStoresFeature } from "../features/UserStoresFeature";
 import { DashboardPage, FeaturePane } from "./Dashboard";
 import { UserHeader } from "./DashboardHeader";
 import { useRouter } from "next/router";
+import { AuthHeader } from "../components/AuthHeader";
 
 export function UserDashboard({ entityId }: { entityId: string }) {
   const conn = useConnection();
@@ -23,7 +24,13 @@ export function UserDashboard({ entityId }: { entityId: string }) {
   return (
     <DashboardPage<UserNavigationState>
       Context={UserDashboardContext}
-      header={<UserHeader userId={entityId} />}
+      header={
+        <>
+          <UserHeader userId={entityId} />
+          <Spacer />
+          <AuthHeader />
+        </>
+      }
       navigation={[
         { key: "stores" },
         { key: "organizations" },

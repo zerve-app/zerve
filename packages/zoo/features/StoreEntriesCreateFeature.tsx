@@ -3,8 +3,8 @@ import { memo, useCallback } from "react";
 import { FeaturePane } from "../web/Dashboard";
 import { useCreateEntry } from "@zerve/zoo-client/Mutation";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
-import { useStoreNavigation } from "../app/useNavigation";
 import { JSONSchemaForm, showToast } from "@zerve/zen";
+import { useStoreNavigation } from "../app/useStoreNavigation";
 
 const EntryNameSchema = {
   type: "string",

@@ -23,7 +23,6 @@ import { setSessionUserId } from "../app/ConnectionStorage";
 import {
   useConnectionNavigation,
   useGlobalNavigation,
-  useStoreNavigation,
 } from "../app/useNavigation";
 import { FontAwesome } from "@expo/vector-icons";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
@@ -44,6 +43,8 @@ import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
 import { isSeeminglyAnonUser, LoginForm, LogoutButton } from "./Auth";
 import { Notice } from "@zerve/zen/Notice";
 import { useQueryClient } from "react-query";
+import { useStoreNavigation } from "../app/useStoreNavigation";
+import { StoreNavigationProvider } from "../app/StoreNavigationProvider";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -112,8 +113,7 @@ export function ZStateNode({
 }
 
 export function NewFileButton({ path }: { path: string[] }) {
-  const { openNewEntry } = useStoreNavigation(path);
-  const conn = useConnection();
+  const { openNewEntry } = useStoreNavigation();
   return (
     <View
       style={{
@@ -145,7 +145,7 @@ function StoreChildList({
   connection: string;
   storePath: string[];
 }) {
-  const { openEntry } = useStoreNavigation(storePath);
+  const { openEntry } = useStoreNavigation();
   if (!list?.length) return <Paragraph>No files here.</Paragraph>;
 
   return (
@@ -158,6 +158,32 @@ function StoreChildList({
           openEntry(child.key);
         },
       }))}
+    />
+  );
+}
+
+function ZStoreLinks() {
+  const { openHistory, openSchemas } = useStoreNavigation();
+  return (
+    <LinkRowGroup
+      links={[
+        {
+          key: "Events",
+          title: "Change History",
+          icon: "history",
+          onPress: () => {
+            openHistory();
+          },
+        },
+        {
+          key: "ServerSchemas",
+          title: "Schemas",
+          icon: "crosshairs",
+          onPress: () => {
+            openSchemas();
+          },
+        },
+      ]}
     />
   );
 }
@@ -175,7 +201,6 @@ export function ZStoreNode({
 }) {
   if (type[".t"] !== "Container" || type?.meta?.zContract !== "Store")
     throw new Error("Unexpected z type info for ZStoreNode");
-  const { openHistory, openSchemas } = useStoreNavigation(path);
   const { data, refetch, isLoading } = useConnectionProjects(path);
   const list = useMemo(() => {
     return Object.entries(data?.node || {})
@@ -190,32 +215,15 @@ export function ZStoreNode({
   if (!connection) return <Paragraph danger>Connection unavailable.</Paragraph>;
 
   return (
-    <VStack>
-      <StoreChildList list={list} connection={connection} storePath={path} />
-      <HStack>
-        <NewFileButton path={path} />
-      </HStack>
-      <LinkRowGroup
-        links={[
-          {
-            key: "Events",
-            title: "Change History",
-            icon: "history",
-            onPress: () => {
-              openHistory();
-            },
-          },
-          {
-            key: "ServerSchemas",
-            title: "Schemas",
-            icon: "crosshairs",
-            onPress: () => {
-              openSchemas();
-            },
-          },
-        ]}
-      />
-    </VStack>
+    <StoreNavigationProvider connection={connection} storePath={path}>
+      <VStack>
+        <StoreChildList list={list} connection={connection} storePath={path} />
+        <HStack>
+          <NewFileButton path={path} />
+        </HStack>
+        <ZStoreLinks />
+      </VStack>
+    </StoreNavigationProvider>
   );
 }
 

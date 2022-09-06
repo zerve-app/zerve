@@ -4,7 +4,6 @@ import { FragmentContext } from "../web/Fragment";
 
 export type StoreFeatureProps = {
   title: string;
-  storeId: string;
   storePath: Array<string>;
   href: string;
 };

@@ -73,58 +73,6 @@ export function useConnectionNavigation() {
   );
 }
 
-export function useStoreNavigation(storePath: string[]) {
-  const { navigate, dispatch } = useReactNavigation();
-  const conn = useConnection();
-  const connection = conn?.key;
-  if (!connection) throw new Error("Connection required to navigate");
-  return useMemo(
-    () => ({
-      openEntry: (name: string) => {
-        navigate("HomeStack", {
-          screen: "Entry",
-          params: { connection, storePath, name },
-        });
-      },
-      openNewEntry: () => {
-        navigate("HomeStack", {
-          screen: "NewFile",
-          params: { connection, storePath },
-        });
-      },
-      openSchema: (schema: string) => {
-        navigate("HomeStack", {
-          screen: "StoreSchema",
-          params: { connection, storePath, schema },
-        });
-      },
-      openSchemas: () => {
-        navigate("HomeStack", {
-          screen: "StoreSchemas",
-          params: { connection, storePath },
-        });
-      },
-      openHistory: () => {
-        navigate("HomeStack", {
-          screen: "StoreHistory",
-          params: { connection, storePath },
-        });
-      },
-
-      replaceToEntry: (name: string) => {
-        dispatch(
-          StackActions.replace("Entry", {
-            connection,
-            storePath,
-            name,
-          }),
-        );
-      },
-    }),
-    [connection],
-  );
-}
-
 export function useStoreFileNavigation(storePath: string[], fileName: string) {
   const { goBack, navigate, dispatch } = useReactNavigation();
   const conn = useConnection();

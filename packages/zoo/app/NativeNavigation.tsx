@@ -35,8 +35,10 @@ import {
   SafeAreaInsetsContext,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import React, { FC, ReactNode } from "react";
+import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { NativeStackNavigatorProps } from "@react-navigation/native-stack/lib/typescript/src/types";
+import { UnsavedContext } from "../context/StoreDashboardContext";
+import StoreFeatureScreen from "../screens/StoreFeatureScreen";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
@@ -101,6 +103,11 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="HistoryEvent"
         component={HistoryEventScreen}
+        options={DefaultScreenOptions}
+      />
+      <HomeStack.Screen
+        name="StoreFeature"
+        component={StoreFeatureScreen}
         options={DefaultScreenOptions}
       />
     </HomeStack.Navigator>
@@ -197,7 +204,7 @@ function rootStackModalContextScreen<
   );
 }
 
-export function RootNavigator() {
+function RootNavigator() {
   return (
     <RootStack.Navigator>
       <RootStack.Screen
@@ -243,5 +250,39 @@ export function RootNavigator() {
         }}
       />
     </RootStack.Navigator>
+  );
+}
+
+export function ZooAppNavigation() {
+  const dirtyIdRef = useRef<null | string>(null);
+  const dirtyValue = useRef<null | any>(null);
+  const [dirtyId, setDirtyId] = useState<null | string>(null);
+  const unsavedCtx = useMemo(() => {
+    return {
+      releaseDirty: (id: string) => {
+        console.log("RELEASEDIRTY", id);
+        dirtyValue.current = null;
+        dirtyIdRef.current = null;
+        setDirtyId(null);
+      },
+      claimDirty: (id: string, value: any) => {
+        console.log("CLAIMDIRTY", id, value);
+        dirtyValue.current = value;
+        dirtyIdRef.current = id;
+        if (dirtyId !== id) {
+          setDirtyId(id);
+        }
+      },
+      getDirtyValue: (id: string) => {
+        if (id === dirtyIdRef.current) return dirtyValue.current;
+        return undefined;
+      },
+      dirtyId,
+    };
+  }, [dirtyId]);
+  return (
+    <UnsavedContext.Provider value={unsavedCtx}>
+      <RootNavigator />
+    </UnsavedContext.Provider>
   );
 }

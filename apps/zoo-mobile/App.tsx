@@ -1,5 +1,5 @@
 import React from "react";
-import { RootNavigator } from "@zerve/zoo/app/NativeNavigation";
+import { ZooAppNavigation } from "@zerve/zoo/app/NativeNavigation";
 import { ToastArea, ZenProvider } from "@zerve/zen";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaContextProvider } from "@zerve/zen";
@@ -18,7 +18,7 @@ export default function App() {
       <ZenProvider>
         <NavigationContainer>
           <ToastArea />
-          <RootNavigator />
+          <ZooAppNavigation />
         </NavigationContainer>
       </ZenProvider>
     </SafeAreaContextProvider>

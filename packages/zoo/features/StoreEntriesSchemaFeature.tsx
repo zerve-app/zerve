@@ -16,13 +16,13 @@ import {
   useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import { useZNodeValue, useZStoreEntrySchema } from "@zerve/zoo-client/Query";
-import { useStoreNavigation } from "../app/useNavigation";
 import {
   AnyError,
   drillSchemaValue,
   lookUpValue,
   mergeValue,
 } from "@zerve/zed";
+import { useStoreNavigation } from "../app/useStoreNavigation";
 
 function StoreEntriesSchema({
   storePath,

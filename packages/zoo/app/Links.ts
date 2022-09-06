@@ -6,6 +6,7 @@ import * as Linking from "expo-linking";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { GenericError } from "@zerve/zed";
+import { StoreNavigationState } from "../context/StoreDashboardContext";
 
 declare global {
   namespace ReactNavigation {
@@ -26,6 +27,11 @@ export type SettingsStackParamList = {
 };
 
 export type HomeStackParamList = {
+  StoreFeature: {
+    connection: string;
+    storePath: string[];
+    feature: StoreNavigationState;
+  };
   Home: undefined;
   History: undefined;
   HistoryEvent: { eventId: string };

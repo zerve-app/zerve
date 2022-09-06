@@ -8,6 +8,14 @@ import { ConnectionKeyProvider } from "../app/ConnectionStorage";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StoreEntriesEntryFeature } from "../features/StoreEntriesEntryFeature";
+import {
+  StoreDashboardContext,
+  StoreNavigationState,
+  UnsavedContext,
+} from "../context/StoreDashboardContext";
+import { useMemo } from "react";
+import { FragmentContext } from "../web/Fragment";
+import { StoreNavigationProvider } from "../app/StoreNavigationProvider";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, "HomeStack">,
@@ -22,14 +30,16 @@ export default function FileScreen({
   return (
     <ScreenContainer scroll>
       <ConnectionKeyProvider value={connection}>
-        <StoreEntriesEntryFeature
-          storePath={storePath}
-          path={[]}
-          entryName={name}
-          href={"lol"}
-          storeId={"not used"}
-          title="ff"
-        />
+        <StoreNavigationProvider connection={connection} storePath={storePath}>
+          <StoreEntriesEntryFeature
+            storePath={storePath}
+            path={[]}
+            entryName={name}
+            href={"lol"}
+            storeId={"not used"}
+            title="ff"
+          />
+        </StoreNavigationProvider>
       </ConnectionKeyProvider>
     </ScreenContainer>
   );

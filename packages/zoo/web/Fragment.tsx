@@ -19,34 +19,6 @@ export type FragmentContext<FragmentState> = {
   fragmentString: string;
 };
 
-export function FragmentLink<FragmentState>({
-  to,
-  children,
-  Context,
-}: {
-  to: FragmentState;
-  children: ReactNode;
-  Context: Context<null | FragmentContext<FragmentState>>;
-}) {
-  const fragmentContext = useContext(Context);
-  if (!fragmentContext)
-    throw new Error("Cannot render FragmentLink outside of a FragmentContext");
-  const { stringifyFragment, navigateFragment } = fragmentContext;
-  return (
-    <a
-      style={{ textDecoration: "none" }}
-      href={`?_=${stringifyFragment(to)}`}
-      onClickCapture={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        navigateFragment(to);
-      }}
-    >
-      {children}
-    </a>
-  );
-}
-
 export function useFragmentNavigate<FragmentState>(
   Context: Context<FragmentContext<FragmentState> | null>,
 ) {
@@ -62,6 +34,12 @@ export function useFragmentNavigate<FragmentState>(
     [fragmentContext.navigateFragment],
   );
 }
+
+export type FragmentLinkProps<FragmentState> = {
+  to: FragmentState;
+  children: ReactNode;
+  Context: Context<null | FragmentContext<FragmentState>>;
+};
 
 export function useFragmentNavigationController<FragmentState>(
   stringifyFragment: (feature: FragmentState) => string,

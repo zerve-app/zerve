@@ -5,10 +5,8 @@ import { AsyncButton } from "../components/Button";
 import ScreenHeader from "../components/ScreenHeader";
 import { useCreateEntry } from "@zerve/zoo-client/Mutation";
 import { prepareStoreFileName } from "@zerve/zed";
-import {
-  useConnectionNavigation,
-  useStoreNavigation,
-} from "../app/useNavigation";
+import { useConnectionNavigation } from "../app/useNavigation";
+import { useStoreNavigation } from "../app/useStoreNavigation";
 
 export function NewFileFeature({ storePath }: { storePath: string[] }) {
   const createEntry = useCreateEntry(storePath);

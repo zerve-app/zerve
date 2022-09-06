@@ -13,6 +13,7 @@ import {
 } from "@zerve/zoo/web/ZooWebServer";
 import { GetServerSideProps } from "next";
 import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
+import { ModalProvider } from "@zerve/zen";
 
 type PageProps = WebPathRootServerProps & StoreDashboardProps;
 
@@ -21,9 +22,11 @@ export default function StorePage(props: PageProps) {
   const conn = useWebConnection(props.config);
   return (
     <ConnectionProvider value={conn}>
-      <AuthorizedArea>
-        <StoreDashboard {...dashProps} />
-      </AuthorizedArea>
+      <ModalProvider>
+        <AuthorizedArea>
+          <StoreDashboard {...dashProps} />
+        </AuthorizedArea>
+      </ModalProvider>
     </ConnectionProvider>
   );
 }

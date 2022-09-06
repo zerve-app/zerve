@@ -3,23 +3,18 @@ import {
   StoreDashboard,
   StoreDashboardProps,
 } from "@zerve/zoo/web/StoreDashboard";
-import { ConnectionProvider } from "@zerve/zoo-client/Connection";
-import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import { WebPathRootServerProps } from "@zerve/zoo/web/ZooWebServer";
-import { PageProvider } from "@zerve/zoo/provider/PageProvider";
+import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
 import { GetServerSideProps } from "next";
 import { SiteConfig } from "@zerve/zoo/app/SiteConfig";
 
 type PageProps = StoreDashboardProps & WebPathRootServerProps;
 export default function StorePage(props: PageProps) {
   const { config, ...dashProps } = props;
-  const conn = useWebConnection(props.config);
   return (
-    <ConnectionProvider value={conn}>
-      <PageProvider>
-        <StoreDashboard {...dashProps} />
-      </PageProvider>
-    </ConnectionProvider>
+    <WebPageProvider config={props.config}>
+      <StoreDashboard {...dashProps} />
+    </WebPageProvider>
   );
 }
 

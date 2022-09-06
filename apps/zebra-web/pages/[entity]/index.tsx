@@ -1,6 +1,4 @@
 import React from "react";
-import { ConnectionProvider } from "@zerve/zoo-client/Connection";
-import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import { UserDashboard } from "@zerve/zoo/web/UserDashboard";
 import { OrgDashboard } from "@zerve/zoo/web/OrgDashboard";
 import {
@@ -8,9 +6,9 @@ import {
   validateUserCanAccessOrg,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
-import { PageProvider } from "@zerve/zoo/provider/PageProvider";
 import { GetServerSideProps } from "next";
 import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
+import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
 
 type EntityIdProps = WebPathRootServerProps & {
   entityId: string;
@@ -18,18 +16,15 @@ type EntityIdProps = WebPathRootServerProps & {
 };
 
 export default function EntityPage(props: EntityIdProps) {
-  const conn = useWebConnection(props.config);
   const dashboard = props.isOrg ? (
     <OrgDashboard entityId={props.entityId} />
   ) : (
     <UserDashboard entityId={props.entityId} />
   );
   return (
-    <ConnectionProvider value={conn}>
-      <PageProvider>
-        <AuthorizedArea>{dashboard}</AuthorizedArea>
-      </PageProvider>
-    </ConnectionProvider>
+    <WebPageProvider config={props.config}>
+      <AuthorizedArea>{dashboard}</AuthorizedArea>
+    </WebPageProvider>
   );
 }
 

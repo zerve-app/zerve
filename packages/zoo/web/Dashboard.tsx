@@ -1,10 +1,4 @@
-import React, {
-  ComponentProps,
-  Context,
-  ReactNode,
-  useContext,
-  useMemo,
-} from "react";
+import { ComponentProps, Context, ReactNode, useContext, useMemo } from "react";
 import { View, Text } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import {
@@ -13,20 +7,15 @@ import {
   Icon,
   IconButton,
   NavBar,
-  NavBarSpacer,
   NavBarZLogo,
   PageContainer,
   Spinner,
   useActionsSheet,
   useWindowDimensions,
 } from "@zerve/zen";
-import { AuthHeader } from "../components/AuthHeader";
-import {
-  FragmentContext,
-  FragmentLink,
-  useFragmentNavigationController,
-} from "./Fragment";
+import { FragmentContext, useFragmentNavigationController } from "./Fragment";
 import { NavigationBarWidth, PaneWidth } from "./DashboardConstants";
+import { FragmentLink } from "./FragmentLink";
 
 export function NavSidebar({
   children,

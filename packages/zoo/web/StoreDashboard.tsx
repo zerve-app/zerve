@@ -19,6 +19,8 @@ import { useRouter } from "next/router";
 import { NavBarSpacer, NavigateInterceptContext, useModal } from "@zerve/zen";
 import { Dialog } from "@zerve/zen/Dialog";
 import { AuthHeader } from "../components/AuthHeader";
+import { renderFeature } from "../features/StoreFeatures";
+import { useRequiredConnection } from "@zerve/zoo-client/Connection";
 
 function parseFeatureFragment(fragment?: string): null | StoreNavigationState {
   if (!fragment) return null;
@@ -116,13 +118,11 @@ export function StoreDashboard({
   const unsavedCtx = useMemo(() => {
     return {
       releaseDirty: (id: string) => {
-        console.log("RELEASEDIRTY", id);
         dirtyValue.current = null;
         dirtyIdRef.current = null;
         setDirtyId(null);
       },
       claimDirty: (id: string, value: any) => {
-        console.log("CLAIMDIRTY", id, value);
         dirtyValue.current = value;
         dirtyIdRef.current = id;
         if (dirtyId !== id) {
@@ -296,61 +296,8 @@ export function StoreDashboard({
             }
             return null;
           }}
-          renderFeature={({ feature, key, ...props }) => {
-            const storeFeatureProps = {
-              key,
-              storeId,
-              storePath,
-              href,
-              ...props,
-            };
-            if (feature?.key === "entries") {
-              if (feature.child === "create") {
-                return <StoreEntriesCreateFeature {...storeFeatureProps} />;
-              }
-              if (feature.child === "schema") {
-                if (!feature.entryName)
-                  throw new Error(
-                    "Cannot display feature for entry without name",
-                  );
-                return (
-                  <StoreEntriesSchemaFeature
-                    {...storeFeatureProps}
-                    entryName={feature.entryName}
-                    path={feature.path || []}
-                  />
-                );
-              }
-              if (feature.entryName) {
-                return (
-                  <StoreEntriesEntryFeature
-                    {...storeFeatureProps}
-                    entryName={feature.entryName}
-                    path={feature.path || []}
-                  />
-                );
-              }
-              return <StoreEntriesFeature {...storeFeatureProps} />;
-            }
-            if (feature?.key === "schemas") {
-              if (feature.child === "create") {
-                return <StoreSchemasCreateFeature {...storeFeatureProps} />;
-              }
-              if (feature.schema) {
-                return (
-                  <StoreSchemasSchemaFeature
-                    {...storeFeatureProps}
-                    schema={feature.schema}
-                    path={feature.path || []}
-                  />
-                );
-              }
-              return <StoreSchemasFeature {...storeFeatureProps} />;
-            }
-            if (feature?.key === "settings") {
-              return <StoreSettingsFeature {...storeFeatureProps} />;
-            }
-            return null;
+          renderFeature={(featureProps) => {
+            return renderFeature({ ...featureProps, href, storePath });
           }}
           parseFeatureFragment={parseFeatureFragment}
           stringifyFeatureFragment={(feature: StoreNavigationState) => {

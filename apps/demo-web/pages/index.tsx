@@ -12,7 +12,7 @@ import {
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
 import { ConnectionProvider } from "@zerve/zoo-client/Connection";
-import { PageProvider } from "@zerve/zoo/provider/PageProvider";
+import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
 
 function HomeScreen() {
   return (
@@ -24,14 +24,10 @@ function HomeScreen() {
 }
 
 export default function HomePage(props: WebPathRootServerProps) {
-  const conn = useWebConnection(props.config);
-
   return (
-    <ConnectionProvider value={conn}>
-      <PageProvider>
-        <HomeScreen />
-      </PageProvider>
-    </ConnectionProvider>
+    <WebPageProvider config={props.config}>
+      <HomeScreen />
+    </WebPageProvider>
   );
 }
 

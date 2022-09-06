@@ -3,13 +3,12 @@ import {
   HStack,
   Label,
   SwitchInput,
-  ThemedText,
   Title,
   useModal,
   VStack,
 } from "@zerve/zen";
-import { Dialog, useDialog } from "@zerve/zen/Dialog";
-import { memo, useContext } from "react";
+import { Dialog } from "@zerve/zen/Dialog";
+import { memo } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../web/Dashboard";
 import { useMutation, useQueryClient } from "react-query";
@@ -19,10 +18,9 @@ import { useRouter } from "next/router";
 import {
   AllExperimentalSchemas,
   IDSchema,
-  StoreSettings,
-  StringSchema,
+  StoreSettings as StoreSettingsType,
 } from "@zerve/zed";
-import { useZNode, useZNodeValue } from "@zerve/zoo-client/Query";
+import { useZNodeValue } from "@zerve/zoo-client/Query";
 
 function RenameStoreDialog({
   onClose,
@@ -139,6 +137,7 @@ function useRenameStoreDialog(storePath: string[], href: string) {
 function useStoreSettings(storePath: string[]) {
   const storeId = storePath.at(-1);
   const parentPath = storePath.slice(0, -2);
+  if (!storeId) throw new Error("Could not determine storeId from storePath");
   return useZNodeValue([...parentPath, "storeSettings", storeId]);
 }
 function useSetStoreSettings(storePath: string[]) {
@@ -147,7 +146,7 @@ function useSetStoreSettings(storePath: string[]) {
   const storeId = storePath.at(-1);
   const parentPath = storePath.slice(0, -2);
   return useMutation(
-    async (settings: StoreSettings) => {
+    async (settings: StoreSettingsType) => {
       await postZAction(conn, [...parentPath, "writeStoreSettings"], {
         storeId,
         settings,
@@ -178,8 +177,8 @@ function ExperimentalSchemas({
   settings,
   onSettings,
 }: {
-  settings: StoreSettings;
-  onSettings: (settings: StoreSettings) => Promise<void>;
+  settings: StoreSettingsType;
+  onSettings: (settings: StoreSettingsType) => Promise<void>;
 }) {
   return (
     <>
@@ -214,12 +213,12 @@ function StoreSettings({ storePath, href, title }: StoreFeatureProps) {
     <FeaturePane title={title} spinner={settingsQuery.isFetching}>
       <VStack padded>
         <Title title="Experimental Schemas:" />
-        {settingsQuery.data && (
+        {settingsQuery.data ? (
           <ExperimentalSchemas
             settings={settingsQuery.data}
-            onSettings={setSettings.mutate}
+            onSettings={setSettings.mutateAsync}
           />
-        )}
+        ) : null}
         <Title title="Dangerous:" />
         <Button danger title="Rename Store" onPress={onRenameStoreDialog} />
         <Button danger title="Delete Store" onPress={onDeleteStoreDialog} />
