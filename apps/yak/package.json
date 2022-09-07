@@ -14,7 +14,7 @@
     "@expo/next-adapter": "^4.0.12",
     "@expo/vector-icons": "^13.0.0",
     "@zerve/zen": "*",
-    "expo": "~46.0.10",
+    "expo": "~46.0.9",
     "expo-linear-gradient": "~11.4.0",
     "next": "12.2.5",
     "node-fetch": "^3.2.10",

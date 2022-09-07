@@ -15,7 +15,7 @@
     "@zerve/react-native-content": "0.1.0-alpha.4",
     "@zerve/zen": "*",
     "@zerve/zoo-client": "*",
-    "expo": "~46.0.10",
+    "expo": "~46.0.9",
     "expo-status-bar": "~1.4.0",
     "react": "18.2.0",
     "react-native": "0.69.5",
