@@ -1,14 +1,11 @@
 import { memo } from "react";
-import { UserFeatureLink } from "../context/UserDashboardContext";
-import { FeaturePane } from "../web/Dashboard";
+import {
+  UserFeatureLink,
+  UserFeatureProps,
+} from "../context/UserDashboardContext";
+import { FeaturePane } from "../components/FeaturePane";
 
-function UserSettings({
-  entityId,
-  title,
-}: {
-  entityId: string;
-  title: string;
-}) {
+function UserSettings({ title }: UserFeatureProps) {
   return (
     <FeaturePane title={title}>
       <UserFeatureLink

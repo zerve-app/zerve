@@ -8,14 +8,9 @@ import { memo, useEffect } from "react";
 import { ChangeUsernameButton } from "../components/ZNode";
 import { FeaturePane } from "../components/FeaturePane";
 import { useRouter } from "next/router";
+import { UserFeatureProps } from "../context/UserDashboardContext";
 
-function UserSettingsProfile({
-  entityId,
-  title,
-}: {
-  entityId: string;
-  title: string;
-}) {
+function UserSettingsProfile({ title }: UserFeatureProps) {
   const conn = useRequiredConnection();
   const { data, isLoading, isFetching, refetch } = useZNodeValue([
     "auth",

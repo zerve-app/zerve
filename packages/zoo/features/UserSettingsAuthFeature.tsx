@@ -4,14 +4,9 @@ import { InfoRow, Title, VStack } from "@zerve/zen";
 import { memo } from "react";
 import { ChangePasswordButton } from "../components/ZNode";
 import { FeaturePane } from "../components/FeaturePane";
+import { UserFeatureProps } from "../context/UserDashboardContext";
 
-function UserSettingsAuth({
-  entityId,
-  title,
-}: {
-  entityId: string;
-  title: string;
-}) {
+function UserSettingsAuth({ title }: UserFeatureProps) {
   const conn = useRequiredConnection();
   const { data, isLoading, isFetching } = useZNodeValue([
     "auth",
