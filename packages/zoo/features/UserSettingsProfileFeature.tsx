@@ -6,7 +6,7 @@ import { useZNodeValue } from "@zerve/zoo-client/Query";
 import { InfoRow, Title, VStack } from "@zerve/zen";
 import { memo, useEffect } from "react";
 import { ChangeUsernameButton } from "../components/ZNode";
-import { FeaturePane } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 import { useRouter } from "next/router";
 
 function UserSettingsProfile({

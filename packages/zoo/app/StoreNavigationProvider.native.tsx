@@ -1,10 +1,14 @@
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import {
   StoreDashboardContext,
   StoreNavigationState,
 } from "../context/StoreDashboardContext";
+import {
+  parseFeatureFragment,
+  stringifyFeatureFragment,
+} from "../features/StoreFeatures";
 import { FragmentContext } from "../web/Fragment";
 import { RootStackParamList } from "./Links";
 
@@ -20,16 +24,17 @@ export function StoreNavigationProvider({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList, "HomeStack">>();
 
+  const [feature, setFeature] = useState<null | StoreNavigationState>(null);
   const ctx = useMemo(
     (): FragmentContext<StoreNavigationState> => ({
-      fragment: { key: "entries" },
-      fragmentString: "",
-      navigateFragment(fragmentState, shouldReplace?) {
-        console.log("NAV TO", fragmentState);
+      fragment: feature,
+      fragmentString: feature ? stringifyFeatureFragment(feature) : "",
+      navigateFragment(feature, shouldReplace?) {
+        setFeature(feature);
         if (shouldReplace) {
           navigation.dispatch(
             StackActions.replace("StoreFeature", {
-              feature: fragmentState,
+              feature: feature,
               connection,
               storePath,
             }),
@@ -37,7 +42,7 @@ export function StoreNavigationProvider({
         } else {
           navigation.dispatch(
             StackActions.push("StoreFeature", {
-              feature: fragmentState,
+              feature: feature,
               connection,
               storePath,
             }),
@@ -45,13 +50,13 @@ export function StoreNavigationProvider({
         }
       },
       parseFragment(fragment) {
-        return null;
+        return parseFeatureFragment(fragment);
       },
       stringifyFragment(feature) {
-        return "";
+        return stringifyFeatureFragment(feature);
       },
     }),
-    [],
+    [feature],
   );
   return (
     <StoreDashboardContext.Provider value={ctx}>

@@ -7,11 +7,11 @@ import {
   StoreFeatureLinkButton,
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
-import { FeaturePane } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 
 function StoreSchemas({ storePath, title }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);
-  const entries = useMemo(() => {
+  const schemas = useMemo(() => {
     const schemas = data?.node?.$schemas;
     return (
       schemas &&
@@ -22,7 +22,7 @@ function StoreSchemas({ storePath, title }: StoreFeatureProps) {
   }, [data]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
-      {entries?.map((schemaName) => {
+      {schemas?.map((schemaName) => {
         return (
           <StoreFeatureLink
             key={schemaName}

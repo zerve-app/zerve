@@ -1,6 +1,4 @@
 import { ToastPresenter, useColors } from "@zerve/zen";
-import { BottomSheetProvider } from "@zerve/zen";
-import { bigShadow } from "@zerve/zen/Style";
 import { ReactNode } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { Platform, View } from "react-native";
@@ -45,9 +43,9 @@ export default function ScreenContainer({
     </View>
   );
   return (
-    <BottomSheetProvider>
+    <>
       {containedChildren}
       {Platform.OS === "android" ? <ToastPresenter /> : null}
-    </BottomSheetProvider>
+    </>
   );
 }

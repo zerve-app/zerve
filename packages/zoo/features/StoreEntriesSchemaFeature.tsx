@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@zerve/zen";
 import { memo, useMemo, useState } from "react";
-import { FeaturePane } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 import { useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
 import {
   StoreFeatureLink,

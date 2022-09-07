@@ -3,7 +3,7 @@ import { postZAction } from "@zerve/zoo-client/ServerCalls";
 import { EmptySchemaStore, IDSchema } from "@zerve/zed";
 import { JSONSchemaForm, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
-import { FeaturePane } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
 import { OrgFeatureProps } from "../context/OrgDashboardContext";

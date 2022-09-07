@@ -75,14 +75,12 @@ export function ZFeature({
         corner={sheetContent}
         onBack={!!path.length ? () => closeZ(path) : undefined}
       ></ScreenHeader>
-      <VStack padded>
-        <ZNode
-          path={path}
-          connection={connection}
-          type={data?.type}
-          value={data?.node}
-        />
-      </VStack>
+      <ZNode
+        path={path}
+        connection={connection}
+        type={data?.type}
+        value={data?.node}
+      />
     </>
   );
 }

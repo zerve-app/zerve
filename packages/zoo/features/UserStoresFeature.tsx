@@ -5,7 +5,8 @@ import {
   UserDashboardContext,
   UserFeatureProps,
 } from "../context/UserDashboardContext";
-import { FeaturePane, NavLinkContent } from "../web/Dashboard";
+import { NavLinkContent } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 
 function NewStoreButton() {
   const fragmentContext = useContext(UserDashboardContext);

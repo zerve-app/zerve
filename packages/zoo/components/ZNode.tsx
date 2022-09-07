@@ -43,6 +43,7 @@ import { Notice } from "@zerve/zen/Notice";
 import { useQueryClient } from "react-query";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { StoreNavigationProvider } from "../app/StoreNavigationProvider";
+import { StoreFeatureLink } from "../context/StoreDashboardContext";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -141,20 +142,22 @@ function StoreChildList({
   connection: string;
   storePath: string[];
 }) {
-  const { openEntry } = useStoreNavigation();
-  if (!list?.length) return <Paragraph>No files here.</Paragraph>;
-
+  if (!list?.length) return <Paragraph>No entries yet.</Paragraph>;
   return (
-    <LinkRowGroup
-      links={list.map((child) => ({
-        key: child.key,
-        title: displayStoreFileName(child.name),
-        icon: "list-ul",
-        onPress: () => {
-          openEntry(child.key);
-        },
-      }))}
-    />
+    <>
+      {list?.map((child) => {
+        return (
+          <StoreFeatureLink
+            key={child.key}
+            to={{
+              key: "entries",
+              entryName: child.name,
+            }}
+            title={displayStoreFileName(child.name)}
+          />
+        );
+      })}
+    </>
   );
 }
 
@@ -212,8 +215,8 @@ export function ZStoreNode({
 
   return (
     <StoreNavigationProvider connection={connection} storePath={path}>
-      <VStack>
-        <StoreChildList list={list} connection={connection} storePath={path} />
+      <StoreChildList list={list} connection={connection} storePath={path} />
+      <VStack padded>
         <HStack>
           <NewFileButton path={path} />
         </HStack>

@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactNode } from "react";
-import { useBottomSheet } from "./BottomSheet";
+import { BottomSheetProvider, useBottomSheet } from "./BottomSheet";
 
 export function useModal<Options>(
   renderModal: (opts: {
@@ -12,5 +12,5 @@ export function useModal<Options>(
 }
 
 export function ModalProvider({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  return <BottomSheetProvider>{children}</BottomSheetProvider>;
 }

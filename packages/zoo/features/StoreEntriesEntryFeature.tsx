@@ -26,8 +26,8 @@ import {
   VSpaced,
   VStack,
 } from "@zerve/zen";
-import { memo, useEffect, useMemo, useState } from "react";
-import { FeaturePane } from "../web/Dashboard";
+import { memo, useMemo, useState } from "react";
+import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteEntry,
   useRenameEntry,

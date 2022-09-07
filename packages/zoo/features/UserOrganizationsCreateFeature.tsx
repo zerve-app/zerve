@@ -1,9 +1,9 @@
 import { useRequiredConnection } from "@zerve/zoo-client/Connection";
 import { postZAction } from "@zerve/zoo-client/ServerCalls";
-import { JSONSchemaForm, Title, useAsyncHandler } from "@zerve/zen";
+import { JSONSchemaForm, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { UserFeatureProps } from "../context/UserDashboardContext";
-import { FeaturePane } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
 import { EmptySchemaStore } from "@zerve/zed";

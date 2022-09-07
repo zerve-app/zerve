@@ -1,19 +1,15 @@
 import { ComponentProps, Context, ReactNode, useContext, useMemo } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import {
-  ActionButtonDef,
   Button,
   Icon,
-  IconButton,
   NavBar,
   NavBarZLogo,
   PageContainer,
-  Spinner,
-  useActionsSheet,
   useWindowDimensions,
 } from "@zerve/zen";
 import { FragmentContext, useFragmentNavigationController } from "./Fragment";
-import { NavigationBarWidth, PaneWidth } from "./DashboardConstants";
+import { NavigationBarWidth, PaneWidth } from "../components/FeaturePane";
 import { FragmentLink } from "./FragmentLink";
 
 export function NavSidebar({
@@ -97,14 +93,25 @@ export function NavLink<FeatureState>({
   const isActive =
     displayActive ||
     fragmentContext.fragmentString === fragmentContext.stringifyFragment(to);
+  console.log("fragmentContext.fragmentString", fragmentContext.fragmentString);
+  console.log(
+    "fragmentContext.stringifyFragment(to)",
+    fragmentContext.stringifyFragment(to),
+  );
   return (
     <FragmentLink<FeatureState> to={to} Context={Context}>
-      <NavLinkContent
-        title={title}
-        icon={icon}
-        isActive={isActive}
-        inset={inset}
-      />
+      <Pressable
+        onPress={() => {
+          fragmentContext.navigateFragment(to);
+        }}
+      >
+        <NavLinkContent
+          title={title}
+          icon={icon}
+          isActive={isActive}
+          inset={inset}
+        />
+      </Pressable>
     </FragmentLink>
   );
 }
@@ -135,53 +142,6 @@ export function NavLinkButton<FeatureState>({
         left={icon && <Icon name={icon} />}
       />
     </FragmentLink>
-  );
-}
-
-export function FeaturePane({
-  title,
-  children,
-  spinner,
-  actions,
-}: {
-  title: string;
-  children: ReactNode;
-  spinner?: boolean;
-  actions?: ActionButtonDef[];
-}) {
-  const [actionButton] = useActionsSheet(
-    (onOpen: () => void) => (
-      <IconButton
-        icon={<Icon name="ellipsis-v" />}
-        onPress={onOpen}
-        altTitle="Options"
-      />
-    ),
-    () => actions || [],
-  );
-  return (
-    <View
-      style={{
-        borderRightWidth: 1,
-        borderColor: "#00000033",
-        width: PaneWidth,
-      }}
-    >
-      <View style={{ minHeight: 80 }}>
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={{ fontSize: 28, color: "#464646", flex: 1, padding: 16 }}
-          >
-            {title}
-          </Text>
-          {actions ? actionButton : null}
-        </View>
-        {spinner && (
-          <Spinner style={{ position: "absolute", right: 10, bottom: 10 }} />
-        )}
-      </View>
-      <View style={{ backgroundColor: "#fafafa", flex: 1 }}>{children}</View>
-    </View>
   );
 }
 

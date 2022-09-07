@@ -6,6 +6,7 @@ export type StoreFeatureProps = {
   title: string;
   storePath: Array<string>;
   href: string;
+  icon: null | ComponentProps<typeof Icon>["name"];
 };
 
 export type StoreNavigationState =

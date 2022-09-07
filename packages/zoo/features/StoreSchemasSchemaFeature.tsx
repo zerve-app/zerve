@@ -11,7 +11,7 @@ import {
   useAsyncHandler,
 } from "@zerve/zen";
 import React, { memo, useMemo, useState } from "react";
-import { FeaturePane } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteSchema,
   useRenameSchema,

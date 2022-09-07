@@ -10,7 +10,7 @@ import {
 import { Dialog } from "@zerve/zen/Dialog";
 import { memo } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
-import { FeaturePane } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 import { useMutation, useQueryClient } from "react-query";
 import { useRequiredConnection } from "@zerve/zoo-client/Connection";
 import { postZAction } from "@zerve/zoo-client/ServerCalls";
@@ -104,6 +104,9 @@ function DeleteStoreDialog({
   );
   const parentLocation = href.split("/").slice(0, -1);
   const afterDeleteHref = parentLocation.join("/");
+
+  // can not useRouter in a featuer
+
   const { push } = useRouter();
   return (
     <Dialog

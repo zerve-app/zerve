@@ -1,6 +1,6 @@
 import { EmptySchemaStore, prepareStoreFileName } from "@zerve/zed";
 import { memo, useCallback } from "react";
-import { FeaturePane } from "../web/Dashboard";
+import { FeaturePane } from "../components/FeaturePane";
 import { useCreateEntry } from "@zerve/zoo-client/Mutation";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { JSONSchemaForm, showToast } from "@zerve/zen";
