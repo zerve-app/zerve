@@ -35,10 +35,13 @@ import {
   SafeAreaInsetsContext,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
-import { NativeStackNavigatorProps } from "@react-navigation/native-stack/lib/typescript/src/types";
+import { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { UnsavedContext } from "../context/StoreDashboardContext";
 import StoreFeatureScreen from "../screens/StoreFeatureScreen";
+import {
+  NavigationContainer,
+  NavigationContainerRef,
+} from "@react-navigation/native";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
@@ -280,9 +283,14 @@ export function ZooAppNavigation() {
       dirtyId,
     };
   }, [dirtyId]);
+  const navContainer =
+    useRef<null | NavigationContainerRef<RootStackParamList>>(null);
+  // navContainer.current?.addListener('state')
   return (
-    <UnsavedContext.Provider value={unsavedCtx}>
-      <RootNavigator />
-    </UnsavedContext.Provider>
+    <NavigationContainer ref={navContainer}>
+      <UnsavedContext.Provider value={unsavedCtx}>
+        <RootNavigator />
+      </UnsavedContext.Provider>
+    </NavigationContainer>
   );
 }

@@ -8,7 +8,7 @@ import {
 } from "@zerve/zoo/web/ZooWebServer";
 import { GetServerSideProps } from "next";
 import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
-import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
+import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
 
 type EntityIdProps = WebPathRootServerProps & {
   entityId: string;

@@ -16,10 +16,8 @@ export default function App() {
   return (
     <SafeAreaContextProvider>
       <ZenProvider>
-        <NavigationContainer>
-          <ToastArea />
-          <ZooAppNavigation />
-        </NavigationContainer>
+        <ToastArea />
+        <ZooAppNavigation />
       </ZenProvider>
     </SafeAreaContextProvider>
   );

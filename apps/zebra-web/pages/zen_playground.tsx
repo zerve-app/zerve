@@ -19,7 +19,7 @@ import {
 } from "@zerve/zoo/web/ZooWebServer";
 import { DashboardPage, FeaturePane } from "@zerve/zoo/web/Dashboard";
 import { FragmentContext } from "@zerve/zoo/web/Fragment";
-import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
+import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
 
 type PlaygroundState = "home" | "toast" | "button" | "spinner";
 

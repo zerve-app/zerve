@@ -1,18 +1,10 @@
-import {
-  NavBar,
-  NavBarSpacer,
-  NavBarZLogo,
-  PageContainer,
-  Title,
-} from "@zerve/zen";
+import { NavBar, PageContainer, Title } from "@zerve/zen";
 import React from "react";
-import { useWebConnection } from "@zerve/zoo/app/ConnectionStorage";
 import {
   getWebRootServerProps,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
-import { ConnectionProvider } from "@zerve/zoo-client/Connection";
-import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
+import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
 
 function HomeScreen() {
   return (

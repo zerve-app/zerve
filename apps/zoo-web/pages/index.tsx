@@ -4,7 +4,7 @@ import {
   StoreDashboardProps,
 } from "@zerve/zoo/web/StoreDashboard";
 import { WebPathRootServerProps } from "@zerve/zoo/web/ZooWebServer";
-import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
+import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
 import { GetServerSideProps } from "next";
 import { SiteConfig } from "@zerve/zoo/app/SiteConfig";
 

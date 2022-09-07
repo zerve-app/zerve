@@ -13,7 +13,7 @@ import {
   getWebRootServerProps,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
-import { WebPageProvider } from "@zerve/zoo/provider/WebPageProvider";
+import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
 import Image from "next/image";
 import { Text, View } from "react-native";
 
