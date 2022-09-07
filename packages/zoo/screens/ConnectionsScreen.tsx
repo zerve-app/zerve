@@ -1,18 +1,6 @@
 import { ComponentFactory, ReactNode, useMemo } from "react";
-import {
-  AbsoluteFill,
-  Button,
-  LinkRow,
-  Padding,
-  useColors,
-  VStack,
-} from "@zerve/zen";
-
-import {
-  RootStackParamList,
-  SettingsStackParamList,
-  SettingsStackScreenProps,
-} from "../app/Links";
+import { Button, Icon, LinkRow, Padding, useColors } from "@zerve/zen";
+import { RootStackParamList, SettingsStackParamList } from "../app/Links";
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -22,19 +10,14 @@ import {
   reorderConnection,
   useSavedConnections,
 } from "../app/ConnectionStorage";
-import { FontAwesome } from "@expo/vector-icons";
 import ScreenHeader from "../components/ScreenHeader";
 import DraggableFlatList, {
   ScaleDecorator,
   ShadowDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import { useSafeArea } from "@zerve/zen";
 import { Connection } from "@zerve/zoo-client/Connection";
-import {
-  useSafeAreaFrame,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { insetsPadding } from "@zerve/zen/InsetUtils";
 
 function ConnectionsScreenHeader() {
@@ -54,9 +37,7 @@ function ConnectionsScreenFooter() {
         onPress={() => {
           navigation.navigate("NewConnection");
         }}
-        left={({ color }) => (
-          <FontAwesome name="plus-circle" color={color} size={24} />
-        )}
+        left={(props) => <Icon name="plus-circle" {...props} />}
         primary
         title="New Connection"
       />

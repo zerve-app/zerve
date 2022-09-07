@@ -1,7 +1,4 @@
-import React, { ReactNode } from "react";
-
-import { IconButton } from "@zerve/zen";
-import { FontAwesome } from "@expo/vector-icons";
+import { Icon, IconButton } from "@zerve/zen";
 
 export function BackButton({
   cancelButton,
@@ -13,10 +10,7 @@ export function BackButton({
   return (
     <IconButton
       icon={(props) => (
-        <FontAwesome
-          {...props}
-          name={cancelButton ? "close" : "chevron-left"}
-        />
+        <Icon {...props} name={cancelButton ? "close" : "chevron-left"} />
       )}
       altTitle="close"
       onPress={onPress}

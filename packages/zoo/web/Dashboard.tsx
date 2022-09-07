@@ -1,6 +1,5 @@
 import { ComponentProps, Context, ReactNode, useContext, useMemo } from "react";
 import { View, Text } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import {
   ActionButtonDef,
   Button,
@@ -47,7 +46,7 @@ export function NavLinkContent({
   isActive,
 }: {
   title: string;
-  icon?: ComponentProps<typeof FontAwesome>["name"] | null;
+  icon?: ComponentProps<typeof Icon>["name"] | null;
   inset?: boolean;
   isActive?: boolean;
 }) {
@@ -61,9 +60,7 @@ export function NavLinkContent({
         ...(inset ? { paddingLeft: 36 } : {}),
       }}
     >
-      {icon && (
-        <FontAwesome name={icon} color="#464646" style={{ marginTop: 2 }} />
-      )}
+      {icon && <Icon name={icon} color="#464646" />}
       <Text
         style={{
           color: "#464646",
@@ -88,7 +85,7 @@ export function NavLink<FeatureState>({
   displayActive,
 }: {
   title: string;
-  icon?: ComponentProps<typeof FontAwesome>["name"] | null;
+  icon?: ComponentProps<typeof Icon>["name"] | null;
   to: FeatureState;
   Context: Context<null | FragmentContext<FeatureState>>;
   inset?: boolean;
@@ -119,7 +116,7 @@ export function NavLinkButton<FeatureState>({
   Context,
 }: {
   title: string;
-  icon?: ComponentProps<typeof FontAwesome>["name"] | null;
+  icon?: ComponentProps<typeof Icon>["name"] | null;
   to: FeatureState;
   Context: Context<null | FragmentContext<FeatureState>>;
 }) {
@@ -202,7 +199,7 @@ function NavigationSidebar<FeatureState>({
   getFeatureTitle: (feature: FeatureState) => string;
   getFeatureIcon: (
     feature: FeatureState,
-  ) => ComponentProps<typeof FontAwesome>["name"] | null;
+  ) => ComponentProps<typeof Icon>["name"] | null;
   footer?: ReactNode;
   activeFeatures: Array<FeatureState>;
   defaultFeature?: FeatureState;
@@ -277,9 +274,9 @@ export function DashboardPage<Feature>({
     isActive: boolean;
     key: string;
     title: string;
-    icon: ComponentProps<typeof FontAwesome>["name"] | null;
+    icon: ComponentProps<typeof Icon>["name"] | null;
   }) => ReactNode;
-  navigation: ReadonlyArray<Feature>;
+  navigation: Array<Feature>;
   onIntercept?: (
     feature: Feature,
     navigateFeature: (feature: Feature) => void,
@@ -289,7 +286,7 @@ export function DashboardPage<Feature>({
   navigationFooter?: ReactNode;
   getFeatureIcon: (
     feature: Feature,
-  ) => ComponentProps<typeof FontAwesome>["name"] | null;
+  ) => ComponentProps<typeof Icon>["name"] | null;
   getParentFeatures?: (feature: Feature) => Array<Feature>;
   stringifyFeatureFragment: (feature: Feature) => string;
   parseFeatureFragment: (fragment: string) => Feature | null;

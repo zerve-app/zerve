@@ -4,7 +4,6 @@ import Layout from "./Layout";
 import { useAllColors, useColors } from "./useColors";
 import { Pressable } from "react-native";
 import { memo, useState } from "react";
-import { FontAwesome } from "@expo/vector-icons";
 import { Icon } from "./Icon";
 import { smallShadow } from "./Style";
 
@@ -113,7 +112,6 @@ export function DropdownUnmemo({
       <Select.Trigger
         id={id}
         style={{
-          border: "none",
           display: "flex",
           alignSelf: "stretch",
           justifySelf: "stretch",

@@ -1,19 +1,17 @@
 import {
   AsyncButton,
   Button,
+  Icon,
   PageSection,
   Paragraph,
-  Spinner,
   VStack,
 } from "@zerve/zen";
 import { SettingsStackScreenProps } from "../app/Links";
 import {
   destroyConnection,
   useSavedConnection,
-  setSession,
   logout,
 } from "../app/ConnectionStorage";
-import { FontAwesome } from "@expo/vector-icons";
 import { InfoRow } from "@zerve/zen/Row";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
@@ -60,9 +58,7 @@ export default function ConnectionInfoScreen({
               navigation.goBack();
             }}
             danger
-            left={({ color }) => (
-              <FontAwesome name="trash" color={color} size={24} />
-            )}
+            left={(props) => <Icon name="trash" {...props} />}
             title="Delete Server Connection"
           />
         </VStack>

@@ -24,7 +24,6 @@ import {
   useConnectionNavigation,
   useGlobalNavigation,
 } from "../app/useNavigation";
-import { FontAwesome } from "@expo/vector-icons";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import { Icon } from "@zerve/zen/Icon";
 import { getZIcon } from "../app/ZIcon";
@@ -36,7 +35,6 @@ import {
   FromSchema,
   GenericError,
   getDefaultSchemaValue,
-  RedirectSchema,
 } from "@zerve/zed";
 import { View } from "react-native";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
@@ -128,9 +126,7 @@ export function NewFileButton({ path }: { path: string[] }) {
         }}
         small
         title="New Entry"
-        left={({ color }) => (
-          <FontAwesome name="plus-circle" color={color} size={24} />
-        )}
+        left={(props) => <Icon name="plus-circle" {...props} />}
       />
     </View>
   );
@@ -163,24 +159,24 @@ function StoreChildList({
 }
 
 function ZStoreLinks() {
-  const { openHistory, openSchemas } = useStoreNavigation();
+  const { openSettings, openSchemas } = useStoreNavigation();
   return (
     <LinkRowGroup
       links={[
         {
-          key: "Events",
-          title: "Change History",
-          icon: "history",
-          onPress: () => {
-            openHistory();
-          },
-        },
-        {
-          key: "ServerSchemas",
+          key: "schemas",
           title: "Schemas",
           icon: "crosshairs",
           onPress: () => {
             openSchemas();
+          },
+        },
+        {
+          key: "settings",
+          title: "Store Settings",
+          icon: "gear",
+          onPress: () => {
+            openSettings();
           },
         },
       ]}

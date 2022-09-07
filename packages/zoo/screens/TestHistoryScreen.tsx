@@ -14,7 +14,7 @@ function HistoryList() {
   return <ThemedText>{JSON.stringify(a)}</ThemedText>;
 }
 
-export function TestHistoryScreen() {
+export default function TestHistoryScreen() {
   const { navigate } = useNavigation();
   return (
     <ScreenContainer scroll>

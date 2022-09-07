@@ -1,7 +1,6 @@
-import { HomeStackScreenProps, RootStackScreenProps } from "../app/Links";
+import { RootStackScreenProps } from "../app/Links";
 import { Button, IconButton, Paragraph, VStack } from "@zerve/zen";
 import { useBottomSheet } from "@zerve/zen";
-import { FontAwesome } from "@expo/vector-icons";
 import { setStringAsync } from "expo-clipboard";
 import { Icon } from "@zerve/zen/Icon";
 import { Pressable } from "react-native";
@@ -33,7 +32,7 @@ function RawValuePage({ navigation, route }: RootStackScreenProps<"RawValue">) {
             onPress={() => {
               onOptions();
             }}
-            icon={(p) => <FontAwesome {...p} name="ellipsis-v" />}
+            icon={(p) => <Icon {...p} name="ellipsis-v" />}
           />
         }
       />

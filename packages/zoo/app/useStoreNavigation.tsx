@@ -23,6 +23,9 @@ export function useStoreNavigation() {
       openSchemas: () => {
         navigate({ key: "schemas" });
       },
+      openSettings: () => {
+        navigate({ key: "settings" });
+      },
       openHistory: () => {},
       replaceToEntry: (entryName: string, path?: string[]) => {
         navigate({ key: "entries", entryName, path }, true);

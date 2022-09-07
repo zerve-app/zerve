@@ -9,11 +9,9 @@ import {
   SettingsStackParamList,
 } from "./Links";
 import HomeScreen from "../screens/HomeScreen";
-import EntryScreen from "../screens/EntryScreen";
 import KitchenSinkScreen from "../screens/KitchenSinkScreen";
 import NewConnectionScreen from "../screens/NewConnectionScreen";
 import ConnectionInfoScreen from "../screens/ConnectionInfoScreen";
-import NewFileScreen from "../screens/NewFileScreen";
 import ZNodeScreen from "../screens/ZNodeScreen";
 import ConnectionsScreen from "../screens/ConnectionsScreen";
 import ErrorScreen from "../screens/ErrorScreen";
@@ -24,12 +22,8 @@ import TestJSONInputScreen from "../screens/TestJSONInputScreen";
 import TestUIScreen from "../screens/TestUIScreen";
 import HistoryScreen from "../screens/HistoryScreen";
 import ConnectionScreen from "../screens/ConnectionScreen";
-import { TestHistoryScreen } from "../screens/TestHistoryScreen";
-import FileSchemaScreen from "../screens/FileSchemaScreen";
-import StoreHistoryScreen from "../screens/StoreHistoryScreen";
-import StoreSchemasScreen from "../screens/StoreSchemasScreen";
+import TestHistoryScreen from "../screens/TestHistoryScreen";
 import HistoryEventScreen from "../screens/HistoryEventScreen";
-import StoreSchemaScreen from "../screens/StoreSchemaScreen";
 import { LogBox, Platform } from "react-native";
 import {
   SafeAreaInsetsContext,
@@ -61,36 +55,6 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="Connection"
         component={ConnectionScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="NewFile"
-        component={NewFileScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="Entry"
-        component={EntryScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="StoreHistory"
-        component={StoreHistoryScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="StoreSchemas"
-        component={StoreSchemasScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="StoreSchema"
-        component={StoreSchemaScreen}
-        options={DefaultScreenOptions}
-      />
-      <HomeStack.Screen
-        name="FileSchema"
-        component={FileSchemaScreen}
         options={DefaultScreenOptions}
       />
       <HomeStack.Screen

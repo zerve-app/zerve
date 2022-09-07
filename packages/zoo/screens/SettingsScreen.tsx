@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
 import { Button, PageSection, VStack, LinkRow, AsyncButton } from "@zerve/zen";
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   fetchUpdateAsync,
   manifest,
@@ -95,9 +95,7 @@ export default function SettingsScreen({
           /> */}
           <AsyncButton
             title="Clear Local History"
-            left={({ color }) => (
-              <FontAwesome name="trash" color={color} size={24} />
-            )}
+            left={({ color }) => <Icon name="trash" color={color} size={24} />}
             danger
             onPress={async () => {
               await clearLocalHistoryStorage();
@@ -106,9 +104,7 @@ export default function SettingsScreen({
           />
           <Button
             title="Reset All Local Data"
-            left={({ color }) => (
-              <FontAwesome name="trash" color={color} size={24} />
-            )}
+            left={({ color }) => <Icon name="trash" color={color} size={24} />}
             danger
             onPress={async () => {
               await connectionStorage.dangerouslyClearAllStorage();
