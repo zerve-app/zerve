@@ -212,3 +212,27 @@ export function parseFeatureFragment(
   if (fragment === "settings") return { key: "settings" };
   return null;
 }
+
+export function allowedToNavigateToFeatureWithDirty(
+  feature: StoreNavigationState,
+  dirtyId: null | string,
+) {
+  if (!dirtyId) return true;
+  if (feature.key === "entries" && feature.child === "schema") {
+    if (dirtyId === `entry-schema-${feature.entryName}`) {
+      return true;
+    }
+  }
+  if (feature.key === "entries") {
+    if (dirtyId === `entry-${feature.entryName}`) {
+      if (!feature.child) return true;
+    }
+  }
+  if (feature.key === "schemas") {
+    if (dirtyId === `schema-${feature.schema}`) {
+      return true;
+    }
+  }
+  console.warn("Refusing to exit with dirty id", dirtyId);
+  return false;
+}

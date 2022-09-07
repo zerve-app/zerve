@@ -711,7 +711,8 @@ function FieldHeader({
   const { enableValueCopy } = useContext(JSONSchemaEditorContext);
   const [labelView] = useActionsSheet(
     (onOpen) => (
-      <View
+      <Pressable
+        onPress={onOpen}
         style={{ flexDirection: "row", alignItems: "center", marginRight: 30 }}
       >
         <Label
@@ -724,7 +725,7 @@ function FieldHeader({
         {!!labelActions && !!labelActions.length ? (
           <Icon name="chevron-down" color={tint} size={12} />
         ) : null}
-      </View>
+      </Pressable>
     ),
     () => labelActions || [],
     !labelActions || labelActions.length == 0,
@@ -753,7 +754,10 @@ function FieldHeader({
   ]);
   const [typeLabelView] = useActionsSheet(
     (onOpen) => (
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <Pressable
+        onPress={onOpen}
+        style={{ flexDirection: "row", alignItems: "center" }}
+      >
         {fieldActions.length ? (
           <Icon name="chevron-down" color={tint} size={12} />
         ) : null}
@@ -762,7 +766,7 @@ function FieldHeader({
             {typeLabel}
           </Label>
         ) : null}
-      </View>
+      </Pressable>
     ),
     () => fieldActions,
     fieldActions.length === 0,

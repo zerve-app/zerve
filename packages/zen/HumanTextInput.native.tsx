@@ -57,7 +57,7 @@ const noAttributes: CustomAttributes = {
   underline: false,
 };
 
-function MediocreTextInput({
+export function HumanTextInput({
   delta,
   onDelta,
 }: {

@@ -93,11 +93,6 @@ export function NavLink<FeatureState>({
   const isActive =
     displayActive ||
     fragmentContext.fragmentString === fragmentContext.stringifyFragment(to);
-  console.log("fragmentContext.fragmentString", fragmentContext.fragmentString);
-  console.log(
-    "fragmentContext.stringifyFragment(to)",
-    fragmentContext.stringifyFragment(to),
-  );
   return (
     <FragmentLink<FeatureState> to={to} Context={Context}>
       <Pressable

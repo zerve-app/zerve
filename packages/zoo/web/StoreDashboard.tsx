@@ -11,36 +11,14 @@ import { NavBarSpacer, NavigateInterceptContext, useModal } from "@zerve/zen";
 import { Dialog } from "@zerve/zen/Dialog";
 import { AuthHeader } from "../components/AuthHeader";
 import {
+  allowedToNavigateToFeatureWithDirty,
   getFeatureIcon,
   getFeatureTitle,
   parseFeatureFragment,
   renderFeature,
   stringifyFeatureFragment,
 } from "../features/StoreFeatures";
-
-function allowedToNavigateToFeature(
-  feature: StoreNavigationState,
-  dirtyId: null | string,
-) {
-  if (!dirtyId) return true;
-  if (feature.key === "entries" && feature.child === "schema") {
-    if (dirtyId === `entry-schema-${feature.entryName}`) {
-      return true;
-    }
-  }
-  if (feature.key === "entries") {
-    if (dirtyId === `entry-${feature.entryName}`) {
-      if (!feature.child) return true;
-    }
-  }
-  if (feature.key === "schemas") {
-    if (dirtyId === `schema-${feature.schema}`) {
-      return true;
-    }
-  }
-  console.warn("Refusing to exit with dirty id", dirtyId);
-  return false;
-}
+import { useDiscardChangesDialog } from "../components/useDiscardChangesDialog";
 
 export type StoreDashboardProps = {
   href: string;
@@ -65,6 +43,13 @@ export function StoreDashboard({
   const unsavedCtx = useMemo(() => {
     return {
       releaseDirty: (id: string) => {
+        if (dirtyIdRef.current === id) {
+          dirtyValue.current = null;
+          dirtyIdRef.current = null;
+          setDirtyId(null);
+        }
+      },
+      discardDirty: () => {
         dirtyValue.current = null;
         dirtyIdRef.current = null;
         setDirtyId(null);
@@ -83,24 +68,11 @@ export function StoreDashboard({
       dirtyId,
     };
   }, [dirtyId]);
-  const openModal = useModal<() => void>(
-    ({ onClose, options: followThroughNavigate }) => (
-      <Dialog
-        onClose={onClose}
-        title="Discard Unsaved Changes?"
-        danger
-        confirmLabel="Discard Changes"
-        closeLabel="Cancel"
-        onConfirm={async () => {
-          dirtyValue.current = null;
-          dirtyIdRef.current = null;
-          setDirtyId(null);
-          onClose();
-          followThroughNavigate();
-        }}
-      />
-    ),
-  );
+  const openDiscardChangesDialog = useDiscardChangesDialog(() => {
+    dirtyValue.current = null;
+    dirtyIdRef.current = null;
+    setDirtyId(null);
+  });
   useEffect(() => {
     window.onbeforeunload = (e) => {
       if (dirtyIdRef.current) {
@@ -116,7 +88,7 @@ export function StoreDashboard({
       const fragment = parseFeatureFragment(fragmentString);
       if (
         fragment &&
-        allowedToNavigateToFeature(fragment, dirtyIdRef.current)
+        allowedToNavigateToFeatureWithDirty(fragment, dirtyIdRef.current)
       ) {
         return true;
       }
@@ -126,7 +98,7 @@ export function StoreDashboard({
           "unused",
           `?_=${latestFeatureRef.current}`,
         );
-        openModal(() => {
+        openDiscardChangesDialog(() => {
           push(state.as);
         });
         return false;
@@ -137,7 +109,7 @@ export function StoreDashboard({
   const navigateInterrupt = useMemo(() => {
     return (href: string) => {
       if (dirtyIdRef.current) {
-        openModal(() => {
+        openDiscardChangesDialog(() => {
           push(href);
         });
         return false;
@@ -162,11 +134,13 @@ export function StoreDashboard({
             feature: StoreNavigationState,
             navigateFeature: (feature: StoreNavigationState) => void,
           ) => {
-            if (allowedToNavigateToFeature(feature, dirtyIdRef.current)) {
+            if (
+              allowedToNavigateToFeatureWithDirty(feature, dirtyIdRef.current)
+            ) {
               return true;
             }
             if (dirtyIdRef.current) {
-              openModal(() => {
+              openDiscardChangesDialog(() => {
                 navigateFeature(feature);
               });
               return false;

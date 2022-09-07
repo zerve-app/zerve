@@ -55,6 +55,7 @@ export type UnsavedCtx = {
   getDirtyValue: (id: string) => any;
   claimDirty: (id: string, value: any) => void;
   releaseDirty: (id: string) => void;
+  discardDirty: () => void;
   dirtyId: null | string;
 };
 export const UnsavedContext = createContext<null | UnsavedCtx>(null);

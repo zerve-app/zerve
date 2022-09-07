@@ -1,4 +1,5 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createStackNavigator } from "@react-navigation/stack";
 
 import SettingsScreen from "../screens/SettingsScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
@@ -29,7 +30,15 @@ import {
   SafeAreaInsetsContext,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { FC, ReactNode, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { UnsavedContext } from "../context/StoreDashboardContext";
 import StoreFeatureScreen from "../screens/StoreFeatureScreen";
 import {
@@ -42,7 +51,7 @@ LogBox.ignoreLogs([
   "new Gestures system!",
 ]);
 
-const HomeStack = createNativeStackNavigator<HomeStackParamList>();
+const HomeStack = createStackNavigator<HomeStackParamList>();
 
 function HomeNavigator() {
   return (
@@ -81,7 +90,7 @@ function HomeNavigator() {
   );
 }
 
-const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
+const SettingsStack = createStackNavigator<SettingsStackParamList>();
 
 const DefaultScreenOptions = {
   headerShown: false,
@@ -145,7 +154,7 @@ function SettingsNavigator() {
   );
 }
 
-const RootStack = createNativeStackNavigator<RootStackParamList>();
+const RootStack = createStackNavigator<RootStackParamList>();
 
 function ModalInsetsContext({ children }: { children: ReactNode }) {
   const insets = useSafeAreaInsets();
@@ -227,13 +236,18 @@ export function ZooAppNavigation() {
   const unsavedCtx = useMemo(() => {
     return {
       releaseDirty: (id: string) => {
-        console.log("RELEASEDIRTY", id);
+        if (dirtyIdRef.current === id) {
+          dirtyValue.current = null;
+          dirtyIdRef.current = null;
+          setDirtyId(null);
+        }
+      },
+      discardDirty: () => {
         dirtyValue.current = null;
         dirtyIdRef.current = null;
         setDirtyId(null);
       },
       claimDirty: (id: string, value: any) => {
-        console.log("CLAIMDIRTY", id, value);
         dirtyValue.current = value;
         dirtyIdRef.current = id;
         if (dirtyId !== id) {
@@ -249,7 +263,15 @@ export function ZooAppNavigation() {
   }, [dirtyId]);
   const navContainer =
     useRef<null | NavigationContainerRef<RootStackParamList>>(null);
-  // navContainer.current?.addListener('state')
+  if (__DEV__)
+    useEffect(() => {
+      if (!navContainer.current)
+        throw new Error("could not access ref of NavigationContainer");
+      navContainer.current.addListener("state", (e) => {
+        console.log("Navigation State Change:");
+        console.log(JSON.stringify(e.data.state));
+      });
+    }, []);
   return (
     <NavigationContainer ref={navContainer}>
       <UnsavedContext.Provider value={unsavedCtx}>

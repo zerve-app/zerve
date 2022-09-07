@@ -4333,6 +4333,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-navigation/stack@npm:^6.2.3":
+  version: 6.2.3
+  resolution: "@react-navigation/stack@npm:6.2.3"
+  dependencies:
+    "@react-navigation/elements": ^1.3.5
+    color: ^4.2.3
+    warn-once: ^0.1.0
+  peerDependencies:
+    "@react-navigation/native": ^6.0.0
+    react: "*"
+    react-native: "*"
+    react-native-gesture-handler: ">= 1.0.0"
+    react-native-safe-area-context: ">= 3.0.0"
+    react-native-screens: ">= 3.0.0"
+  checksum: ed1f5bc6b464d42cc0893d78e3c2f52bc048372d5e1303f94375bd538b8c4650639c06484c9eb154225f7951fca84e82177dabd7f5aa8936c51a4cae0b43c1ff
+  languageName: node
+  linkType: hard
+
 "@rushstack/eslint-patch@npm:^1.1.3":
   version: 1.1.4
   resolution: "@rushstack/eslint-patch@npm:1.1.4"
@@ -6303,6 +6321,7 @@ __metadata:
   peerDependencies:
     "@react-navigation/native": ^6.0.12
     "@react-navigation/native-stack": ^6.8.0
+    "@react-navigation/stack": "*"
     expo-clipboard: ~3.1.0
     expo-font: ~10.2.0
     expo-linear-gradient: ~11.4.0
@@ -24806,6 +24825,7 @@ __metadata:
     "@react-navigation/bottom-tabs": ^6.3.3
     "@react-navigation/native": ^6.0.12
     "@react-navigation/native-stack": ^6.8.0
+    "@react-navigation/stack": ^6.2.3
     "@types/react": ~18.0.18
     "@types/react-native": ^0.69.6
     "@zerve/zed": "*"
