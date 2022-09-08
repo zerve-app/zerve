@@ -35,34 +35,34 @@ export function StoreNavigationProvider({
     discardDirty();
   });
   // UNSTABLE_usePreventRemove(!!dirtyId);
-  useEffect(() => {
-    function beforeRemoveHandler(e) {
-      const { action, destinationRoute } = e.data;
-      function interruptNavigation() {
-        e.preventDefault();
-        openDiscardChangesDialog(() => {
-          navigation.dispatch(action);
-        });
-      }
-      if (destinationRoute === null) {
-        if (dirtyId) interruptNavigation();
-        return;
-      }
-      if (dirtyId && destinationRoute.name !== "StoreFeature") {
-        interruptNavigation();
-        return;
-      }
-      const { feature } = destinationRoute.params;
-      if (!allowedToNavigateToFeatureWithDirty(feature, dirtyId)) {
-        interruptNavigation();
-        return;
-      }
-    }
-    navigation.addListener("beforeRemove", beforeRemoveHandler);
-    return () => {
-      navigation.removeListener("beforeRemove", beforeRemoveHandler);
-    };
-  }, [dirtyId]);
+  // useEffect(() => {
+  //   function beforeRemoveHandler(e) {
+  //     const { action, destinationRoute } = e.data;
+  //     function interruptNavigation() {
+  //       e.preventDefault();
+  //       openDiscardChangesDialog(() => {
+  //         navigation.dispatch(action);
+  //       });
+  //     }
+  //     if (destinationRoute === null) {
+  //       if (dirtyId) interruptNavigation();
+  //       return;
+  //     }
+  //     if (dirtyId && destinationRoute.name !== "StoreFeature") {
+  //       interruptNavigation();
+  //       return;
+  //     }
+  //     const { feature } = destinationRoute.params;
+  //     if (!allowedToNavigateToFeatureWithDirty(feature, dirtyId)) {
+  //       interruptNavigation();
+  //       return;
+  //     }
+  //   }
+  //   navigation.addListener("beforeRemove", beforeRemoveHandler);
+  //   return () => {
+  //     navigation.removeListener("beforeRemove", beforeRemoveHandler);
+  //   };
+  // }, [dirtyId]);
   const [feature, setFeature] = useState<null | StoreNavigationState>(null);
   const ctx = useMemo(
     (): FragmentContext<StoreNavigationState> => ({

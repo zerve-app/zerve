@@ -45,6 +45,7 @@ import {
   NavigationContainer,
   NavigationContainerRef,
 } from "@react-navigation/native";
+import AuthInScreen from "../screens/AuthInScreen";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
@@ -198,7 +199,14 @@ function RootNavigator() {
         component={ErrorScreen}
         options={DefaultScreenOptions}
       />
-
+      <RootStack.Screen
+        name="AuthIn"
+        component={rootStackModalContextScreen<"AuthIn">(AuthInScreen)}
+        options={{
+          ...DefaultScreenOptions,
+          ...ModalScreenOptions,
+        }}
+      />
       <RootStack.Screen
         name="JSONInput"
         component={rootStackModalContextScreen<"JSONInput">(JSONInputScreen)}

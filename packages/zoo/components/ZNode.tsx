@@ -45,6 +45,7 @@ import { useQueryClient } from "react-query";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { StoreNavigationProvider } from "../app/StoreNavigationProvider";
 import { StoreFeatureLink } from "../context/StoreDashboardContext";
+import { useNavigation } from "@react-navigation/native";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -317,6 +318,7 @@ export function LoggedInAuthNode({
     </>
   );
 }
+
 export function ZAuthNode({
   type,
   value,
@@ -331,6 +333,7 @@ export function ZAuthNode({
   if (type[".t"] !== "Container" || type?.meta?.zContract !== "Auth")
     throw new Error("Unexpected z type info for ZAuthNode");
 
+  const { navigate } = useNavigation();
   const conn = useConnection();
   if (!connection || !conn)
     return <Paragraph danger>Connection unavailable.</Paragraph>;
@@ -359,7 +362,15 @@ export function ZAuthNode({
   // if not authenticated...
   return (
     <PageSection title="Welcome! You are not yet signed in.">
-      <LoginForm path={path} authMeta={type.meta} />
+      <VStack padded>
+        <Button
+          title="Log In / Register"
+          left={(p) => <Icon {...p} name="user" />}
+          onPress={() => {
+            navigate("AuthIn", { connection, path });
+          }}
+        />
+      </VStack>
     </PageSection>
   );
 }

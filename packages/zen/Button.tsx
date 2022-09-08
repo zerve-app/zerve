@@ -59,7 +59,7 @@ export type ButtonProps = {
   title: string;
   primary?: boolean;
   danger?: boolean;
-  onPress: null | (() => void);
+  onPress: null | undefined | (() => void);
   onLongPress?: () => void;
   style?: StyleProp<ViewStyle>;
   small?: boolean;

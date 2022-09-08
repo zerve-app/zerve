@@ -15,6 +15,7 @@ import {
   Button,
   Icon,
   JSONSchemaForm,
+  PageSection,
   showToast,
   Title,
   VStack,
@@ -28,14 +29,14 @@ const LoginStrategies = [
   //   label: "Phone",
   //   key: "Phone",
   //   schema: PhoneSchema,
-  //   title: "Log In / Register with SMS code",
+  //   title: "Auth with SMS code",
   // },
   {
     icon: "envelope",
     label: "Email Address",
     key: "Email",
     schema: EmailSchema,
-    title: "Log In / Register with Email",
+    title: "Auth with Email",
   },
   {
     icon: "user",
@@ -46,7 +47,7 @@ const LoginStrategies = [
       type: "string",
       minLength: 6,
     },
-    title: "Log In with Username + Password",
+    title: "Auth with Username + Password",
   },
 ] as const;
 
@@ -87,56 +88,53 @@ function LoginStrategyForm({
 
   if (address) {
     return (
-      <>
-        <Title title={`Enter the code we sent to ${address}`} />
-        <JSONSchemaForm
-          id="auth-login-code"
-          key="auth-login-code"
-          schema={CodeSchema}
-          saveLabel="Log In"
-          onCancel={() => {
-            setToken("");
-            setAddress(undefined);
-          }}
-          value={token}
-          onValue={async (t: string) => {
-            setToken(t);
-            const session = await postZAction(
-              conn,
-              [...path, "createSession"],
-              {
-                strategy,
-                payload: {
-                  address,
-                  token: t,
+      <PageSection title={`Enter the code we sent to ${address}`}>
+        <VStack padded>
+          <JSONSchemaForm
+            id="auth-login-code"
+            key="auth-login-code"
+            schema={CodeSchema}
+            saveLabel="Log In"
+            value={token}
+            onValue={async (t: string) => {
+              setToken(t);
+              const session = await postZAction(
+                conn,
+                [...path, "createSession"],
+                {
+                  strategy,
+                  payload: {
+                    address,
+                    token: t,
+                  },
                 },
-              },
-            ).catch((e) => {
-              setToken("");
-              throw e;
-            });
-            if (!session) {
-              setToken("");
-              throw new Error("Failed to authenticate.");
-            }
-            setSession(conn.key, {
-              authPath: path,
-              userLabel: address,
-              sessionId: session.sessionId,
-              userId: session.userId,
-              sessionToken: session.sessionToken,
-            });
-            showToast(`Logged in.`);
-            onComplete?.(session.userId);
-          }}
-        />
-      </>
+              ).catch((e) => {
+                setToken("");
+                throw e;
+              });
+              if (!session) {
+                setToken("");
+                throw new Error("Failed to authenticate.");
+              }
+              setSession(conn.key, {
+                authPath: path,
+                userLabel: address,
+                sessionId: session.sessionId,
+                userId: session.userId,
+                sessionToken: session.sessionToken,
+              });
+              showToast(`Logged in.`);
+              onComplete?.(session.userId);
+            }}
+          />
+          <Button chromeless title="Cancel" onPress={onCancel} />
+        </VStack>
+      </PageSection>
     );
   }
 
   return (
-    <>
-      <Title title={strat.title} />
+    <VStack padded>
       <JSONSchemaForm
         id="authCode"
         schema={schema}
@@ -154,9 +152,9 @@ function LoginStrategyForm({
           showToast(`Code sent to ${address}`);
         }}
         schemaStore={EmptySchemaStore}
-        onCancel={onCancel}
       />
-    </>
+      <Button chromeless title="Cancel" onPress={onCancel} />
+    </VStack>
   );
 }
 const UsernamePasswordSchema: ZSchema = {
@@ -191,7 +189,7 @@ function UsernamePasswordLoginForm({
   if (!conn) throw new Error("ConnectionContext missing");
 
   return (
-    <>
+    <VStack padded>
       <JSONSchemaForm
         id="usernamePasswordLogin"
         schema={UsernamePasswordSchema}
@@ -222,31 +220,37 @@ function UsernamePasswordLoginForm({
           onComplete?.(session.userId);
         }}
         schemaStore={EmptySchemaStore}
-        onCancel={onCancel}
       />
-    </>
+      {onCancel && <Button chromeless onPress={onCancel} title="Cancel" />}
+    </VStack>
   );
 }
 
 function StrategySelectForm({
   onSelectedStrategy,
+  onCancel,
 }: {
   onSelectedStrategy: (strat: typeof LoginStrategies[number]["key"]) => void;
+  onCancel?: () => void;
 }) {
   return (
-    <VStack>
-      <Title title="Log In / Register with:" />
-      {LoginStrategies.map((l) => (
-        <Button
-          key={l.key}
-          title={l.label}
-          left={(p) => (l.icon ? <Icon {...p} name={l.icon} /> : null)}
-          onPress={() => {
-            onSelectedStrategy(l.key);
-          }}
-        />
-      ))}
-    </VStack>
+    <PageSection title="Auth with:">
+      <VStack padded>
+        {LoginStrategies.map((l) => (
+          <Button
+            key={l.key}
+            title={l.label}
+            left={(p) => (l.icon ? <Icon {...p} name={l.icon} /> : null)}
+            onPress={() => {
+              onSelectedStrategy(l.key);
+            }}
+          />
+        ))}
+        {onCancel ? (
+          <Button chromeless title="Cancel" onPress={onCancel} />
+        ) : null}
+      </VStack>
+    </PageSection>
   );
 }
 
@@ -254,10 +258,12 @@ export function LoginForm({
   path,
   authMeta,
   onComplete,
+  onCancel,
 }: {
   path: string[];
   authMeta: any;
   onComplete?: (userId: string) => void;
+  onCancel?: () => void;
 }) {
   const [selectedStrategy, setSelectedStrategy] = useState<
     null | typeof LoginStrategies[number]["key"]
@@ -265,7 +271,10 @@ export function LoginForm({
   return (
     <>
       {!selectedStrategy && (
-        <StrategySelectForm onSelectedStrategy={setSelectedStrategy} />
+        <StrategySelectForm
+          onSelectedStrategy={setSelectedStrategy}
+          onCancel={onCancel}
+        />
       )}
       {selectedStrategy === "Username" ? (
         <UsernamePasswordLoginForm
