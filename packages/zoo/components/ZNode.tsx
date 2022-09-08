@@ -208,11 +208,15 @@ export function ZStoreNode({
   if (!connection) return <Paragraph danger>Connection unavailable.</Paragraph>;
 
   return (
-    <StoreNavigationProvider connection={connection} storePath={path}>
+    <StoreNavigationProvider
+      connection={connection}
+      storePath={path}
+      feature={{ key: "entries" }}
+    >
       <StoreChildList list={list} connection={connection} storePath={path} />
       <VStack padded>
         <HGroup>
-          <NewEntryButton path={path} />
+          <NewEntryButton />
         </HGroup>
         <ZStoreLinks />
       </VStack>

@@ -46,6 +46,11 @@ import {
   NavigationContainerRef,
 } from "@react-navigation/native";
 import AuthInScreen from "../screens/AuthInScreen";
+import {
+  AppLocation,
+  AppLocationProvider,
+  LocationContextProvider,
+} from "./Location";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
@@ -237,6 +242,12 @@ function RootNavigator() {
   );
 }
 
+function getActiveRoute(state) {
+  const route = state.routes[state.index];
+  if (route.state) return getActiveRoute(route.state);
+  return route;
+}
+
 export function ZooAppNavigation() {
   const dirtyIdRef = useRef<null | string>(null);
   const dirtyValue = useRef<null | any>(null);
@@ -271,20 +282,34 @@ export function ZooAppNavigation() {
   }, [dirtyId]);
   const navContainer =
     useRef<null | NavigationContainerRef<RootStackParamList>>(null);
-  if (__DEV__)
-    useEffect(() => {
-      if (!navContainer.current)
-        throw new Error("could not access ref of NavigationContainer");
-      navContainer.current.addListener("state", (e) => {
-        console.log("Navigation State Change:");
-        console.log(JSON.stringify(e.data.state));
-      });
-    }, []);
+  const [location, setLocation] = useState<null | AppLocation>(null);
+  useEffect(() => {
+    if (!navContainer.current)
+      throw new Error("could not access ref of NavigationContainer");
+    function handleState(e) {
+      const route = getActiveRoute(e.data.state);
+      if (route.name === "StoreFeature") {
+        setLocation({
+          connection: route.params.connection,
+          path: route.params.storePath,
+          storeFeature: route.params.feature,
+        });
+      } else {
+        setLocation(null);
+      }
+    }
+    navContainer.current.addListener("state", handleState);
+    return () => {
+      navContainer.current?.removeListener("state", handleState);
+    };
+  }, []);
   return (
     <NavigationContainer ref={navContainer}>
-      <UnsavedContext.Provider value={unsavedCtx}>
-        <RootNavigator />
-      </UnsavedContext.Provider>
+      <AppLocationProvider location={location}>
+        <UnsavedContext.Provider value={unsavedCtx}>
+          <RootNavigator />
+        </UnsavedContext.Provider>
+      </AppLocationProvider>
     </NavigationContainer>
   );
 }

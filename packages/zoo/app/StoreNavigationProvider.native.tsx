@@ -1,10 +1,18 @@
 import {
   StackActions,
   UNSTABLE_usePreventRemove,
+  useFocusEffect,
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDiscardChangesDialog } from "../components/useDiscardChangesDialog";
 import {
   StoreDashboardContext,
@@ -18,15 +26,21 @@ import {
 } from "../features/StoreFeatures";
 import { FragmentContext } from "../web/Fragment";
 import { RootStackParamList } from "./Links";
+import { useAppLocation, useLocationContext } from "./Location";
+
+const arrayEquals = (a, b) =>
+  a.length === b.length && a.every((v, i) => v === b[i]);
 
 export function StoreNavigationProvider({
   connection,
   storePath,
   children,
+  feature,
 }: {
   connection: string | null;
   storePath: string[];
   children: ReactNode;
+  feature: StoreNavigationState;
 }) {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList, "HomeStack">>();
@@ -63,13 +77,21 @@ export function StoreNavigationProvider({
   //     navigation.removeListener("beforeRemove", beforeRemoveHandler);
   //   };
   // }, [dirtyId]);
-  const [feature, setFeature] = useState<null | StoreNavigationState>(null);
+  // const [feature, setFeature] = useState<null | StoreNavigationState>(null);
+  const location = useAppLocation();
+  const fragment =
+    location?.connection === connection &&
+    !!location.path &&
+    arrayEquals(location.path, storePath) &&
+    !!location.storeFeature
+      ? location.storeFeature
+      : null;
+
   const ctx = useMemo(
     (): FragmentContext<StoreNavigationState> => ({
-      fragment: feature,
-      fragmentString: feature ? stringifyFeatureFragment(feature) : "",
+      fragment,
+      fragmentString: fragment ? stringifyFeatureFragment(fragment) : "",
       navigateFragment(feature, shouldReplace?) {
-        setFeature(feature);
         if (shouldReplace) {
           navigation.dispatch(
             StackActions.replace("StoreFeature", {
@@ -95,7 +117,7 @@ export function StoreNavigationProvider({
         return stringifyFeatureFragment(feature);
       },
     }),
-    [feature],
+    [fragment],
   );
   return (
     <StoreDashboardContext.Provider value={ctx}>

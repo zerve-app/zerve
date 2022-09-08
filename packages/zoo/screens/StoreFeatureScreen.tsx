@@ -29,7 +29,11 @@ export default function StoreFeatureScreen({
   const { pop, push } = useNavigation<NavigationProp>();
   return (
     <ConnectionKeyProvider value={connection}>
-      <StoreNavigationProvider connection={connection} storePath={storePath}>
+      <StoreNavigationProvider
+        connection={connection}
+        storePath={storePath}
+        feature={feature}
+      >
         <ModalProvider>
           {renderFeature({
             storePath,
