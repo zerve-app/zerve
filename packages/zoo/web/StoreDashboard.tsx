@@ -35,7 +35,7 @@ export function StoreDashboard({
   entityIsOrg,
   storePath,
 }: StoreDashboardProps) {
-  const { beforePopState, push } = useRouter();
+  const { beforePopState, push, replace } = useRouter();
   const dirtyIdRef = useRef<null | string>(null);
   const dirtyValue = useRef<null | any>(null);
   const [dirtyId, setDirtyId] = useState<null | string>(null);
@@ -125,6 +125,7 @@ export function StoreDashboard({
   if (entityId) {
     sidebarFeatures.push({ key: "settings" });
   }
+  const parentLocation = href.split("/").slice(0, -1);
   return (
     <UnsavedContext.Provider value={unsavedCtx}>
       <NavigateInterceptContext.Provider value={navigateInterrupt}>
@@ -168,7 +169,16 @@ export function StoreDashboard({
           getFeatureTitle={getFeatureTitle}
           getFeatureIcon={getFeatureIcon}
           renderFeature={(featureProps) => {
-            return renderFeature({ ...featureProps, href, storePath });
+            return renderFeature({
+              ...featureProps,
+              storePath,
+              onStoreDelete: () => {
+                push(`${parentLocation.join("/")}`);
+              },
+              onStoreRename: (newStoreId) => {
+                push(`${[...parentLocation, newStoreId].join("/")}`);
+              },
+            });
           }}
           parseFeatureFragment={parseFeatureFragment}
           stringifyFeatureFragment={stringifyFeatureFragment}

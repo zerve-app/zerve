@@ -30,8 +30,8 @@ import ScreenHeader from "../components/ScreenHeader";
 import { OptionsButton } from "../components/OptionsButton";
 
 type NavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "Home">
+  NativeStackNavigationProp<HomeStackParamList, "Home">,
+  NativeStackNavigationProp<RootStackParamList, "HomeStack">
 >;
 
 function ConnectionSection({ connection }: { connection: Connection }) {

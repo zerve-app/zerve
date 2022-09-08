@@ -14,21 +14,14 @@ import { StoreSchemasFeature } from "./StoreSchemasFeature";
 import { StoreSchemasSchemaFeature } from "./StoreSchemasSchemaFeature";
 import { StoreSettingsFeature } from "./StoreSettingsFeature";
 
-export function renderFeature(props: {
-  feature: StoreNavigationState | null;
-  isActive: boolean;
-  title: string;
-  storePath: string[];
-  href: string;
-  icon: null | ComponentProps<typeof Icon>["name"];
-}): ReactNode {
-  const { feature, href, title, icon, storePath } = props;
-  const storeFeatureProps: StoreFeatureProps = {
-    href,
-    title,
-    icon,
-    storePath,
-  };
+export function renderFeature(
+  props: {
+    feature: StoreNavigationState | null;
+    isActive: boolean;
+  } & StoreFeatureProps,
+): ReactNode {
+  const { feature, isActive, ...featureProps } = props;
+  const storeFeatureProps: StoreFeatureProps = featureProps;
   if (feature?.key === "entries") {
     if (feature.child === "create") {
       return <StoreEntriesCreateFeature {...storeFeatureProps} />;

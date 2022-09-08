@@ -1,3 +1,4 @@
+import { Icon } from "@zerve/zen";
 import { ComponentProps, createContext, useContext } from "react";
 import { NavLink, NavLinkButton } from "../web/Dashboard";
 import { FragmentContext } from "../web/Fragment";
@@ -5,7 +6,8 @@ import { FragmentContext } from "../web/Fragment";
 export type StoreFeatureProps = {
   title: string;
   storePath: Array<string>;
-  href: string;
+  onStoreDelete: () => void;
+  onStoreRename: (newName: string) => void;
   icon: null | ComponentProps<typeof Icon>["name"];
 };
 

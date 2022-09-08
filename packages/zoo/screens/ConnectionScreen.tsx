@@ -22,8 +22,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ZLoadedNode } from "../components/ZNode";
 
 type NavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<RootStackParamList, "HomeStack">,
-  NativeStackNavigationProp<HomeStackParamList, "Connection">
+  NativeStackNavigationProp<HomeStackParamList, "Connection">,
+  NativeStackNavigationProp<RootStackParamList, "HomeStack">
 >;
 
 export function ConnectionPage({

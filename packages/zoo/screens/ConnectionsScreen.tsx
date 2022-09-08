@@ -25,8 +25,8 @@ function ConnectionsScreenHeader() {
 }
 
 type NavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<RootStackParamList, "SettingsStack">,
-  NativeStackNavigationProp<SettingsStackParamList, "Connections">
+  NativeStackNavigationProp<SettingsStackParamList, "Connections">,
+  NativeStackNavigationProp<RootStackParamList, "SettingsStack">
 >;
 
 function ConnectionsScreenFooter() {

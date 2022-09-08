@@ -64,6 +64,7 @@ export function HumanTextInput({
   delta: Delta;
   onDelta: (d: Delta) => void;
 }) {
+  throw new Error("not supported yet");
   const [selection, setSelection] = useState<null | Selection>(null);
   const [applyingAttributes, setApplyingAttributes] =
     useState<CustomAttributes>(noAttributes);
