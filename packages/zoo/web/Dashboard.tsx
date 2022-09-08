@@ -12,6 +12,7 @@ import {
 import { FragmentContext, useFragmentNavigationController } from "./Fragment";
 import { NavigationBarWidth, PaneWidth } from "../components/FeaturePane";
 import { FragmentLink } from "./FragmentLink";
+import { NavLinkContent } from "@zerve/zen/NavLink";
 
 export function NavSidebar({
   children,
@@ -36,61 +37,7 @@ export function NavSidebar({
   );
 }
 
-export function NavLinkContentGroup({ children }: { children: ReactNode }) {
-  return (
-    <View
-      style={{
-        marginVertical: 12,
-        borderTopWidth: 1,
-        borderColor: "#eee",
-      }}
-    >
-      {children}
-    </View>
-  );
-}
-
-export function NavLinkContent({
-  title,
-  icon,
-  inset,
-  isActive,
-}: {
-  title: string;
-  icon?: ComponentProps<typeof Icon>["name"] | null;
-  inset?: boolean;
-  isActive?: boolean;
-}) {
-  const colors = useColors();
-  return (
-    <View
-      style={{
-        paddingVertical: 14,
-        paddingHorizontal: 12,
-        flexDirection: "row",
-        backgroundColor: isActive ? "#FFC8FC" : colors.background,
-        ...(inset ? { paddingLeft: 36 } : {}),
-        borderBottomWidth: 1,
-        borderBottomColor: "#eee",
-        alignItems: "center",
-      }}
-    >
-      {icon && <Icon name={icon} color="#464646" />}
-      <Text
-        style={{
-          color: colors.text,
-          fontSize: 16,
-          marginHorizontal: 16,
-          textDecorationLine: "none",
-        }}
-      >
-        {title}
-      </Text>
-    </View>
-  );
-}
-
-export function NavLink<FeatureState>({
+export function NavFeatureLink<FeatureState>({
   title,
   icon,
   to,
@@ -191,7 +138,7 @@ function NavigationSidebar<FeatureState>({
   navigation.forEach((nav) => {
     const fragmentKey = fragmentContext.stringifyFragment(nav);
     displayNavItems.push(
-      <NavLink
+      <NavFeatureLink
         Context={Context}
         to={nav}
         icon={getFeatureIcon(nav)}
@@ -209,7 +156,7 @@ function NavigationSidebar<FeatureState>({
         const childFragmentKey = fragmentContext.stringifyFragment(feature);
         if (childFragmentKey === fragmentKey) return;
         displayNavItems.push(
-          <NavLink
+          <NavFeatureLink
             inset
             Context={Context}
             key={childFragmentKey}

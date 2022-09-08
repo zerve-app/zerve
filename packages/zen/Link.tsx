@@ -33,7 +33,10 @@ export function Link({
           push(href);
         }
       }}
-      style={{ textDecoration: "none", display: inline ? "inline" : "flex" }}
+      style={{
+        textDecoration: "none",
+        display: inline ? "inline" : "block",
+      }}
     >
       {children}
     </a>

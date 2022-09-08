@@ -1,5 +1,5 @@
 import { ComponentProps, createContext } from "react";
-import { NavLink } from "../web/Dashboard";
+import { NavFeatureLink } from "../web/Dashboard";
 import { FragmentContext } from "../web/Fragment";
 
 export type UserFeatureProps = {
@@ -19,10 +19,16 @@ export type UserNavigationState =
     };
 
 export function UserFeatureLink(
-  props: Omit<ComponentProps<typeof NavLink<UserNavigationState>>, "Context">,
+  props: Omit<
+    ComponentProps<typeof NavFeatureLink<UserNavigationState>>,
+    "Context"
+  >,
 ) {
   return (
-    <NavLink<UserNavigationState> Context={UserDashboardContext} {...props} />
+    <NavFeatureLink<UserNavigationState>
+      Context={UserDashboardContext}
+      {...props}
+    />
   );
 }
 

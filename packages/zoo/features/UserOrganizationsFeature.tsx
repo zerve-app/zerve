@@ -5,8 +5,8 @@ import {
   UserDashboardContext,
   UserFeatureProps,
 } from "../context/UserDashboardContext";
-import { NavLinkContent } from "../web/Dashboard";
 import { FeaturePane } from "../components/FeaturePane";
+import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
 
 function NewOrganizationButton() {
   const fragmentContext = useContext(UserDashboardContext);
@@ -35,11 +35,13 @@ function UserOrganizations({ entityId, title }: UserFeatureProps) {
   ]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
-      {data?.children.map((orgId) => (
-        <Link key={orgId} href={`/${orgId}`}>
-          <NavLinkContent title={orgId} icon="building" />
-        </Link>
-      ))}
+      <NavLinkContentGroup>
+        {data?.children.map((orgId) => (
+          <Link key={orgId} href={`/${orgId}`}>
+            <NavLinkContent title={orgId} icon="building" />
+          </Link>
+        ))}
+      </NavLinkContentGroup>
       <HStack padded>
         <NewOrganizationButton />
       </HStack>

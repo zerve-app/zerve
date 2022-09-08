@@ -46,7 +46,7 @@ import { useStoreNavigation } from "../app/useStoreNavigation";
 import { StoreNavigationProvider } from "../app/StoreNavigationProvider";
 import { StoreFeatureLink } from "../context/StoreDashboardContext";
 import { useNavigation } from "@react-navigation/native";
-import { NavLinkContentGroup } from "../web/Dashboard";
+import { NavLink, NavLinkContentGroup } from "@zerve/zen/NavLink";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -395,26 +395,30 @@ export function ZGroupNode({
   const { openZ } = useConnectionNavigation();
   const staticMetaValue = type.meta?.zStatic;
   return (
-    <VStack padded>
+    <>
       {childNames.length === 0 ? <Paragraph>Nothing here</Paragraph> : null}
-      {childNames.map((childName: string) => (
-        <Button
-          title={childName}
-          key={childName}
-          onPress={() => {
-            openZ([...path, childName]);
-          }}
-        />
-      ))}
-      {staticMetaValue && (
-        <ZStaticNode
-          value={staticMetaValue}
-          connection={connection}
-          path={path}
-          inline
-        />
-      )}
-    </VStack>
+      <NavLinkContentGroup>
+        {childNames.map((childName: string) => (
+          <NavLink
+            title={childName}
+            key={childName}
+            onPress={() => {
+              openZ([...path, childName]);
+            }}
+          />
+        ))}
+      </NavLinkContentGroup>
+      <VStack padded>
+        {staticMetaValue && (
+          <ZStaticNode
+            value={staticMetaValue}
+            connection={connection}
+            path={path}
+            inline
+          />
+        )}
+      </VStack>
+    </>
   );
 }
 

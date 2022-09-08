@@ -5,8 +5,8 @@ import {
   UserDashboardContext,
   UserFeatureProps,
 } from "../context/UserDashboardContext";
-import { NavLinkContent } from "../web/Dashboard";
 import { FeaturePane } from "../components/FeaturePane";
+import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
 
 function NewStoreButton() {
   const fragmentContext = useContext(UserDashboardContext);
@@ -32,11 +32,13 @@ function UserStores({ entityId, title }: UserFeatureProps) {
   ]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
-      {data?.children?.map((storeName) => (
-        <Link key={storeName} href={`/${entityId}/${storeName}`}>
-          <NavLinkContent title={storeName} icon="briefcase" />
-        </Link>
-      ))}
+      <NavLinkContentGroup>
+        {data?.children?.map((storeName) => (
+          <Link key={storeName} href={`/${entityId}/${storeName}`}>
+            <NavLinkContent title={storeName} icon="briefcase" />
+          </Link>
+        ))}
+      </NavLinkContentGroup>
       <HStack padded>
         <NewStoreButton />
       </HStack>

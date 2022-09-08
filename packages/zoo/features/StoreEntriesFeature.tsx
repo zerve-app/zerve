@@ -8,7 +8,7 @@ import {
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../components/FeaturePane";
-import { NavLinkContentGroup } from "../web/Dashboard";
+import { NavLinkContentGroup } from "@zerve/zen/NavLink";
 
 function StoreEntries({ storePath, title }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);

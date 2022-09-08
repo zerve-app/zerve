@@ -1,6 +1,6 @@
 import { Icon } from "@zerve/zen";
 import { ComponentProps, createContext, useContext } from "react";
-import { NavLink, NavLinkButton } from "../web/Dashboard";
+import { NavFeatureLink, NavLinkButton } from "../web/Dashboard";
 import { FragmentContext } from "../web/Fragment";
 
 export type StoreFeatureProps = {
@@ -30,10 +30,16 @@ export type StoreNavigationState =
     };
 
 export function StoreFeatureLink(
-  props: Omit<ComponentProps<typeof NavLink<StoreNavigationState>>, "Context">,
+  props: Omit<
+    ComponentProps<typeof NavFeatureLink<StoreNavigationState>>,
+    "Context"
+  >,
 ) {
   return (
-    <NavLink<StoreNavigationState> Context={StoreDashboardContext} {...props} />
+    <NavFeatureLink<StoreNavigationState>
+      Context={StoreDashboardContext}
+      {...props}
+    />
   );
 }
 
