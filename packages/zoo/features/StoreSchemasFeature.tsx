@@ -8,6 +8,7 @@ import {
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../components/FeaturePane";
+import { NavLinkContentGroup } from "../web/Dashboard";
 
 function StoreSchemas({ storePath, title, icon, onBack }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);
@@ -27,18 +28,20 @@ function StoreSchemas({ storePath, title, icon, onBack }: StoreFeatureProps) {
       onBack={onBack}
       spinner={isLoading || isFetching}
     >
-      {schemas?.map((schemaName) => {
-        return (
-          <StoreFeatureLink
-            key={schemaName}
-            to={{
-              key: "schemas",
-              schema: schemaName,
-            }}
-            title={displayStoreFileName(schemaName)}
-          />
-        );
-      })}
+      <NavLinkContentGroup>
+        {schemas?.map((schemaName) => {
+          return (
+            <StoreFeatureLink
+              key={schemaName}
+              to={{
+                key: "schemas",
+                schema: schemaName,
+              }}
+              title={displayStoreFileName(schemaName)}
+            />
+          );
+        })}
+      </NavLinkContentGroup>
       <VStack padded>
         <StoreFeatureLinkButton
           title="Create Schema"

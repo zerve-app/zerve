@@ -46,6 +46,7 @@ import { useStoreNavigation } from "../app/useStoreNavigation";
 import { StoreNavigationProvider } from "../app/StoreNavigationProvider";
 import { StoreFeatureLink } from "../context/StoreDashboardContext";
 import { useNavigation } from "@react-navigation/native";
+import { NavLinkContentGroup } from "../web/Dashboard";
 
 export function ZInlineNode({ path }: { path: string[] }) {
   return <ZLoadedNode path={path} />;
@@ -137,7 +138,7 @@ function StoreChildList({
 }) {
   if (!list?.length) return <Paragraph>No entries yet.</Paragraph>;
   return (
-    <>
+    <NavLinkContentGroup>
       {list?.map((child) => {
         return (
           <StoreFeatureLink
@@ -150,7 +151,7 @@ function StoreChildList({
           />
         );
       })}
-    </>
+    </NavLinkContentGroup>
   );
 }
 

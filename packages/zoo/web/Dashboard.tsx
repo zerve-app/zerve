@@ -6,6 +6,7 @@ import {
   NavBar,
   NavBarZLogo,
   PageContainer,
+  useColors,
   useWindowDimensions,
 } from "@zerve/zen";
 import { FragmentContext, useFragmentNavigationController } from "./Fragment";
@@ -35,6 +36,20 @@ export function NavSidebar({
   );
 }
 
+export function NavLinkContentGroup({ children }: { children: ReactNode }) {
+  return (
+    <View
+      style={{
+        marginVertical: 12,
+        borderTopWidth: 1,
+        borderColor: "#eee",
+      }}
+    >
+      {children}
+    </View>
+  );
+}
+
 export function NavLinkContent({
   title,
   icon,
@@ -46,23 +61,26 @@ export function NavLinkContent({
   inset?: boolean;
   isActive?: boolean;
 }) {
+  const colors = useColors();
   return (
     <View
       style={{
         paddingVertical: 14,
         paddingHorizontal: 12,
         flexDirection: "row",
-        backgroundColor: isActive ? "#FFC8FC" : "transparent",
+        backgroundColor: isActive ? "#FFC8FC" : colors.background,
         ...(inset ? { paddingLeft: 36 } : {}),
+        borderBottomWidth: 1,
+        borderBottomColor: "#eee",
+        alignItems: "center",
       }}
     >
       {icon && <Icon name={icon} color="#464646" />}
       <Text
         style={{
-          color: "#464646",
-          fontWeight: "bold",
-          fontSize: 14,
-          marginLeft: 12,
+          color: colors.text,
+          fontSize: 16,
+          marginHorizontal: 16,
           textDecorationLine: "none",
         }}
       >

@@ -8,6 +8,7 @@ import {
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../components/FeaturePane";
+import { NavLinkContentGroup } from "../web/Dashboard";
 
 function StoreEntries({ storePath, title }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);
@@ -17,18 +18,20 @@ function StoreEntries({ storePath, title }: StoreFeatureProps) {
   }, [data]);
   return (
     <FeaturePane title={title} spinner={isLoading || isFetching}>
-      {entries.map((entryName) => {
-        return (
-          <StoreFeatureLink
-            title={displayStoreFileName(entryName)}
-            key={entryName}
-            to={{
-              key: "entries",
-              path: [entryName],
-            }}
-          />
-        );
-      })}
+      <NavLinkContentGroup>
+        {entries.map((entryName) => {
+          return (
+            <StoreFeatureLink
+              title={displayStoreFileName(entryName)}
+              key={entryName}
+              to={{
+                key: "entries",
+                path: [entryName],
+              }}
+            />
+          );
+        })}
+      </NavLinkContentGroup>
       <VStack padded>
         <StoreFeatureLinkButton
           title="Create Entry"
