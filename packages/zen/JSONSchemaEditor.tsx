@@ -52,6 +52,7 @@ function AddButton({
       left={(p) => <Icon {...p} name="plus" />}
       onPress={onPress}
       small
+      inline
     />
   );
 }
@@ -333,9 +334,6 @@ export function ObjectEditor({
     </VStack>
   );
 }
-
-const defaultArrayItemsSchema = {} as const;
-const defaultObjectItemsSchema = {} as const;
 
 export function ArrayEditor({
   value,

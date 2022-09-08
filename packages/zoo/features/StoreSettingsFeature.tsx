@@ -213,13 +213,20 @@ function StoreSettings({
   onStoreDelete,
   onStoreRename,
   title,
+  icon,
+  onBack,
 }: StoreFeatureProps) {
   const onDeleteStoreDialog = useDeleteStoreDialog(storePath, onStoreDelete);
   const onRenameStoreDialog = useRenameStoreDialog(storePath, onStoreRename);
   const settingsQuery = useStoreSettings(storePath);
   const setSettings = useSetStoreSettings(storePath);
   return (
-    <FeaturePane title={title} spinner={settingsQuery.isFetching}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      onBack={onBack}
+      spinner={settingsQuery.isFetching}
+    >
       <VStack padded>
         <Title title="Experimental Schemas:" />
         {settingsQuery.data ? (

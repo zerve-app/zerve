@@ -74,7 +74,7 @@ export function ZFeature({
         onLongPress={onOptions}
         corner={sheetContent}
         onBack={!!path.length ? () => closeZ(path) : undefined}
-      ></ScreenHeader>
+      />
       <ZNode
         path={path}
         connection={connection}

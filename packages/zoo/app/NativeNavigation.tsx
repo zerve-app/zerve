@@ -1,4 +1,4 @@
-// import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import SettingsScreen from "../screens/SettingsScreen";
@@ -51,7 +51,7 @@ LogBox.ignoreLogs([
   "new Gestures system!",
 ]);
 
-const HomeStack = createStackNavigator<HomeStackParamList>();
+const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
 function HomeNavigator() {
   return (
@@ -90,7 +90,7 @@ function HomeNavigator() {
   );
 }
 
-const SettingsStack = createStackNavigator<SettingsStackParamList>();
+const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 
 const DefaultScreenOptions = {
   headerShown: false,
@@ -154,7 +154,7 @@ function SettingsNavigator() {
   );
 }
 
-const RootStack = createStackNavigator<RootStackParamList>();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 function ModalInsetsContext({ children }: { children: ReactNode }) {
   const insets = useSafeAreaInsets();

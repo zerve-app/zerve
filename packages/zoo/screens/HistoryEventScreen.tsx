@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import NotFoundScreen from "./NotFoundScreen";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import { EmptySchemaStore } from "@zerve/zed";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HistoryEventScreen({
   navigation,
@@ -15,9 +16,10 @@ export default function HistoryEventScreen({
   const { eventId } = route.params;
   const event = useHistoryEvent(eventId);
   if (!event) return <NotFoundScreen />;
+  const { goBack } = useNavigation();
   return (
     <ScreenContainer scroll>
-      <ScreenHeader title={event.title} />
+      <ScreenHeader title={event.title} onBack={goBack} />
       <VStack padded>
         <ThemedText>{format(new Date(event.time), "p P")}</ThemedText>
         <JSONSchemaEditor

@@ -40,6 +40,8 @@ function StoreSchemasSchema({
   storePath,
   schema: schemaName,
   title,
+  onBack,
+  icon,
   path,
 }: StoreFeatureProps & { schema: string; path: string[] }) {
   const schemaSchemaQuery = useZStoreSchemaSchema(storePath, schemaName);
@@ -131,6 +133,8 @@ function StoreSchemasSchema({
   return (
     <FeaturePane
       title={title}
+      icon={icon}
+      onBack={onBack}
       actions={schemaActions}
       spinner={
         saveSchema.isLoading ||

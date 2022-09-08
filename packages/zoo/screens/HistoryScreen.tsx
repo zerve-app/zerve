@@ -8,9 +8,11 @@ import { format } from "date-fns";
 import { HomeStackScreenProps } from "../app/Links";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { insetsPadding } from "@zerve/zen/InsetUtils";
+import { useNavigation } from "@react-navigation/native";
 
 function HistoryScreenHeader() {
-  return <ScreenHeader title="Local Event History" />;
+  const { goBack } = useNavigation();
+  return <ScreenHeader title="Local Event History" onBack={goBack} />;
 }
 
 export default function HistoryScreen({

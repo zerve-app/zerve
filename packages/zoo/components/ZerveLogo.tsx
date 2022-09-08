@@ -6,6 +6,7 @@ export function ZerveLogo() {
   return (
     <View
       style={{
+        zIndex: 1,
         padding: 24,
         maxWidth: 300,
         aspectRatio: 346 / 92,

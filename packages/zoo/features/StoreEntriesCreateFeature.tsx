@@ -11,7 +11,12 @@ const EntryNameSchema = {
   title: "Entry Name",
 } as const;
 
-function StoreEntriesCreate({ storePath, title }: StoreFeatureProps) {
+function StoreEntriesCreate({
+  storePath,
+  title,
+  icon,
+  onBack,
+}: StoreFeatureProps) {
   const createEntry = useCreateEntry(storePath);
   const { replaceToEntrySchema } = useStoreNavigation();
   const handleSubmit = useCallback(async (name) => {
@@ -21,7 +26,12 @@ function StoreEntriesCreate({ storePath, title }: StoreFeatureProps) {
     replaceToEntrySchema(actualName);
   }, []);
   return (
-    <FeaturePane title={title} spinner={createEntry.isLoading}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      onBack={onBack}
+      spinner={createEntry.isLoading}
+    >
       <JSONSchemaForm
         id="entry-create-name"
         onSubmit={handleSubmit}

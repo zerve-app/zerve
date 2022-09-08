@@ -11,7 +11,12 @@ const SchemaNameSchema = {
   title: "Schema Name",
 } as const;
 
-function StoreSchemasCreate({ storePath, title }: StoreFeatureProps) {
+function StoreSchemasCreate({
+  storePath,
+  title,
+  icon,
+  onBack,
+}: StoreFeatureProps) {
   const createSchema = useCreateSchema(storePath);
   const { replaceToSchema } = useStoreNavigation();
   const handleSubmit = useCallback(async (name) => {
@@ -20,7 +25,12 @@ function StoreSchemasCreate({ storePath, title }: StoreFeatureProps) {
     replaceToSchema(actualName);
   }, []);
   return (
-    <FeaturePane title={title} spinner={createSchema.isLoading}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      onBack={onBack}
+      spinner={createSchema.isLoading}
+    >
       <JSONSchemaForm
         id="schema-create-name"
         onSubmit={handleSubmit}

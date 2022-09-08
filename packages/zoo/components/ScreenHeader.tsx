@@ -4,6 +4,8 @@ import { View } from "react-native";
 import { BackButton } from "./BackButton";
 import { Pressable } from "react-native";
 
+const MAX_OVERSCROLL_PLUS_LOGO_HEIGHT = 800;
+
 export default function ScreenHeader({
   title,
   isLoading,
@@ -27,6 +29,11 @@ export default function ScreenHeader({
       <View
         style={{
           backgroundColor: colors.background,
+          // make sure this header color is visible on iOS overscroll:
+          marginTop: -MAX_OVERSCROLL_PLUS_LOGO_HEIGHT,
+          paddingTop: MAX_OVERSCROLL_PLUS_LOGO_HEIGHT,
+          // allow logo to be visible over header on home screen because it has a higher z-index, (and because of the overscroll hack):
+          zIndex: -10,
           flexDirection: "row",
           paddingLeft: 12,
           alignItems: "center",

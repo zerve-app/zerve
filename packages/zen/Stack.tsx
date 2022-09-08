@@ -23,6 +23,22 @@ export function HStack({
   );
 }
 
+export function HGroup({ children }: { children: ReactNode }) {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "flex-end",
+      }}
+    >
+      {Children.map(children, (el) => (
+        <View style={{ marginLeft: 12, marginBottom: 12 }}>{el}</View>
+      ))}
+    </View>
+  );
+}
+
 export function Padding({ children }: { children: ReactNode }) {
   return <View style={{ margin: 12 }}>{children}</View>;
 }

@@ -66,6 +66,7 @@ export type ButtonProps = {
   disabled?: boolean;
   chromeless?: boolean;
   textAlign?: "right" | "left" | "center";
+  inline?: boolean;
 };
 export function Button({
   title,
@@ -80,6 +81,7 @@ export function Button({
   disabled,
   chromeless,
   textAlign = "center",
+  inline,
 }: ButtonProps) {
   const colors = useColors();
   const pressHeight = useSharedValue(0.5); // 0.5 = inactive, 1 = hover/active, 0 = pressed
@@ -142,7 +144,7 @@ export function Button({
             paddingHorizontal: 12,
             fontSize: 16,
             fontWeight: primary ? "bold" : "normal",
-            flex: 1,
+            flex: inline ? null : 1,
             textAlign,
           }}
         >

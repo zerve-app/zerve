@@ -5,7 +5,7 @@ import {
   Spinner,
   useActionsSheet,
 } from "@zerve/zen";
-import { ReactNode } from "react";
+import { ComponentProps, ReactNode } from "react";
 import { Text, View } from "react-native";
 
 export const NavigationBarWidth = 300;
@@ -17,11 +17,15 @@ export function FeaturePane({
   children,
   spinner,
   actions,
+  icon,
+  onBack,
 }: {
   title: string;
   children: ReactNode;
   spinner?: boolean;
   actions?: ActionButtonDef[];
+  icon?: null | ComponentProps<typeof Icon>["name"];
+  onBack?: () => void;
 }) {
   const [actionButton] = useActionsSheet(
     (onOpen: () => void) => (

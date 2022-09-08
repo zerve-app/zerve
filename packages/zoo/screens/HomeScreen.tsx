@@ -81,7 +81,7 @@ function ConnectionSection({ connection }: { connection: Connection }) {
       header={<Label>{connection.name}</Label>}
       right={<>{optionsButton}</>}
     >
-      <VStack padded>
+      <VStack>
         <ZLoadedNode path={[]} onActions={setActions} />
       </VStack>
     </DisclosureSection>
@@ -129,7 +129,7 @@ function SingleConnection({ connection }: { connection: Connection }) {
         corner={optionsButton}
         onLongPress={openOptions}
       />
-      <VStack padded>
+      <VStack>
         <ConnectionProvider key={connection.key} value={connection}>
           <ZLoadedNode path={[]} onActions={setActions} />
         </ConnectionProvider>

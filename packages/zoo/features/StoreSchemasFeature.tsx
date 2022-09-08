@@ -9,7 +9,7 @@ import {
 } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../components/FeaturePane";
 
-function StoreSchemas({ storePath, title }: StoreFeatureProps) {
+function StoreSchemas({ storePath, title, icon, onBack }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);
   const schemas = useMemo(() => {
     const schemas = data?.node?.$schemas;
@@ -21,7 +21,12 @@ function StoreSchemas({ storePath, title }: StoreFeatureProps) {
     );
   }, [data]);
   return (
-    <FeaturePane title={title} spinner={isLoading || isFetching}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      onBack={onBack}
+      spinner={isLoading || isFetching}
+    >
       {schemas?.map((schemaName) => {
         return (
           <StoreFeatureLink

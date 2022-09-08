@@ -1,4 +1,8 @@
-import { StackActions, useNavigation } from "@react-navigation/native";
+import {
+  StackActions,
+  UNSTABLE_usePreventRemove,
+  useNavigation,
+} from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { useDiscardChangesDialog } from "../components/useDiscardChangesDialog";
@@ -30,6 +34,7 @@ export function StoreNavigationProvider({
   const openDiscardChangesDialog = useDiscardChangesDialog(() => {
     discardDirty();
   });
+  // UNSTABLE_usePreventRemove(!!dirtyId);
   useEffect(() => {
     function beforeRemoveHandler(e) {
       const { action, destinationRoute } = e.data;

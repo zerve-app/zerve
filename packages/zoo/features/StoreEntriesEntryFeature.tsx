@@ -94,6 +94,8 @@ function StoreEntriesEntry({
   entryName,
   path,
   title,
+  icon,
+  onBack,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const saveEntry = useSaveEntry(storePath);
   const schemasQuery = useZStoreSchemas(storePath);
@@ -181,6 +183,8 @@ function StoreEntriesEntry({
   return (
     <FeaturePane
       title={title}
+      icon={icon}
+      onBack={onBack}
       spinner={
         saveEntry.isLoading || schemasQuery.isFetching || entryQuery.isFetching
       }

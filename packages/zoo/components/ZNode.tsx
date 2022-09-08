@@ -4,8 +4,9 @@ import {
   ActionButtonDef,
   AsyncButton,
   Button,
-  HStack,
+  HGroup,
   LinkRowGroup,
+  PageSection,
   Paragraph,
   Spinner,
   VStack,
@@ -61,10 +62,8 @@ export function ZContainerNode({
 }) {
   const { openZ } = useConnectionNavigation();
   const childNames = Object.keys(type.children);
-  console.log("metaaaa", type?.meta);
-
   return (
-    <VStack>
+    <VStack padded>
       <LinkRowGroup
         links={childNames.map((childName) => ({
           key: childName,
@@ -111,25 +110,18 @@ export function ZStateNode({
   );
 }
 
-export function NewFileButton({ path }: { path: string[] }) {
+export function NewEntryButton() {
   const { openNewEntry } = useStoreNavigation();
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        marginBottom: 12,
+    <Button
+      onPress={() => {
+        openNewEntry();
       }}
-    >
-      <Button
-        onPress={() => {
-          openNewEntry();
-        }}
-        small
-        title="New Entry"
-        left={(props) => <Icon name="plus-circle" {...props} />}
-      />
-    </View>
+      small
+      inline
+      title="New Entry"
+      left={(props) => <Icon name="plus-circle" {...props} />}
+    />
   );
 }
 
@@ -217,9 +209,9 @@ export function ZStoreNode({
     <StoreNavigationProvider connection={connection} storePath={path}>
       <StoreChildList list={list} connection={connection} storePath={path} />
       <VStack padded>
-        <HStack>
-          <NewFileButton path={path} />
-        </HStack>
+        <HGroup>
+          <NewEntryButton path={path} />
+        </HGroup>
         <ZStoreLinks />
       </VStack>
     </StoreNavigationProvider>
@@ -315,13 +307,14 @@ export function LoggedInAuthNode({
   path: string[];
 }) {
   return (
-    <VStack>
-      <Paragraph>Welcome, {session.userLabel}.</Paragraph>
-      <ZLoadedNode path={[...path, "user"]} />
-      <LogoutButton connection={connection} session={session} />
-      {/* <ChangeUsernameButton connection={connection} session={session} />
-      <ChangePasswordButton connection={connection} session={session} /> */}
-    </VStack>
+    <>
+      <PageSection title={`Signed in as ${session.userLabel}`}>
+        <ZLoadedNode path={[...path, "user"]} />
+        <VStack padded>
+          <LogoutButton connection={connection} session={session} />
+        </VStack>
+      </PageSection>
+    </>
   );
 }
 export function ZAuthNode({
@@ -354,8 +347,6 @@ export function ZAuthNode({
         />
       );
     }
-    console.log("Your path: ", path);
-    console.log("Session Path: ", conn.session.authPath);
     return (
       <Paragraph>
         You are logged in at {conn.session.authPath.join("/")}. Log out first
@@ -366,7 +357,11 @@ export function ZAuthNode({
   }
 
   // if not authenticated...
-  return <LoginForm path={path} authMeta={type.meta} />;
+  return (
+    <PageSection title="Welcome! You are not yet signed in.">
+      <LoginForm path={path} authMeta={type.meta} />
+    </PageSection>
+  );
 }
 
 export function ZGroupNode({
@@ -384,9 +379,8 @@ export function ZGroupNode({
   const { openZ } = useConnectionNavigation();
   const staticMetaValue = type.meta?.zStatic;
   return (
-    <VStack>
+    <VStack padded>
       {childNames.length === 0 ? <Paragraph>Nothing here</Paragraph> : null}
-      {/* <JSONSchemaForm value={value} schema={type.value} /> */}
       {childNames.map((childName: string) => (
         <Button
           title={childName}
@@ -401,6 +395,7 @@ export function ZGroupNode({
           value={staticMetaValue}
           connection={connection}
           path={path}
+          inline
         />
       )}
     </VStack>
@@ -505,12 +500,14 @@ export function ZGettableNode({
   if (type[".t"] !== "Gettable")
     throw new Error("Unexpected z type for ZGettableNode");
   return (
-    <JSONSchemaEditor
-      id={`gettable-${path.join("-")}`}
-      value={value}
-      schema={type.value}
-      schemaStore={EmptySchemaStore}
-    />
+    <VStack padded>
+      <JSONSchemaEditor
+        id={`gettable-${path.join("-")}`}
+        value={value}
+        schema={type.value}
+        schemaStore={EmptySchemaStore}
+      />
+    </VStack>
   );
 }
 
@@ -547,15 +544,15 @@ export function ZStaticNode({
   value,
   connection,
   path,
+  inline,
 }: {
   value: any;
   connection: string;
   path: string[];
+  inline?: boolean;
 }) {
   if (extractZContract(value) === "ReferenceList") {
-    return (
-      <ZReferenceListNode path={path} value={value} connection={connection} />
-    );
+    return <ZReferenceListNode value={value} inline={inline} />;
   }
   if (Array.isArray(value)) {
     return (
@@ -583,26 +580,42 @@ export function ZStaticNode({
 }
 
 export function ZReferenceListNode({
-  path,
-  connection,
   value,
+  inline,
 }: {
-  path: string[];
-  connection: string;
   value: any;
+  inline?: boolean;
 }) {
   const { openZ } = useConnectionNavigation();
+  if (inline)
+    return (
+      <HGroup>
+        {value.items.map((item) => (
+          <Button
+            key={item.key}
+            title={item.name}
+            left={item.icon ? (p) => <Icon name={item.icon} {...p} /> : null}
+            inline
+            onPress={() => {
+              openZ(item.path);
+            }}
+          />
+        ))}
+      </HGroup>
+    );
   return (
-    <LinkRowGroup
-      links={value.items.map((item) => ({
-        key: item.key,
-        title: item.name,
-        icon: item.icon,
-        onPress: () => {
-          openZ(item.path);
-        },
-      }))}
-    />
+    <VStack padded>
+      <LinkRowGroup
+        links={value.items.map((item) => ({
+          key: item.key,
+          title: item.name,
+          icon: item.icon,
+          onPress: () => {
+            openZ(item.path);
+          },
+        }))}
+      />
+    </VStack>
   );
 }
 
@@ -621,14 +634,7 @@ export function ZNode({
   const typeMeta = type?.meta;
   let body = null;
   if (typeName === "Static") {
-    body = (
-      <ZStaticNode
-        path={path}
-        type={type}
-        value={value}
-        connection={connection}
-      />
-    );
+    body = <ZStaticNode path={path} value={value} connection={connection} />;
   }
   if (typeName === "Container") {
     const zContract = typeMeta?.zContract;

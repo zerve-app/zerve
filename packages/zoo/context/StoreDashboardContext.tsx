@@ -9,6 +9,7 @@ export type StoreFeatureProps = {
   onStoreDelete: () => void;
   onStoreRename: (newName: string) => void;
   icon: null | ComponentProps<typeof Icon>["name"];
+  onBack?: () => void;
 };
 
 export type StoreNavigationState =

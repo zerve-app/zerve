@@ -26,7 +26,7 @@ export function Dropdown<OptionValues>({
   const colors = useColors();
   const selectedOption = options.find((o) => o.value === value);
   const onOpen = useBottomSheet(({ onClose }) => (
-    <VStack>
+    <VStack padded>
       {options.map((option) => {
         const isActive = option.value === value;
         return (
@@ -39,9 +39,7 @@ export function Dropdown<OptionValues>({
             }}
             primary={isActive}
             right={(p) =>
-              isActive ? (
-                <Icon {...p} name="check" color={colors.secondaryText} />
-              ) : null
+              isActive ? <Icon {...p} name="check" color={colors.tint} /> : null
             }
           />
         );

@@ -37,6 +37,9 @@ export default function StoreFeatureScreen({
             feature,
             title: getFeatureTitle(feature),
             icon: getFeatureIcon(feature),
+            onBack: () => {
+              pop();
+            },
             onStoreDelete: () => {
               // not good because we assume the current nav state
               // replace with popTo after ReactNav7

@@ -29,6 +29,8 @@ function StoreEntriesSchema({
   entryName,
   path,
   title,
+  onBack,
+  icon,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const schemaSchemaQuery = useZStoreEntrySchema(storePath);
   const entrySchemaQuery = useZNodeValue([
@@ -79,6 +81,8 @@ function StoreEntriesSchema({
   return (
     <FeaturePane
       title={title}
+      onBack={onBack}
+      icon={icon}
       spinner={
         doSave.isLoading ||
         schemaSchemaQuery.isFetching ||
