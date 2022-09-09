@@ -5,28 +5,20 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import {
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { ReactNode, useMemo } from "react";
 import { useDiscardChangesDialog } from "../components/useDiscardChangesDialog";
 import {
   StoreDashboardContext,
   StoreNavigationState,
-  useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import {
-  allowedToNavigateToFeatureWithDirty,
   parseFeatureFragment,
   stringifyFeatureFragment,
 } from "../features/StoreFeatures";
 import { FragmentContext } from "../web/Fragment";
 import { RootStackParamList } from "./Links";
-import { useAppLocation, useLocationContext } from "./Location";
+import { useAppLocation } from "./Location";
+import { useUnsavedContext } from "./Unsaved";
 
 const arrayEquals = (a, b) =>
   a.length === b.length && a.every((v, i) => v === b[i]);
@@ -34,13 +26,13 @@ const arrayEquals = (a, b) =>
 export function StoreNavigationProvider({
   connection,
   storePath,
-  children,
   feature,
+  render,
 }: {
   connection: string | null;
   storePath: string[];
-  children: ReactNode;
   feature: StoreNavigationState;
+  render: (props: { isActive: boolean }) => ReactNode;
 }) {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList, "HomeStack">>();
@@ -119,9 +111,10 @@ export function StoreNavigationProvider({
     }),
     [fragment],
   );
+  const isActive = fragment === feature;
   return (
     <StoreDashboardContext.Provider value={ctx}>
-      {children}
+      {render({ isActive })}
     </StoreDashboardContext.Provider>
   );
 }

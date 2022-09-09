@@ -1,6 +1,4 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createStackNavigator } from "@react-navigation/stack";
-
 import SettingsScreen from "../screens/SettingsScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import {
@@ -30,27 +28,15 @@ import {
   SafeAreaInsetsContext,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import {
-  createContext,
-  FC,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { UnsavedContext } from "../context/StoreDashboardContext";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import StoreFeatureScreen from "../screens/StoreFeatureScreen";
 import {
   NavigationContainer,
   NavigationContainerRef,
 } from "@react-navigation/native";
 import AuthInScreen from "../screens/AuthInScreen";
-import {
-  AppLocation,
-  AppLocationProvider,
-  LocationContextProvider,
-} from "./Location";
+import { AppLocation, AppLocationProvider } from "./Location";
+import { UnsavedContext, useUnsaved } from "./Unsaved";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
@@ -249,37 +235,7 @@ function getActiveRoute(state) {
 }
 
 export function ZooAppNavigation() {
-  const dirtyIdRef = useRef<null | string>(null);
-  const dirtyValue = useRef<null | any>(null);
-  const [dirtyId, setDirtyId] = useState<null | string>(null);
-  const unsavedCtx = useMemo(() => {
-    return {
-      releaseDirty: (id: string) => {
-        if (dirtyIdRef.current === id) {
-          dirtyValue.current = null;
-          dirtyIdRef.current = null;
-          setDirtyId(null);
-        }
-      },
-      discardDirty: () => {
-        dirtyValue.current = null;
-        dirtyIdRef.current = null;
-        setDirtyId(null);
-      },
-      claimDirty: (id: string, value: any) => {
-        dirtyValue.current = value;
-        dirtyIdRef.current = id;
-        if (dirtyId !== id) {
-          setDirtyId(id);
-        }
-      },
-      getDirtyValue: (id: string) => {
-        if (id === dirtyIdRef.current) return dirtyValue.current;
-        return undefined;
-      },
-      dirtyId,
-    };
-  }, [dirtyId]);
+  const unsaved = useUnsaved();
   const navContainer =
     useRef<null | NavigationContainerRef<RootStackParamList>>(null);
   const [location, setLocation] = useState<null | AppLocation>(null);
@@ -306,7 +262,7 @@ export function ZooAppNavigation() {
   return (
     <NavigationContainer ref={navContainer}>
       <AppLocationProvider location={location}>
-        <UnsavedContext.Provider value={unsavedCtx}>
+        <UnsavedContext.Provider value={unsaved}>
           <RootNavigator />
         </UnsavedContext.Provider>
       </AppLocationProvider>

@@ -19,7 +19,6 @@ export function getDefaultSchemaValue(
     if (refSchema) {
       usableSchema = refSchema;
     } else {
-      debugger;
       throw new Error("Schema Ref not Found");
     }
   }

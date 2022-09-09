@@ -26,7 +26,7 @@ function StoreEntries({ storePath, title }: StoreFeatureProps) {
               key={entryName}
               to={{
                 key: "entries",
-                path: [entryName],
+                entryName,
               }}
             />
           );

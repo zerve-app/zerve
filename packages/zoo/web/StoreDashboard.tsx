@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   StoreDashboardContext,
   StoreNavigationState,
-  UnsavedContext,
 } from "../context/StoreDashboardContext";
 import { DashboardPage } from "./Dashboard";
 import { OrgHeader, ProjectHeader, UserHeader } from "./DashboardHeader";
 import { useRouter } from "next/router";
-import { NavBarSpacer, NavigateInterceptContext, useModal } from "@zerve/zen";
-import { Dialog } from "@zerve/zen/Dialog";
+import { NavBarSpacer, NavigateInterceptContext } from "@zerve/zen";
 import { AuthHeader } from "../components/AuthHeader";
 import {
   allowedToNavigateToFeatureWithDirty,
@@ -19,6 +17,7 @@ import {
   stringifyFeatureFragment,
 } from "../features/StoreFeatures";
 import { useDiscardChangesDialog } from "../components/useDiscardChangesDialog";
+import { UnsavedContext, useUnsaved } from "../app/Unsaved";
 
 export type StoreDashboardProps = {
   href: string;
@@ -36,46 +35,14 @@ export function StoreDashboard({
   storePath,
 }: StoreDashboardProps) {
   const { beforePopState, push, replace } = useRouter();
-  const dirtyIdRef = useRef<null | string>(null);
-  const dirtyValue = useRef<null | any>(null);
-  const [dirtyId, setDirtyId] = useState<null | string>(null);
   const latestFeatureRef = useRef<null | string>(null);
-  const unsavedCtx = useMemo(() => {
-    return {
-      releaseDirty: (id: string) => {
-        if (dirtyIdRef.current === id) {
-          dirtyValue.current = null;
-          dirtyIdRef.current = null;
-          setDirtyId(null);
-        }
-      },
-      discardDirty: () => {
-        dirtyValue.current = null;
-        dirtyIdRef.current = null;
-        setDirtyId(null);
-      },
-      claimDirty: (id: string, value: any) => {
-        dirtyValue.current = value;
-        dirtyIdRef.current = id;
-        if (dirtyId !== id) {
-          setDirtyId(id);
-        }
-      },
-      getDirtyValue: (id: string) => {
-        if (id === dirtyIdRef.current) return dirtyValue.current;
-        return undefined;
-      },
-      dirtyId,
-    };
-  }, [dirtyId]);
+  const unsaved = useUnsaved();
   const openDiscardChangesDialog = useDiscardChangesDialog(() => {
-    dirtyValue.current = null;
-    dirtyIdRef.current = null;
-    setDirtyId(null);
+    unsaved.discardDirty();
   });
   useEffect(() => {
     window.onbeforeunload = (e) => {
-      if (dirtyIdRef.current) {
+      if (unsaved.hasUnsaved()) {
         return "Unsaved changes will be lost.";
       }
       return undefined;
@@ -88,11 +55,11 @@ export function StoreDashboard({
       const fragment = parseFeatureFragment(fragmentString);
       if (
         fragment &&
-        allowedToNavigateToFeatureWithDirty(fragment, dirtyIdRef.current)
+        allowedToNavigateToFeatureWithDirty(fragment, unsaved.getDirtyId())
       ) {
         return true;
       }
-      if (dirtyIdRef.current) {
+      if (unsaved.hasUnsaved()) {
         window.history.pushState(
           { pushId: Date.now() }, // maybe this is not needed?
           "unused",
@@ -108,7 +75,7 @@ export function StoreDashboard({
   }, []);
   const navigateInterrupt = useMemo(() => {
     return (href: string) => {
-      if (dirtyIdRef.current) {
+      if (unsaved.hasUnsaved()) {
         openDiscardChangesDialog(() => {
           push(href);
         });
@@ -127,7 +94,7 @@ export function StoreDashboard({
   }
   const parentLocation = href.split("/").slice(0, -1);
   return (
-    <UnsavedContext.Provider value={unsavedCtx}>
+    <UnsavedContext.Provider value={unsaved}>
       <NavigateInterceptContext.Provider value={navigateInterrupt}>
         <DashboardPage<StoreNavigationState>
           Context={StoreDashboardContext}
@@ -136,11 +103,11 @@ export function StoreDashboard({
             navigateFeature: (feature: StoreNavigationState) => void,
           ) => {
             if (
-              allowedToNavigateToFeatureWithDirty(feature, dirtyIdRef.current)
+              allowedToNavigateToFeatureWithDirty(feature, unsaved.getDirtyId())
             ) {
               return true;
             }
-            if (dirtyIdRef.current) {
+            if (unsaved.hasUnsaved()) {
               openDiscardChangesDialog(() => {
                 navigateFeature(feature);
               });

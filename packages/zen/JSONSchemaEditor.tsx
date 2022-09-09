@@ -462,7 +462,7 @@ function ValueLine({ value, schema }: { value: any; schema: any }) {
 function limitList<A = any>(list: Array<A>, rowCount: number) {
   if (list.length <= rowCount) return { visible: list, remainder: [] };
   return {
-    visible: list.slice(0, rowCount - 2),
+    visible: list.slice(0, rowCount - 1),
     remainder: list.slice(rowCount - 1),
   };
 }

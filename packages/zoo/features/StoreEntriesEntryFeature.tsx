@@ -26,7 +26,7 @@ import {
   VSpaced,
   VStack,
 } from "@zerve/zen";
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteEntry,
@@ -37,11 +37,11 @@ import {
   StoreFeatureLink,
   StoreFeatureLinkButton,
   StoreFeatureProps,
-  useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import { useZNodeValue, useZStoreSchemas } from "@zerve/zoo-client/Query";
 import { Notice } from "@zerve/zen/Notice";
 import { useStoreNavigation } from "../app/useStoreNavigation";
+import { useUnsavedContext, useUnsavedDeepValue } from "../app/Unsaved";
 
 function extractErrorMessage(error: AnyError) {
   let message = error.message;
@@ -96,6 +96,7 @@ function StoreEntriesEntry({
   title,
   icon,
   onBack,
+  isActive,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const saveEntry = useSaveEntry(storePath);
   const schemasQuery = useZStoreSchemas(storePath);
@@ -152,34 +153,32 @@ function StoreEntriesEntry({
     const expanded = entrySchema && expandSchema(entrySchema, schemaStore);
     return expanded;
   }, [entrySchema, schemaStore]);
-  const { schema: pathSchema, value: savedPathValue } = useMemo(() => {
-    const importedValue =
-      savedEntryValue === undefined
-        ? undefined
-        : importValue(savedEntryValue, fullSchema);
-    return drillSchemaValue(fullSchema, importedValue, path);
-  }, [fullSchema, savedEntryValue, path]);
 
   const {
-    claimDirty,
+    pathValue,
+    pathSchema,
+    onPathValue,
     releaseDirty,
-    dirtyId: currentDirtyId,
-    getDirtyValue,
-  } = useUnsavedContext();
-  const isDirty = currentDirtyId === dirtyId;
-  const [draftValue, setDraftValue] = useState(
-    isDirty ? lookUpValue(getDirtyValue(dirtyId), path) : undefined,
-  );
+    getDirty,
+    isDirty,
+  } = useUnsavedDeepValue({
+    isActive,
+    path,
+    savedValue: savedEntryValue,
+    fullSchema,
+    onImport: importValue,
+    dirtyId,
+  });
+
   const doSave = useAsyncHandler<void, AnyError>(async () => {
-    const internalValue = getDirtyValue(dirtyId);
+    const internalValue = getDirty();
     const exportedValue = exportValue(internalValue, fullSchema);
     await saveEntry.mutateAsync({
       name: entryName,
       value: exportedValue,
     });
-    releaseDirty(dirtyId);
+    releaseDirty();
   });
-  const displayValue = draftValue === undefined ? savedPathValue : draftValue;
   return (
     <FeaturePane
       title={title}
@@ -242,18 +241,8 @@ function StoreEntriesEntry({
             ) : null}
             <JSONSchemaEditor
               id={`entry-${entryName}-${path.join("-")}`}
-              onValue={(value: any) => {
-                setDraftValue(value);
-                const prevEntryValue =
-                  currentDirtyId === dirtyId
-                    ? getDirtyValue(dirtyId)
-                    : savedEntryValue;
-                const updatedValue = path.length
-                  ? mergeValue(prevEntryValue, path, value)
-                  : value;
-                claimDirty(dirtyId, updatedValue);
-              }}
-              value={displayValue}
+              onValue={onPathValue}
+              value={pathValue}
               schema={pathSchema}
               schemaStore={schemaStore}
             />
@@ -274,11 +263,11 @@ function StoreEntriesEntry({
               <HStack padded>
                 <Button
                   chromeless
+                  danger
                   title="Discard"
                   onPress={() => {
                     doSave.reset();
-                    setDraftValue(undefined);
-                    releaseDirty(dirtyId);
+                    releaseDirty();
                   }}
                 />
                 <Button primary title="Save Changes" onPress={doSave.handle} />

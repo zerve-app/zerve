@@ -177,6 +177,9 @@ export function exploreUnionSchema(
       if (typeof value === "object") {
         let walkingKeyMap = unionKeyMap || {};
         unionKeys.forEach((unionKey) => {
+          if (!walkingKeyMap) debugger;
+          schema;
+          value;
           if (typeof walkingKeyMap === "number") return;
           const theValue = value[unionKey];
           const nextWalk =
@@ -252,10 +255,15 @@ export function drillSchemaValue(
   inputValue: unknown,
   path: string[],
 ) {
-  let schema = inputSchema;
+  let schema: JSONSchema | undefined = inputSchema;
   let value = inputValue;
   path.forEach((pathTerm) => {
-    if (value == null) return;
+    if (value == null || schema == null) {
+      schema = undefined;
+      value = undefined;
+      // drilling failed, probably because value or schema is not provided
+      return;
+    }
     if (schema === true) {
       value = lookUpValue(value, pathTerm);
       return;
@@ -272,7 +280,9 @@ export function drillSchemaValue(
       }
       schema = schema.oneOf[Number(matched)];
     }
-    if (schema.type === "array") {
+    if (typeof schema !== "object") {
+      // schema should be an object by now because we detected null,true,false
+    } else if (schema.type === "array") {
       value = lookUpValue(value, pathTerm);
       schema = schema.items;
     } else if (schema.type === "object") {

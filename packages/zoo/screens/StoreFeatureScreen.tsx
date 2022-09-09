@@ -33,35 +33,36 @@ export default function StoreFeatureScreen({
         connection={connection}
         storePath={storePath}
         feature={feature}
-      >
-        <ModalProvider>
-          {renderFeature({
-            storePath,
-            isActive: true,
-            feature,
-            title: getFeatureTitle(feature),
-            icon: getFeatureIcon(feature),
-            onBack: () => {
-              pop();
-            },
-            onStoreDelete: () => {
-              // not good because we assume the current nav state
-              // replace with popTo after ReactNav7
-              pop();
-              pop();
-            },
-            onStoreRename: (newName: string) => {
-              pop();
-              pop();
-              push("StoreFeature", {
-                feature: { key: "entries" },
-                connection,
-                storePath: [...storePath.slice(0, -1), newName],
-              });
-            },
-          })}
-        </ModalProvider>
-      </StoreNavigationProvider>
+        render={({ isActive }) => (
+          <ModalProvider>
+            {renderFeature({
+              storePath,
+              isActive,
+              feature,
+              title: getFeatureTitle(feature),
+              icon: getFeatureIcon(feature),
+              onBack: () => {
+                pop();
+              },
+              onStoreDelete: () => {
+                // not good because we assume the current nav state
+                // replace with popTo after ReactNav7
+                pop();
+                pop();
+              },
+              onStoreRename: (newName: string) => {
+                pop();
+                pop();
+                push("StoreFeature", {
+                  feature: { key: "entries" },
+                  connection,
+                  storePath: [...storePath.slice(0, -1), newName],
+                });
+              },
+            })}
+          </ModalProvider>
+        )}
+      />
     </ConnectionKeyProvider>
   );
 }

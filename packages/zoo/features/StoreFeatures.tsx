@@ -20,7 +20,7 @@ export function renderFeature(
     isActive: boolean;
   } & StoreFeatureProps,
 ): ReactNode {
-  const { feature, isActive, ...featureProps } = props;
+  const { feature, ...featureProps } = props;
   const storeFeatureProps: StoreFeatureProps = featureProps;
   if (feature?.key === "entries") {
     if (feature.child === "create") {

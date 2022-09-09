@@ -212,15 +212,22 @@ export function ZStoreNode({
       connection={connection}
       storePath={path}
       feature={{ key: "entries" }}
-    >
-      <StoreChildList list={list} connection={connection} storePath={path} />
-      <VStack padded>
-        <HGroup>
-          <NewEntryButton />
-        </HGroup>
-        <ZStoreLinks />
-      </VStack>
-    </StoreNavigationProvider>
+      render={({ isActive }) => (
+        <>
+          <StoreChildList
+            list={list}
+            connection={connection}
+            storePath={path}
+          />
+          <VStack padded>
+            <HGroup>
+              <NewEntryButton />
+            </HGroup>
+            <ZStoreLinks />
+          </VStack>
+        </>
+      )}
+    />
   );
 }
 

@@ -1,6 +1,4 @@
 import {
-  showToast,
-  JSONSchemaForm,
   JSONSchemaEditorContext,
   useTextInputFormModal,
   VStack,
@@ -10,7 +8,7 @@ import {
   Spacer,
   useAsyncHandler,
 } from "@zerve/zen";
-import React, { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteSchema,
@@ -20,21 +18,14 @@ import {
 import {
   StoreFeatureLink,
   StoreFeatureProps,
-  useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import {
-  useZNodeValue,
   useZStoreSchema,
   useZStoreSchemaSchema,
 } from "@zerve/zoo-client/Query";
-import {
-  AnyError,
-  drillSchemaValue,
-  lookUpValue,
-  mergeValue,
-  prepareStoreFileName,
-} from "@zerve/zed";
+import { AnyError, prepareStoreFileName } from "@zerve/zed";
 import { useStoreNavigation } from "../app/useStoreNavigation";
+import { useUnsavedDeepValue } from "../app/Unsaved";
 
 function StoreSchemasSchema({
   storePath,
@@ -43,6 +34,7 @@ function StoreSchemasSchema({
   onBack,
   icon,
   path,
+  isActive,
 }: StoreFeatureProps & { schema: string; path: string[] }) {
   const schemaSchemaQuery = useZStoreSchemaSchema(storePath, schemaName);
   const schemaQuery = useZStoreSchema(storePath, schemaName);
@@ -102,33 +94,34 @@ function StoreSchemasSchema({
     ];
   }, [schemaName]);
 
-  const {
-    claimDirty,
-    releaseDirty,
-    dirtyId: currentDirtyId,
-    getDirtyValue,
-  } = useUnsavedContext();
   const dirtyId = `schema-${schemaName}`;
-  const isDirty = currentDirtyId === dirtyId;
-  const currentDirtyValue = getDirtyValue(dirtyId);
-  const [draftValue, setDraftValue] = useState(
-    isDirty ? lookUpValue(currentDirtyValue, path) : undefined,
-  );
-  const currentValue = currentDirtyValue || schemaQuery.data;
-  const { schema: pathSchema, value: savedPathValue } = useMemo(
-    () =>
-      schemaSchemaQuery.data
-        ? drillSchemaValue(schemaSchemaQuery.data, currentValue, path)
-        : { schema: undefined, value: undefined },
-    [schemaSchemaQuery.data, currentValue, path],
-  );
-
+  console.log("YOUR SCHEMA SCHEMA SIR", schemaSchemaQuery.data);
+  const {
+    pathValue,
+    pathSchema,
+    onPathValue,
+    releaseDirty,
+    getDirty,
+    isDirty,
+  } = useUnsavedDeepValue({
+    isActive,
+    path,
+    savedValue: schemaQuery.data,
+    fullSchema: schemaSchemaQuery.data, // todo, expand?!
+    dirtyId,
+  });
   const doSave = useAsyncHandler<void, AnyError>(async () => {
     await saveSchema.mutateAsync({
       schemaName,
-      schema: getDirtyValue(dirtyId),
+      schema: getDirty(),
     });
-    releaseDirty(dirtyId);
+    releaseDirty();
+  });
+  console.log("RENDER the editor", {
+    dirtyId,
+    path,
+    pathValue,
+    pathSchema,
   });
   return (
     <FeaturePane
@@ -149,18 +142,8 @@ function StoreSchemasSchema({
             <VStack padded>
               <JSONSchemaEditor
                 id={`schema-${schemaName}-${path.join("-")}`}
-                onValue={(value: any) => {
-                  setDraftValue(value);
-                  const prevSchemaValue =
-                    dirtyId === currentDirtyId
-                      ? getDirtyValue(dirtyId)
-                      : schemaQuery.data;
-                  const updatedValue = path.length
-                    ? mergeValue(prevSchemaValue, path, value)
-                    : value;
-                  claimDirty(dirtyId, updatedValue);
-                }}
-                value={draftValue === undefined ? savedPathValue : draftValue}
+                onValue={onPathValue}
+                value={pathValue}
                 schema={pathSchema}
                 schemaStore={schemaStore}
               />
@@ -181,10 +164,10 @@ function StoreSchemasSchema({
                 <HStack padded>
                   <Button
                     chromeless
+                    danger
                     title="Discard"
                     onPress={() => {
-                      setDraftValue(undefined);
-                      releaseDirty(dirtyId);
+                      releaseDirty();
                     }}
                   />
                   <Button primary title="Save Schema" onPress={doSave.handle} />

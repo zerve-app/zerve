@@ -10,6 +10,7 @@ export type StoreFeatureProps = {
   onStoreRename: (newName: string) => void;
   icon: null | ComponentProps<typeof Icon>["name"];
   onBack?: () => void;
+  isActive: boolean;
 };
 
 export type StoreNavigationState =
@@ -59,21 +60,3 @@ export function StoreFeatureLinkButton(
 
 export const StoreDashboardContext =
   createContext<null | FragmentContext<StoreNavigationState>>(null);
-
-export type UnsavedCtx = {
-  getDirtyValue: (id: string) => any;
-  claimDirty: (id: string, value: any) => void;
-  releaseDirty: (id: string) => void;
-  discardDirty: () => void;
-  dirtyId: null | string;
-};
-export const UnsavedContext = createContext<null | UnsavedCtx>(null);
-
-export function useUnsavedContext() {
-  const ctx = useContext(UnsavedContext);
-  if (!ctx)
-    throw new Error(
-      "Must use this feature within an UnsavedContext Environment ",
-    );
-  return ctx;
-}

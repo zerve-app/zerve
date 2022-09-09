@@ -13,7 +13,6 @@ import { useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
 import {
   StoreFeatureLink,
   StoreFeatureProps,
-  useUnsavedContext,
 } from "../context/StoreDashboardContext";
 import { useZNodeValue, useZStoreEntrySchema } from "@zerve/zoo-client/Query";
 import {
@@ -23,6 +22,7 @@ import {
   mergeValue,
 } from "@zerve/zed";
 import { useStoreNavigation } from "../app/useStoreNavigation";
+import { useUnsavedDeepValue } from "../app/Unsaved";
 
 function StoreEntriesSchema({
   storePath,
@@ -31,6 +31,7 @@ function StoreEntriesSchema({
   title,
   onBack,
   icon,
+  isActive,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const schemaSchemaQuery = useZStoreEntrySchema(storePath);
   const entrySchemaQuery = useZNodeValue([
@@ -53,30 +54,29 @@ function StoreEntriesSchema({
     return ctx;
   }, []);
 
-  const {
-    claimDirty,
-    releaseDirty,
-    dirtyId: currentDirtyId,
-    getDirtyValue,
-  } = useUnsavedContext();
   const dirtyId = `entry-schema-${entryName}`;
-  const isDirty = dirtyId === currentDirtyId;
-  const currentDirtyValue = getDirtyValue(dirtyId);
-  const [draftValue, setDraftValue] = useState(
-    isDirty ? lookUpValue(currentDirtyValue, path) : undefined,
-  );
-  const currentValue = currentDirtyValue || entrySchemaQuery.data;
-  const { schema: pathSchema, value: savedPathValue } = useMemo(
-    () => drillSchemaValue(schemaSchemaQuery.data, currentValue, path),
-    [schemaSchemaQuery.data, currentValue, path],
-  );
+
+  const {
+    pathValue,
+    pathSchema,
+    onPathValue,
+    releaseDirty,
+    getDirty,
+    isDirty,
+  } = useUnsavedDeepValue({
+    isActive,
+    path,
+    savedValue: entrySchemaQuery.data,
+    fullSchema: schemaSchemaQuery.data, // todo, expand?!
+    dirtyId,
+  });
 
   const doSave = useAsyncHandler<void, AnyError>(async () => {
     await saveSchema.mutateAsync({
       name: entryName,
-      schema: getDirtyValue(dirtyId),
+      schema: getDirty(),
     });
-    releaseDirty(dirtyId);
+    releaseDirty();
   });
   return (
     <FeaturePane
@@ -95,18 +95,8 @@ function StoreEntriesSchema({
             <VStack padded>
               <JSONSchemaEditor
                 id={dirtyId}
-                onValue={(value: any) => {
-                  setDraftValue(value);
-                  const prevSchemaValue =
-                    dirtyId === currentDirtyId
-                      ? getDirtyValue(dirtyId)
-                      : entrySchemaQuery.data;
-                  const updatedValue = path.length
-                    ? mergeValue(prevSchemaValue, path, value)
-                    : value;
-                  claimDirty(dirtyId, updatedValue);
-                }}
-                value={draftValue === undefined ? savedPathValue : draftValue}
+                onValue={onPathValue}
+                value={pathValue}
                 schema={pathSchema}
                 schemaStore={schemaStore}
               />
@@ -128,10 +118,10 @@ function StoreEntriesSchema({
                 <HStack padded>
                   <Button
                     chromeless
+                    danger
                     title="Discard"
                     onPress={() => {
-                      setDraftValue(undefined);
-                      releaseDirty(dirtyId);
+                      releaseDirty();
                     }}
                   />
                   <Button primary title="Save Schema" onPress={doSave.handle} />
