@@ -19871,14 +19871,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-draggable-flatlist@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "react-native-draggable-flatlist@npm:3.1.2"
+"react-native-draggable-flatlist@npm:4.0.0-beta.12":
+  version: 4.0.0-beta.12
+  resolution: "react-native-draggable-flatlist@npm:4.0.0-beta.12"
+  dependencies:
+    "@babel/preset-typescript": ^7.17.12
   peerDependencies:
     react-native: ">=0.64.0"
-    react-native-gesture-handler: ">=1.10.0"
-    react-native-reanimated: ">=2.2.0"
-  checksum: 64601358ec2d25b5946baa7ec7808bc8953409df2d7d711624bd3ee160690c3ba739328bc981e5bb296027936c62997816b21c0c2b913ebaeec181fa7d9a071c
+    react-native-gesture-handler: ">=2.0.0"
+    react-native-reanimated: ">=2.8.0"
+  checksum: 747420065881f3b21085267da3eb7626043625e9521401050ca321ea9710fb48f178e7ce4d94a595b3cd1ec9de8f7bb5b7063ac473c2d623e99e45796108b21f
   languageName: node
   linkType: hard
 
@@ -24859,7 +24861,7 @@ __metadata:
     react: 18.0.0
     react-dom: 18.2.0
     react-native: 0.69.5
-    react-native-draggable-flatlist: ^3.1.2
+    react-native-draggable-flatlist: 4.0.0-beta.12
     react-native-gesture-handler: ~2.6.0
     react-native-keyboard-aware-scroll-view: ^0.9.5
     react-native-mmkv: ^2.4.3
