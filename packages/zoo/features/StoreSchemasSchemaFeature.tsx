@@ -130,37 +130,36 @@ function StoreSchemasSchema({
         schemaSchemaQuery.isFetching ||
         schemaQuery.isFetching
       }
+      footer={
+        isDirty &&
+        (path.length ? (
+          <BackToSaveButton
+            onPress={() => {
+              backToSchema(schemaName, path);
+            }}
+          />
+        ) : (
+          <SaveOrDiscardFooter
+            onSave={doSave.handle}
+            onDiscard={() => {
+              doSave.reset();
+              releaseDirty();
+            }}
+          />
+        ))
+      }
     >
       <JSONSchemaEditorContext.Provider value={editorContext}>
         {schemaQuery.data && pathSchema ? (
-          <>
-            <VStack padded>
-              <JSONSchemaEditor
-                id={`schema-${schemaName}-${path.join("-")}`}
-                onValue={onPathValue}
-                value={pathValue}
-                schema={pathSchema}
-                schemaStore={schemaStore}
-              />
-            </VStack>
-            <Spacer />
-            {isDirty &&
-              (path.length ? (
-                <BackToSaveButton
-                  onPress={() => {
-                    backToSchema(schemaName, path);
-                  }}
-                />
-              ) : (
-                <SaveOrDiscardFooter
-                  onSave={doSave.handle}
-                  onDiscard={() => {
-                    doSave.reset();
-                    releaseDirty();
-                  }}
-                />
-              ))}
-          </>
+          <VStack padded>
+            <JSONSchemaEditor
+              id={`schema-${schemaName}-${path.join("-")}`}
+              onValue={onPathValue}
+              value={pathValue}
+              schema={pathSchema}
+              schemaStore={schemaStore}
+            />
+          </VStack>
         ) : null}
       </JSONSchemaEditorContext.Provider>
     </FeaturePane>

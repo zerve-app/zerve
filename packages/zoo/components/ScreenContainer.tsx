@@ -1,17 +1,11 @@
-import { ToastPresenter, useColors } from "@zerve/zen";
+import { bigShadow, ToastPresenter, useColors } from "@zerve/zen";
 import { ReactNode, useEffect, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { insetsPadding } from "@zerve/zen/InsetUtils";
 import { BlurView } from "expo-blur";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
-
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+import { MotiView } from "moti";
+import { AnimatePresence } from "moti";
 
 function ScrollWithFooter({
   children,
@@ -23,16 +17,8 @@ function ScrollWithFooter({
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const [footerHeight, setFooterHeight] = useState(0);
-  const footerBottomHeightWithInset = useSharedValue(0);
-  const blurFooterStyle = useAnimatedStyle(() => ({
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: withTiming(footerBottomHeightWithInset.value, { duration: 300 }),
-  }));
   useEffect(() => {
-    if (!footer) footerBottomHeightWithInset.value = 0;
+    if (!footer) setFooterHeight(0);
   }, [!!footer]);
   return (
     <>
@@ -40,56 +26,72 @@ function ScrollWithFooter({
         style={{
           flex: 1,
           backgroundColor: colors.backgroundDim,
-          // ...bigShadow, // disabled because it does not seem to actually appear on ScreenContainer's ScrollView (when swiping back on iOS)
+          ...bigShadow, // disabled because it does not seem to actually appear on ScreenContainer's ScrollView (when swiping back on iOS)
           borderLeftWidth: 1,
           borderColor: "#ccc",
           shadowColor: colors.text,
         }}
-        contentContainerStyle={{
-          ...insetsPadding(insets),
-          minHeight: "100%",
-          paddingBottom: Math.max(footerHeight, insets.bottom),
-        }}
         scrollIndicatorInsets={{
-          bottom: Math.max(footerHeight - insets.bottom, 0),
-          top: 0,
+          bottom: Math.max(footerHeight - insets.bottom + 14, 14),
+          // bottom: insets.bottom,
+          top: 5,
           left: 0,
           right: 0,
         }}
       >
-        {children}
+        <View
+          style={{
+            minHeight: "100%",
+            paddingTop: insets.top,
+            paddingBottom: !!footer ? footerHeight : insets.bottom,
+          }}
+        >
+          {children}
+        </View>
       </ScrollView>
-      <BlurView
+      <BlurView // behind status bar
         style={{
           position: "absolute",
           top: 0,
-          left: 0,
+          left: 1,
           right: 0,
           height: insets.top,
         }}
       />
-      <AnimatedBlurView style={blurFooterStyle}></AnimatedBlurView>
-      <View
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          paddingBottom: footer ? insets.bottom : 0,
-        }}
-      >
+      <AnimatePresence>
         {footer && (
-          <View
-            onLayout={(e) => {
-              const { height } = e.nativeEvent.layout;
-              footerBottomHeightWithInset.value = height + insets.bottom;
-              setFooterHeight(height);
+          <MotiView
+            from={{
+              translateY: 200,
+            }}
+            animate={{
+              translateY: 0,
+            }}
+            exit={{
+              translateY: 200,
+            }}
+            transition={{
+              type: "timing",
             }}
           >
-            {footer}
-          </View>
+            <BlurView
+              style={{
+                position: "absolute",
+                left: 1,
+                right: 0,
+                bottom: 0,
+                paddingBottom: footer ? insets.bottom : 0,
+              }}
+              onLayout={(e) => {
+                const { height } = e.nativeEvent.layout;
+                setFooterHeight(height);
+              }}
+            >
+              {footer}
+            </BlurView>
+          </MotiView>
         )}
-      </View>
+      </AnimatePresence>
     </>
   );
 }

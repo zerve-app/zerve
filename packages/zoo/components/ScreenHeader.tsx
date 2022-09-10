@@ -62,7 +62,7 @@ export default function ScreenHeader({
           />
         </Pressable>
         <Spacer />
-        {isLoading && <Spinner style={{ marginHorizontal: 12 }} size="large" />}
+        {isLoading && <Spinner style={{ marginHorizontal: 12 }} size="small" />}
         {corner}
       </View>
     </View>

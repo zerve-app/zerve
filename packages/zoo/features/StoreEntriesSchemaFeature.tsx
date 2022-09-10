@@ -90,37 +90,36 @@ function StoreEntriesSchema({
         schemaSchemaQuery.isFetching ||
         entrySchemaQuery.isFetching
       }
+      footer={
+        isDirty &&
+        (path.length ? (
+          <BackToSaveButton
+            onPress={() => {
+              backToEntrySchema(entryName, path);
+            }}
+          />
+        ) : (
+          <SaveOrDiscardFooter
+            onSave={doSave.handle}
+            onDiscard={() => {
+              doSave.reset();
+              releaseDirty();
+            }}
+          />
+        ))
+      }
     >
       <JSONSchemaEditorContext.Provider value={editorContext}>
         {entrySchemaQuery.data && schemaSchemaQuery.data ? (
-          <>
-            <VStack padded>
-              <JSONSchemaEditor
-                id={dirtyId}
-                onValue={onPathValue}
-                value={pathValue}
-                schema={pathSchema}
-                schemaStore={schemaStore}
-              />
-            </VStack>
-            <Spacer />
-            {isDirty &&
-              (path.length ? (
-                <BackToSaveButton
-                  onPress={() => {
-                    backToEntrySchema(entryName, path);
-                  }}
-                />
-              ) : (
-                <SaveOrDiscardFooter
-                  onSave={doSave.handle}
-                  onDiscard={() => {
-                    doSave.reset();
-                    releaseDirty();
-                  }}
-                />
-              ))}
-          </>
+          <VStack padded>
+            <JSONSchemaEditor
+              id={dirtyId}
+              onValue={onPathValue}
+              value={pathValue}
+              schema={pathSchema}
+              schemaStore={schemaStore}
+            />
+          </VStack>
         ) : null}
       </JSONSchemaEditorContext.Provider>
     </FeaturePane>
