@@ -161,13 +161,6 @@ export function useUnsavedDeepValue({
         ? onImport(currentValue, fullSchema)
         : currentValue;
     const { schema, value } = drillSchemaValue(fullSchema, importedValue, path);
-    console.log("DRILL FAILED?!", {
-      fullSchema,
-      importedValue,
-      schema,
-      value,
-      path,
-    });
     return { schema, value };
   }, [fullSchema, currentValue, path, onImport]);
 
@@ -178,17 +171,6 @@ export function useUnsavedDeepValue({
     isActive && localDraftValue !== undefined
       ? localDraftValue
       : currentPathValue;
-  console.log("Unsaved grrrr!", {
-    fullSchema,
-    dirtyId,
-    path,
-    currentValue,
-    currentPathValue,
-    currentPathSchema,
-    savedPathValue,
-    savedPathSchema,
-    localPathValue,
-  });
   const pathSchema =
     currentPathSchema === undefined ? savedPathSchema : currentPathSchema;
   const pathValue =

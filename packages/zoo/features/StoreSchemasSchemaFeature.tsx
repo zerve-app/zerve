@@ -26,6 +26,8 @@ import {
 import { AnyError, prepareStoreFileName } from "@zerve/zed";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { useUnsavedDeepValue } from "../app/Unsaved";
+import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
+import { BackToSaveButton } from "../components/BackToSaveButton";
 
 function StoreSchemasSchema({
   storePath,
@@ -43,7 +45,7 @@ function StoreSchemasSchema({
   const deleteSchema = useDeleteSchema(storePath);
   const saveSchema = useSaveSchema(storePath);
 
-  const { openSchema, replaceToSchemas, replaceToSchema } =
+  const { openSchema, replaceToSchemas, replaceToSchema, backToSchema } =
     useStoreNavigation();
   const editorContext = useMemo(() => {
     const ctx: JSONSchemaEditorContext = {
@@ -95,7 +97,6 @@ function StoreSchemasSchema({
   }, [schemaName]);
 
   const dirtyId = `schema-${schemaName}`;
-  console.log("YOUR SCHEMA SCHEMA SIR", schemaSchemaQuery.data);
   const {
     pathValue,
     pathSchema,
@@ -116,12 +117,6 @@ function StoreSchemasSchema({
       schema: getDirty(),
     });
     releaseDirty();
-  });
-  console.log("RENDER the editor", {
-    dirtyId,
-    path,
-    pathValue,
-    pathSchema,
   });
   return (
     <FeaturePane
@@ -151,27 +146,19 @@ function StoreSchemasSchema({
             <Spacer />
             {isDirty &&
               (path.length ? (
-                <StoreFeatureLink
-                  title="Unsaved Changes. Go Back to Save"
-                  to={{
-                    key: "schemas",
-                    schema: schemaName,
-                    path: path.slice(0, -1),
+                <BackToSaveButton
+                  onPress={() => {
+                    backToSchema(schemaName, path);
                   }}
-                  icon="backward"
                 />
               ) : (
-                <HStack padded>
-                  <Button
-                    chromeless
-                    danger
-                    title="Discard"
-                    onPress={() => {
-                      releaseDirty();
-                    }}
-                  />
-                  <Button primary title="Save Schema" onPress={doSave.handle} />
-                </HStack>
+                <SaveOrDiscardFooter
+                  onSave={doSave.handle}
+                  onDiscard={() => {
+                    doSave.reset();
+                    releaseDirty();
+                  }}
+                />
               ))}
           </>
         ) : null}

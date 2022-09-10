@@ -15,6 +15,7 @@ export function FeaturePane({
   spinner,
   actions,
   onBack,
+  footer,
 }: {
   title: string;
   icon: null | ComponentProps<typeof Icon>["name"];
@@ -22,6 +23,7 @@ export function FeaturePane({
   spinner?: boolean;
   actions?: ActionButtonDef[];
   onBack?: () => void;
+  footer: null | ReactNode;
 }) {
   const [actionButton] = useActionsSheet(
     (onOpen: () => void) => (
@@ -34,7 +36,7 @@ export function FeaturePane({
     () => actions || [],
   );
   return (
-    <ScreenContainer scroll>
+    <ScreenContainer scroll footer={footer}>
       <ScreenHeader
         title={title}
         icon={icon}

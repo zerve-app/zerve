@@ -6,9 +6,9 @@ import {
   useActionsSheet,
 } from "@zerve/zen";
 import { ComponentProps, ReactNode } from "react";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
-export const NavigationBarWidth = 300;
+export const NavigationBarWidth = 350;
 export const PaneWidth = 400;
 export const PaneMaxWidth = 500;
 
@@ -19,6 +19,7 @@ export function FeaturePane({
   actions,
   icon,
   onBack,
+  footer,
 }: {
   title: string;
   children: ReactNode;
@@ -26,6 +27,7 @@ export function FeaturePane({
   actions?: ActionButtonDef[];
   icon?: null | ComponentProps<typeof Icon>["name"];
   onBack?: () => void;
+  footer?: null | ReactNode;
 }) {
   const [actionButton] = useActionsSheet(
     (onOpen: () => void) => (
@@ -43,6 +45,7 @@ export function FeaturePane({
         borderRightWidth: 1,
         borderColor: "#00000033",
         width: PaneWidth,
+        flex: 1,
       }}
     >
       <View style={{ minHeight: 80 }}>
@@ -58,7 +61,14 @@ export function FeaturePane({
           <Spinner style={{ position: "absolute", right: 10, bottom: 10 }} />
         )}
       </View>
-      <View style={{ backgroundColor: "#fafafa", flex: 1 }}>{children}</View>
+      <ScrollView
+        style={{ backgroundColor: "#fafafa", flex: 1 }}
+        contentContainerStyle={{}}
+        scrollEnabled={true}
+      >
+        {children}
+      </ScrollView>
+      {footer}
     </View>
   );
 }

@@ -4,11 +4,13 @@ import {
   StoreNavigationState,
 } from "../context/StoreDashboardContext";
 import { useFragmentNavigate } from "../web/Fragment";
+import { useNavigation } from "@react-navigation/native";
 
 export function useStoreNavigation() {
   const navigate = useFragmentNavigate<StoreNavigationState>(
     StoreDashboardContext,
   );
+  const { pop } = useNavigation();
   return useMemo(
     () => ({
       openEntry: (entryName: string, path?: string[]) => {
@@ -44,6 +46,21 @@ export function useStoreNavigation() {
       },
       replaceToSchema: (schema: string) => {
         navigate({ key: "schemas", schema }, true);
+      },
+      backToSchema: (schema: string, path: string[]) => {
+        path.forEach(() => {
+          pop();
+        });
+      },
+      backToEntry: (entryName: string, path: string[]) => {
+        path.forEach(() => {
+          pop();
+        });
+      },
+      backToEntrySchema: (entryName: string, path: string[]) => {
+        path.forEach(() => {
+          pop();
+        });
       },
     }),
     [],

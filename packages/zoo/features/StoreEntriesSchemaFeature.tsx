@@ -23,6 +23,8 @@ import {
 } from "@zerve/zed";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { useUnsavedDeepValue } from "../app/Unsaved";
+import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
+import { BackToSaveButton } from "../components/BackToSaveButton";
 
 function StoreEntriesSchema({
   storePath,
@@ -44,7 +46,7 @@ function StoreEntriesSchema({
 
   const saveSchema = useSaveEntrySchema(storePath, schemaStore);
 
-  const { openEntrySchema } = useStoreNavigation();
+  const { openEntrySchema, backToEntrySchema } = useStoreNavigation();
   const editorContext = useMemo(() => {
     const ctx: JSONSchemaEditorContext = {
       openChildEditor: (key: string) => {
@@ -104,28 +106,19 @@ function StoreEntriesSchema({
             <Spacer />
             {isDirty &&
               (path.length ? (
-                <StoreFeatureLink
-                  title="Unsaved Changes. Go Back to Save"
-                  to={{
-                    key: "entries",
-                    entryName,
-                    child: "schema",
-                    path: path.slice(0, -1),
+                <BackToSaveButton
+                  onPress={() => {
+                    backToEntrySchema(entryName, path);
                   }}
-                  icon="backward"
                 />
               ) : (
-                <HStack padded>
-                  <Button
-                    chromeless
-                    danger
-                    title="Discard"
-                    onPress={() => {
-                      releaseDirty();
-                    }}
-                  />
-                  <Button primary title="Save Schema" onPress={doSave.handle} />
-                </HStack>
+                <SaveOrDiscardFooter
+                  onSave={doSave.handle}
+                  onDiscard={() => {
+                    doSave.reset();
+                    releaseDirty();
+                  }}
+                />
               ))}
           </>
         ) : null}

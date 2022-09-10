@@ -42,6 +42,8 @@ import { useZNodeValue, useZStoreSchemas } from "@zerve/zoo-client/Query";
 import { Notice } from "@zerve/zen/Notice";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { useUnsavedContext, useUnsavedDeepValue } from "../app/Unsaved";
+import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
+import { BackToSaveButton } from "../components/BackToSaveButton";
 
 function extractErrorMessage(error: AnyError) {
   let message = error.message;
@@ -101,8 +103,13 @@ function StoreEntriesEntry({
   const saveEntry = useSaveEntry(storePath);
   const schemasQuery = useZStoreSchemas(storePath);
   const entryQuery = useZNodeValue([...storePath, "State", entryName]);
-  const { openEntry, openEntrySchema, replaceToEntries, replaceToEntry } =
-    useStoreNavigation();
+  const {
+    openEntry,
+    backToEntry,
+    openEntrySchema,
+    replaceToEntries,
+    replaceToEntry,
+  } = useStoreNavigation();
   const deleteFile = useDeleteEntry(
     storePath,
     useMemo(
@@ -187,6 +194,25 @@ function StoreEntriesEntry({
       spinner={
         saveEntry.isLoading || schemasQuery.isFetching || entryQuery.isFetching
       }
+      footer={
+        isDirty ? (
+          path.length ? (
+            <BackToSaveButton
+              onPress={() => {
+                backToEntry(entryName, path);
+              }}
+            />
+          ) : (
+            <SaveOrDiscardFooter
+              onSave={doSave.handle}
+              onDiscard={() => {
+                doSave.reset();
+                releaseDirty();
+              }}
+            />
+          )
+        ) : null
+      }
       actions={[
         {
           key: "Refresh",
@@ -247,32 +273,6 @@ function StoreEntriesEntry({
               schemaStore={schemaStore}
             />
           </VStack>
-          <Spacer />
-          {isDirty &&
-            (path.length ? (
-              <StoreFeatureLink
-                title="Unsaved Changes. Go Back to Save"
-                to={{
-                  key: "entries",
-                  entryName,
-                  path: path.slice(0, -1),
-                }}
-                icon="backward"
-              />
-            ) : (
-              <HStack padded>
-                <Button
-                  chromeless
-                  danger
-                  title="Discard"
-                  onPress={() => {
-                    doSave.reset();
-                    releaseDirty();
-                  }}
-                />
-                <Button primary title="Save Changes" onPress={doSave.handle} />
-              </HStack>
-            ))}
         </JSONSchemaEditorContext.Provider>
       )}
     </FeaturePane>

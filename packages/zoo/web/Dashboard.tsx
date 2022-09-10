@@ -1,5 +1,5 @@
 import { ComponentProps, Context, ReactNode, useContext, useMemo } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import {
   Button,
   Icon,
@@ -22,10 +22,10 @@ export function NavSidebar({
   footer?: ReactNode | null;
 }) {
   return (
-    <View
+    <ScrollView
       style={{
         backgroundColor: "#f9d9fb",
-        width: NavigationBarWidth,
+        maxWidth: NavigationBarWidth,
         borderRightWidth: 1,
         borderColor: "#ccc",
         paddingTop: 80,
@@ -33,7 +33,7 @@ export function NavSidebar({
     >
       <View style={{ flex: 1 }}>{children}</View>
       {footer}
-    </View>
+    </ScrollView>
   );
 }
 

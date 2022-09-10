@@ -20,6 +20,7 @@
     "@react-navigation/native": "^6.0.12",
     "@react-navigation/native-stack": "^6.8.0",
     "@react-navigation/stack": "*",
+    "expo-blur": "*",
     "expo-clipboard": "~3.1.0",
     "expo-font": "~10.2.0",
     "expo-linear-gradient": "~11.4.0",
