@@ -233,7 +233,7 @@ export async function startApp() {
       enabledSchemas,
       {
         title: storeId,
-        icon: "folder-open",
+        icon: "briefcase",
       },
     );
     const newMemoryStore = { store, settings: storeSettings };

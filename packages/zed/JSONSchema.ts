@@ -68,7 +68,7 @@ export const NumberSchemaSchema = {
   properties: {
     type: { const: "number", title: "Number" },
     ...SchemaMeta,
-    default: { type: "number" }, // uhh this implies the need of a more powerful generic/recursion o_O. Like {$ref:'#'}
+    default: { type: "number", title: "Number" }, // uhh this implies the need of a more powerful generic/recursion o_O. Like {$ref:'#'}
   },
   propertyTitles: {
     ...SchemaMetaTitles,
@@ -158,7 +158,7 @@ export const BooleanSchemaSchema = {
   properties: {
     type: { const: "boolean" },
     ...SchemaMeta,
-    default: { type: "boolean" }, // uhh this implies the need of a more powerful generic/recursion o_O
+    default: { type: "boolean", title: "Switch" },
   },
   propertyTitles: {
     ...SchemaMetaTitles,
