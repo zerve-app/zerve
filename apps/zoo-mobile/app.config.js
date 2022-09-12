@@ -6,6 +6,7 @@ export default () => {
       version: "1.0.0",
       orientation: "portrait",
       scheme: "zerve",
+      jsEngine: "hermes",
       userInterfaceStyle: "automatic",
       backgroundColor: "#806896",
       primaryColor: "#8147b7",
