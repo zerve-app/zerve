@@ -1,4 +1,5 @@
 import React, {
+  ComponentProps,
   ReactNode,
   useContext,
   useEffect,
@@ -75,8 +76,43 @@ function LabelButton({
   );
 }
 
+function ButtonFormHeader({
+  title,
+  hasChanged,
+  onPress,
+  icon,
+}: {
+  title: string;
+  hasChanged?: boolean;
+  onPress: () => void;
+  icon: ComponentProps<typeof Icon>["name"];
+}) {
+  const colors = useColors();
+
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: hasChanged ? colors.changedTint : undefined,
+        paddingHorizontal: hasChanged ? 4 : 0,
+        paddingVertical: hasChanged ? 6 : 0,
+        borderRadius: 4,
+      }}
+    >
+      <LabelButton
+        title={title}
+        onPress={onPress}
+        style={{ marginRight: 8, textAlign: "left" }}
+      />
+      {icon && <Icon name={icon} color={colors.tint} size={12} />}
+    </View>
+  );
+}
+
 export function ObjectEditor({
   value,
+  comparisonValue,
   onValue,
   id,
   schema,
@@ -84,6 +120,7 @@ export function ObjectEditor({
   onSubmitEditing,
 }: {
   value: any;
+  comparisonValue?: any;
   onValue?: (v: any) => void;
   id: string;
   schema: JSONSchema;
@@ -114,7 +151,6 @@ export function ObjectEditor({
 
   const propertyKeys = new Set(propertyKeyList);
   const otherKeys = value ? valueKeys.filter((p) => !propertyKeys.has(p)) : [];
-
   const importValue = useValueImporter(schemaStore);
 
   const propertyNameInput = useTextInputFormModal<null | string>(
@@ -164,7 +200,6 @@ export function ObjectEditor({
   // @#$&* ^^^^^^^
   // *#Y$% there is some binding issue that prevents the correct value from flowing through to the property onValue callback in certain cases
   // )@#Y@ DRAGON ALERT
-  const { tint } = useColors();
   return (
     <VStack>
       {schema.description ? <Paragraph>{schema.description}</Paragraph> : null}
@@ -178,36 +213,37 @@ export function ObjectEditor({
       {propertyKeyList.map((propertyName, propertyIndex, allKeys) => {
         const fieldLabel = propertyTitles?.[propertyName] || propertyName;
         if (value?.[propertyName] === undefined) {
-          if (onValue)
+          if (onValue) {
+            const keyHasChanged = comparisonValue?.[propertyName] !== undefined;
             return (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <LabelButton
-                  title={`Add ${fieldLabel}`}
-                  onPress={() => {
-                    const propertySchema = schema.properties?.[propertyName];
-                    if (!propertySchema)
-                      throw new Error(
-                        `Can not find valid schema for "${propertyName}" property`,
-                      );
-                    const defaultValue = getDefaultSchemaValue(
-                      propertySchema,
-                      schemaStore,
+              <ButtonFormHeader
+                title={`Add ${fieldLabel}`}
+                icon="chevron-right"
+                hasChanged={keyHasChanged}
+                onPress={() => {
+                  const propertySchema = schema.properties?.[propertyName];
+                  if (!propertySchema)
+                    throw new Error(
+                      `Can not find valid schema for "${propertyName}" property`,
                     );
-                    const importedValue = importValue(
-                      defaultValue,
-                      propertySchema,
-                    );
-                    onValue({
-                      ...(value || {}),
-                      [propertyName]: importedValue,
-                    });
-                  }}
-                  style={{ marginRight: 8, textAlign: "left" }}
-                />
-                <Icon name="chevron-right" color={tint} size={12} />
-              </View>
+                  const defaultValue = getDefaultSchemaValue(
+                    propertySchema,
+                    schemaStore,
+                  );
+                  const importedValue = importValue(
+                    defaultValue,
+                    propertySchema,
+                  );
+                  onValue({
+                    ...(value || {}),
+                    [propertyName]: importedValue,
+                  });
+                }}
+              />
             );
-          return <Label secondary>{propertyName}</Label>;
+          } else {
+            return <Label secondary>{propertyName}</Label>;
+          }
         }
         const actions = [];
         if (onValue && (!required || required.indexOf(propertyName) === -1)) {
@@ -223,11 +259,18 @@ export function ObjectEditor({
           });
         }
         const isLastKey = propertyIndex === allKeys.length - 1;
+        const childCompareValue =
+          comparisonValue === undefined
+            ? undefined
+            : comparisonValue?.[propertyName] === undefined
+            ? MissingValueSymbol
+            : comparisonValue?.[propertyName];
         return (
           <FormField
             id={`${id}-${propertyName}`}
             key={propertyName}
             value={value?.[propertyName]}
+            comparisonValue={childCompareValue}
             valueKey={propertyName}
             schema={schema.properties?.[propertyName]}
             schemaStore={schemaStore}
@@ -291,11 +334,18 @@ export function ObjectEditor({
             },
           });
         }
+        const childCompareValue =
+          comparisonValue === undefined
+            ? undefined
+            : comparisonValue?.[itemName] === undefined
+            ? MissingValueSymbol
+            : comparisonValue?.[itemName];
         return (
           <FormField
             id={`${id}-${itemName}`}
             key={itemName}
             value={value?.[itemName]}
+            comparisonValue={childCompareValue}
             valueKey={itemName}
             schema={
               schema.additionalProperties == null
@@ -337,6 +387,7 @@ export function ObjectEditor({
 
 export function ArrayEditor({
   value,
+  comparisonValue,
   onValue,
   schema,
   id,
@@ -344,6 +395,7 @@ export function ArrayEditor({
   onSubmitEditing,
 }: {
   value: any;
+  comparisonValue?: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   id: string;
@@ -391,11 +443,18 @@ export function ArrayEditor({
             },
           });
         }
+        const childCompareValue =
+          comparisonValue === undefined
+            ? undefined
+            : comparisonValue?.[childValueIndex] === undefined
+            ? MissingValueSymbol
+            : comparisonValue?.[childValueIndex];
         return (
           <FormField
             id={`${id}_${childValueIndex}`}
             label={`#${childValueIndex}`}
             value={childValue}
+            comparisonValue={childCompareValue}
             valueKey={String(childValueIndex)}
             schema={schema.items}
             schemaStore={schemaStore}
@@ -445,7 +504,8 @@ function ValueLine({ value, schema }: { value: any; schema: any }) {
     if (overrideAsText)
       return <ThemedText {...lineProps}>{overrideAsText(value)}</ThemedText>;
   }
-  if (value === null) return <ThemedText>Empty</ThemedText>;
+  if (value === null) return <ThemedText secondary>(Empty)</ThemedText>;
+  if (value === "") return <ThemedText secondary>(Empty Text)</ThemedText>;
   if (typeof value === "object") {
     if (typeof value.title === "string")
       return <ThemedText {...lineProps}>{value.title}</ThemedText>;
@@ -557,6 +617,7 @@ function ObjectField({
   label,
   labelActions,
   value,
+  comparisonValue,
   valueKey,
   onValue,
   schema,
@@ -566,6 +627,7 @@ function ObjectField({
   label: string;
   labelActions?: ActionButtonDef[];
   value: any;
+  comparisonValue?: any;
   valueKey: string;
   onValue?: (v: any) => void;
   id: string;
@@ -574,6 +636,7 @@ function ObjectField({
 }) {
   const { openChildEditor } = useContext(JSONSchemaEditorContext);
   const typeLabel = getHumanLabelOfSchema(schema);
+  const colors = useColors();
   return (
     <>
       <FieldHeader
@@ -585,6 +648,11 @@ function ObjectField({
         actions={actions}
       />
       <ContentButton
+        tint={
+          comparisonValue !== undefined && comparisonValue !== value
+            ? colors.changedTint
+            : null
+        }
         disabled={!openChildEditor}
         onPress={
           openChildEditor
@@ -604,6 +672,7 @@ function ArrayField({
   label,
   labelActions,
   value,
+  comparisonValue,
   onValue,
   schema,
   valueKey,
@@ -613,13 +682,14 @@ function ArrayField({
   label: string;
   labelActions?: ActionButtonDef[];
   value: any;
+  comparisonValue?: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   valueKey: string;
   actions?: ActionButtonDef[];
 }) {
   const { openChildEditor } = useContext(JSONSchemaEditorContext);
-
+  const colors = useColors();
   return (
     <>
       <FieldHeader
@@ -632,6 +702,11 @@ function ArrayField({
       />
       <ContentButton
         disabled={!openChildEditor}
+        tint={
+          comparisonValue !== undefined && comparisonValue !== value
+            ? colors.changedTint
+            : null
+        }
         onPress={
           openChildEditor
             ? () => {
@@ -650,6 +725,7 @@ function EnumField({
   id,
   label,
   value,
+  comparisonValue,
   onValue,
   schema,
   actions,
@@ -657,6 +733,7 @@ function EnumField({
   id: string;
   label: string | ReactNode;
   value: any;
+  comparisonValue?: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   actions?: ActionButtonDef[];
@@ -664,6 +741,7 @@ function EnumField({
   if (!onValue) {
     return <InfoRow label={label} value={value} />;
   }
+  const colors = useColors();
   return (
     <>
       <FieldHeader
@@ -676,6 +754,11 @@ function EnumField({
       <Dropdown
         id={id}
         value={value}
+        tint={
+          comparisonValue !== undefined && value !== comparisonValue
+            ? colors.changedTint
+            : null
+        }
         unselectedLabel={`Choose: ${schema.enum.slice(0, 5).join(",")}`}
         onOptionSelect={onValue}
         options={schema.enum.map((optionValue) => ({
@@ -792,6 +875,7 @@ export function OneOfField({
   label,
   labelActions,
   value,
+  comparisonValue,
   valueKey,
   onValue,
   schema,
@@ -803,6 +887,7 @@ export function OneOfField({
   label: string;
   labelActions?: ActionButtonDef[];
   value: any;
+  comparisonValue?: any;
   valueKey: string;
   onValue?: (v: any) => void;
   schema: JSONSchema;
@@ -859,6 +944,7 @@ export function OneOfField({
               options={unionOptions.options}
               unselectedLabel={`[Type Not Selected]`}
               value={matched}
+              // tint={}
               onOptionSelect={(optionValue) => {
                 const converter = unionOptions.converters[Number(optionValue)];
                 const convertedValue = converter(value);
@@ -871,6 +957,7 @@ export function OneOfField({
         <FormField
           id={id}
           value={value}
+          comparisonValue={comparisonValue}
           valueKey={valueKey}
           onValue={onValue}
           schema={matchedSchema}
@@ -891,6 +978,7 @@ type FormFieldProps = {
   label: string;
   labelActions?: ActionButtonDef[];
   value: any;
+  comparisonValue?: any;
   onValue?: (v: any) => void;
   id: string;
   schema: JSONSchema;
@@ -930,6 +1018,7 @@ export function FormField(fieldProps: FormFieldProps) {
     label,
     labelActions,
     value,
+    comparisonValue,
     onValue,
     id,
     schema,
@@ -959,6 +1048,7 @@ export function FormField(fieldProps: FormFieldProps) {
         <OverrideComponent
           id={id}
           value={value}
+          comparisonValue={comparisonValue}
           onValue={onValue}
           schema={schema}
           onSubmitEditing={onSubmitEditing}
@@ -969,7 +1059,6 @@ export function FormField(fieldProps: FormFieldProps) {
   if (!schema) {
     if (valueKey[0] === "$") return null;
     const deleteAction = actions?.find((a) => a.key === "Delete");
-    console.log(actions?.map((action) => action.key));
     return (
       <Notice
         danger
@@ -992,6 +1081,7 @@ export function FormField(fieldProps: FormFieldProps) {
       <LeafField
         id={id}
         value={value}
+        comparisonValue={comparisonValue}
         schema={schema}
         label={label}
         labelActions={labelActions}
@@ -1008,6 +1098,7 @@ export function FormField(fieldProps: FormFieldProps) {
       <OneOfField
         id={id}
         value={value}
+        comparisonValue={comparisonValue}
         valueKey={valueKey}
         schema={schema}
         schemaStore={schemaStore}
@@ -1024,6 +1115,7 @@ export function FormField(fieldProps: FormFieldProps) {
       <EnumField
         id={id}
         value={value}
+        comparisonValue={comparisonValue}
         schema={schema}
         label={label}
         labelActions={labelActions}
@@ -1037,6 +1129,7 @@ export function FormField(fieldProps: FormFieldProps) {
       <ObjectField
         id={id}
         value={value}
+        comparisonValue={comparisonValue}
         schema={schema}
         label={label}
         labelActions={labelActions}
@@ -1052,6 +1145,7 @@ export function FormField(fieldProps: FormFieldProps) {
       <ArrayField
         id={id}
         value={value}
+        comparisonValue={comparisonValue}
         valueKey={valueKey}
         schema={schema}
         label={label}
@@ -1071,6 +1165,7 @@ export function LeafField({
   label,
   labelActions,
   value,
+  comparisonValue,
   onValue,
   schema,
   schemaStore,
@@ -1081,6 +1176,7 @@ export function LeafField({
   label: string | ReactNode;
   labelActions?: ActionButtonDef[];
   value: any;
+  comparisonValue?: any;
   id: string;
   onValue?: (v: any) => void;
   schema: LeafSchema;
@@ -1091,6 +1187,7 @@ export function LeafField({
   const description = schema.description ? (
     <Paragraph>{schema.description}</Paragraph>
   ) : null;
+  const colors = useColors();
   if (schema.const != null) {
     if (value === schema.const) {
       return (
@@ -1141,6 +1238,11 @@ export function LeafField({
           id={id}
           disabled={!onValue}
           value={value}
+          tint={
+            comparisonValue !== undefined && value !== comparisonValue
+              ? colors.changedTint
+              : null
+          }
           onValue={onValue}
           placeholder={schema.placeholder}
           autoCapitalize={autoCapitalize}
@@ -1170,6 +1272,11 @@ export function LeafField({
           placeholder={String(defaultNumber)}
           keyboardType={schema.type === "integer" ? "number-pad" : "numeric"}
           value={value == null ? "" : String(value)}
+          tint={
+            comparisonValue !== undefined && value !== comparisonValue
+              ? colors.changedTint
+              : null
+          }
           onSubmitEditing={onSubmitEditing}
           onValue={
             onValue ? (valueString) => onValue(Number(valueString)) : undefined
@@ -1190,7 +1297,16 @@ export function LeafField({
           value={value}
           actions={actions}
         />
-        <SwitchInput disabled={!onValue} value={value} onValue={onValue} />
+        <SwitchInput
+          disabled={!onValue}
+          value={value}
+          onValue={onValue}
+          tint={
+            comparisonValue !== undefined && value !== comparisonValue
+              ? colors.changedTint
+              : null
+          }
+        />
         {description}
       </>
     );
@@ -1214,8 +1330,11 @@ export function LeafField({
   return <ThemedText danger>Invalid field schema</ThemedText>;
 }
 
+const MissingValueSymbol = Symbol("MissingValue");
+
 export function JSONSchemaEditor({
   value,
+  comparisonValue,
   onValue,
   schema,
   label,
@@ -1224,6 +1343,7 @@ export function JSONSchemaEditor({
   onSubmitEditing,
 }: {
   value: any;
+  comparisonValue?: any;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   label?: string | ReactNode;
@@ -1231,6 +1351,7 @@ export function JSONSchemaEditor({
   onSubmitEditing?: () => void;
   id: string;
 }) {
+  const colors = useColors();
   const expandedSchema = useMemo(
     () => expandSchema(schema, schemaStore),
     [schema, schemaStore],
@@ -1245,6 +1366,7 @@ export function JSONSchemaEditor({
         <OverrideComponent
           id={id}
           value={value}
+          comparisonValue={comparisonValue}
           onValue={onValue}
           schema={schema}
           onSubmitEditing={onSubmitEditing}
@@ -1261,6 +1383,8 @@ export function JSONSchemaEditor({
   if (expandedSchema.oneOf) {
     const unionOptions = exploreUnionSchema(expandedSchema);
     const matched = unionOptions.match(value);
+    const matchedComparison =
+      comparisonValue !== undefined && unionOptions.match(comparisonValue);
     const matchedSchema = expandedSchema.oneOf[Number(matched)];
     return (
       <>
@@ -1269,6 +1393,11 @@ export function JSONSchemaEditor({
             id={`${id}-oneof-select`}
             options={unionOptions.options}
             value={matched}
+            tint={
+              comparisonValue !== undefined && matched !== matchedComparison
+                ? colors.tint
+                : null
+            }
             unselectedLabel={`Select Type...`}
             onOptionSelect={(optionValue) => {
               const converter = unionOptions.converters[Number(optionValue)];
@@ -1281,6 +1410,7 @@ export function JSONSchemaEditor({
           <JSONSchemaEditor
             id={`${id}`}
             value={value}
+            comparisonValue={comparisonValue}
             onValue={onValue}
             schema={matchedSchema}
             schemaStore={schemaStore}
@@ -1298,6 +1428,7 @@ export function JSONSchemaEditor({
       <ArrayEditor
         id={id}
         value={value}
+        comparisonValue={comparisonValue}
         onValue={onValue}
         schema={expandedSchema}
         schemaStore={schemaStore}
@@ -1310,6 +1441,7 @@ export function JSONSchemaEditor({
       <ObjectEditor
         id={id}
         value={value}
+        comparisonValue={comparisonValue}
         onValue={onValue}
         schema={expandedSchema}
         schemaStore={schemaStore}
@@ -1323,6 +1455,7 @@ export function JSONSchemaEditor({
         id={id}
         label={label || ""}
         value={value}
+        comparisonValue={comparisonValue}
         onValue={onValue}
         schema={expandedSchema}
         schemaStore={schemaStore}
@@ -1336,6 +1469,7 @@ export function JSONSchemaEditor({
         id={id}
         label={expandedSchema?.title || expandedSchema.type || "enum"}
         value={value}
+        comparisonValue={comparisonValue}
         onValue={onValue}
         schema={schema}
       />
