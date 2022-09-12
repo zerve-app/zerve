@@ -52,13 +52,18 @@ export function useUnsaved(): UnsavedCtx {
         id,
         setTimeout(() => {
           notifiers?.forEach((notify) => notify(value));
-        }, 150) as unknown as number,
+        }, 200) as unknown as number,
       );
     }
     return {
       releaseDirty: (id: string) => {
         if (dirtyIdRef.current === id) {
-          notify(id, undefined);
+          clearTimeout(
+            dirtyValueNotifyTimeout.current.get(id) as unknown as number,
+          );
+          dirtyValueSubscribers.current
+            .get(id)
+            ?.forEach((notify) => notify(undefined));
           dirtyValue.current = null;
           dirtyIdRef.current = null;
           setDirtyId(null);
@@ -66,6 +71,15 @@ export function useUnsaved(): UnsavedCtx {
       },
       discardDirty: () => {
         if (dirtyIdRef.current) {
+          clearTimeout(
+            dirtyValueNotifyTimeout.current.get(
+              dirtyIdRef.current,
+            ) as unknown as number,
+          );
+          dirtyValueSubscribers.current
+            .get(dirtyIdRef.current)
+            ?.forEach((notify) => notify(undefined));
+
           notify(dirtyIdRef.current, undefined);
         }
         dirtyValue.current = null;
@@ -109,14 +123,12 @@ export function useUnsaved(): UnsavedCtx {
 }
 
 export function useUnsavedDeepValue({
-  onImport,
   dirtyId,
   savedValue,
   path,
   fullSchema,
   isActive,
 }: {
-  onImport?: (v: any, schema: JSONSchema) => any;
   dirtyId: string;
   savedValue: any;
   path: string[];
@@ -124,13 +136,7 @@ export function useUnsavedDeepValue({
   isActive: boolean;
 }) {
   const { schema: savedPathSchema, value: savedPathValue } = useMemo(() => {
-    const importedValue =
-      savedValue === undefined
-        ? undefined
-        : onImport
-        ? onImport(savedValue, fullSchema)
-        : savedValue;
-    return drillSchemaValue(fullSchema, importedValue, path);
+    return drillSchemaValue(fullSchema, savedValue, path);
   }, [fullSchema, savedValue, path]);
   const {
     claimDirty,
@@ -154,15 +160,9 @@ export function useUnsavedDeepValue({
   }, [dirtyId]);
 
   const { schema: currentPathSchema, value: currentPathValue } = useMemo(() => {
-    const importedValue =
-      currentValue === undefined
-        ? undefined
-        : onImport
-        ? onImport(currentValue, fullSchema)
-        : currentValue;
-    const { schema, value } = drillSchemaValue(fullSchema, importedValue, path);
+    const { schema, value } = drillSchemaValue(fullSchema, currentValue, path);
     return { schema, value };
-  }, [fullSchema, currentValue, path, onImport]);
+  }, [fullSchema, currentValue, path]);
 
   useEffect(() => {
     if (!isActive) setLocalDraftValue(undefined);
@@ -188,6 +188,7 @@ export function useUnsavedDeepValue({
 
   return {
     pathValue,
+    savedPathValue,
     pathSchema,
     onPathValue,
     isDirty,
