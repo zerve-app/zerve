@@ -1,5 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
-import React, { ComponentProps } from "react";
+import { ComponentProps } from "react";
+import { ColorValue } from "react-native";
 import { useColors } from "./useColors";
 
 export function Icon({
@@ -10,7 +11,7 @@ export function Icon({
   size = 24,
 }: {
   name: ComponentProps<typeof FontAwesome>["name"];
-  color?: string;
+  color?: ColorValue;
   size?: number;
   primary?: boolean;
   danger?: boolean;

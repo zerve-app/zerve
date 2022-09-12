@@ -1,9 +1,10 @@
 import React, { ComponentProps } from "react";
-import { Switch, TextInput, View } from "react-native";
+import { ColorValue, Switch, TextInput, View } from "react-native";
 import { useColors } from "./useColors";
 import { Label } from "./Label";
 import { getRowStyles, marginHInset, marginVInset } from "./Row";
 import { ZTextInputType } from "@zerve/zed";
+import Layout from "./Layout";
 
 export function Input({
   value,
@@ -11,6 +12,7 @@ export function Input({
   onValue,
   onSubmitEditing,
   label,
+  tint,
   placeholder,
   autoCapitalize,
   autoFocus,
@@ -27,6 +29,7 @@ export function Input({
   onValue?: (value: string) => void;
   onSubmitEditing?: () => void;
   label?: string;
+  tint?: ColorValue | null;
   placeholder?: string;
   autoCapitalize?: "characters" | "words" | "none" | "sentences";
   autoFocus?: boolean;
@@ -53,7 +56,7 @@ export function Input({
         style={{
           ...getRowStyles(colors),
           color: colors.text,
-          backgroundColor: colors.background,
+          backgroundColor: tint || colors.background,
           outlineColor: colors.tint,
         }}
         focusable={!disabled}
@@ -78,17 +81,35 @@ export function SwitchInput({
   value,
   onValue,
   label,
+  tint,
   disabled,
 }: {
   value: boolean;
   onValue?: (value: boolean) => void;
   label?: string;
+  tint?: ColorValue | null;
   disabled?: boolean;
 }) {
+  const colors = useColors();
   return (
-    <View style={{}}>
+    <View
+      style={{
+        backgroundColor: tint || undefined,
+        borderRadius: Layout.borderRadius,
+        padding: Layout.paddingHorizontal,
+      }}
+    >
       {label != null && <Label>{label}</Label>}
-      <Switch onValueChange={onValue} value={value} disabled={disabled} />
+      <Switch
+        onValueChange={onValue}
+        value={value}
+        disabled={disabled}
+        ios_backgroundColor={colors.secondaryText}
+        trackColor={{
+          false: colors.secondaryText,
+          true: colors.tint,
+        }}
+      />
     </View>
   );
 }

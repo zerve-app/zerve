@@ -1,6 +1,13 @@
 import React from "react";
 
-import { Pressable, View, Text, StyleProp, ViewStyle } from "react-native";
+import {
+  Pressable,
+  View,
+  Text,
+  StyleProp,
+  ViewStyle,
+  ColorValue,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -251,17 +258,19 @@ export function ContentButton({
   children,
   onPress,
   disabled,
+  tint,
 }: {
   children: ReactNode;
   onPress?: (() => void) | null;
   disabled?: boolean;
+  tint?: ColorValue | null;
 }) {
   const colors = useColors();
   return (
     <Pressable onPress={onPress} disabled={!!disabled || !onPress}>
       <View
         style={{
-          backgroundColor: `${colors.background}88`,
+          backgroundColor: tint || `${colors.background}88`,
           borderWidth: 1,
           borderColor: `${colors.secondaryText}33`,
           borderRadius: Layout.borderRadius,

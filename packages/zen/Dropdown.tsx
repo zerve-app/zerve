@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { ColorValue, Text, View } from "react-native";
 import * as Select from "@radix-ui/react-select";
 import Layout from "./Layout";
 import { useAllColors, useColors } from "./useColors";
@@ -86,6 +86,7 @@ const UNSELECTED_ITEM_KEY = "$dropdown_unselected_key";
 export function DropdownUnmemo({
   options,
   value,
+  tint,
   onOptionSelect,
   unselectedLabel = "Select...",
   id,
@@ -95,6 +96,7 @@ export function DropdownUnmemo({
   value: string | null;
   id: string;
   onOptionSelect: (optionValue: string) => void;
+  tint?: ColorValue | null;
   unselectedLabel?: string;
   allowUnselect?: boolean;
 }) {
@@ -115,7 +117,7 @@ export function DropdownUnmemo({
           display: "flex",
           alignSelf: "stretch",
           justifySelf: "stretch",
-          backgroundColor: background,
+          backgroundColor: tint || background,
           borderRadius: Layout.borderRadius,
           padding: 12,
           flexDirection: "row",
