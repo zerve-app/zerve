@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { Notice } from "./Notice";
 
 type CustomAttributes = {
   bold: boolean;
@@ -64,7 +65,7 @@ export function HumanTextInput({
   delta: Delta;
   onDelta: (d: Delta) => void;
 }) {
-  throw new Error("not supported yet");
+  return <Notice message="HumanText not supported on mobile yet." />;
   const [selection, setSelection] = useState<null | Selection>(null);
   const [applyingAttributes, setApplyingAttributes] =
     useState<CustomAttributes>(noAttributes);
