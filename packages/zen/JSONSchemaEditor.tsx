@@ -204,7 +204,12 @@ export function ObjectEditor({
     <VStack>
       {schema.description ? <Paragraph>{schema.description}</Paragraph> : null}
       {!!errors.length && (
-        <Paragraph>Errors: {errors.map((e) => e.message).join(". ")}</Paragraph>
+        <Notice
+          danger
+          message={`Error${errors.length > 1 ? "s" : ""}: ${errors
+            .map((e) => e.message)
+            .join(". ")}`}
+        />
       )}
       {valueKeys.length === 0 && propertyKeyList.length === 0 && (
         <ThemedText>Object is Empty.</ThemedText>
@@ -559,7 +564,7 @@ function ValueView({ value, schema }: { value: any; schema: any }) {
       </View>
     );
   }
-  if (typeof value === "object") {
+  if (typeof value === "object" && value !== null) {
     const entries = Object.entries(value);
     const { visible, remainder } = limitList(
       entries.filter((entry) => {

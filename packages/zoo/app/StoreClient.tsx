@@ -216,7 +216,6 @@ export function useStoreEntry(
       const { value, schema } = results;
       const fullSchema = expandSchema(schema, schemas.data);
       const importedValue = importValue(value, fullSchema);
-      debugger;
       return {
         schema: fullSchema,
         value: importedValue,

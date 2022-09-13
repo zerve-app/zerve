@@ -38,7 +38,7 @@ export function getValueImport(
       const itemsSchema = schema.items;
       return v.map((node) => importNode(node, itemsSchema));
     }
-    if (schema.type === "object" && typeof v === "object") {
+    if (schema.type === "object" && typeof v === "object" && v !== null) {
       return Object.fromEntries(
         Object.entries(v).map(([key, childValue]) => [
           key,

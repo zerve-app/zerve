@@ -125,8 +125,6 @@ function StoreEntriesEntry({
     return getValueExport(editorContext.OverrideFieldComponents);
   }, [editorContext.OverrideFieldComponents]);
 
-  const { data: entry } = useStoreEntry(storePath, entryName, editorContext);
-
   const deleteFile = useDeleteEntry(
     storePath,
     useMemo(
@@ -151,17 +149,7 @@ function StoreEntriesEntry({
       };
     },
   );
-
-  // const entrySchema = entryQuery.data?.schema;
-  // const savedEntryValue = entryQuery.data?.value;
-  // const schemaStore = schemasQuery.data || EmptySchemaStore;
-
   const dirtyId = `entry-${entryName}`;
-  // const fullSchema = useMemo(() => {
-  //   const expanded = entrySchema && expandSchema(entrySchema, schemaStore);
-  //   return expanded;
-  // }, [entrySchema, schemaStore]);
-
   const {
     pathValue,
     savedPathValue,
