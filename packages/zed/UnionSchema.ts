@@ -224,7 +224,7 @@ export function mergeValue(
         `Can not set child "${child}" in array at path "${path.join(".")}".`,
       );
     }
-    const newMainValue = Array.from(mainValue);
+    const newMainValue = [...mainValue];
     newMainValue[childIndex] = mergeValue(
       newMainValue[childIndex],
       rest,

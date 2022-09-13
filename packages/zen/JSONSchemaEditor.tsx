@@ -1395,7 +1395,7 @@ export function JSONSchemaEditor({
             value={matched}
             tint={
               comparisonValue !== undefined && matched !== matchedComparison
-                ? colors.tint
+                ? colors.changedTint
                 : null
             }
             unselectedLabel={`Select Type...`}

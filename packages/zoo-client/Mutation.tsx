@@ -133,7 +133,15 @@ export function useSaveEntry(storePath: string[]) {
           "State",
           name,
           ".node",
-          "value",
+          "value", // todo maybe we dont need this
+        ]);
+        queryClient.invalidateQueries([
+          conn?.key,
+          "z",
+          ...storePath,
+          "State",
+          name,
+          "fullComputedEntry",
         ]);
       },
     },

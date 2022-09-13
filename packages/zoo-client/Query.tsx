@@ -8,12 +8,7 @@ import { getZ } from "./ServerCalls";
 import { useConnection, Connection, UnauthorizedSymbol } from "./Connection";
 import { getTypedZ } from "./ServerCalls";
 import { createContext, useContext, useEffect, useMemo } from "react";
-import {
-  displayStoreFileName,
-  GenericError,
-  ZSchema,
-  ZSchemaSchema,
-} from "@zerve/zed";
+import { GenericError } from "@zerve/zed";
 
 export type QueryOptions = {
   skipLoading?: boolean;
@@ -31,7 +26,7 @@ export function useConnectionProjects(
   return useZNode([...storePath, "State"], options);
 }
 
-function useConnectionQuery<Result>(
+export function useConnectionQuery<Result>(
   conn: Connection | null,
   path: string[],
   getQuery: () => Promise<Result>,
@@ -121,138 +116,4 @@ export function useZChildren(path: string[], options?: QueryOptions) {
       onError: options?.onError,
     },
   );
-}
-
-export function schemaStoreToSchema(
-  schemaStore: Record<string, ZSchema>,
-  filterRef?: string,
-) {
-  const refSchemas = Object.entries(schemaStore || {})
-    .filter(([schemaName]) => {
-      if (filterRef === schemaName) return false;
-      return true;
-    })
-    .map(([schemaName, schema]) => {
-      const $id = `https://type.zerve.link/${schemaName}`;
-      return {
-        $id,
-        type: "object",
-        properties: {
-          title: { const: displayStoreFileName(schemaName) },
-          $ref: { const: $id },
-        },
-        additionalProperties: false,
-        required: ["$ref", "title"],
-      };
-    });
-  const finalSchema = {
-    oneOf: [
-      ...ZSchemaSchema.oneOf.map((zSubSchema) => {
-        if (zSubSchema.title === "List Schema") {
-          const listSchema = {
-            ...zSubSchema,
-            properties: {
-              ...zSubSchema.properties,
-              items: {
-                oneOf: [...zSubSchema.properties.items.oneOf, ...refSchemas],
-              },
-            },
-          };
-          return listSchema;
-        } else if (zSubSchema.title === "Object Schema") {
-          return {
-            ...zSubSchema,
-            properties: {
-              ...zSubSchema.properties,
-              properties: {
-                ...zSubSchema.properties.properties,
-                additionalProperties: {
-                  ...zSubSchema.properties.properties.additionalProperties,
-                  oneOf: [
-                    ...zSubSchema.properties.properties.additionalProperties
-                      .oneOf,
-                    ...refSchemas,
-                  ],
-                },
-              },
-              additionalProperties: {
-                ...zSubSchema.properties.additionalProperties,
-                oneOf: [
-                  ...zSubSchema.properties.additionalProperties.oneOf,
-                  ...refSchemas,
-                ],
-              },
-            },
-          };
-        } else {
-          return zSubSchema;
-        }
-      }),
-      ...refSchemas,
-    ],
-    $refSchemas: refSchemas,
-    $schemaStore: schemaStore,
-  };
-  return finalSchema;
-}
-
-export function useZStoreSchemas(storePath: string[], options?: QueryOptions) {
-  const conn = useConnection();
-  if (!conn) throw new Error("Cannot useDoc outside of connection context.");
-  return useConnectionQuery<Record<string, ZSchema>>(
-    conn,
-    [conn.key, "z", ...storePath, "State", "$schemas"],
-    async () => {
-      if (!conn || options?.skipLoading) return undefined;
-      const schemas = await getZ(conn, [...storePath, "State", "$schemas"]);
-      return schemas as Record<string, ZSchema>;
-    },
-    {
-      onError: options?.onError,
-    },
-  );
-}
-
-export function useZStoreSchema(
-  storePath: string[],
-  schemaName: string,
-  options?: QueryOptions,
-) {
-  const schemas = useZStoreSchemas(storePath, options);
-  const schema = useMemo(() => {
-    return {
-      ...schemas,
-      data: schemas.data?.[schemaName],
-    };
-  }, [schemas, schemas.data]);
-  return schema;
-}
-
-export function useZStoreEntrySchema(
-  storePath: string[],
-  options?: QueryOptions,
-) {
-  const schemas = useZStoreSchemas(storePath, options);
-  const schema = useMemo(() => {
-    return {
-      ...schemas,
-      data: schemaStoreToSchema(schemas.data),
-    };
-  }, [schemas, schemas.data]);
-  return schema;
-}
-
-export function useZStoreSchemaSchema(
-  storePath: string[],
-  schemaName: string,
-  options?: QueryOptions,
-) {
-  const schemas = useZStoreSchemas(storePath, options);
-  const schemaSchema = useMemo(() => {
-    return {
-      ...schemas,
-      data: schemaStoreToSchema(schemas.data, schemaName),
-    };
-  }, [schemas, schemas.data]);
-  return schemaSchema;
 }

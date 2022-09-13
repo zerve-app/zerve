@@ -1,30 +1,22 @@
 import {
-  Button,
-  HStack,
   JSONSchemaEditor,
   JSONSchemaEditorContext,
-  Spacer,
   useAsyncHandler,
   VStack,
 } from "@zerve/zen";
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { FeaturePane } from "../components/FeaturePane";
 import { useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
 import {
   StoreFeatureLink,
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
-import { useZNodeValue, useZStoreEntrySchema } from "@zerve/zoo-client/Query";
-import {
-  AnyError,
-  drillSchemaValue,
-  lookUpValue,
-  mergeValue,
-} from "@zerve/zed";
+import { AnyError } from "@zerve/zed";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { useUnsavedDeepValue } from "../app/Unsaved";
 import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
+import { useStoreEntrySchema } from "../app/StoreClient";
 
 function StoreEntriesSchema({
   storePath,
@@ -35,17 +27,11 @@ function StoreEntriesSchema({
   icon,
   isActive,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
-  const schemaSchemaQuery = useZStoreEntrySchema(storePath);
-  const entrySchemaQuery = useZNodeValue([
-    ...storePath,
-    "State",
-    entryName,
-    "schema",
-  ]);
-  const schemaStore = schemaSchemaQuery.data?.$schemaStore;
-
-  const saveSchema = useSaveEntrySchema(storePath, schemaStore);
-
+  const entrySchemaQuery = useStoreEntrySchema(storePath, entryName);
+  const saveSchema = useSaveEntrySchema(
+    storePath,
+    entrySchemaQuery.data?.schemaStore,
+  );
   const { openEntrySchema, backToEntrySchema } = useStoreNavigation();
   const editorContext = useMemo(() => {
     const ctx: JSONSchemaEditorContext = {
@@ -60,6 +46,7 @@ function StoreEntriesSchema({
 
   const {
     pathValue,
+    savedPathValue,
     pathSchema,
     onPathValue,
     releaseDirty,
@@ -68,8 +55,8 @@ function StoreEntriesSchema({
   } = useUnsavedDeepValue({
     isActive,
     path,
-    savedValue: entrySchemaQuery.data,
-    fullSchema: schemaSchemaQuery.data, // todo, expand?!
+    savedValue: entrySchemaQuery.data?.schema,
+    fullSchema: entrySchemaQuery.data?.schemaSchema,
     dirtyId,
   });
 
@@ -85,11 +72,7 @@ function StoreEntriesSchema({
       title={title}
       onBack={onBack}
       icon={icon}
-      spinner={
-        doSave.isLoading ||
-        schemaSchemaQuery.isFetching ||
-        entrySchemaQuery.isFetching
-      }
+      spinner={doSave.isLoading || entrySchemaQuery.isFetching}
       footer={
         isDirty &&
         (path.length ? (
@@ -110,14 +93,15 @@ function StoreEntriesSchema({
       }
     >
       <JSONSchemaEditorContext.Provider value={editorContext}>
-        {entrySchemaQuery.data && schemaSchemaQuery.data ? (
+        {entrySchemaQuery.data ? (
           <VStack padded>
             <JSONSchemaEditor
               id={dirtyId}
               onValue={onPathValue}
               value={pathValue}
+              comparisonValue={savedPathValue}
               schema={pathSchema}
-              schemaStore={schemaStore}
+              schemaStore={entrySchemaQuery.data?.schemaStore}
             />
           </VStack>
         ) : null}

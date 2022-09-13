@@ -38,12 +38,12 @@ import {
   StoreFeatureLinkButton,
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
-import { useZNodeValue, useZStoreSchemas } from "@zerve/zoo-client/Query";
 import { Notice } from "@zerve/zen/Notice";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { useUnsavedContext, useUnsavedDeepValue } from "../app/Unsaved";
 import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
+import { useStoreEntry } from "../app/StoreClient";
 
 function extractErrorMessage(error: AnyError) {
   let message = error.message;
@@ -101,8 +101,6 @@ function StoreEntriesEntry({
   isActive,
 }: StoreFeatureProps & { entryName: string; path: Array<string> }) {
   const saveEntry = useSaveEntry(storePath);
-  const schemasQuery = useZStoreSchemas(storePath);
-  const entryQuery = useZNodeValue([...storePath, "State", entryName]);
   const {
     openEntry,
     backToEntry,
@@ -110,6 +108,25 @@ function StoreEntriesEntry({
     replaceToEntries,
     replaceToEntry,
   } = useStoreNavigation();
+  // const schemasQuery = useStoreSchemas(storePath);
+  const editorContext = useMemo(() => {
+    return {
+      OverrideFieldComponents: {
+        "https://type.zerve.link/HumanText": HumanTextInput,
+      },
+      openChildEditor: (key: string) => {
+        openEntry(entryName, [...path, key]);
+      },
+    };
+  }, []);
+  const entryQuery = useStoreEntry(storePath, entryName, editorContext);
+
+  const exportValue = useMemo(() => {
+    return getValueExport(editorContext.OverrideFieldComponents);
+  }, [editorContext.OverrideFieldComponents]);
+
+  const { data: entry } = useStoreEntry(storePath, entryName, editorContext);
+
   const deleteFile = useDeleteEntry(
     storePath,
     useMemo(
@@ -134,35 +151,20 @@ function StoreEntriesEntry({
       };
     },
   );
-  const editorContext = useMemo(() => {
-    return {
-      OverrideFieldComponents: {
-        "https://type.zerve.link/HumanText": HumanTextInput,
-      },
-      openChildEditor: (key: string) => {
-        openEntry(entryName, [...path, key]);
-      },
-    };
-  }, []);
-  const entrySchema = entryQuery.data?.schema;
-  const savedEntryValue = entryQuery.data?.value;
-  const schemaStore = schemasQuery.data || EmptySchemaStore;
 
-  const [importValue, exportValue] = useMemo(() => {
-    return [
-      getValueImport(editorContext.OverrideFieldComponents),
-      getValueExport(editorContext.OverrideFieldComponents),
-    ];
-  }, [editorContext.OverrideFieldComponents]);
+  // const entrySchema = entryQuery.data?.schema;
+  // const savedEntryValue = entryQuery.data?.value;
+  // const schemaStore = schemasQuery.data || EmptySchemaStore;
 
   const dirtyId = `entry-${entryName}`;
-  const fullSchema = useMemo(() => {
-    const expanded = entrySchema && expandSchema(entrySchema, schemaStore);
-    return expanded;
-  }, [entrySchema, schemaStore]);
+  // const fullSchema = useMemo(() => {
+  //   const expanded = entrySchema && expandSchema(entrySchema, schemaStore);
+  //   return expanded;
+  // }, [entrySchema, schemaStore]);
 
   const {
     pathValue,
+    savedPathValue,
     pathSchema,
     onPathValue,
     releaseDirty,
@@ -171,15 +173,15 @@ function StoreEntriesEntry({
   } = useUnsavedDeepValue({
     isActive,
     path,
-    savedValue: savedEntryValue,
-    fullSchema,
-    onImport: importValue,
+    savedValue: entryQuery.data?.value,
+    fullSchema: entryQuery.data?.schema,
+    // onImport: importValue,
     dirtyId,
   });
 
   const doSave = useAsyncHandler<void, AnyError>(async () => {
     const internalValue = getDirty();
-    const exportedValue = exportValue(internalValue, fullSchema);
+    const exportedValue = exportValue(internalValue, entryQuery.data?.schema);
     await saveEntry.mutateAsync({
       name: entryName,
       value: exportedValue,
@@ -191,9 +193,7 @@ function StoreEntriesEntry({
       title={title}
       icon={icon}
       onBack={onBack}
-      spinner={
-        saveEntry.isLoading || schemasQuery.isFetching || entryQuery.isFetching
-      }
+      spinner={saveEntry.isLoading || entryQuery.isFetching}
       footer={
         isDirty ? (
           path.length ? (
@@ -251,9 +251,9 @@ function StoreEntriesEntry({
         },
       ]}
     >
-      {!(savedEntryValue !== undefined || !schemaStore) ? null : isEmptySchema(
-          entrySchema,
-        ) ? (
+      {!(
+        entryQuery.data?.value !== undefined || !entryQuery.data?.schema
+      ) ? null : isEmptySchema(entryQuery.data?.schema) ? (
         <EmptyEntryContent entryName={entryName} path={path} />
       ) : (
         <JSONSchemaEditorContext.Provider value={editorContext}>
@@ -269,8 +269,9 @@ function StoreEntriesEntry({
               id={`entry-${entryName}-${path.join("-")}`}
               onValue={onPathValue}
               value={pathValue}
+              comparisonValue={savedPathValue}
               schema={pathSchema}
-              schemaStore={schemaStore}
+              schemaStore={entryQuery.data?.schemaStore}
             />
           </VStack>
         </JSONSchemaEditorContext.Provider>

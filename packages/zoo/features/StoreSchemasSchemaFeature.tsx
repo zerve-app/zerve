@@ -19,15 +19,12 @@ import {
   StoreFeatureLink,
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
-import {
-  useZStoreSchema,
-  useZStoreSchemaSchema,
-} from "@zerve/zoo-client/Query";
 import { AnyError, prepareStoreFileName } from "@zerve/zed";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { useUnsavedDeepValue } from "../app/Unsaved";
 import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
+import { useStoreSchema } from "../app/StoreClient";
 
 function StoreSchemasSchema({
   storePath,
@@ -38,9 +35,7 @@ function StoreSchemasSchema({
   path,
   isActive,
 }: StoreFeatureProps & { schema: string; path: string[] }) {
-  const schemaSchemaQuery = useZStoreSchemaSchema(storePath, schemaName);
-  const schemaQuery = useZStoreSchema(storePath, schemaName);
-  const schemaStore = schemaSchemaQuery.data?.$schemaStore;
+  const schemaQuery = useStoreSchema(storePath, schemaName);
 
   const deleteSchema = useDeleteSchema(storePath);
   const saveSchema = useSaveSchema(storePath);
@@ -100,6 +95,7 @@ function StoreSchemasSchema({
   const {
     pathValue,
     pathSchema,
+    savedPathValue,
     onPathValue,
     releaseDirty,
     getDirty,
@@ -107,8 +103,8 @@ function StoreSchemasSchema({
   } = useUnsavedDeepValue({
     isActive,
     path,
-    savedValue: schemaQuery.data,
-    fullSchema: schemaSchemaQuery.data, // todo, expand?!
+    savedValue: schemaQuery.data?.schema,
+    fullSchema: schemaQuery.data?.schemaSchema,
     dirtyId,
   });
   const doSave = useAsyncHandler<void, AnyError>(async () => {
@@ -125,10 +121,7 @@ function StoreSchemasSchema({
       onBack={onBack}
       actions={schemaActions}
       spinner={
-        saveSchema.isLoading ||
-        deleteSchema.isLoading ||
-        schemaSchemaQuery.isFetching ||
-        schemaQuery.isFetching
+        saveSchema.isLoading || deleteSchema.isLoading || schemaQuery.isFetching
       }
       footer={
         isDirty &&
@@ -156,8 +149,9 @@ function StoreSchemasSchema({
               id={`schema-${schemaName}-${path.join("-")}`}
               onValue={onPathValue}
               value={pathValue}
+              comparisonValue={savedPathValue}
               schema={pathSchema}
-              schemaStore={schemaStore}
+              schemaStore={schemaQuery.data?.schemaStore}
             />
           </VStack>
         ) : null}
