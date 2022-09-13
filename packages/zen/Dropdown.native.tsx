@@ -3,6 +3,7 @@ import { Icon } from "./Icon";
 import { VStack } from "./Stack";
 import { Button } from "./Button";
 import { useColors } from "./useColors";
+import { Alert, ColorValue } from "react-native";
 
 export type DropdownOption = {
   value: boolean | string | number;
@@ -15,12 +16,14 @@ export function Dropdown<OptionValues>({
   value,
   onOptionSelect,
   id,
+  tint,
   unselectedLabel = "Select...",
 }: {
   options: DropdownOption[];
   value: boolean | string | number;
   onOptionSelect: (optionValue: string | number) => void;
   id: string;
+  tint?: ColorValue | null;
   unselectedLabel?: string;
 }) {
   const colors = useColors();
@@ -33,6 +36,7 @@ export function Dropdown<OptionValues>({
           <Button
             key={option.value}
             title={option.title}
+            tint={tint}
             onPress={() => {
               onClose();
               onOptionSelect(option.value);
@@ -49,6 +53,7 @@ export function Dropdown<OptionValues>({
   return (
     <Button
       title={selectedOption?.title || unselectedLabel}
+      tint={tint}
       onPress={onOpen}
       right={(p) => (
         <Icon name="chevron-down" {...p} color={colors.secondaryText} />

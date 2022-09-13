@@ -74,6 +74,7 @@ export type ButtonProps = {
   chromeless?: boolean;
   textAlign?: "right" | "left" | "center";
   inline?: boolean;
+  tint?: ColorValue | null;
 };
 export function Button({
   title,
@@ -89,6 +90,7 @@ export function Button({
   chromeless,
   textAlign = "center",
   inline,
+  tint,
 }: ButtonProps) {
   const colors = useColors();
   const pressHeight = useSharedValue(0.5); // 0.5 = inactive, 1 = hover/active, 0 = pressed
@@ -99,7 +101,8 @@ export function Button({
     ? colors.tint
     : colors.text;
   const containerStyle = useAnimatedStyle(() => ({
-    backgroundColor: chromeless ? "transparent" : `${colors.background}88`,
+    backgroundColor:
+      tint || (chromeless ? "transparent" : `${colors.background}88`),
     borderWidth: chromeless ? 0 : danger || primary ? 4 : 1,
     borderColor: danger
       ? colors.dangerText
@@ -200,6 +203,7 @@ export type ButtonContentProps = {
   chromeless?: boolean;
   danger?: boolean;
   primary?: boolean;
+  tint?: ColorValue | null;
 };
 export function ButtonContent({
   title,
@@ -209,6 +213,7 @@ export function ButtonContent({
   primary,
   left,
   right,
+  tint,
 }: ButtonContentProps) {
   const colors = useColors();
   const color = danger
@@ -220,7 +225,8 @@ export function ButtonContent({
   return (
     <View
       style={{
-        backgroundColor: chromeless ? "transparent" : `${colors.background}88`,
+        backgroundColor:
+          tint || (chromeless ? "transparent" : `${colors.background}88`),
         borderWidth: chromeless ? 0 : danger || primary ? 4 : 1,
         borderColor: danger
           ? colors.dangerText

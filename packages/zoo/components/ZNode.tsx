@@ -751,9 +751,12 @@ export function ZNode({
 
 export function ErrorBox({ error }: { error: any }) {
   return (
-    <Paragraph danger>
-      Error: {error.message || JSON.stringify(error)}
-    </Paragraph>
+    <VStack padded>
+      <Notice
+        danger
+        message={`Error: ${error.message || JSON.stringify(error)}`}
+      />
+    </VStack>
   );
 }
 
@@ -765,8 +768,7 @@ export function ZLoadedNode({
   onActions?: (actions: ActionButtonDef[]) => void;
 }) {
   const conn = useConnection();
-  const { isLoading, data, refetch, error, isError, isRefetching } =
-    useZNode(path);
+  const { isLoading, data, refetch, error, isError } = useZNode(path);
 
   React.useEffect(() => {
     onActions?.([
