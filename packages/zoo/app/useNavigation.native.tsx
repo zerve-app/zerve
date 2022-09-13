@@ -17,14 +17,6 @@ export function useGlobalNavigation() {
       openRawJSON: (title: string, data: any) => {
         push("RawValue", { title, value: data });
       },
-      openSchemaInput: (
-        title: string,
-        schema: any,
-        value: any,
-        onValue?: undefined | ((value: any) => void),
-      ) => {
-        push("JSONInput", { value, schema, onValue });
-      },
       openHistory: () => {
         navigate("HomeStack", { screen: "History" });
       },

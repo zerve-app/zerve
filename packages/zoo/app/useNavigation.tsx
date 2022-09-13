@@ -48,31 +48,9 @@ function JSONInputModal({
 }
 
 export function useGlobalNavigation() {
-  const openInputModal = useModal<{
-    title: string;
-    schema: any;
-    value: any;
-    onValue?: undefined | ((value: any) => void);
-    schemaStore: SchemaStore;
-  }>(({ onClose, options }) => <JSONInputModal {...options} />);
   return useMemo(
     () => ({
       openRawJSON: (title: string, data: any) => {},
-      openSchemaInput: (
-        title: string,
-        schema: any,
-        value: any,
-        onValue?: undefined | ((value: any) => void),
-        schemaStore?: SchemaStore,
-      ) => {
-        openInputModal({
-          title,
-          schema,
-          value,
-          onValue,
-          schemaStore: schemaStore || EmptySchemaStore,
-        });
-      },
       openHistory: () => {},
       openHistoryEvent: (eventId: string) => {},
       openError: (e: Error) => {},

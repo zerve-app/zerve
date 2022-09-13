@@ -4,9 +4,11 @@ import { View, ViewStyle } from "react-native";
 export function HStack({
   children,
   padded,
+  edgelessExperimental,
 }: {
   children: ReactNode;
   padded?: boolean;
+  edgelessExperimental?: boolean;
 }) {
   return (
     <View
@@ -14,6 +16,8 @@ export function HStack({
         flexDirection: "row",
         padding: 6,
         paddingVertical: padded ? 12 : 0,
+        alignItems: "center",
+        marginHorizontal: edgelessExperimental ? -12 : 0,
       }}
     >
       {Children.map(children, (el) => (

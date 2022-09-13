@@ -31,11 +31,16 @@ export function FeaturePane({
 }) {
   const [actionButton] = useActionsSheet(
     (onOpen: () => void) => (
-      <IconButton
-        icon={<Icon name="ellipsis-v" />}
-        onPress={onOpen}
-        altTitle="Options"
-      />
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Icon name="ellipsis-v" />
+      </View>
     ),
     () => actions || [],
   );
@@ -49,7 +54,7 @@ export function FeaturePane({
       }}
     >
       <View style={{ minHeight: 80 }}>
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text
             style={{ fontSize: 28, color: "#464646", flex: 1, padding: 16 }}
           >

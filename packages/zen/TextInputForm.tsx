@@ -11,11 +11,13 @@ export function TextInputForm({
   defaultValue = "",
   inputLabel = "name",
   secureTextEntry,
+  onEscape,
 }: {
   onSubmit: (v: string) => Promise<void>;
   defaultValue?: string;
   inputLabel?: string;
   secureTextEntry?: boolean;
+  onEscape?: () => void;
 }) {
   const [s, setS] = useState(defaultValue || "");
   const handleSubmitAsync = useCallback(async () => {
@@ -35,6 +37,7 @@ export function TextInputForm({
         returnKeyType="done"
         enablesReturnKeyAutomatically
         onSubmitEditing={handle}
+        onEscape={onEscape}
         keyboardType={secureTextEntry ? "password" : "default"}
       />
       {isLoading && <Spinner />}

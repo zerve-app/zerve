@@ -15,6 +15,7 @@ export function Link({
   children: ReactNode;
   external?: boolean;
   inline?: boolean;
+  nativePress: () => void;
 }) {
   const { push } = useRouter();
   const navigateIntercept = useContext(NavigateInterceptContext);

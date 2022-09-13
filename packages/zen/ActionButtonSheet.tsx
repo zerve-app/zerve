@@ -6,6 +6,7 @@ import { ActionButtonDef } from "./ActionButton";
 import { smallShadow } from "./Style";
 import { useAllColors, useColors } from "./useColors";
 import { Icon } from "./Icon";
+import { ScrollView } from "react-native-gesture-handler";
 
 function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
   const colors = useAllColors();
@@ -34,10 +35,10 @@ function ActionMenuItemUnmemo({ action }: { action: ActionButtonDef }) {
           setIsFocused(false);
         }}
         style={{
-          paddingTop: 5,
-          paddingBottom: 5,
-          paddingLeft: 10,
-          paddingRight: 10,
+          paddingTop: 12,
+          paddingBottom: 12,
+          paddingLeft: 14,
+          paddingRight: 14,
           cursor: "pointer",
           backgroundColor: isFocused ? activeBackground : "transparent",
           alignItems: "center",
@@ -79,25 +80,29 @@ export function useActionsSheet(
           border: "none",
           backgroundColor: "transparent",
           padding: 0,
+          cursor: "pointer",
         }}
       >
         {renderButton(onOpen)}
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
+        align="end"
+        side="bottom"
         style={{
           minWidth: 130,
-          borderRadius: 2,
+          borderRadius: 4,
           backgroundColor: colors.background,
           ...smallShadow,
           boxShadow: "0 2px 5px #00000040",
-          paddingTop: 8,
-          paddingBottom: 8,
           zIndex: 10000000,
+          overflow: "hidden",
         }}
       >
-        {getActions().map((action) => (
-          <ActionMenuItem action={action} key={action.key} />
-        ))}
+        <ScrollView style={{ maxHeight: 300 }} showsVerticalScrollIndicator>
+          {getActions().map((action) => (
+            <ActionMenuItem action={action} key={action.key} />
+          ))}
+        </ScrollView>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );

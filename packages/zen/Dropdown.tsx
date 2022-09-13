@@ -5,7 +5,7 @@ import { useAllColors, useColors } from "./useColors";
 import { Pressable } from "react-native";
 import { memo, useState } from "react";
 import { Icon } from "./Icon";
-import { smallShadow } from "./Style";
+import { smallShadow, smallShadowCSS } from "./Style";
 
 export type DropdownOption = {
   value: string;
@@ -38,6 +38,18 @@ function DropdownItem({
       }}
       onBlur={() => {
         setIsFocused(false);
+      }}
+      style={{
+        // outline: "3px solid green",
+        // border: `0px solid ${colors.background}`,
+        borderColor: "transparent",
+        // borderLeftWidth: 1,
+        // borderRightWidth: 1,
+        // borderTopWidth: 0,
+        // borderBottomWidth: 0,
+        borderWidth: 0,
+        borderStyle: "solid",
+        outline: "none",
       }}
     >
       <Pressable
@@ -143,32 +155,32 @@ export function DropdownUnmemo({
 
       <Select.Content>
         <Select.ScrollUpButton />
-        <Select.Viewport>
-          <View
-            style={{
-              backgroundColor: background,
-              borderRadius: Layout.borderRadius,
-              borderWidth: 1,
-              borderColor: "#ccc",
-              ...smallShadow,
-            }}
-          >
-            {allOptions.map((option) => (
-              <DropdownItem
-                key={option.value}
-                unselected={option.value === UNSELECTED_ITEM_KEY}
-                active={
-                  option.value === value ||
-                  (value == null && option.value === UNSELECTED_ITEM_KEY)
-                }
-                value={option.value}
-                title={option.title}
-                onSelect={() => {
-                  onOptionSelect(option.value);
-                }}
-              />
-            ))}
-          </View>
+        <Select.Viewport
+          style={{
+            // border: "1px solid #ccc",
+            borderRadius: Layout.borderRadius,
+            overflow: "hidden",
+            backgroundColor: background,
+            display: "flex",
+            flexDirection: "column",
+            ...smallShadowCSS,
+          }}
+        >
+          {allOptions.map((option) => (
+            <DropdownItem
+              key={option.value}
+              unselected={option.value === UNSELECTED_ITEM_KEY}
+              active={
+                option.value === value ||
+                (value == null && option.value === UNSELECTED_ITEM_KEY)
+              }
+              value={option.value}
+              title={option.title}
+              onSelect={() => {
+                onOptionSelect(option.value);
+              }}
+            />
+          ))}
         </Select.Viewport>
         <Select.ScrollDownButton />
       </Select.Content>

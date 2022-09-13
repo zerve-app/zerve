@@ -2,6 +2,7 @@ import { ComponentProps, Context, ReactNode, useContext, useMemo } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import {
   Button,
+  ButtonContent,
   Icon,
   NavBar,
   NavBarZLogo,
@@ -30,6 +31,9 @@ export function NavSidebar({
         borderColor: "#ccc",
         paddingTop: 80,
       }}
+      contentContainerStyle={{
+        minHeight: "100%",
+      }}
     >
       <View style={{ flex: 1 }}>{children}</View>
       {footer}
@@ -52,26 +56,27 @@ export function NavFeatureLink<FeatureState>({
   inset?: boolean;
   displayActive?: boolean;
 }) {
+  const colors = useColors();
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
     throw new Error("Cannot render NavLink outside of a FragmentContext");
   const isActive =
     displayActive ||
     fragmentContext.fragmentString === fragmentContext.stringifyFragment(to);
+  const backgroundColor = isActive ? "#FFC8FC" : colors.background;
+
   return (
-    <FragmentLink<FeatureState> to={to} Context={Context}>
-      <Pressable
-        onPress={() => {
-          fragmentContext.navigateFragment(to);
-        }}
-      >
-        <NavLinkContent
-          title={title}
-          icon={icon}
-          isActive={isActive}
-          inset={inset}
-        />
-      </Pressable>
+    <FragmentLink<FeatureState>
+      to={to}
+      Context={Context}
+      backgroundColor={backgroundColor}
+    >
+      <NavLinkContent
+        title={title}
+        icon={icon}
+        isActive={isActive}
+        inset={inset}
+      />
     </FragmentLink>
   );
 }
@@ -92,15 +97,7 @@ export function NavLinkButton<FeatureState>({
     throw new Error("Cannot render NavLinkButton outside of a FragmentContext");
   return (
     <FragmentLink<FeatureState> to={to} Context={Context}>
-      <Button
-        onPress={() => {
-          // this should not be reached. FragmentLink should stopPropagation() the event before it hits the button because it uses onClickCapture
-          // but just in case:
-          fragmentContext.navigateFragment(to);
-        }}
-        title={title}
-        left={icon && <Icon name={icon} />}
-      />
+      <ButtonContent title={title} left={icon && <Icon name={icon} />} />
     </FragmentLink>
   );
 }

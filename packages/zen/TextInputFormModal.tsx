@@ -24,6 +24,7 @@ export function useTextInputFormModal<A>(
             await onValue(value, options);
             onClose();
           }}
+          onEscape={onClose}
         />
       </VStack>
     );

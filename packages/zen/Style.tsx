@@ -14,6 +14,10 @@ export const smallShadow = {
   }),
 } as const;
 
+export const smallShadowCSS = {
+  boxShadow: "0px 3px 3px 0px rgba(17,17,1,0.25)",
+};
+
 export const bigShadow = Platform.select({
   android: {
     elevation: 6,
@@ -29,6 +33,10 @@ export const bigShadow = Platform.select({
     shadowColor: "#111", // you should usually override with your text color so it looks as good on inverted color mode
   },
 });
+
+export const bigShadowCSS = {
+  boxShadow: "0px 4px 6px 0px rgba(17,17,1,0.25)",
+};
 
 export const AbsoluteFill = {
   position: "absolute",

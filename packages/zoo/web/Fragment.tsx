@@ -7,6 +7,7 @@ import React, {
   useMemo,
 } from "react";
 import { useRouter } from "next/router";
+import { ColorValue } from "react-native";
 
 export type FragmentContext<FragmentState> = {
   stringifyFragment: (feature: FragmentState) => string;
@@ -39,6 +40,8 @@ export type FragmentLinkProps<FragmentState> = {
   to: FragmentState;
   children: ReactNode;
   Context: Context<null | FragmentContext<FragmentState>>;
+  // you'd think bg color would be in styles. But the focus ring must be visible on web, so it is important for the link itself to have the background color set :-D
+  backgroundColor?: ColorValue;
 };
 
 export function useFragmentNavigationController<FragmentState>(

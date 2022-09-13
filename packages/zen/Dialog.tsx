@@ -72,8 +72,8 @@ export function Dialog<Schema extends JSONSchema>({
           schemaStore={EmptySchemaStore}
         />
       )}
-      <HStack>
-        <Button onPress={onClose} title={closeLabel || "Close"} />
+      <HStack edgelessExperimental>
+        <Button onPress={onClose} chromeless title={closeLabel || "Close"} />
         <Button
           onPress={() => handle(state)}
           danger={danger}

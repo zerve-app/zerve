@@ -22,6 +22,7 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColors } from "./useColors";
 import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
+import { BlurView } from "expo-blur";
 
 export type BottomSheetContext = {
   open: <O>(
@@ -136,17 +137,17 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
             index={0}
             onChange={handleSheetChanges}
           >
-            <View
+            <BlurView
               onLayout={handleContentLayout}
               style={{
-                backgroundColor: colors.backgroundDim,
+                // backgroundColor: "orange",
                 ...smallShadow,
               }}
             >
               <SafeAreaView edges={["right", "bottom", "left"]}>
                 {sheetConfig.children}
               </SafeAreaView>
-            </View>
+            </BlurView>
           </BottomSheet>
         )}
       </View>

@@ -23,6 +23,7 @@ export function Input({
   enablesReturnKeyAutomatically,
   InputComponent,
   onBlur,
+  onEscape,
 }: {
   value: string;
   id?: string;
@@ -40,6 +41,7 @@ export function Input({
   returnKeyType?: ComponentProps<typeof TextInput>["returnKeyType"];
   autoComplete?: ComponentProps<typeof TextInput>["autoComplete"];
   keyboardType?: ZTextInputType;
+  onEscape?: () => void;
 }) {
   const colors = useColors();
   const TextInputComponent = InputComponent || TextInput;
@@ -57,7 +59,6 @@ export function Input({
           ...getRowStyles(colors),
           color: colors.text,
           backgroundColor: tint || colors.background,
-          outlineColor: colors.tint,
         }}
         focusable={!disabled}
         keyboardType={keyboardType === "password" ? "default" : keyboardType}
@@ -72,6 +73,9 @@ export function Input({
         placeholder={placeholder}
         onChangeText={onValue}
         onBlur={onBlur}
+        onKeyPress={(e) => {
+          if (e.nativeEvent.key === "Escape") onEscape?.();
+        }}
       />
     </View>
   );

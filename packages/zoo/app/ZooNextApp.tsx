@@ -1,7 +1,7 @@
 import Head from "next/head";
 import "raf/polyfill";
 import { AppProps } from "next/app";
-import { ModalProvider, ToastPresenter } from "@zerve/zen";
+import { ModalProvider, ToastPresenter, useColors } from "@zerve/zen";
 import { SafeAreaContextProvider } from "@zerve/zen";
 
 // FIXME need reanimated update, see https://github.com/software-mansion/react-native-reanimated/issues/3355
@@ -12,6 +12,7 @@ if (process.browser) {
 }
 
 export default function ZooNextApp({ Component, pageProps }: AppProps) {
+  const colors = useColors();
   return (
     <>
       <Head>
@@ -42,6 +43,15 @@ export default function ZooNextApp({ Component, pageProps }: AppProps) {
           // this is terrible of course. we should somehow associate css with @zerve/zen/HumanTextInput
           dangerouslySetInnerHTML={{
             __html: `
+* :focus-visible {
+  outline-color: ${colors.tint}66;
+  outline-style: auto;
+  outline-offset: -1px;
+  outline-width:2px;
+}
+label:not([for]) {
+  cursor: inherit;
+}
 .HumanTextEditorContent {
 }
 .HumanTextEditorContent > div {

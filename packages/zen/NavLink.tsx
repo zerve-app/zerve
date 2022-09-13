@@ -37,7 +37,6 @@ export function NavLinkContent({
         paddingVertical: 14,
         paddingHorizontal: 12,
         flexDirection: "row",
-        backgroundColor: isActive ? "#FFC8FC" : colors.background,
         ...(inset ? { paddingLeft: 36 } : {}),
         borderBottomWidth: 1,
         borderBottomColor: "#eee",

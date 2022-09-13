@@ -653,6 +653,7 @@ function ObjectField({
         actions={actions}
       />
       <ContentButton
+        id={id}
         tint={
           comparisonValue !== undefined && comparisonValue !== value
             ? colors.changedTint
@@ -706,6 +707,7 @@ function ArrayField({
         actions={actions}
       />
       <ContentButton
+        id={id}
         disabled={!openChildEditor}
         tint={
           comparisonValue !== undefined && comparisonValue !== value
@@ -784,6 +786,7 @@ function FieldHeader({
   value,
   schema,
   actions,
+  changedTint,
 }: {
   id: string;
   label: string;
@@ -792,13 +795,13 @@ function FieldHeader({
   value?: any;
   schema?: any;
   actions?: ActionButtonDef[];
+  changedTint?: boolean;
 }) {
-  const { tint } = useColors();
+  const { tint, ...colors } = useColors();
   const { enableValueCopy } = useContext(JSONSchemaEditorContext);
   const [labelView] = useActionsSheet(
     (onOpen) => (
-      <Pressable
-        onPress={onOpen}
+      <View
         style={{ flexDirection: "row", alignItems: "center", marginRight: 30 }}
       >
         <Label
@@ -811,7 +814,7 @@ function FieldHeader({
         {!!labelActions && !!labelActions.length ? (
           <Icon name="chevron-down" color={tint} size={12} />
         ) : null}
-      </Pressable>
+      </View>
     ),
     () => labelActions || [],
     !labelActions || labelActions.length == 0,
@@ -840,10 +843,7 @@ function FieldHeader({
   ]);
   const [typeLabelView] = useActionsSheet(
     (onOpen) => (
-      <Pressable
-        onPress={onOpen}
-        style={{ flexDirection: "row", alignItems: "center" }}
-      >
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
         {fieldActions.length ? (
           <Icon name="chevron-down" color={tint} size={12} />
         ) : null}
@@ -852,14 +852,25 @@ function FieldHeader({
             {typeLabel}
           </Label>
         ) : null}
-      </Pressable>
+      </View>
     ),
     () => fieldActions,
     fieldActions.length === 0,
   );
 
   return (
-    <View>
+    <View
+      style={{
+        borderRadius: 4,
+        ...(changedTint
+          ? {
+              backgroundColor: colors.changedTint,
+              paddingTop: 4,
+              paddingHorizontal: 4,
+            }
+          : {}),
+      }}
+    >
       <View
         style={{
           flexDirection: "row",
@@ -1201,8 +1212,8 @@ export function LeafField({
             id={id}
             label={`${label || ""}: ${schema.title || schema.const}`}
             labelActions={labelActions}
-            typeLabel={getHumanLabelOfSchema(schema)}
             value={value}
+            changedTint={comparisonValue !== value}
             actions={actions}
           />
           {description}

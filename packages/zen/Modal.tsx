@@ -1,7 +1,10 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { View } from "react-native";
+import { View, ViewStyle } from "react-native";
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
+import { AnimatePresence, MotiView } from "moti";
+import { BlurView } from "expo-blur";
+import { Easing } from "react-native-reanimated";
 
 type ModalContext = null | {
   onModal: (
@@ -24,19 +27,35 @@ export function useModal<Options>(
   return onOpen;
 }
 
+function WebBlurView({
+  style,
+  children,
+}: {
+  style: ViewStyle;
+  children: ReactNode;
+}) {
+  if ("GestureEvent" in global.window) {
+    // safari doesnt support BlurView in my testing
+    return (
+      <View style={[{ backgroundColor: "white" }, style]}>{children}</View>
+    );
+  }
+  return <BlurView style={style}>{children}</BlurView>;
+}
+
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [openDialogContent, setOpenDialogContent] = useState<null | ReactNode>(
+  const [openModalContent, setOpenModalContent] = useState<null | ReactNode>(
     null,
   );
   const onClose = () => {
-    setOpenDialogContent(null);
+    setOpenModalContent(null);
   };
   const context = useMemo(
     () => ({
       onModal: (
         renderer: (opts: { onClose: () => void }) => React.ReactNode,
       ) => {
-        setOpenDialogContent(renderer({ onClose }));
+        setOpenModalContent(renderer({ onClose }));
       },
     }),
     [],
@@ -44,41 +63,66 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   return (
     <ModalContext.Provider value={context}>
       <Dialog.Root
-        open={!!openDialogContent}
+        open={!!openModalContent}
         onOpenChange={(v) => {
-          setOpenDialogContent(null);
+          setOpenModalContent(null);
         }}
       >
         {children}
-        <Dialog.Overlay>
-          <View
-            style={{
-              ...AbsoluteFill,
-              backgroundColor: "#ccc5",
-            }}
-          />
-        </Dialog.Overlay>
-        <Dialog.DialogContent>
-          <View
-            pointerEvents="box-none"
-            style={{
-              ...AbsoluteFill,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                padding: 30,
-                backgroundColor: "white",
-                borderRadius: 10,
-                ...bigShadow,
+        <AnimatePresence>
+          {openModalContent && (
+            <MotiView
+              from={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                type: "timing",
+                duration: 800,
               }}
-            >
-              {openDialogContent}
-            </View>
-          </View>
-        </Dialog.DialogContent>
+              style={{
+                ...AbsoluteFill,
+                backgroundColor: "#fff9",
+              }}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {openModalContent && (
+            <Dialog.DialogContent forceMount>
+              <MotiView
+                from={{ translateY: 800, rotateX: "90deg" }}
+                animate={{ translateY: 0, rotateX: "0deg" }}
+                exit={{ translateY: 800, rotateX: "90deg" }}
+                transition={{
+                  easing: Easing.inOut(Easing.poly(5)),
+                  type: "timing",
+                  duration: 500,
+                }}
+                exitTransition={{
+                  easing: Easing.inOut(Easing.poly(5)),
+                  type: "timing",
+                  duration: 300,
+                }}
+                pointerEvents="box-none"
+                style={{
+                  ...AbsoluteFill,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <WebBlurView
+                  style={{
+                    padding: 30,
+                    borderRadius: 10,
+                    ...bigShadow,
+                  }}
+                >
+                  {openModalContent}
+                </WebBlurView>
+              </MotiView>
+            </Dialog.DialogContent>
+          )}
+        </AnimatePresence>
       </Dialog.Root>
     </ModalContext.Provider>
   );

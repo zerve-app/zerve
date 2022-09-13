@@ -1,11 +1,22 @@
-import { FragmentLinkProps } from "./Fragment";
+import { Pressable } from "react-native";
+import { FragmentLinkProps, useFragmentNavigate } from "./Fragment";
 
 export function FragmentLink<FragmentState>({
   children,
+  Context,
+  to,
+  backgroundColor,
 }: FragmentLinkProps<FragmentState>) {
-  // This component is not used in native apps
-  // You should always wrap this component with a button or pressable that handles the navigation behavior for native.
-
+  const navigate = useFragmentNavigate(Context);
   // see FragmentLink.web.tsx for the component that renders an "a" tag
-  return <>{children}</>;
+  return (
+    <Pressable
+      style={{ backgroundColor }}
+      onPress={() => {
+        navigate(to);
+      }}
+    >
+      {children}
+    </Pressable>
+  );
 }

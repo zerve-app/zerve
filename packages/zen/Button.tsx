@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import Layout from "./Layout";
 import { ComponentProps, ReactNode, useRef, useState } from "react";
@@ -115,7 +116,10 @@ export function Button({
     minHeight: small ? 30 : 50,
     flexDirection: "row",
     alignItems: "center",
-    transform: [{ translateY: -pressHeight.value * 3 }],
+    transform: [
+      { translateY: -pressHeight.value * 3 },
+      { scale: 0.95 + pressHeight.value * 0.1 },
+    ],
     overflow: "hidden",
   }));
   const pressBounceTimeout = useRef<null | ReturnType<typeof setTimeout>>(null);
@@ -127,22 +131,22 @@ export function Button({
       onPress={() => {
         if (!onPress) return;
         onPress();
-        pressHeight.value = withSpring(0, { mass: 0.5 });
+        pressHeight.value = withTiming(0, { duration: 150 });
         pressBounceTimeout.current = setTimeout(() => {
-          pressHeight.value = withSpring(0.5, { mass: 0.5 });
+          pressHeight.value = withTiming(0.5, { duration: 150 });
           pressBounceTimeout.current = null;
-        }, 250);
+        }, 150);
       }}
       hitSlop={{ left: 6, right: 6, top: 6, bottom: 6 }}
       onLongPress={onLongPress}
       disabled={disabled}
       onResponderEnd={() => {}}
       onPressIn={() => {
-        pressHeight.value = withSpring(1, { mass: 0.5 });
+        pressHeight.value = withTiming(1, { duration: 150 });
       }}
       onTouchEnd={() => {
         if (!pressBounceTimeout.current) {
-          pressHeight.value = withSpring(0.5, { mass: 0.5 });
+          pressHeight.value = withTiming(0.5, { duration: 150 });
         }
       }}
     >
@@ -265,15 +269,21 @@ export function ContentButton({
   onPress,
   disabled,
   tint,
+  id,
 }: {
   children: ReactNode;
   onPress?: (() => void) | null;
   disabled?: boolean;
   tint?: ColorValue | null;
+  id?: string;
 }) {
   const colors = useColors();
   return (
-    <Pressable onPress={onPress} disabled={!!disabled || !onPress}>
+    <Pressable
+      onPress={onPress}
+      disabled={!!disabled || !onPress}
+      nativeID={id}
+    >
       <View
         style={{
           backgroundColor: tint || `${colors.background}88`,

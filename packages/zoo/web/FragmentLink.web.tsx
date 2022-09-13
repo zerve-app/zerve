@@ -5,6 +5,7 @@ export function FragmentLink<FragmentState>({
   to,
   children,
   Context,
+  backgroundColor,
 }: FragmentLinkProps<FragmentState>) {
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
@@ -12,7 +13,11 @@ export function FragmentLink<FragmentState>({
   const { stringifyFragment, navigateFragment } = fragmentContext;
   return (
     <a
-      style={{ textDecoration: "none" }}
+      style={{
+        textDecoration: "none",
+        // its important for the link itself to have the background color set, not the children. this allows the focus ring to be visible on web
+        backgroundColor,
+      }}
       href={`?_=${stringifyFragment(to)}`}
       onClickCapture={(e) => {
         if (e.metaKey) {

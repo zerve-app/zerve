@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import { ActionButton, ActionButtonDef } from "./ActionButton";
 import { VStack } from "./Stack";
 import { useBottomSheet } from "./BottomSheet";
+import { Pressable } from "react-native";
 
 export function useActionsSheet(
   renderButton: (onOpen: () => void) => ReactNode,
@@ -23,5 +24,8 @@ export function useActionsSheet(
       ))}
     </VStack>
   ));
-  return [renderButton(onOpen), onOpen] as const;
+  return [
+    <Pressable onPress={() => onOpen()}>{renderButton(onOpen)}</Pressable>,
+    onOpen,
+  ] as const;
 }
