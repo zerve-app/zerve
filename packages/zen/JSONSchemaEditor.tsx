@@ -1284,7 +1284,13 @@ export function LeafField({
           }
           onSubmitEditing={onSubmitEditing}
           onValue={
-            onValue ? (valueString) => onValue(Number(valueString)) : undefined
+            onValue
+              ? (valueString) => {
+                  const newValue = Number(valueString);
+                  if (Number.isNaN(newValue)) return;
+                  onValue(newValue);
+                }
+              : undefined
           }
         />
         {description}
