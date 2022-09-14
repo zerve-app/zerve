@@ -13,7 +13,7 @@ import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteSchema,
   useRenameSchema,
-  useSaveSchema,
+  useSaveStoreSchema,
 } from "@zerve/zoo-client/Mutation";
 import {
   StoreFeatureLink,
@@ -25,6 +25,8 @@ import { useUnsavedDeepValue } from "../app/Unsaved";
 import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreSchema } from "../app/StoreClient";
+import { Notice } from "@zerve/zen/Notice";
+import { extractErrorMessage } from "../app/ErrorHandling";
 
 function StoreSchemasSchema({
   storePath,
@@ -38,7 +40,7 @@ function StoreSchemasSchema({
   const schemaQuery = useStoreSchema(storePath, schemaName);
 
   const deleteSchema = useDeleteSchema(storePath);
-  const saveSchema = useSaveSchema(storePath);
+  const saveSchema = useSaveStoreSchema(storePath);
 
   const { openSchema, replaceToSchemas, replaceToSchema, backToSchema } =
     useStoreNavigation();
@@ -142,6 +144,15 @@ function StoreSchemasSchema({
         ))
       }
     >
+      {doSave.error ? (
+        <VStack padded>
+          <Notice
+            danger
+            message={extractErrorMessage(doSave.error)}
+            icon="exclamation-circle"
+          />
+        </VStack>
+      ) : null}
       <JSONSchemaEditorContext.Provider value={editorContext}>
         {schemaQuery.data && pathSchema ? (
           <VStack padded>

@@ -2,6 +2,7 @@ import {
   ConstSchemaSchema,
   getDefaultSchemaValue,
   SchemaStore,
+  ZSchema,
 } from "@zerve/zed";
 // import { showToast } from "@zerve/zen";
 import { useMutation, useQueryClient } from "react-query";
@@ -210,15 +211,37 @@ export function useSaveEntrySchema(
   );
 }
 
-export function useSaveSchema(storePath: string[]) {
+export function useSaveStoreSchema(storePath: string[]) {
   const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
-    async (payload: { schemaName: string; schema: any }) => {
+    async (payload: { schemaName: string; schema: ZSchema }) => {
+      const { schema, schemaName } = payload;
+      let actualSchema = schema;
+      if (schema.type === "object") {
+        actualSchema = {
+          ...schema,
+          properties: {
+            ...(schema.properties || {}),
+            $key: {
+              type: "string",
+              // todo maybe annotate this further and ensure the key is a slug
+            },
+          },
+        };
+        if (
+          actualSchema.properties.key &&
+          actualSchema.properties.key.type !== "string"
+        ) {
+          throw new Error(
+            "Object key property may only be Text if it is defined.",
+          );
+        }
+      }
       if (conn) {
         await postZAction(conn, [...storePath, "Dispatch"], {
           name: "WriteSchema",
-          value: payload,
+          value: { schema: actualSchema, schemaName },
         });
       } else {
         // "local" behavior.. should be consolidated into logic above
