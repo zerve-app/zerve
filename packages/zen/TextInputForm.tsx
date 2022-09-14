@@ -2,8 +2,8 @@ import React, { useCallback } from "react";
 import { useState } from "react";
 import { Form } from "./Form";
 import { Input } from "./Input";
+import { Notice } from "./Notice";
 import { Spinner } from "./Spinner";
-import { ThemedText } from "./Themed";
 import { useAsyncHandler } from "./useAsyncHandler";
 
 export function TextInputForm({
@@ -12,23 +12,32 @@ export function TextInputForm({
   inputLabel = "name",
   secureTextEntry,
   onEscape,
+  validate,
 }: {
   onSubmit: (v: string) => Promise<void>;
   defaultValue?: string;
   inputLabel?: string;
   secureTextEntry?: boolean;
   onEscape?: () => void;
+  validate?: (input: string) => null | string;
 }) {
   const [s, setS] = useState(defaultValue || "");
+  const [validationError, setValidationError] = useState<string | null>(null);
   const handleSubmitAsync = useCallback(async () => {
+    if (validate) {
+      let invalidError = validate(s);
+      setValidationError(invalidError);
+      if (invalidError) return;
+    }
     await onSubmit(s);
-  }, [s]);
+  }, [s, validate]);
   const { handle, isLoading, error } = useAsyncHandler<void, Error>(
     handleSubmitAsync,
   );
   return (
     <Form onSubmit={handle}>
-      {error && <ThemedText danger>{error.message}</ThemedText>}
+      {error && <Notice danger message={error.message} />}
+      {validationError && <Notice danger message={validationError} />}
       <Input
         label={inputLabel}
         autoFocus

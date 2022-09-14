@@ -6,6 +6,7 @@ import { Pressable } from "react-native";
 import { memo, useState } from "react";
 import { Icon } from "./Icon";
 import { smallShadow, smallShadowCSS } from "./Style";
+import { ScrollView } from "react-native-gesture-handler";
 
 export type DropdownOption = {
   value: string;
@@ -153,15 +154,15 @@ export function DropdownUnmemo({
         <Icon name="chevron-down" size={16} color={secondaryText} />
       </Select.Trigger>
 
-      <Select.Content>
+      <Select.Content style={{}}>
         <Select.ScrollUpButton />
         <Select.Viewport
           style={{
             // border: "1px solid #ccc",
             borderRadius: Layout.borderRadius,
-            overflow: "hidden",
-            backgroundColor: background,
             display: "flex",
+            backgroundColor: background,
+            overflowY: "scroll",
             flexDirection: "column",
             ...smallShadowCSS,
           }}

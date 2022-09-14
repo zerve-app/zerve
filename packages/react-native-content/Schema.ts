@@ -16,6 +16,7 @@ export const HumanTextSchema = {
     type: "object",
     additionalProperties: false,
     properties: {
+      $key: StringSchema,
       text: StringSchema,
       bold: BooleanSchema,
       italic: BooleanSchema,

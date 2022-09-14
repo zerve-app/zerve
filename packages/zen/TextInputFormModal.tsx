@@ -9,10 +9,11 @@ export function useTextInputFormModal<A>(
     inputLabel: string;
     defaultValue: string;
     secureTextEntry?: boolean;
+    validate?: (input: string) => null | string;
   },
 ) {
   return useModal<A>(({ onClose, options }) => {
-    const { inputLabel, defaultValue, secureTextEntry, onValue } =
+    const { inputLabel, defaultValue, secureTextEntry, onValue, validate } =
       onGetInput(options);
     return (
       <VStack padded>
@@ -20,6 +21,7 @@ export function useTextInputFormModal<A>(
           inputLabel={inputLabel}
           defaultValue={defaultValue}
           secureTextEntry={secureTextEntry}
+          validate={validate}
           onSubmit={async (value) => {
             await onValue(value, options);
             onClose();

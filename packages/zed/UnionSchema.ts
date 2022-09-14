@@ -197,15 +197,26 @@ export function exploreUnionSchema(
   };
 }
 
-export function lookUpValue(value: any, child: string | string[]): any {
-  if (Array.isArray(child))
-    return child.reduce((prev, oneChild) => lookUpValue(prev, oneChild), value);
+export function lookUpValue(value: any, childPath: string | string[]): any {
+  if (Array.isArray(childPath))
+    return childPath.reduce(
+      (prev, oneChild) => lookUpValue(prev, oneChild),
+      value,
+    );
+  const pathTerm = childPath;
   if (value == null)
-    throw new Error(`Can not look up "${child}" within empty value.`);
-  if (Array.isArray(value)) return value[Number(child)];
-  if (typeof value === "object") return value[child];
+    throw new Error(`Can not look up "${pathTerm}" within empty value.`);
+  if (Array.isArray(value)) {
+    const foundChildByKey = value.find(
+      (v) => typeof v === "object" && v !== null && v.$key === pathTerm,
+    );
+    if (foundChildByKey) return foundChildByKey;
+    const foundByIndex = value.find((v, i) => pathTerm === `Item ${i}`);
+    if (foundByIndex) return foundByIndex;
+  }
+  if (typeof value === "object") return value[pathTerm];
   throw new Error(
-    `Can not look up "${child}" within ${JSON.stringify(value)}.`,
+    `Can not look up "${pathTerm}" within ${JSON.stringify(value)}.`,
   );
 }
 
@@ -218,10 +229,15 @@ export function mergeValue(
   const child = path[0];
   const rest = path.slice(1);
   if (Array.isArray(mainValue)) {
-    const childIndex = Number(child);
-    if (isNaN(childIndex)) {
+    let childIndex = mainValue.findIndex(
+      (v) => typeof v === "object" && v !== null && v.$key === child,
+    );
+    if (childIndex === -1) {
+      childIndex = mainValue.findIndex((v, i) => child === `Item ${i}`);
+    }
+    if (childIndex === -1) {
       throw new Error(
-        `Can not set child "${child}" in array at path "${path.join(".")}".`,
+        `Can not find child "${child}" in array at path "${path.join(".")}".`,
       );
     }
     const newMainValue = [...mainValue];

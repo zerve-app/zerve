@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
-import { ZSchema } from "./JSONSchema";
+import { getListItemKey, ZSchema } from "./JSONSchema";
 import { RequestError } from "./Errors";
 
 export const ajv = new Ajv({ strict: false });
@@ -80,6 +80,64 @@ function getSchemaStoreValidator(
   }
 }
 
+export type ValidationError = {
+  instancePath: string; // like /0/key
+  schemaPath: string; // like 'https://type.zerve.link/SchemaName/required',
+  keyword: string; // 'required', 'listKey'
+  params: unknown; // eg { missingProperty: 'ok' },
+  message: string;
+};
+
+export function validateListKeys(
+  value: unknown,
+  contextPath: string[] = [],
+): ValidationError[] {
+  console.log("validateListKeys", contextPath, value);
+  if (Array.isArray(value)) {
+    let errors: ValidationError[] = [];
+    const allKeysSoFar = new Set();
+    console.log("validating array, good! the value is: ", value);
+    value.forEach((childValue, childValueIndex) => {
+      const key = getListItemKey(childValue, childValueIndex);
+      console.log("checking key", {
+        item: childValue,
+        key,
+      });
+      if (allKeysSoFar.has(key)) {
+        errors.push({
+          instancePath: `/${(contextPath || []).join("/")}/${childValueIndex}`,
+          schemaPath: "", // hmm, hope we dont need this later!
+          keyword: "duplicateKey",
+          params: {
+            key,
+            index: childValueIndex,
+            contextPath,
+          },
+          message: `duplicate key "${key}"`,
+        });
+      }
+      allKeysSoFar.add(key);
+      validateListKeys(childValue, [
+        ...contextPath,
+        String(childValueIndex),
+      ]).forEach((error) => errors.push(error));
+    });
+    return errors;
+  } else if (value === null) {
+    return [];
+  } else if (typeof value === "object") {
+    let errors: ValidationError[] = [];
+    Object.entries(value).forEach(([childValueKey, childValue]) => {
+      if (childValueKey === "$key") return;
+      validateListKeys(childValue, [...contextPath, childValueKey]).forEach(
+        (error) => errors.push(error),
+      );
+    });
+    return errors;
+  }
+  return [];
+}
+
 export function validateWithSchemaStore<Schema extends JSONSchema>(
   schema: Schema,
   value: any,
@@ -98,13 +156,17 @@ export function validateWithSchemaStore<Schema extends JSONSchema>(
     );
   const validate = getSchemaStoreValidator(schema, validatorMap, schemaStore);
   const isValid = validate(value);
-  if (!isValid) {
-    console.error(validate.errors);
+  const arrayValidationErrors = validateListKeys(value);
+  const validationErrors = [
+    ...(isValid ? [] : (validate.errors as unknown as ValidationError[])),
+    ...arrayValidationErrors,
+  ];
+  if (validationErrors.length) {
     throw new RequestError(
       "ValidationError",
-      `Invalid: ${validate.errors[0].message}`,
+      `Invalid: ${validationErrors.map((e) => e.message).join(", ")}`,
       {
-        errors: validate.errors,
+        errors: validationErrors,
       },
     );
   }

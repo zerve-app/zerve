@@ -11,6 +11,7 @@ import {
   expandSchema,
   exploreUnionSchema,
   getDefaultSchemaValue,
+  getListItemKey,
   isLeafType,
   JSONSchema,
   JSONSchemaPluck,
@@ -189,6 +190,11 @@ export function ObjectEditor({
           );
         }
       },
+      validate: (propertyName: string) => {
+        if (propertyName[0] === "$")
+          return "Property name may not start with $";
+        return null;
+      },
       defaultValue: propertyEditKey || "",
       inputLabel: "New Property Name",
     }),
@@ -216,6 +222,7 @@ export function ObjectEditor({
       )}
 
       {propertyKeyList.map((propertyName, propertyIndex, allKeys) => {
+        if (propertyName[0] === "$") return null;
         const fieldLabel = propertyTitles?.[propertyName] || propertyName;
         if (value?.[propertyName] === undefined) {
           if (onValue) {
@@ -318,6 +325,8 @@ export function ObjectEditor({
         <ThemedText>Schema disallows additional keys.</ThemedText>
       ) : null}
       {otherKeys.map((itemName) => {
+        if (itemName[0] === "$") return null;
+
         const actions: ActionButtonDef[] = [];
         if (onValue) {
           actions.push({
@@ -435,6 +444,7 @@ export function ArrayEditor({
     <VStack>
       {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
       {value.map((childValue, childValueIndex) => {
+        const key = getListItemKey(childValue, childValueIndex);
         const actions: ActionButtonDef[] = [];
         if (onValue) {
           actions.push({
@@ -456,11 +466,12 @@ export function ArrayEditor({
             : comparisonValue?.[childValueIndex];
         return (
           <FormField
-            id={`${id}_${childValueIndex}`}
-            label={`#${childValueIndex}`}
+            key={key}
+            id={`${id}_${key}`}
+            label={key}
             value={childValue}
             comparisonValue={childCompareValue}
-            valueKey={String(childValueIndex)}
+            valueKey={key}
             schema={schema.items}
             schemaStore={schemaStore}
             actions={actions}

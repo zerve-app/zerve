@@ -1,5 +1,6 @@
 import {
   ConstSchemaSchema,
+  ensureUniqueValueKeys,
   getDefaultSchemaValue,
   SchemaStore,
   ZSchema,
@@ -14,7 +15,6 @@ export function useCreateEntry(storePath: string[]) {
   const queryClient = useQueryClient();
   return useMutation(
     async (name: string) => {
-      console.log("usecreatee");
       if (conn) {
         await postZAction(conn, [...storePath, "Dispatch"], {
           name: "CreateValue",
@@ -115,11 +115,13 @@ export function useSaveEntry(storePath: string[]) {
   const conn = useConnection();
   const queryClient = useQueryClient();
   return useMutation(
-    async (payload: { name: string; value: any }) => {
+    async (payload: { name: string; value: any; schema: ZSchema }) => {
       if (conn) {
+        const { name, value, schema } = payload;
+        const actualValue = ensureUniqueValueKeys(value, schema);
         await postZAction(conn, [...storePath, "Dispatch"], {
           name: "WriteValue",
-          value: payload,
+          value: { name, value: actualValue },
         });
       } else {
         // "local" behavior.. should be consolidated into logic above
@@ -219,6 +221,10 @@ export function useSaveStoreSchema(storePath: string[]) {
       const { schema, schemaName } = payload;
       let actualSchema = schema;
       if (schema.type === "object") {
+        let required = schema.required || [];
+        if (required?.indexOf("$key") === -1) {
+          required = ["$key", ...required];
+        }
         actualSchema = {
           ...schema,
           properties: {
@@ -228,13 +234,22 @@ export function useSaveStoreSchema(storePath: string[]) {
               // todo maybe annotate this further and ensure the key is a slug
             },
           },
+          required,
         };
         if (
           actualSchema.properties.key &&
           actualSchema.properties.key.type !== "string"
         ) {
           throw new Error(
-            "Object key property may only be Text if it is defined.",
+            `Object "key" property may only be Text if it is defined.`,
+          );
+        }
+        if (
+          actualSchema.properties.Key &&
+          actualSchema.properties.Key.type !== "string"
+        ) {
+          throw new Error(
+            `Object "Key" property may only be Text if it is defined.`,
           );
         }
       }

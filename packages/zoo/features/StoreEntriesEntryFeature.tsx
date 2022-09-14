@@ -155,9 +155,13 @@ function StoreEntriesEntry({
 
   const doSave = useAsyncHandler<void, AnyError>(async () => {
     const internalValue = getDirty();
-    const exportedValue = exportValue(internalValue, entryQuery.data?.schema);
+    const schema = entryQuery.data?.schema;
+    if (!schema)
+      throw new Error("Cannot save if schema is not properly loaded.");
+    const exportedValue = exportValue(internalValue, schema);
     await saveEntry.mutateAsync({
       name: entryName,
+      schema,
       value: exportedValue,
     });
     releaseDirty();

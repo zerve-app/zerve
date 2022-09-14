@@ -62,6 +62,16 @@ export function isEmptySchema(schema: JSONSchema) {
   return false;
 }
 
+export function getListItemKey(value: unknown, valueIndex: number): string {
+  if (value === null) return `Item ${valueIndex}`;
+  if (typeof value === "object") {
+    if (typeof value.Key === "string") return value.Key;
+    if (typeof value.key === "string") return value.key;
+    if (typeof value.$key === "string") return value.$key;
+  }
+  return `Item ${valueIndex}`;
+}
+
 export const NumberSchemaSchema = {
   type: "object",
   title: "Number Schema",
