@@ -344,8 +344,7 @@ export function ZAuthNode({
 }) {
   if (type[".t"] !== "Container" || type?.meta?.zContract !== "Auth")
     throw new Error("Unexpected z type info for ZAuthNode");
-
-  const { navigate } = useNavigation();
+  const { openAuthIn } = useGlobalNavigation();
   const conn = useConnection();
   if (!connection || !conn)
     return <Paragraph danger>Connection unavailable.</Paragraph>;
@@ -379,7 +378,7 @@ export function ZAuthNode({
           title="Log In / Register"
           left={(p) => <Icon {...p} name="user" />}
           onPress={() => {
-            navigate("AuthIn", { connection, path });
+            openAuthIn(connection, path);
           }}
         />
       </VStack>

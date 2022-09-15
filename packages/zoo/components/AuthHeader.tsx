@@ -1,8 +1,12 @@
-import { useConnection } from "@zerve/zoo-client/Connection";
-import { Button, HStack, Link, ThemedText, useModal } from "@zerve/zen";
-import { Text, View } from "react-native";
-import { isSeeminglyAnonUser, LoginForm } from "./Auth";
+import {
+  useConnection,
+  useRequiredConnection,
+} from "@zerve/zoo-client/Connection";
+import { Button, HStack, Link, ThemedText } from "@zerve/zen";
+import { View } from "react-native";
 import { useRouter } from "next/router";
+import { isSeeminglyAnonUser } from "./Auth";
+import { useWebAuthModal } from "../app/AuthWeb";
 
 function UserProfileIcon() {
   return (
@@ -20,23 +24,21 @@ function UserProfileIcon() {
 
 export function AuthHeader() {
   const { push } = useRouter();
-  const openLogin = useModal<void>(({ onClose }) => (
-    <LoginForm
-      path={["auth"]}
-      authMeta={{}}
-      onComplete={(userId) => {
-        onClose();
-        push(`/${userId}`);
-      }}
-    />
-  ));
-  const conn = useConnection();
+  const openLogin = useWebAuthModal((userId) => {
+    push(`/${userId}`);
+  });
+  const conn = useRequiredConnection();
   const session = conn?.session;
   if (session) {
     const { userLabel, userId } = session;
     const url = `/${userId}`;
     return (
-      <Link href={url}>
+      <Link
+        href={url}
+        nativePress={() => {
+          // not needed because we are on web
+        }}
+      >
         <View style={{ flexDirection: "row", marginLeft: 40 }}>
           <ThemedText
             style={{ alignSelf: "center", fontWeight: "bold", fontSize: 16 }}
@@ -54,7 +56,7 @@ export function AuthHeader() {
         title="Log In / Register"
         small
         onPress={() => {
-          openLogin();
+          openLogin({ connection: conn.key, path: ["auth"] });
         }}
       />
     </HStack>

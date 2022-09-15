@@ -14,6 +14,9 @@ export function useGlobalNavigation() {
 
   return useMemo(
     () => ({
+      openAuthIn: (connection: string, path: string[]) => {
+        navigate("AuthIn", { connection, path });
+      },
       openRawJSON: (title: string, data: any) => {
         push("RawValue", { title, value: data });
       },

@@ -10,6 +10,7 @@ import {
   StoreDashboardContext,
   StoreNavigationState,
 } from "../context/StoreDashboardContext";
+import { useWebAuthModal } from "./AuthWeb";
 
 function JSONInputModal({
   title,
@@ -48,8 +49,12 @@ function JSONInputModal({
 }
 
 export function useGlobalNavigation() {
+  const openAuth = useWebAuthModal();
   return useMemo(
     () => ({
+      openAuthIn: (connection: string, path: string[]) => {
+        openAuth({ connection, path });
+      },
       openRawJSON: (title: string, data: any) => {},
       openHistory: () => {},
       openHistoryEvent: (eventId: string) => {},

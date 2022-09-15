@@ -4,12 +4,7 @@ import {
   useConnection,
 } from "@zerve/zoo-client/Connection";
 import { postZAction } from "@zerve/zoo-client/ServerCalls";
-import {
-  EmailSchema,
-  EmptySchemaStore,
-  PhoneSchema,
-  ZSchema,
-} from "@zerve/zed";
+import { EmailSchema, EmptySchemaStore, ZSchema } from "@zerve/zed";
 import {
   AsyncButton,
   Button,
@@ -17,7 +12,6 @@ import {
   JSONSchemaForm,
   PageSection,
   showToast,
-  Title,
   VStack,
 } from "@zerve/zen";
 import { useState } from "react";

@@ -18,7 +18,7 @@ const packageJsons = packageDirNames.map((pkgName) => {
 const localPackageNames = packageJsons.map((p) => p?.name).filter(Boolean);
 
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   webpack5: true,
   experimental: {
     images: {
