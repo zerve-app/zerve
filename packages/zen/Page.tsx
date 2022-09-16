@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { View } from "react-native";
 import { ThemedText } from "./Themed";
+import { useColors } from "./useColors";
 
 export function PageSection({
   title,
@@ -33,8 +34,11 @@ export function PageSection({
 }
 
 export function PageContainer({ children }: { children: ReactNode }) {
+  const colors = useColors();
   return (
-    <View style={{ backgroundColor: "#ebebeb", flex: 1 }}>{children}</View>
+    <View style={{ backgroundColor: colors.backgroundDim, flex: 1 }}>
+      {children}
+    </View>
   );
 }
 

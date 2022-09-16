@@ -13,7 +13,7 @@ import {
 import { FragmentContext, useFragmentNavigationController } from "./Fragment";
 import { NavigationBarWidth, PaneWidth } from "../components/FeaturePane";
 import { FragmentLink } from "./FragmentLink";
-import { NavLinkContent } from "@zerve/zen/NavLink";
+import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
 
 export function NavSidebar({
   children,
@@ -22,10 +22,11 @@ export function NavSidebar({
   children: ReactNode;
   footer?: ReactNode | null;
 }) {
+  const colors = useColors();
   return (
     <ScrollView
       style={{
-        backgroundColor: "#f9d9fb",
+        backgroundColor: colors.background,
         maxWidth: NavigationBarWidth,
         borderRightWidth: 1,
         borderColor: "#ccc",
@@ -165,7 +166,11 @@ function NavigationSidebar<FeatureState>({
       });
     }
   });
-  return <NavSidebar footer={footer}>{displayNavItems}</NavSidebar>;
+  return (
+    <NavSidebar footer={footer}>
+      <NavLinkContentGroup>{displayNavItems}</NavLinkContentGroup>
+    </NavSidebar>
+  );
 }
 
 export function DashboardPage<Feature>({

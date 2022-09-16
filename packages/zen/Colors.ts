@@ -15,8 +15,8 @@ export default {
   light: {
     text: "#000000",
     secondaryText: "#505050",
-    changedTint: "#ffd8b1",
-    changed: "#db7107",
+    changedTint: "#ffecda",
+    changed: "#f08b26",
     dangerText: "#812313",
     background: "#ffffff",
     backgroundDim: "#fdfafd",
@@ -26,10 +26,10 @@ export default {
   dark: {
     text: "#ffffff",
     secondaryText: "#dfdfdf",
-    changedTint: "#db7107",
+    changedTint: "#6c3703",
     changed: "#ffd8b1",
     dangerText: "#F95A3E",
-    background: "#19141c",
+    background: "#0d0c0d",
     backgroundDim: "#000000",
     tintInverted: "#9b65bc",
     tint: "#D2B4E4",

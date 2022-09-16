@@ -9,6 +9,8 @@ import Animated, {
   useAnimatedKeyboard,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { useColorScheme } from "./useColorScheme";
+import { useColors } from "./useColors";
 
 // danger, this stuff is .native only o_O
 type ModalCtx = {
@@ -40,6 +42,8 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const modalFrameStyle = useAnimatedStyle(() => ({
     paddingBottom: keyboardHeight.value,
   }));
+  const colorScheme = useColorScheme();
+  const colors = useColors();
   return (
     <ModalNativeContext.Provider
       value={useMemo(
@@ -68,7 +72,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           <MotiView
             style={{
               ...AbsoluteFill,
-              backgroundColor: "#fff8",
+              backgroundColor:
+                colorScheme === "light"
+                  ? `${colors.background}88`
+                  : `${colors.backgroundDim}aa`,
             }}
             from={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -117,7 +124,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
                   overflow: "hidden",
                 }}
               >
-                <BlurView style={{}}>{openModal.content}</BlurView>
+                <BlurView tint={colorScheme} style={{}}>
+                  {openModal.content}
+                </BlurView>
               </View>
             </Animated.View>
           </MotiView>

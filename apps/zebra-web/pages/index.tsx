@@ -28,7 +28,7 @@ function HomeScreen() {
       </NavBar>
       <View
         style={{
-          backgroundColor: "white",
+          backgroundColor: colors.backgroundDim,
           flex: 1,
           padding: 20,
           justifyContent: "center",

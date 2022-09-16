@@ -1,4 +1,9 @@
-import { bigShadow, ToastPresenter, useColors } from "@zerve/zen";
+import {
+  bigShadow,
+  ToastPresenter,
+  useColors,
+  useColorScheme,
+} from "@zerve/zen";
 import { ReactNode, useEffect, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { Platform, View } from "react-native";
@@ -20,6 +25,7 @@ function ScrollWithFooter({
   useEffect(() => {
     if (!footer) setFooterHeight(0);
   }, [!!footer]);
+  const scheme = useColorScheme();
   return (
     <>
       <ScrollView
@@ -28,7 +34,7 @@ function ScrollWithFooter({
           backgroundColor: colors.backgroundDim,
           ...bigShadow, // disabled because it does not seem to actually appear on ScreenContainer's ScrollView (when swiping back on iOS)
           borderLeftWidth: 1,
-          borderColor: "#ccc",
+          borderColor: `${colors.secondaryText}33`,
           shadowColor: colors.text,
         }}
         scrollIndicatorInsets={{
@@ -50,6 +56,7 @@ function ScrollWithFooter({
         </View>
       </ScrollView>
       <BlurView // behind status bar
+        tint={scheme}
         style={{
           position: "absolute",
           top: 0,
@@ -116,7 +123,7 @@ export default function ScreenContainer({
         backgroundColor: colors.backgroundDim,
         borderLeftWidth: 1,
         marginLeft: -1,
-        borderColor: "#ccc",
+        borderColor: `${colors.secondaryText}33`,
       }}
     >
       {children}

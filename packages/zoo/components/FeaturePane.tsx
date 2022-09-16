@@ -4,6 +4,7 @@ import {
   IconButton,
   Spinner,
   useActionsSheet,
+  useColors,
 } from "@zerve/zen";
 import { ComponentProps, ReactNode } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -29,6 +30,7 @@ export function FeaturePane({
   onBack?: () => void;
   footer?: null | ReactNode;
 }) {
+  const colors = useColors();
   const [actionButton] = useActionsSheet(
     (onOpen: () => void) => (
       <View
@@ -53,7 +55,7 @@ export function FeaturePane({
         flex: 1,
       }}
     >
-      <View style={{ minHeight: 80 }}>
+      <View style={{ minHeight: 80, backgroundColor: colors.background }}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text
             style={{ fontSize: 28, color: "#464646", flex: 1, padding: 16 }}
@@ -67,7 +69,7 @@ export function FeaturePane({
         )}
       </View>
       <ScrollView
-        style={{ backgroundColor: "#fafafa", flex: 1 }}
+        style={{ backgroundColor: colors.backgroundDim, flex: 1 }}
         contentContainerStyle={{}}
         scrollEnabled={true}
       >

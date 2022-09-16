@@ -30,7 +30,7 @@ import { Button, ContentButton } from "./Button";
 import { Icon } from "./Icon";
 import { Label } from "./Label";
 import { useColors } from "./useColors";
-import { VStack } from "./Stack";
+import { HGroup, VStack } from "./Stack";
 import { Paragraph } from "./Text";
 import { TextProps, ThemedText } from "./Themed";
 import { ActionButtonDef } from "./ActionButton";
@@ -387,14 +387,16 @@ export function ObjectEditor({
           />
         );
       })}
-      {additionalProperties !== false && !!onValue && (
-        <AddButton
-          label="Add Property"
-          onPress={() => {
-            propertyNameInput(null);
-          }}
-        />
-      )}
+      <HGroup>
+        {additionalProperties !== false && !!onValue && (
+          <AddButton
+            label="Add Property"
+            onPress={() => {
+              propertyNameInput(null);
+            }}
+          />
+        )}
+      </HGroup>
     </VStack>
   );
 }
@@ -437,7 +439,7 @@ export function ArrayEditor({
     return (
       <>
         <ThemedText>Value is not an array</ThemedText>
-        {addButton}
+        <HGroup>{addButton}</HGroup>
       </>
     );
   return (
@@ -487,7 +489,7 @@ export function ArrayEditor({
           />
         );
       })}
-      {!!onValue && addButton}
+      <HGroup>{!!onValue && addButton}</HGroup>
     </VStack>
   );
 }

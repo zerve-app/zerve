@@ -7,6 +7,8 @@ import {
   StyleProp,
   ViewStyle,
   ColorValue,
+  Platform,
+  StyleSheet,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -20,6 +22,11 @@ import { useColors } from "./useColors";
 import { Spinner } from "./Spinner";
 import { showErrorToast } from "./Toast";
 import { Icon } from "./Icon";
+import {
+  LongPressGestureHandler,
+  State,
+  TapGestureHandler,
+} from "react-native-gesture-handler";
 
 export function IconButton({
   icon,
@@ -62,8 +69,10 @@ export function IconButton({
   );
 }
 export type ButtonProps = {
-  left?: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
-  right?: ReactNode | ((opts: { color: string; size: number }) => ReactNode);
+  left?: ReactNode | ((opts: { color: ColorValue; size: number }) => ReactNode);
+  right?:
+    | ReactNode
+    | ((opts: { color: ColorValue; size: number }) => ReactNode);
   title: string;
   primary?: boolean;
   danger?: boolean;
@@ -77,6 +86,9 @@ export type ButtonProps = {
   inline?: boolean;
   tint?: ColorValue | null;
 };
+
+const ButtonHitSlop = { left: 6, right: 6, top: 6, bottom: 6 };
+
 export function Button({
   title,
   left,
@@ -94,7 +106,7 @@ export function Button({
   tint,
 }: ButtonProps) {
   const colors = useColors();
-  const pressHeight = useSharedValue(0.5); // 0.5 = inactive, 1 = hover/active, 0 = pressed
+  const pressHeight = useSharedValue(0); // 0 = inactive, 1 = began, -0.5 = pressed
 
   const color = danger
     ? colors.dangerText
@@ -102,8 +114,7 @@ export function Button({
     ? colors.tint
     : colors.text;
   const containerStyle = useAnimatedStyle(() => ({
-    backgroundColor:
-      tint || (chromeless ? "transparent" : `${colors.background}88`),
+    backgroundColor: tint || (chromeless ? "transparent" : colors.background),
     borderWidth: chromeless ? 0 : danger || primary ? 4 : 1,
     borderColor: danger
       ? colors.dangerText
@@ -114,43 +125,26 @@ export function Button({
     padding: small ? 8 : 12,
     paddingHorizontal: small ? 12 : 18,
     minHeight: small ? 30 : 50,
-    flexDirection: "row",
-    alignItems: "center",
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: pressHeight.value * 0.25,
+    shadowColor: chromeless ? undefined : "#111",
     transform: [
       { translateY: -pressHeight.value * 3 },
-      { scale: 0.95 + pressHeight.value * 0.1 },
+      { scale: 1 + pressHeight.value * 0.02 },
     ],
-    overflow: "hidden",
   }));
-  const pressBounceTimeout = useRef<null | ReturnType<typeof setTimeout>>(null);
   const appendageProps = { color, size: small ? 18 : 24 };
 
-  return (
-    <Pressable
-      style={style}
-      onPress={() => {
-        if (!onPress) return;
-        onPress();
-        pressHeight.value = withTiming(0, { duration: 150 });
-        pressBounceTimeout.current = setTimeout(() => {
-          pressHeight.value = withTiming(0.5, { duration: 150 });
-          pressBounceTimeout.current = null;
-        }, 150);
-      }}
-      hitSlop={{ left: 6, right: 6, top: 6, bottom: 6 }}
-      onLongPress={onLongPress}
-      disabled={disabled}
-      onResponderEnd={() => {}}
-      onPressIn={() => {
-        pressHeight.value = withTiming(1, { duration: 150 });
-      }}
-      onTouchEnd={() => {
-        if (!pressBounceTimeout.current) {
-          pressHeight.value = withTiming(0.5, { duration: 150 });
-        }
-      }}
-    >
-      <Animated.View style={containerStyle}>
+  let content = (
+    <Animated.View style={containerStyle}>
+      <View
+        style={{
+          overflow: "hidden",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
         {typeof left === "function" ? left(appendageProps) : left}
         <Text
           style={{
@@ -165,9 +159,104 @@ export function Button({
           {title}
         </Text>
         {typeof right === "function" ? right(appendageProps) : right}
-      </Animated.View>
-    </Pressable>
+      </View>
+    </Animated.View>
   );
+
+  if (Platform.OS === "web" && !disabled && (!!onPress || !!onLongPress)) {
+    // use pressable instead of RNGH on web, to address accessibility and
+    return (
+      <Pressable
+        style={style}
+        onPress={() => {
+          if (!onPress) return;
+          onPress();
+          pressHeight.value = withTiming(-0.5, { duration: 100 });
+          setTimeout(() => {
+            pressHeight.value = withTiming(0, { duration: 250 });
+          }, 100);
+        }}
+        hitSlop={ButtonHitSlop}
+        onLongPress={() => {
+          if (onLongPress) {
+            onLongPress();
+            pressHeight.value = withTiming(-0.5, { duration: 100 });
+          }
+          setTimeout(() => {
+            pressHeight.value = withTiming(0, { duration: 250 });
+          }, 100);
+        }}
+        disabled={disabled}
+        onResponderEnd={() => {}}
+        onPressIn={() => {
+          pressHeight.value = withTiming(1, { duration: 150 });
+        }}
+        onPressOut={() => {
+          pressHeight.value = withTiming(0, { duration: 250 });
+        }}
+        onTouchEnd={() => {
+          if (!pressBounceTimeout.current) {
+            pressHeight.value = withTiming(0.5, { duration: 150 });
+          }
+        }}
+      >
+        {content}
+      </Pressable>
+    );
+  }
+
+  if (onPress && !disabled) {
+    content = (
+      <TapGestureHandler
+        maxDurationMs={2000}
+        hitSlop={ButtonHitSlop}
+        onHandlerStateChange={(e) => {
+          const { state } = e.nativeEvent;
+          if (state === State.BEGAN) {
+            pressHeight.value = withTiming(1, { duration: 400 });
+          } else if (state === State.ACTIVE) {
+            onPress();
+            pressHeight.value = withTiming(-0.5, { duration: 100 });
+          } else if (state === State.END) {
+            setTimeout(() => {
+              pressHeight.value = withTiming(0, { duration: 250 });
+            }, 100);
+          } else {
+            pressHeight.value = withTiming(0, { duration: 250 });
+          }
+        }}
+      >
+        {content}
+      </TapGestureHandler>
+    );
+  }
+
+  if (onLongPress && !disabled) {
+    content = (
+      <LongPressGestureHandler
+        hitSlop={ButtonHitSlop}
+        onHandlerStateChange={(e) => {
+          const { state } = e.nativeEvent;
+          if (state === State.BEGAN) {
+            pressHeight.value = withTiming(1, { duration: 400 });
+          } else if (state === State.ACTIVE) {
+            onLongPress();
+            pressHeight.value = withTiming(-0.5, { duration: 100 });
+          } else if (state === State.END) {
+            setTimeout(() => {
+              pressHeight.value = withTiming(0, { duration: 250 });
+            }, 100);
+          } else {
+            pressHeight.value = withTiming(0, { duration: 250 });
+          }
+        }}
+      >
+        {content}
+      </LongPressGestureHandler>
+    );
+  }
+
+  return content;
 }
 
 type AsyncButtonProps = Omit<ComponentProps<typeof Button>, "onPress"> & {

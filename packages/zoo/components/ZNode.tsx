@@ -5,6 +5,7 @@ import {
   AsyncButton,
   Button,
   HGroup,
+  JSONSchemaEditorContext,
   LinkRowGroup,
   PageSection,
   Paragraph,
@@ -36,6 +37,7 @@ import {
   FromSchema,
   GenericError,
   getDefaultSchemaValue,
+  lookUpValue,
 } from "@zerve/zed";
 import { View } from "react-native";
 import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
@@ -525,14 +527,23 @@ export function ZGettableNode({
 }) {
   if (type[".t"] !== "Gettable")
     throw new Error("Unexpected z type for ZGettableNode");
+  const { openRawJSON } = useGlobalNavigation();
   return (
     <VStack padded>
-      <JSONSchemaEditor
-        id={`gettable-${path.join("-")}`}
-        value={value}
-        schema={type.value}
-        schemaStore={EmptySchemaStore}
-      />
+      <JSONSchemaEditorContext.Provider
+        value={{
+          openChildEditor: (key: string) => {
+            openRawJSON(key, lookUpValue(value, key));
+          },
+        }}
+      >
+        <JSONSchemaEditor
+          id={`gettable-${path.join("-")}`}
+          value={value}
+          schema={type.value}
+          schemaStore={EmptySchemaStore}
+        />
+      </JSONSchemaEditorContext.Provider>
     </VStack>
   );
 }

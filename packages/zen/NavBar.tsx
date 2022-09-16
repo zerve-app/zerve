@@ -56,7 +56,7 @@ export function NavBar({ children }: { children: ReactNode }) {
         flex: 1,
         alignItems: "center",
       }}
-      style={{ backgroundColor: colors.backgroundDim, maxHeight: 60 }}
+      style={{ backgroundColor: colors.background, maxHeight: 60 }}
     >
       {children}
       <NavBarRoutingIndicator />

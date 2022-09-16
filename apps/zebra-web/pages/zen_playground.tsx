@@ -1,5 +1,6 @@
 import {
   Button,
+  Icon,
   Link,
   NavBarSpacer,
   PageContainer,
@@ -17,9 +18,10 @@ import {
   getWebRootServerProps,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
-import { DashboardPage, FeaturePane } from "@zerve/zoo/web/Dashboard";
+import { DashboardPage } from "@zerve/zoo/web/Dashboard";
 import { FragmentContext } from "@zerve/zoo/web/Fragment";
 import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
+import { FeaturePane } from "@zerve/zoo/components/FeaturePane";
 
 type PlaygroundState = "home" | "toast" | "button" | "spinner";
 
@@ -78,8 +80,35 @@ function ToastPlayground() {
 }
 
 function ButtonPlayground() {
+  const colors = useColors();
   return (
     <FeaturePane title="Button">
+      <PageSection title="Modes">
+        <VStack padded>
+          <Button
+            title="Pressable"
+            onPress={() => {
+              showToast("Pressed");
+            }}
+          />
+          <Button
+            title="Long Pressable"
+            onPress={() => {
+              showToast("Pressed");
+            }}
+            onLongPress={() => {
+              showToast("Long Pressed");
+            }}
+          />
+          <Button
+            title="Disabled"
+            disabled
+            onPress={() => {
+              showToast("This does not happen");
+            }}
+          />
+        </VStack>
+      </PageSection>
       <PageSection title="Variants">
         <VStack padded>
           <Button title="Normal" onPress={() => {}} />
@@ -87,11 +116,36 @@ function ButtonPlayground() {
           <Button title="Primary" primary onPress={() => {}} />
           <Button title="Chromeless" chromeless onPress={() => {}} />
         </VStack>
-        <PageSection title="Sizes"></PageSection>
-        <VStack padded>
-          <Button title="Normal" onPress={() => {}} />
-          <Button title="Small" small onPress={() => {}} />
-        </VStack>
+        <PageSection title="Sizes">
+          <VStack padded>
+            <Button title="Normal" onPress={() => {}} />
+            <Button title="Small" small onPress={() => {}} />
+          </VStack>
+        </PageSection>
+        <PageSection title="Tint">
+          <VStack padded>
+            <Button
+              title="Changed Tint"
+              tint={colors.changedTint}
+              onPress={() => {}}
+            />
+          </VStack>
+        </PageSection>
+        <PageSection title="Icons">
+          <VStack padded>
+            <Button
+              title="Trash"
+              danger
+              left={(p) => <Icon {...p} name="trash" />}
+              onPress={() => {}}
+            />
+            <Button
+              title="Refresh"
+              left={(p) => <Icon {...p} name="refresh" />}
+              onPress={() => {}}
+            />
+          </VStack>
+        </PageSection>
       </PageSection>
     </FeaturePane>
   );

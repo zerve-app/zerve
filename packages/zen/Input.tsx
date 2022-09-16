@@ -108,7 +108,9 @@ export function SwitchInput({
         onValueChange={onValue}
         value={value}
         disabled={disabled}
+        activeThumbColor={colors.secondaryText}
         ios_backgroundColor={colors.secondaryText}
+        thumbColor={colors.background}
         trackColor={{
           false: colors.secondaryText,
           true: colors.tint,

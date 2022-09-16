@@ -1,4 +1,10 @@
-import { ActionButtonDef, Icon, IconButton, useActionsSheet } from "@zerve/zen";
+import {
+  ActionButtonDef,
+  Icon,
+  IconButton,
+  useActionsSheet,
+  useColors,
+} from "@zerve/zen";
 import { ComponentProps, ReactNode } from "react";
 import { View } from "react-native";
 import ScreenContainer from "./ScreenContainer";
@@ -25,6 +31,7 @@ export function FeaturePane({
   onBack?: () => void;
   footer: null | ReactNode;
 }) {
+  const colors = useColors();
   const [actionButton] = useActionsSheet(
     (onOpen: () => void) => (
       <IconButton
@@ -44,7 +51,9 @@ export function FeaturePane({
         onBack={onBack}
         corner={actions && actions.length ? actionButton : null}
       />
-      <View style={{ backgroundColor: "#fafafa", flex: 1 }}>{children}</View>
+      <View style={{ backgroundColor: colors.backgroundDim, flex: 1 }}>
+        {children}
+      </View>
     </ScreenContainer>
   );
 }

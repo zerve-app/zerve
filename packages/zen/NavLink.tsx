@@ -4,12 +4,13 @@ import { Icon } from "./Icon";
 import { useColors } from "./useColors";
 
 export function NavLinkContentGroup({ children }: { children: ReactNode }) {
+  const colors = useColors();
   return (
     <View
       style={{
         marginVertical: 12,
         borderTopWidth: 1,
-        borderColor: "#eee",
+        borderColor: `${colors.secondaryText}33`,
       }}
     >
       {children}
@@ -34,12 +35,13 @@ export function NavLinkContent({
   return (
     <View
       style={{
+        backgroundColor: colors.background,
         paddingVertical: 14,
         paddingHorizontal: 12,
         flexDirection: "row",
         ...(inset ? { paddingLeft: 36 } : {}),
         borderBottomWidth: 1,
-        borderBottomColor: "#eee",
+        borderBottomColor: `${colors.secondaryText}33`,
         alignItems: "center",
       }}
     >
