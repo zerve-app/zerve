@@ -1,6 +1,6 @@
 import { GetStaticProps } from "next";
 import React, { ReactNode } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   PageContainer,
   NavBar,
@@ -134,16 +134,24 @@ function NavBarLink({ title, href }) {
   const colors = useColors();
   return (
     <Link href={href}>
-      <Text
+      <View
         style={{
-          color: colors.secondaryText,
-          fontSize: 18,
-          fontWeight: "bold",
-          padding: 10,
+          minHeight: 60,
+          flexDirection: "row",
         }}
       >
-        {title}
-      </Text>
+        <Text
+          style={{
+            alignSelf: "center",
+            color: colors.secondaryText,
+            fontSize: 18,
+            fontWeight: "bold",
+            padding: 10,
+          }}
+        >
+          {title}
+        </Text>
+      </View>
     </Link>
   );
 }
@@ -167,70 +175,82 @@ function HomeLink({ href, children }: { href: string; children: ReactNode }) {
 }
 export default function HomeScreen() {
   return (
-    <PageContainer>
-      <NavBar>
-        <NavBarZLogo />
-        <HStack>
-          <NavBarLink href="https://docs.zerve.app/docs/intro" title="Docs" />
-          <NavBarLink href="https://docs.zerve.app/blog" title="Blog" />
-        </HStack>
-        <NavBarSpacer />
-        <HStack>
-          <LinkButton
-            href="https://alpha.zerve.app"
-            title="Launch App"
-            primary
-            small
-            right={(props) => <Icon name="arrow-right" {...props} />}
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ minHeight: "100%" }}
+    >
+      <PageContainer>
+        <NavBar>
+          <NavBarZLogo />
+          <View
+            style={{
+              paddingHorizontal: 12,
+              flexDirection: "row",
+              alignSelf: "stretch",
+              alignItems: "stretch",
+            }}
+          >
+            <NavBarLink href="https://docs.zerve.app/docs/intro" title="Docs" />
+            <NavBarLink href="https://docs.zerve.app/blog" title="Blog" />
+          </View>
+          <NavBarSpacer />
+          <HStack>
+            <LinkButton
+              href="https://alpha.zerve.app"
+              title="Launch App"
+              primary
+              small
+              right={(props) => <Icon name="arrow-right" {...props} />}
+            />
+          </HStack>
+        </NavBar>
+        <View
+          style={{
+            minHeight: 500,
+            justifyContent: "center",
+            borderTopWidth: 1,
+            borderColor: "#eee",
+          }}
+        >
+          <LinearGradient
+            colors={["#6144b8", "#9f4ab5"]}
+            start={{ x: 0.5, y: 0.0 }}
+            style={StyleSheet.absoluteFill}
           />
-        </HStack>
-      </NavBar>
-      <View
-        style={{
-          minHeight: 500,
-          justifyContent: "center",
-          borderTopWidth: 1,
-          borderColor: "#eee",
-        }}
-      >
-        <LinearGradient
-          colors={["#6144b8", "#9f4ab5"]}
-          start={{ x: 0.5, y: 0.0 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <Image
-          src={require("../assets/ZContentSystemLight.svg")}
-          alt="Zerve Content System – Alpha"
-        />
-      </View>
-      <View
-        style={{
-          backgroundColor: "white",
-          flex: 1,
-          padding: 20,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingVertical: 60,
-        }}
-      >
-        <View style={{ maxWidth: 500 }}>
-          <HomeLink href="https://docs.zerve.app">📚 Get Started</HomeLink>
-          <HomeLink href="https://twitter.com/ZerveApp">
-            🐤 Follow Zerve on Twitter
-          </HomeLink>
-          <HomeLink href="https://discord.gg/UDBJZRMQTp">
-            💬 Join our Discord
-          </HomeLink>
-          <HomeLink href="https://www.youtube.com/channel/UC2H16-XPP4IWrFl54ADOU3w">
-            🎥 Watch along on YouTube
-          </HomeLink>
-          <HomeLink href="https://github.com/zerve-app/zerve">
-            ⭐️ Star this repo 😎
-          </HomeLink>
+          <Image
+            src={require("../assets/ZContentSystemLight.svg")}
+            alt="Zerve Content System – Alpha"
+          />
         </View>
-      </View>
-      <SiteFooter />
-    </PageContainer>
+        <View
+          style={{
+            backgroundColor: "white",
+            flex: 1,
+            padding: 20,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingVertical: 60,
+          }}
+        >
+          <View style={{ maxWidth: 500 }}>
+            <HomeLink href="https://docs.zerve.app">📚 Get Started</HomeLink>
+            <HomeLink href="https://twitter.com/ZerveApp">
+              🐤 Follow Zerve on Twitter
+            </HomeLink>
+            <HomeLink href="https://discord.gg/UDBJZRMQTp">
+              💬 Join our Discord
+            </HomeLink>
+            <HomeLink href="https://www.youtube.com/channel/UC2H16-XPP4IWrFl54ADOU3w">
+              🎥 Watch along on YouTube
+            </HomeLink>
+            <HomeLink href="https://github.com/zerve-app/zerve">
+              ⭐️ Star this repo 😎
+            </HomeLink>
+          </View>
+        </View>
+        <SiteFooter />
+      </PageContainer>
+    </ScrollView>
   );
 }
 

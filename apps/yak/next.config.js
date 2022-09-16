@@ -68,9 +68,12 @@ const nextConfig = {
 
 const { withExpo } = require("@expo/next-adapter");
 const withTM = require("next-transpile-modules")([
+  ...localPackageNames,
   "react-native",
   "react-native-web",
-  ...localPackageNames,
+  "moti",
+  "@motify/core",
+  "@motify/components",
 ]);
 
 module.exports = withPlugins(

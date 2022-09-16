@@ -89,6 +89,7 @@ function ScrollWithFooter({
                 bottom: 0,
                 paddingBottom: footer ? insets.bottom : 0,
               }}
+              tint={scheme}
               onLayout={(e) => {
                 const { height } = e.nativeEvent.layout;
                 setFooterHeight(height);

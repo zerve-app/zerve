@@ -47,7 +47,7 @@ body {
 }
 `;
 
-export async function getInitialProps({ renderPage }) {
+export async function getInitialProps({ renderPage, ...rest }) {
   AppRegistry.registerComponent("Main", () => Main);
   const { getStyleElement } = AppRegistry.getApplication("Main");
   const page = await renderPage();

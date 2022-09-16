@@ -51,17 +51,18 @@ export default function ScreenHeader({
           style={{
             flexDirection: "row",
             alignItems: "center",
+            flex: 1,
             marginHorizontal: 10,
           }}
         >
           {icon ? <Icon name={icon} color={colors.secondaryText} /> : null}
           <Title
+            numberOfLines={1}
             title={title}
             secondary
-            style={{ marginVertical: 20, marginHorizontal: 10 }}
+            style={{ marginVertical: 20, marginHorizontal: 10, flex: 1 }}
           />
         </Pressable>
-        <Spacer />
         {isLoading && <Spinner style={{ marginHorizontal: 12 }} size="small" />}
         {corner}
       </View>

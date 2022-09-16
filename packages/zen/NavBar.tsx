@@ -50,6 +50,7 @@ export function NavBar({ children }: { children: ReactNode }) {
   return (
     <ScrollView
       horizontal
+      showsHorizontalScrollIndicator={false}
       contentContainerStyle={{
         flexDirection: "row",
         height: 60,
