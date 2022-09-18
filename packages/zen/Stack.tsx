@@ -103,3 +103,15 @@ export function VStack({
     </View>
   );
 }
+
+export function VPadding({ children }: { children: ReactNode }) {
+  return (
+    <View
+      style={{
+        paddingHorizontal: 12,
+      }}
+    >
+      {children}
+    </View>
+  );
+}

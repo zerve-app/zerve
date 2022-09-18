@@ -37,7 +37,7 @@ export function ConnectionPage({
   const { navigate } = useNavigation<NavigationProp>();
   const [optionsButton] = useActionsSheet(
     (onOpen) => <OptionsButton onOptions={onOpen} />,
-    () => [
+    [
       {
         key: "info",
         title: "Connection Info",

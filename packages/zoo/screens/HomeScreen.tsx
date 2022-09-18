@@ -107,7 +107,7 @@ function SingleConnection({ connection }: { connection: Connection }) {
   const navigation = useNavigation<NavigationProp>();
   const [optionsButton, openOptions] = useActionsSheet(
     (onOpen) => <OptionsButton onOptions={onOpen} />,
-    () => [
+    [
       ...actions,
       {
         title: "Connection Info",

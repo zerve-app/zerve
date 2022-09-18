@@ -44,7 +44,7 @@ export function FeaturePane({
         <Icon name="ellipsis-v" />
       </View>
     ),
-    () => actions || [],
+    actions || [],
   );
   return (
     <View
@@ -56,9 +56,22 @@ export function FeaturePane({
       }}
     >
       <View style={{ minHeight: 80, backgroundColor: colors.background }}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingLeft: !!icon ? 16 : 0,
+          }}
+        >
+          {icon ? <Icon name={icon} /> : null}
           <Text
-            style={{ fontSize: 28, color: "#464646", flex: 1, padding: 16 }}
+            style={{
+              fontSize: 28,
+              color: "#464646",
+              flex: 1,
+              padding: 16,
+            }}
+            numberOfLines={1}
           >
             {title}
           </Text>

@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { ActionButton, ActionButtonDef } from "./ActionButton";
 import { VStack } from "./Stack";
 import { useBottomSheet } from "./BottomSheet";
@@ -6,11 +6,11 @@ import { Pressable } from "react-native";
 
 export function useActionsSheet(
   renderButton: (onOpen: () => void) => ReactNode,
-  getActions: () => ActionButtonDef[],
+  actions: ActionButtonDef[],
 ): readonly [null | ReactNode, () => void] {
-  const onOpen = useBottomSheet<void>(({ onClose }) => (
+  const onOpen = useBottomSheet<ActionButtonDef[]>(({ onClose, options }) => (
     <VStack padded>
-      {getActions().map((action) => (
+      {options.map((action) => (
         <ActionButton
           key={action.key}
           action={{
@@ -24,8 +24,18 @@ export function useActionsSheet(
       ))}
     </VStack>
   ));
-  return [
-    <Pressable onPress={() => onOpen()}>{renderButton(onOpen)}</Pressable>,
-    onOpen,
-  ] as const;
+  if (actions.length) {
+    return [
+      <Pressable
+        onPress={() => {
+          onOpen(actions);
+        }}
+      >
+        {renderButton(() => onOpen(actions))}
+      </Pressable>,
+      () => onOpen(actions),
+    ] as const;
+  } else {
+    return [renderButton(() => {}), () => {}] as const;
+  }
 }

@@ -29,7 +29,7 @@ export function ZFeature({
 
   const [sheetContent, onOptions] = useActionsSheet(
     (handlePress) => <OptionsButton onOptions={handlePress} />,
-    () => [
+    [
       {
         key: "refresh",
         title: "Refresh",

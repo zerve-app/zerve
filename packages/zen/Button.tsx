@@ -69,23 +69,13 @@ export function IconButton({
   );
 }
 export type ButtonProps = {
-  left?: ReactNode | ((opts: { color: ColorValue; size: number }) => ReactNode);
-  right?:
-    | ReactNode
-    | ((opts: { color: ColorValue; size: number }) => ReactNode);
-  title: string;
-  primary?: boolean;
-  danger?: boolean;
   onPress: null | undefined | (() => void);
   onLongPress?: () => void;
   style?: StyleProp<ViewStyle>;
-  small?: boolean;
   disabled?: boolean;
-  chromeless?: boolean;
   textAlign?: "right" | "left" | "center";
   inline?: boolean;
-  tint?: ColorValue | null;
-};
+} & ButtonContentProps;
 
 const ButtonHitSlop = { left: 6, right: 6, top: 6, bottom: 6 };
 
@@ -297,6 +287,7 @@ export type ButtonContentProps = {
   danger?: boolean;
   primary?: boolean;
   tint?: ColorValue | null;
+  textAlign?: "right" | "left" | "center";
 };
 export function ButtonContent({
   title,
@@ -307,6 +298,7 @@ export function ButtonContent({
   left,
   right,
   tint,
+  textAlign = "center",
 }: ButtonContentProps) {
   const colors = useColors();
   const color = danger
@@ -343,7 +335,7 @@ export function ButtonContent({
           fontSize: 16,
           fontWeight: primary ? "bold" : "normal",
           flex: 1,
-          textAlign: "center",
+          textAlign,
         }}
       >
         {title}

@@ -94,6 +94,7 @@ export function JSONSchemaForm({
             onSubmitEditing={() => {
               handle(valueState);
             }}
+            onEscape={onCancel}
             schemaStore={schemaStore || EmptySchemaStore}
           />
           {(valueState !== savedValue || onSubmit) && (

@@ -6,10 +6,12 @@ import {
   Button,
   HGroup,
   JSONSchemaEditorContext,
+  LinkButton,
   LinkRowGroup,
   PageSection,
   Paragraph,
   Spinner,
+  VPadding,
   VStack,
 } from "@zerve/zen";
 import { pathStartsWith, postZAction } from "@zerve/zoo-client/ServerCalls";
@@ -472,6 +474,7 @@ export function ZActionNode({
   connection: string;
   path: string[];
 }) {
+  console.log("ZActionNode", { type, value });
   const [actionValue, setActionValue] = useState(
     getDefaultSchemaValue(type.payload),
   );
@@ -482,7 +485,7 @@ export function ZActionNode({
   if (!conn) throw new Error("connection");
 
   return (
-    <VStack>
+    <VStack padded>
       {error && <Paragraph>{error.message}</Paragraph>}
       <JSONSchemaEditor
         id={`action-${path.join("-")}`}
@@ -497,7 +500,11 @@ export function ZActionNode({
         onCatch={(e) => {
           setError(e);
         }}
-        right={(p) => <Icon name="play" {...p} />}
+        left={(p) => {
+          let iconName = type.payload?.submitIcon;
+          if (iconName === undefined) iconName = "play";
+          return iconName ? <Icon name={iconName} {...p} /> : null;
+        }}
         onPress={async () => {
           setError(null);
           const response = await postZAction(conn, path, actionValue);
@@ -627,31 +634,61 @@ export function ZReferenceListNode({
   if (inline)
     return (
       <HGroup>
-        {value.items.map((item) => (
-          <Button
-            key={item.key}
-            title={item.name}
-            left={item.icon ? (p) => <Icon name={item.icon} {...p} /> : null}
-            inline
-            onPress={() => {
-              openZ(item.path);
-            }}
-          />
-        ))}
+        {value.items.map((item) => {
+          if (item.inline) {
+            return <ZInlineNode key={item.key} path={item.path} />;
+          }
+          return (
+            <Button
+              key={item.key}
+              title={item.name}
+              left={item.icon ? (p) => <Icon name={item.icon} {...p} /> : null}
+              inline
+              onPress={() => {
+                openZ(item.path);
+              }}
+            />
+          );
+        })}
       </HGroup>
     );
+  const hasInlineItem = value.items.find((i) => !!i.inline);
+  if (!hasInlineItem) {
+    return (
+      <VStack padded>
+        <LinkRowGroup
+          links={value.items.map((item) => ({
+            title: item.name,
+            key: item.key,
+            icon: item.icon,
+            onPress: () => {
+              openZ(item.path);
+            },
+          }))}
+        />
+      </VStack>
+    );
+  }
   return (
-    <VStack padded>
-      <LinkRowGroup
-        links={value.items.map((item) => ({
-          key: item.key,
-          title: item.name,
-          icon: item.icon,
-          onPress: () => {
-            openZ(item.path);
-          },
-        }))}
-      />
+    <VStack>
+      {value.items.map((item) => {
+        if (item.inline) {
+          return <ZInlineNode key={item.key} path={item.path} />;
+        }
+        return (
+          <VPadding>
+            <LinkButton
+              nativePress={() => {
+                openZ(item.path);
+              }}
+              left={item.icon ? (p) => <Icon {...p} name={item.icon} /> : null}
+              title={item.name}
+              key={item.key}
+              href="uhh"
+            />
+          </VPadding>
+        );
+      })}
     </VStack>
   );
 }

@@ -9,6 +9,7 @@ import {
   AsyncButton,
   Button,
   Icon,
+  JSONSchemaEditorContext,
   JSONSchemaForm,
   PageSection,
   showToast,
@@ -90,6 +91,7 @@ function LoginStrategyForm({
             schema={CodeSchema}
             saveLabel="Log In"
             value={token}
+            onCancel={onCancel}
             onValue={async (t: string) => {
               setToken(t);
               const session = await postZAction(
@@ -121,7 +123,6 @@ function LoginStrategyForm({
               onComplete?.(session.userId);
             }}
           />
-          <Button chromeless title="Cancel" onPress={onCancel} />
         </VStack>
       </PageSection>
     );
@@ -134,6 +135,7 @@ function LoginStrategyForm({
         schema={schema}
         saveLabel="Send me a Code"
         value={address}
+        onCancel={onCancel}
         onValue={async (address) => {
           await postZAction(conn, [...path, "createSession"], {
             strategy,
@@ -147,7 +149,6 @@ function LoginStrategyForm({
         }}
         schemaStore={EmptySchemaStore}
       />
-      <Button chromeless title="Cancel" onPress={onCancel} />
     </VStack>
   );
 }
@@ -189,6 +190,7 @@ function UsernamePasswordLoginForm({
         schema={UsernamePasswordSchema}
         saveLabel="Log In"
         value={InitialLoginFormValue}
+        onCancel={onCancel}
         onSubmit={async (formValues) => {
           const session = await postZAction(
             conn,
@@ -215,7 +217,6 @@ function UsernamePasswordLoginForm({
         }}
         schemaStore={EmptySchemaStore}
       />
-      {onCancel && <Button chromeless onPress={onCancel} title="Cancel" />}
     </VStack>
   );
 }
@@ -263,7 +264,7 @@ export function LoginForm({
     null | typeof LoginStrategies[number]["key"]
   >(null);
   return (
-    <>
+    <JSONSchemaEditorContext.Provider value={{ disableTypeLabels: true }}>
       {!selectedStrategy && (
         <StrategySelectForm
           onSelectedStrategy={setSelectedStrategy}
@@ -290,7 +291,7 @@ export function LoginForm({
           />
         )
       )}
-    </>
+    </JSONSchemaEditorContext.Provider>
   );
 }
 

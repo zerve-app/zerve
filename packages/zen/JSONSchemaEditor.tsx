@@ -115,6 +115,7 @@ export function ObjectEditor({
   value,
   comparisonValue,
   onValue,
+  onEscape,
   id,
   schema,
   schemaStore,
@@ -123,6 +124,7 @@ export function ObjectEditor({
   value: any;
   comparisonValue?: any;
   onValue?: (v: any) => void;
+  onEscape?: () => void;
   id: string;
   schema: JSONSchema;
   schemaStore: SchemaStore;
@@ -295,6 +297,7 @@ export function ObjectEditor({
                   }
             }
             actions={actions}
+            onEscape={onEscape}
             onValue={
               onValue
                 ? (propertyValue) => {
@@ -369,6 +372,7 @@ export function ObjectEditor({
             schemaStore={schemaStore}
             label={itemName}
             actions={actions}
+            onEscape={onEscape}
             onValue={
               onValue
                 ? (propertyValue) => {
@@ -405,6 +409,7 @@ export function ArrayEditor({
   value,
   comparisonValue,
   onValue,
+  onEscape,
   schema,
   id,
   schemaStore,
@@ -413,6 +418,7 @@ export function ArrayEditor({
   value: any;
   comparisonValue?: any;
   onValue?: (v: any) => void;
+  onEscape?: () => void;
   schema: JSONSchema;
   id: string;
   schemaStore: SchemaStore;
@@ -486,6 +492,7 @@ export function ArrayEditor({
                   }
                 : undefined
             }
+            onEscape={onEscape}
           />
         );
       })}
@@ -811,7 +818,9 @@ function FieldHeader({
   changedTint?: boolean;
 }) {
   const { tint, ...colors } = useColors();
-  const { enableValueCopy } = useContext(JSONSchemaEditorContext);
+  const { enableValueCopy, disableTypeLabels } = useContext(
+    JSONSchemaEditorContext,
+  );
   const [labelView] = useActionsSheet(
     (onOpen) => (
       <View
@@ -822,14 +831,14 @@ function FieldHeader({
           tint={!!labelActions && !!labelActions.length}
           style={{ marginRight: 8, textAlign: "left" }}
         >
-          {label}
+          {disableTypeLabels ? label || typeLabel : label}
         </Label>
         {!!labelActions && !!labelActions.length ? (
           <Icon name="chevron-down" color={tint} size={12} />
         ) : null}
       </View>
     ),
-    () => labelActions || [],
+    labelActions || [],
     !labelActions || labelActions.length == 0,
   );
   const fieldActions = useMemo(() => {
@@ -867,10 +876,18 @@ function FieldHeader({
         ) : null}
       </View>
     ),
-    () => fieldActions,
+    fieldActions,
     fieldActions.length === 0,
   );
-
+  let content = disableTypeLabels ? (
+    labelView
+  ) : (
+    <>
+      {labelView}
+      <View style={{ flex: 1 }} />
+      {typeLabelView}
+    </>
+  );
   return (
     <View
       style={{
@@ -891,9 +908,7 @@ function FieldHeader({
           paddingBottom: 6,
         }}
       >
-        {labelView}
-        <View style={{ flex: 1 }} />
-        {typeLabelView}
+        {content}
       </View>
     </View>
   );
@@ -1049,6 +1064,7 @@ export function FormField(fieldProps: FormFieldProps) {
     value,
     comparisonValue,
     onValue,
+    onEscape,
     id,
     schema,
     schemaStore,
@@ -1118,6 +1134,7 @@ export function FormField(fieldProps: FormFieldProps) {
         typeLabel={typeLabel}
         actions={actions}
         onSubmitEditing={onSubmitEditing}
+        onEscape={onEscape}
       />
     );
   }
@@ -1196,6 +1213,7 @@ export function LeafField({
   value,
   comparisonValue,
   onValue,
+  onEscape,
   schema,
   schemaStore,
   actions,
@@ -1208,6 +1226,7 @@ export function LeafField({
   comparisonValue?: any;
   id: string;
   onValue?: (v: any) => void;
+  onEscape?: () => void;
   schema: LeafSchema;
   schemaStore: SchemaStore;
   actions?: ActionButtonDef[];
@@ -1272,6 +1291,7 @@ export function LeafField({
               ? colors.changedTint
               : null
           }
+          onEscape={onEscape}
           onValue={onValue}
           placeholder={schema.placeholder}
           autoCapitalize={autoCapitalize}
@@ -1371,6 +1391,7 @@ export function JSONSchemaEditor({
   value,
   comparisonValue,
   onValue,
+  onEscape,
   schema,
   label,
   schemaStore,
@@ -1384,6 +1405,7 @@ export function JSONSchemaEditor({
   label?: string | ReactNode;
   schemaStore: SchemaStore;
   onSubmitEditing?: () => void;
+  onEscape?: () => void;
   id: string;
 }) {
   const colors = useColors();
@@ -1405,6 +1427,7 @@ export function JSONSchemaEditor({
           onValue={onValue}
           schema={schema}
           onSubmitEditing={onSubmitEditing}
+          onEscape={onEscape}
         />
       </>
     );
@@ -1447,6 +1470,7 @@ export function JSONSchemaEditor({
             value={value}
             comparisonValue={comparisonValue}
             onValue={onValue}
+            onEscape={onEscape}
             schema={matchedSchema}
             schemaStore={schemaStore}
             label={label}
@@ -1465,6 +1489,7 @@ export function JSONSchemaEditor({
         value={value}
         comparisonValue={comparisonValue}
         onValue={onValue}
+        onEscape={onEscape}
         schema={expandedSchema}
         schemaStore={schemaStore}
         onSubmitEditing={onSubmitEditing}
@@ -1478,6 +1503,7 @@ export function JSONSchemaEditor({
         value={value}
         comparisonValue={comparisonValue}
         onValue={onValue}
+        onEscape={onEscape}
         schema={expandedSchema}
         schemaStore={schemaStore}
         onSubmitEditing={onSubmitEditing}
@@ -1492,6 +1518,7 @@ export function JSONSchemaEditor({
         value={value}
         comparisonValue={comparisonValue}
         onValue={onValue}
+        onEscape={onEscape}
         schema={expandedSchema}
         schemaStore={schemaStore}
         onSubmitEditing={onSubmitEditing}

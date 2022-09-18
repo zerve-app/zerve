@@ -40,7 +40,7 @@ export function FeaturePane({
         altTitle="Options"
       />
     ),
-    () => actions || [],
+    actions || [],
   );
   return (
     <ScreenContainer scroll footer={footer}>

@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { Pressable, Text } from "react-native";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
@@ -62,7 +62,7 @@ const ActionMenuItem = React.memo(ActionMenuItemUnmemo);
 
 export function useActionsSheet(
   renderButton: (onOpen: () => void) => ReactElement,
-  getActions: () => ActionButtonDef[],
+  actions: ActionButtonDef[],
   disabled?: boolean,
 ): readonly [null | ReactElement, () => void] {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,7 +99,7 @@ export function useActionsSheet(
         }}
       >
         <ScrollView style={{ maxHeight: 300 }} showsVerticalScrollIndicator>
-          {getActions().map((action) => (
+          {actions.map((action) => (
             <ActionMenuItem action={action} key={action.key} />
           ))}
         </ScrollView>

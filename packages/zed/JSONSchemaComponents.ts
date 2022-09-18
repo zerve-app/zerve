@@ -5,5 +5,6 @@ export type FieldComponentProps<FieldSchema extends JSONSchema> = {
   onSubmitEditing: (() => void) | undefined;
   value: FromSchema<FieldSchema>;
   onValue?: undefined | ((v: FromSchema<FieldSchema>) => void);
+  onEscape?: () => void;
   schema: FieldSchema;
 };

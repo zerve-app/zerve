@@ -102,6 +102,10 @@ export async function startApp() {
   function logServerEvent(name: string, event: any) {
     let overriddenEvent = event;
     const { path, body } = event;
+    if (!body) {
+      logEvent(name, overriddenEvent);
+      return;
+    }
     // we MUST strip plaintext passwords to prevent them from appearing in the logs!
     // other than plaintext pw, all user data is already accessible for somebody who has read access on the dataDir
     // because we have a deep understanding of the Auth module and client UI, we know these are the only two situations where the user should provide plaintext pw to the server
@@ -114,7 +118,7 @@ export async function startApp() {
     if (path === "/auth/user/setPassword") {
       overriddenEvent = {
         ...event,
-        body: { ...body, newPassword: !!body.newPassword },
+        body: null,
       };
     }
     logEvent(name, overriddenEvent);
@@ -620,20 +624,85 @@ export async function startApp() {
       }),
       accountSettingsProfile: createZStatic({
         zContract: "ReferenceList",
-        items: [],
+        items: [
+          {
+            key: "userId",
+            name: "User Id",
+            path: ["auth", "user", "userId"],
+            inline: true,
+          },
+          {
+            key: "setUsername",
+            name: "Set User ID",
+            icon: "user",
+            path: ["auth", "user", "setUsername"],
+          },
+          {
+            key: "displayName",
+            name: "Display Name",
+            path: ["auth", "user", "displayName"],
+            inline: true,
+          },
+        ],
         meta: {
           title: "User Profile",
           icon: "user",
         },
       }),
+      userId: createZGettable(
+        {
+          type: "string",
+          title: "User ID",
+        } as const,
+        async () => {
+          return userId;
+        },
+      ),
+      displayName: createZGettable(
+        {
+          type: "string",
+          title: "Display Name",
+        } as const,
+        async () => {
+          return userId;
+        },
+      ),
       accountSettingsAuth: createZStatic({
         zContract: "ReferenceList",
-        items: [],
+        items: [
+          {
+            key: "password",
+            name: "Password",
+            path: ["auth", "user", "password"],
+            inline: true,
+          },
+          {
+            key: "setPassword",
+            name: "Set Password",
+            path: ["auth", "user", "setPassword"],
+          },
+        ],
         meta: {
           title: "Auth Settings",
           icon: "lock",
         },
       }),
+      password: createZGettable(
+        {
+          oneOf: [
+            {
+              type: "string",
+              title: "Password",
+            },
+            { type: "null", title: "No Password Set" },
+          ],
+        } as const,
+        async () => {
+          const profile = await user.profile.get();
+          if (profile.hasPassword) return "****";
+          return null;
+        },
+      ),
       ...storeGroup,
     };
   }

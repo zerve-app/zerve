@@ -163,16 +163,6 @@ export const PasswordSchema = {
   minLength: 6,
 } as const;
 
-const SetPasswordSchema = {
-  type: "object",
-  properties: {
-    newPassword: PasswordSchema,
-    previousPassword: PasswordSchema,
-  },
-  required: ["newPassword"],
-  additionalProperties: false,
-} as const;
-
 const LoginWithPasswordSchema = {
   type: "object",
   properties: {
@@ -209,7 +199,12 @@ function getSetUsernameAction(
   ) => Promise<void>,
 ) {
   return createZAction(
-    UsernameSchema,
+    {
+      ...UsernameSchema,
+      title: "New User ID",
+      submitLabel: "Save User ID",
+      submitIcon: null,
+    } as const,
     NullSchema,
     async (newUserId: Username) => {
       if (newUserId === userId) return null;
@@ -269,6 +264,10 @@ function getSetUsernameAction(
         await handleUserIdChange(userId, newUserId, entityData);
       return null;
     },
+    {
+      icon: "user",
+      title: "Set User ID",
+    },
   );
 }
 
@@ -287,9 +286,14 @@ function getSetPasswordAction(
   userId: string,
 ) {
   return createZAction(
-    SetPasswordSchema,
+    {
+      ...PasswordSchema,
+      title: "New Password",
+      submitLabel: "Save Password",
+      submitIcon: "key",
+    } as const,
     NullSchema,
-    async ({ newPassword, previousPassword }) => {
+    async (newPassword) => {
       const userDataPath = joinPath(usersFilesPath, userId, "entity.json");
 
       const userData: UserData = await ReadJSON.call(userDataPath);
@@ -313,6 +317,10 @@ function getSetPasswordAction(
       });
 
       return null;
+    },
+    {
+      icon: "key",
+      title: "Set Password",
     },
   );
 }

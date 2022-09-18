@@ -21,6 +21,7 @@ export type JSONSchemaEditorContext = {
   OverrideFieldComponents?: OverrideFieldComponents;
   openChildEditor?: (key: string) => void;
   enableValueCopy?: boolean;
+  disableTypeLabels?: boolean;
 };
 export const JSONSchemaEditorContext = createContext<JSONSchemaEditorContext>(
   {},
