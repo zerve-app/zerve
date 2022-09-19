@@ -23,6 +23,7 @@ export function FragmentLink<FragmentState>({
         if (e.metaKey) {
           // user is *probably* pressing this key to open the link in a new tab
           e.stopPropagation();
+          return;
           // stop propogation of event that would flow to children components, to avoid other components from handling this navigation
         }
         e.preventDefault();
