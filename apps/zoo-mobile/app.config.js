@@ -16,6 +16,11 @@ export default () => {
         backgroundColor: "#0000ff",
       },
       assetBundlePatterns: ["**/*"],
+      extra: {
+        eas: {
+          projectId: "8610ab44-2040-43d7-8673-0aa5984278fb",
+        },
+      },
       ios: {
         icon: "./assets/images/icon.png",
         infoPlist: {
