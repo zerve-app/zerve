@@ -38,6 +38,7 @@ import { useStoreEntry } from "../app/StoreClient";
 import { extractErrorMessage } from "../app/ErrorHandling";
 import { NotFoundSymbol } from "@zerve/zoo-client/Connection";
 import { ErrorRow } from "../components/Error";
+import { EmptyContentRow } from "../components/Empty";
 
 function EmptyEntryContent({
   entryName,
@@ -48,13 +49,7 @@ function EmptyEntryContent({
 }) {
   return (
     <VStack padded>
-      <VSpaced space={4}>
-        <Title
-          secondary
-          style={{ textAlign: "center" }}
-          title="This Entry is Empty"
-        />
-      </VSpaced>
+      <EmptyContentRow message="This Entry is Empty" />
       <Label>You can modify the schema here:</Label>
       <StoreFeatureLinkButton
         title="Set Schema"

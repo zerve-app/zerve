@@ -265,7 +265,7 @@ export async function startZedServer(
     promisedValue: Promise<any>,
   ) {
     if (process.env.SLOW_TEST) {
-      await new Promise((r) => setTimeout(r, 2500));
+      await new Promise((r) => setTimeout(r, 1000));
     }
 
     await promisedValue

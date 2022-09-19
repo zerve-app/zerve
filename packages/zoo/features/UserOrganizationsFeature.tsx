@@ -1,5 +1,5 @@
 import { useZNodeValue } from "@zerve/zoo-client/Query";
-import { Button, HStack, Icon, Link, Title } from "@zerve/zen";
+import { Button, HStack, Icon, Link, Title, VSpaced, VStack } from "@zerve/zen";
 import { memo, useContext } from "react";
 import {
   UserDashboardContext,
@@ -7,6 +7,7 @@ import {
 } from "../context/UserDashboardContext";
 import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
+import { EmptyContentRow } from "../components/Empty";
 
 function NewOrganizationButton() {
   const fragmentContext = useContext(UserDashboardContext);
@@ -45,13 +46,18 @@ function UserOrganizations({
       isActive={isActive}
       spinner={isLoading || isFetching}
     >
-      <NavLinkContentGroup>
-        {data?.children.map((orgId) => (
-          <Link key={orgId} href={`/${orgId}`}>
-            <NavLinkContent title={orgId} icon="building" />
-          </Link>
-        ))}
-      </NavLinkContentGroup>
+      {data?.children && data?.children.length === 0 ? (
+        <EmptyContentRow message="You are not in any organizations yet." />
+      ) : null}
+      {data?.children && data?.children.length ? (
+        <NavLinkContentGroup>
+          {data?.children.map((orgId) => (
+            <Link key={orgId} href={`/${orgId}`}>
+              <NavLinkContent title={orgId} icon="building" />
+            </Link>
+          ))}
+        </NavLinkContentGroup>
+      ) : null}
       <HStack padded>
         <NewOrganizationButton />
       </HStack>

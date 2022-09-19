@@ -9,6 +9,7 @@ import {
 } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContentGroup } from "@zerve/zen/NavLink";
+import { EmptyContentRow } from "../components/Empty";
 
 function StoreSchemas({
   storePath,
@@ -35,20 +36,25 @@ function StoreSchemas({
       onBack={onBack}
       spinner={isLoading || isFetching}
     >
-      <NavLinkContentGroup>
-        {schemas?.map((schemaName) => {
-          return (
-            <StoreFeatureLink
-              key={schemaName}
-              to={{
-                key: "schemas",
-                schema: schemaName,
-              }}
-              title={displayStoreFileName(schemaName)}
-            />
-          );
-        })}
-      </NavLinkContentGroup>
+      {schemas && schemas.length === 0 ? (
+        <EmptyContentRow message="No store schemas yet." />
+      ) : null}
+      {schemas && schemas.length ? (
+        <NavLinkContentGroup>
+          {schemas?.map((schemaName) => {
+            return (
+              <StoreFeatureLink
+                key={schemaName}
+                to={{
+                  key: "schemas",
+                  schema: schemaName,
+                }}
+                title={displayStoreFileName(schemaName)}
+              />
+            );
+          })}
+        </NavLinkContentGroup>
+      ) : null}
       <VStack padded>
         <StoreFeatureLinkButton
           title="Create Schema"

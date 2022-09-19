@@ -9,12 +9,13 @@ import {
 } from "../context/StoreDashboardContext";
 import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContentGroup } from "@zerve/zen/NavLink";
+import { EmptyContentRow } from "../components/Empty";
 
 function StoreEntries({ storePath, title, icon, isActive }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);
   const entries = useMemo(() => {
-    const allEntries = data ? Object.keys(data.node as string[]) : [];
-    return allEntries.filter((entry) => entry !== "$schemas");
+    const allEntries = data ? Object.keys(data.node as string[]) : undefined;
+    return allEntries?.filter((entry) => entry !== "$schemas");
   }, [data]);
   return (
     <FeaturePane
@@ -23,20 +24,25 @@ function StoreEntries({ storePath, title, icon, isActive }: StoreFeatureProps) {
       isActive={isActive}
       spinner={isLoading || isFetching}
     >
-      <NavLinkContentGroup>
-        {entries.map((entryName) => {
-          return (
-            <StoreFeatureLink
-              title={displayStoreFileName(entryName)}
-              key={entryName}
-              to={{
-                key: "entries",
-                entryName,
-              }}
-            />
-          );
-        })}
-      </NavLinkContentGroup>
+      {entries && entries.length === 0 ? (
+        <EmptyContentRow message="No entries in the store yet." />
+      ) : null}
+      {entries && entries.length ? (
+        <NavLinkContentGroup>
+          {entries?.map((entryName) => {
+            return (
+              <StoreFeatureLink
+                title={displayStoreFileName(entryName)}
+                key={entryName}
+                to={{
+                  key: "entries",
+                  entryName,
+                }}
+              />
+            );
+          })}
+        </NavLinkContentGroup>
+      ) : null}
       <VStack padded>
         <StoreFeatureLinkButton
           title="Create Entry"
