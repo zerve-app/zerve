@@ -4,6 +4,7 @@ export type ColorTheme = {
   text: ColorValue;
   secondaryText: ColorValue;
   changedTint: ColorValue;
+  activeTint: ColorValue;
   dangerText: ColorValue;
   background: ColorValue;
   backgroundDim: ColorValue;
@@ -16,6 +17,7 @@ export default {
     text: "#000000",
     secondaryText: "#505050",
     changedTint: "#ffecda",
+    activeTint: "#e2f4ff",
     changed: "#f08b26",
     dangerText: "#812313",
     background: "#ffffff",
@@ -27,6 +29,7 @@ export default {
     text: "#ffffff",
     secondaryText: "#dfdfdf",
     changedTint: "#6c3703",
+    activeTint: "#03466c",
     changed: "#ffd8b1",
     dangerText: "#F95A3E",
     background: "#0d0c0d",

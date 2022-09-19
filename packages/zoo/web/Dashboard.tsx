@@ -64,7 +64,7 @@ export function NavFeatureLink<FeatureState>({
   const isActive =
     displayActive ||
     fragmentContext.fragmentString === fragmentContext.stringifyFragment(to);
-  const backgroundColor = isActive ? "#FFC8FC" : colors.background;
+  const backgroundColor = isActive ? colors.activeTint : colors.background;
 
   return (
     <FragmentLink<FeatureState>

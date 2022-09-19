@@ -1,32 +1,23 @@
 import {
   AnyError,
   displayStoreFileName,
-  drillSchemaValue,
-  EmptySchemaStore,
-  expandSchema,
   isEmptySchema,
-  lookUpValue,
-  mergeValue,
   prepareStoreFileName,
 } from "@zerve/zed";
 import {
-  Button,
   getValueExport,
-  getValueImport,
-  HStack,
   HumanTextInput,
   JSONSchemaEditor,
   JSONSchemaEditorContext,
   Label,
   showToast,
-  Spacer,
   Title,
   useAsyncHandler,
   useTextInputFormModal,
   VSpaced,
   VStack,
 } from "@zerve/zen";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useContext, useMemo } from "react";
 import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteEntry,
@@ -34,13 +25,13 @@ import {
   useSaveEntry,
 } from "@zerve/zoo-client/Mutation";
 import {
-  StoreFeatureLink,
+  StoreDashboardContext,
   StoreFeatureLinkButton,
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
 import { Notice } from "@zerve/zen/Notice";
 import { useStoreNavigation } from "../app/useStoreNavigation";
-import { useUnsavedContext, useUnsavedDeepValue } from "../app/Unsaved";
+import { useUnsavedDeepValue } from "../app/Unsaved";
 import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreEntry } from "../app/StoreClient";
@@ -152,6 +143,26 @@ function StoreEntriesEntry({
     // onImport: importValue,
     dirtyId,
   });
+  const fragmentContext = useContext(StoreDashboardContext);
+  const activeFragment = fragmentContext?.fragment;
+  let hasChildActive =
+    !!activeFragment &&
+    activeFragment.key === "entries" &&
+    activeFragment.entryName === entryName;
+  const activeChild =
+    (!!activeFragment &&
+      activeFragment.key === "entries" &&
+      activeFragment.path &&
+      activeFragment.path.find(
+        (pathTerm: string, index: number, activePath: string[]) => {
+          if (path.length < activePath.length)
+            return hasChildActive && path.length === index;
+          if (path[index] !== pathTerm) hasChildActive = false;
+          return false;
+        },
+      )) ||
+    undefined;
+  console.log({ activeFragment, path, entryName, activeChild });
 
   const doSave = useAsyncHandler<void, AnyError>(async () => {
     const internalValue = getDirty();
@@ -247,6 +258,7 @@ function StoreEntriesEntry({
               id={`entry-${entryName}-${path.join("-")}`}
               onValue={onPathValue}
               value={pathValue}
+              activeChild={activeChild}
               comparisonValue={savedPathValue}
               schema={pathSchema}
               schemaStore={entryQuery.data?.schemaStore}

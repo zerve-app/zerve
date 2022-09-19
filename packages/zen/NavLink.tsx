@@ -10,6 +10,7 @@ export function NavLinkContentGroup({ children }: { children: ReactNode }) {
       style={{
         marginVertical: 12,
         borderTopWidth: 1,
+        backgroundColor: colors.background,
         borderColor: `${colors.secondaryText}33`,
       }}
     >
@@ -35,7 +36,7 @@ export function NavLinkContent({
   return (
     <View
       style={{
-        backgroundColor: colors.background,
+        // backgroundColor: colors.background,
         paddingVertical: 14,
         paddingHorizontal: 12,
         flexDirection: "row",

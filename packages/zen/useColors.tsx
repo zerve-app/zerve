@@ -1,5 +1,7 @@
 import { createContext, ReactNode, useContext, useMemo } from "react";
-import Colors from "./Colors";
+import { ColorValue } from "react-native";
+import { multiplyColors } from "./ColorMath";
+import Colors, { ColorTheme } from "./Colors";
 import { useColorScheme } from "./useColorScheme";
 
 const ColorInversionContext = createContext<boolean>(false);
@@ -16,8 +18,6 @@ export function Invert({ children }: { children: ReactNode }) {
 function useInvertableColorScheme(): "light" | "dark" {
   const isInverted = useContext(ColorInversionContext);
   const wouldBeDark = useColorScheme() === "dark";
-  // SORRYFIXME! DARK MODE LOOKS UGLY NOW, OK?!
-  // const wouldBeDark = false;
   const isDark = isInverted ? !wouldBeDark : wouldBeDark;
   const scheme = isDark ? "dark" : "light";
   return scheme;
@@ -38,4 +38,28 @@ export function useAllColors() {
     }),
     [scheme],
   );
+}
+
+export function useEnhancedColors(colors: ColorTheme) {
+  return useMemo(
+    () => ({
+      ...colors,
+      activeChangedTint: multiplyColors(
+        colors.changedTint,
+        colors.activeTint,
+      ) as ColorValue,
+    }),
+    [colors.changedTint, colors.activeTint],
+  );
+}
+
+export function useTint(isChanged: boolean, isActive?: boolean) {
+  const colors = useColors();
+  const enhanced = useEnhancedColors(colors);
+  if (isChanged) {
+    if (isActive) return enhanced.activeChangedTint;
+    else return colors.changedTint;
+  } else if (isActive) {
+    return colors.activeTint;
+  } else return null;
 }

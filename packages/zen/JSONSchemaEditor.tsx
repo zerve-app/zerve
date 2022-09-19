@@ -29,7 +29,7 @@ import {
 import { Button, ContentButton } from "./Button";
 import { Icon } from "./Icon";
 import { Label } from "./Label";
-import { useColors } from "./useColors";
+import { useColors, useTint } from "./useColors";
 import { HGroup, VStack } from "./Stack";
 import { Paragraph } from "./Text";
 import { TextProps, ThemedText } from "./Themed";
@@ -116,6 +116,7 @@ export function ObjectEditor({
   comparisonValue,
   onValue,
   onEscape,
+  activeChild,
   id,
   schema,
   schemaStore,
@@ -125,6 +126,7 @@ export function ObjectEditor({
   comparisonValue?: any;
   onValue?: (v: any) => void;
   onEscape?: () => void;
+  activeChild?: string;
   id: string;
   schema: JSONSchema;
   schemaStore: SchemaStore;
@@ -298,6 +300,7 @@ export function ObjectEditor({
             }
             actions={actions}
             onEscape={onEscape}
+            isNavHighlight={propertyName === activeChild}
             onValue={
               onValue
                 ? (propertyValue) => {
@@ -373,6 +376,7 @@ export function ObjectEditor({
             label={itemName}
             actions={actions}
             onEscape={onEscape}
+            isNavHighlight={itemName === activeChild}
             onValue={
               onValue
                 ? (propertyValue) => {
@@ -410,6 +414,7 @@ export function ArrayEditor({
   comparisonValue,
   onValue,
   onEscape,
+  activeChild,
   schema,
   id,
   schemaStore,
@@ -419,6 +424,7 @@ export function ArrayEditor({
   comparisonValue?: any;
   onValue?: (v: any) => void;
   onEscape?: () => void;
+  activeChild?: string;
   schema: JSONSchema;
   id: string;
   schemaStore: SchemaStore;
@@ -477,6 +483,7 @@ export function ArrayEditor({
             key={key}
             id={`${id}_${key}`}
             label={key}
+            isNavHighlight={key === activeChild}
             value={childValue}
             comparisonValue={childCompareValue}
             valueKey={key}
@@ -643,6 +650,7 @@ function ObjectField({
   labelActions,
   value,
   comparisonValue,
+  isNavHighlight,
   valueKey,
   onValue,
   schema,
@@ -653,6 +661,7 @@ function ObjectField({
   labelActions?: ActionButtonDef[];
   value: any;
   comparisonValue?: any;
+  isNavHighlight?: boolean;
   valueKey: string;
   onValue?: (v: any) => void;
   id: string;
@@ -661,7 +670,8 @@ function ObjectField({
 }) {
   const { openChildEditor } = useContext(JSONSchemaEditorContext);
   const typeLabel = getHumanLabelOfSchema(schema);
-  const colors = useColors();
+  const isChanged = comparisonValue !== undefined && comparisonValue !== value;
+  const tint = useTint(isChanged, isNavHighlight);
   return (
     <>
       <FieldHeader
@@ -674,11 +684,7 @@ function ObjectField({
       />
       <ContentButton
         id={id}
-        tint={
-          comparisonValue !== undefined && comparisonValue !== value
-            ? colors.changedTint
-            : null
-        }
+        tint={tint}
         disabled={!openChildEditor}
         onPress={
           openChildEditor
@@ -699,6 +705,7 @@ function ArrayField({
   labelActions,
   value,
   comparisonValue,
+  isNavHighlight,
   onValue,
   schema,
   valueKey,
@@ -709,13 +716,15 @@ function ArrayField({
   labelActions?: ActionButtonDef[];
   value: any;
   comparisonValue?: any;
+  isNavHighlight?: boolean;
   onValue?: (v: any) => void;
   schema: JSONSchema;
   valueKey: string;
   actions?: ActionButtonDef[];
 }) {
   const { openChildEditor } = useContext(JSONSchemaEditorContext);
-  const colors = useColors();
+  const isChanged = comparisonValue !== undefined && comparisonValue !== value;
+  const tint = useTint(isChanged, isNavHighlight);
   return (
     <>
       <FieldHeader
@@ -729,11 +738,7 @@ function ArrayField({
       <ContentButton
         id={id}
         disabled={!openChildEditor}
-        tint={
-          comparisonValue !== undefined && comparisonValue !== value
-            ? colors.changedTint
-            : null
-        }
+        tint={tint}
         onPress={
           openChildEditor
             ? () => {
@@ -1024,6 +1029,8 @@ type FormFieldProps = {
   value: any;
   comparisonValue?: any;
   onValue?: (v: any) => void;
+  onEscape?: () => void;
+  isNavHighlight?: boolean;
   id: string;
   schema: JSONSchema;
   schemaStore: SchemaStore;
@@ -1067,6 +1074,7 @@ export function FormField(fieldProps: FormFieldProps) {
     onEscape,
     id,
     schema,
+    isNavHighlight,
     schemaStore,
     typeLabel,
     actions,
@@ -1176,6 +1184,7 @@ export function FormField(fieldProps: FormFieldProps) {
         id={id}
         value={value}
         comparisonValue={comparisonValue}
+        isNavHighlight={isNavHighlight}
         schema={schema}
         label={label}
         labelActions={labelActions}
@@ -1192,6 +1201,7 @@ export function FormField(fieldProps: FormFieldProps) {
         id={id}
         value={value}
         comparisonValue={comparisonValue}
+        isNavHighlight={isNavHighlight}
         valueKey={valueKey}
         schema={schema}
         label={label}
@@ -1395,6 +1405,7 @@ export function JSONSchemaEditor({
   schema,
   label,
   schemaStore,
+  activeChild,
   id,
   onSubmitEditing,
 }: {
@@ -1404,6 +1415,7 @@ export function JSONSchemaEditor({
   schema: JSONSchema;
   label?: string | ReactNode;
   schemaStore: SchemaStore;
+  activeChild?: string;
   onSubmitEditing?: () => void;
   onEscape?: () => void;
   id: string;
@@ -1490,6 +1502,7 @@ export function JSONSchemaEditor({
         comparisonValue={comparisonValue}
         onValue={onValue}
         onEscape={onEscape}
+        activeChild={activeChild}
         schema={expandedSchema}
         schemaStore={schemaStore}
         onSubmitEditing={onSubmitEditing}
@@ -1504,6 +1517,7 @@ export function JSONSchemaEditor({
         comparisonValue={comparisonValue}
         onValue={onValue}
         onEscape={onEscape}
+        activeChild={activeChild}
         schema={expandedSchema}
         schemaStore={schemaStore}
         onSubmitEditing={onSubmitEditing}
