@@ -318,7 +318,6 @@ HumanTextInput.export = (value) => {
       output.push(n);
     });
   });
-  console.log("== EXPORTED HTEXTVALUE:", output);
   return output;
 };
 HumanTextInput.renderAsText = (value) => {
