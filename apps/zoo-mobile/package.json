@@ -63,7 +63,7 @@
     "@babel/core": "^7.18.13",
     "@types/react": "~18.0.18",
     "@types/react-native": "^0.69.6",
-    "eas-cli": "1.1.1",
+    "eas-cli": "1.2.0",
     "rimraf": "^3.0.2",
     "tsconfig": "*"
   }

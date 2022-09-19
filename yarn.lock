@@ -2404,12 +2404,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/apple-utils@npm:0.0.0-alpha.33":
-  version: 0.0.0-alpha.33
-  resolution: "@expo/apple-utils@npm:0.0.0-alpha.33"
+"@expo/apple-utils@npm:0.0.0-alpha.34":
+  version: 0.0.0-alpha.34
+  resolution: "@expo/apple-utils@npm:0.0.0-alpha.34"
   bin:
     apple-utils: bin.js
-  checksum: 9118c8b9737597ef5990dacde7e32c82cd2d53b8ccb89649e6eed4052238f4cde92cabe320ebee55509e2f6f70e529f3f1ba03c8152fb990daab6239e69855e0
+  checksum: 65ac39a8f52fbab24c3ee5322208bb45cd31d370f0d6a205a32faec8809c91e3ed3cdcb505c8107779f6449aff1395caf2cc0de91a4dc7ba53061d51cada649a
   languageName: node
   linkType: hard
 
@@ -2629,9 +2629,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/eas-json@npm:1.1.1":
-  version: 1.1.1
-  resolution: "@expo/eas-json@npm:1.1.1"
+"@expo/eas-json@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@expo/eas-json@npm:1.2.0"
   dependencies:
     "@expo/eas-build-job": 0.2.85
     "@expo/json-file": 8.2.36
@@ -2642,7 +2642,7 @@ __metadata:
     log-symbols: 4.1.0
     semver: 7.3.7
     tslib: 2.4.0
-  checksum: aebc5f921b5fde9c88a4ca2ddf5bab0257d5c87b97bdfa2990d23be361831e86f05e58acb6a4a58fa1b251d11e1bd9d2e90622b828ebc5431f552e5c82cb8b76
+  checksum: d8ef2af4ecb838d972b2a4ae53559d2a7a570f38dbb629d2676f91aeb2a57ac1308071719ad1610141fe9d5014210768dc80504d3c6a969607fab7d9b5032e7c
   languageName: node
   linkType: hard
 
@@ -10386,17 +10386,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eas-cli@npm:1.1.1":
-  version: 1.1.1
-  resolution: "eas-cli@npm:1.1.1"
+"eas-cli@npm:1.2.0":
+  version: 1.2.0
+  resolution: "eas-cli@npm:1.2.0"
   dependencies:
-    "@expo/apple-utils": 0.0.0-alpha.33
+    "@expo/apple-utils": 0.0.0-alpha.34
     "@expo/code-signing-certificates": 0.0.2
     "@expo/config": 7.0.1
     "@expo/config-plugins": 5.0.1
     "@expo/config-types": 46.0.2
     "@expo/eas-build-job": 0.2.85
-    "@expo/eas-json": 1.1.1
+    "@expo/eas-json": 1.2.0
     "@expo/json-file": 8.2.36
     "@expo/multipart-body-parser": 1.1.0
     "@expo/package-manager": 0.0.56
@@ -10460,7 +10460,7 @@ __metadata:
     wrap-ansi: 7.0.0
   bin:
     eas: bin/run
-  checksum: d2ae96d6f78b3089d6f3a75f730f30b38048bf5e7751ff198d5194eedaf605f8c1389aac24ad9ae33f862b648ec71b0a4d9d652181323d9a3807cd601ae3fb18
+  checksum: 7d02733a2dafe3a1de1c83fd1bd094e910714e4bda850e5f65ea87b0cfed1a6017016ac2349baf4ccd1419849a18058968977b5f3151a70c9473c92b37fcd8fe
   languageName: node
   linkType: hard
 
@@ -24863,7 +24863,7 @@ __metadata:
     "@zerve/zoo": "*"
     "@zerve/zoo-client": "*"
     date-fns: ^2.29.2
-    eas-cli: 1.1.1
+    eas-cli: 1.2.0
     expo: ~46.0.9
     expo-app-loading: ~2.1.0
     expo-application: ~4.2.2
