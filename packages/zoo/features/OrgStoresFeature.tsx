@@ -24,7 +24,7 @@ function NewStoreButton() {
   );
 }
 
-function OrgStores({ entityId, title }: OrgFeatureProps) {
+function OrgStores({ entityId, title, icon, isActive }: OrgFeatureProps) {
   const { data, isLoading, isFetching } = useZNodeValue([
     "auth",
     "user",
@@ -33,7 +33,12 @@ function OrgStores({ entityId, title }: OrgFeatureProps) {
     "stores",
   ]);
   return (
-    <FeaturePane title={title} spinner={isLoading || isFetching}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      isActive={isActive}
+      spinner={isLoading || isFetching}
+    >
       <NavLinkContentGroup>
         {data?.children.map((storeName) => (
           <Link key={storeName} href={`/${entityId}/${storeName}`}>

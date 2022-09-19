@@ -13,7 +13,12 @@ const OrgNameSchema = {
   title: "Organization Name",
 } as const;
 
-function UserOrganizationsCreate({ entityId, title }: UserFeatureProps) {
+function UserOrganizationsCreate({
+  entityId,
+  title,
+  icon,
+  isActive,
+}: UserFeatureProps) {
   const conn = useRequiredConnection();
   const queryClient = useQueryClient();
   const { push } = useRouter();
@@ -23,7 +28,7 @@ function UserOrganizationsCreate({ entityId, title }: UserFeatureProps) {
     push(`/${value}`);
   });
   return (
-    <FeaturePane title={title} spinner={false}>
+    <FeaturePane title={title} icon={icon} isActive={isActive} spinner={false}>
       <JSONSchemaForm
         id="org-create-name"
         onSubmit={handle}

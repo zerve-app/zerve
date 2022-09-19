@@ -1,3 +1,4 @@
+import { Icon } from "@zerve/zen";
 import { ComponentProps, createContext } from "react";
 import { NavFeatureLink } from "../web/Dashboard";
 import { FragmentContext } from "../web/Fragment";
@@ -5,6 +6,8 @@ import { FragmentContext } from "../web/Fragment";
 export type UserFeatureProps = {
   title: string;
   entityId: string;
+  isActive: boolean;
+  icon: ComponentProps<typeof Icon>["name"] | null;
 };
 
 export type UserNavigationState =

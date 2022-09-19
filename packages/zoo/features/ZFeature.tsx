@@ -1,6 +1,4 @@
-import React, { useMemo, useState } from "react";
-
-import { useActionsSheet, VStack } from "@zerve/zen";
+import { useActionsSheet } from "@zerve/zen";
 import { useZNode } from "@zerve/zoo-client/Query";
 import { UnauthorizedSymbol } from "@zerve/zoo-client/Connection";
 import ScreenHeader from "../components/ScreenHeader";

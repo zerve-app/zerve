@@ -27,14 +27,24 @@ function NewOrganizationButton() {
   );
 }
 
-function UserOrganizations({ entityId, title }: UserFeatureProps) {
+function UserOrganizations({
+  entityId,
+  title,
+  icon,
+  isActive,
+}: UserFeatureProps) {
   const { data, isLoading, isFetching } = useZNodeValue([
     "auth",
     "user",
     "orgs",
   ]);
   return (
-    <FeaturePane title={title} spinner={isLoading || isFetching}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      isActive={isActive}
+      spinner={isLoading || isFetching}
+    >
       <NavLinkContentGroup>
         {data?.children.map((orgId) => (
           <Link key={orgId} href={`/${orgId}`}>

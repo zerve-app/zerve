@@ -6,9 +6,9 @@ import {
 import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContentGroup } from "@zerve/zen/NavLink";
 
-function UserSettings({ title }: UserFeatureProps) {
+function UserSettings({ title, icon, isActive }: UserFeatureProps) {
   return (
-    <FeaturePane title={title}>
+    <FeaturePane title={title} icon={icon} isActive={isActive}>
       <NavLinkContentGroup>
         <UserFeatureLink
           title="Profile"

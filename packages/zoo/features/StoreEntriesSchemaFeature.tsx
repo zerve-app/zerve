@@ -93,6 +93,7 @@ function StoreEntriesSchema({
       title={title}
       onBack={onBack}
       icon={icon}
+      isActive={isActive}
       spinner={doSave.isLoading || entrySchemaQuery.isFetching}
       footer={
         isDirty &&

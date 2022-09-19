@@ -10,14 +10,19 @@ import {
 import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContentGroup } from "@zerve/zen/NavLink";
 
-function StoreEntries({ storePath, title }: StoreFeatureProps) {
+function StoreEntries({ storePath, title, icon, isActive }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);
   const entries = useMemo(() => {
     const allEntries = data ? Object.keys(data.node as string[]) : [];
     return allEntries.filter((entry) => entry !== "$schemas");
   }, [data]);
   return (
-    <FeaturePane title={title} spinner={isLoading || isFetching}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      isActive={isActive}
+      spinner={isLoading || isFetching}
+    >
       <NavLinkContentGroup>
         {entries.map((entryName) => {
           return (

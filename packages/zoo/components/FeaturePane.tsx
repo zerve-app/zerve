@@ -20,6 +20,7 @@ export function FeaturePane({
   actions,
   icon,
   onBack,
+  isActive,
   footer,
 }: {
   title: string;
@@ -28,6 +29,7 @@ export function FeaturePane({
   actions?: ActionButtonDef[];
   icon?: null | ComponentProps<typeof Icon>["name"];
   onBack?: () => void;
+  isActive?: boolean;
   footer?: null | ReactNode;
 }) {
   const colors = useColors();
@@ -55,7 +57,12 @@ export function FeaturePane({
         flex: 1,
       }}
     >
-      <View style={{ minHeight: 80, backgroundColor: colors.background }}>
+      <View
+        style={{
+          minHeight: 80,
+          backgroundColor: isActive ? colors.background : colors.backgroundDim,
+        }}
+      >
         <View
           style={{
             flexDirection: "row",

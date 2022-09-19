@@ -1,5 +1,5 @@
 import { useZNodeValue } from "@zerve/zoo-client/Query";
-import { Button, HStack, Icon, Link, Title } from "@zerve/zen";
+import { Button, HStack, Icon, Link } from "@zerve/zen";
 import { memo, useContext } from "react";
 import {
   UserDashboardContext,
@@ -24,14 +24,19 @@ function NewStoreButton() {
   );
 }
 
-function UserStores({ entityId, title }: UserFeatureProps) {
+function UserStores({ entityId, title, icon, isActive }: UserFeatureProps) {
   const { data, isLoading, isFetching } = useZNodeValue([
     "auth",
     "user",
     "stores",
   ]);
   return (
-    <FeaturePane title={title} spinner={isLoading || isFetching}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      isActive={isActive}
+      spinner={isLoading || isFetching}
+    >
       <NavLinkContentGroup>
         {data?.children?.map((storeName) => (
           <Link key={storeName} href={`/${entityId}/${storeName}`}>

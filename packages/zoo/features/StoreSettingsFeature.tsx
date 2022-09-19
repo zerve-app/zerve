@@ -214,6 +214,7 @@ function StoreSettings({
   onStoreRename,
   title,
   icon,
+  isActive,
   onBack,
 }: StoreFeatureProps) {
   const onDeleteStoreDialog = useDeleteStoreDialog(storePath, onStoreDelete);
@@ -224,6 +225,7 @@ function StoreSettings({
     <FeaturePane
       title={title}
       icon={icon}
+      isActive={isActive}
       onBack={onBack}
       spinner={settingsQuery.isFetching}
     >

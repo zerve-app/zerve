@@ -14,21 +14,23 @@ const EntryNameSchema = {
 function StoreEntriesCreate({
   storePath,
   title,
+  isActive,
   icon,
   onBack,
 }: StoreFeatureProps) {
   const createEntry = useCreateEntry(storePath);
-  const { replaceToEntrySchema } = useStoreNavigation();
+  const { replaceToEntry } = useStoreNavigation();
   const handleSubmit = useCallback(async (name) => {
     const actualName = prepareStoreFileName(name);
     await createEntry.mutateAsync(actualName);
     showToast(`Created "${name}"`);
-    replaceToEntrySchema(actualName);
+    replaceToEntry(actualName);
   }, []);
   return (
     <FeaturePane
       title={title}
       icon={icon}
+      isActive={isActive}
       onBack={onBack}
       spinner={createEntry.isLoading}
     >

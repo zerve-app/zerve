@@ -136,6 +136,7 @@ function StoreSchemasSchema({
     <FeaturePane
       title={title}
       icon={icon}
+      isActive={isActive}
       onBack={onBack}
       actions={schemaActions}
       spinner={

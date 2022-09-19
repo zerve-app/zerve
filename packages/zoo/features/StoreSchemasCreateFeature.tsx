@@ -15,6 +15,7 @@ function StoreSchemasCreate({
   storePath,
   title,
   icon,
+  isActive,
   onBack,
 }: StoreFeatureProps) {
   const createSchema = useCreateSchema(storePath);
@@ -29,6 +30,7 @@ function StoreSchemasCreate({
       title={title}
       icon={icon}
       onBack={onBack}
+      isActive={isActive}
       spinner={createSchema.isLoading}
     >
       <JSONSchemaForm

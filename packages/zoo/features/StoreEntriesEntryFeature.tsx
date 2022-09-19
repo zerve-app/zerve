@@ -179,6 +179,7 @@ function StoreEntriesEntry({
     <FeaturePane
       title={title}
       icon={icon}
+      isActive={isActive}
       onBack={onBack}
       spinner={saveEntry.isLoading || entryQuery.isFetching}
       footer={

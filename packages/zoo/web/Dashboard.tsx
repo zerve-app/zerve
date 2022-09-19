@@ -1,7 +1,14 @@
-import { ComponentProps, Context, ReactNode, useContext, useMemo } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
 import {
-  Button,
+  ComponentProps,
+  Context,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { View, ScrollView } from "react-native";
+import {
   ButtonContent,
   Icon,
   NavBar,
@@ -221,6 +228,10 @@ export function DashboardPage<Feature>({
       onFeature,
       onIntercept,
     );
+  const [focusedFeature, setFocusedFeature] = useState<Feature | null>(feature);
+  useEffect(() => {
+    setFocusedFeature(feature);
+  }, [feature]);
   const parentFeatures = useMemo(
     () => (getParentFeatures && feature ? getParentFeatures(feature) : []),
     [getParentFeatures, feature],
@@ -279,20 +290,50 @@ export function DashboardPage<Feature>({
                 borderColor: "#ccc",
               }}
             >
-              {displayFeatures.map((displayFeature) =>
-                renderFeature({
-                  feature: displayFeature,
-                  isActive: displayFeature === feature,
-                  fragmentContext,
-                  key: fragmentContext.stringifyFragment(displayFeature),
-                  title: getFeatureTitle(displayFeature),
-                  icon: getFeatureIcon(displayFeature),
-                }),
-              )}
+              {displayFeatures.map((displayFeature) => (
+                <DetectFocus
+                  onReportedFocus={() => {
+                    setFocusedFeature(displayFeature);
+                  }}
+                >
+                  {renderFeature({
+                    feature: displayFeature,
+                    isActive: displayFeature === focusedFeature,
+                    fragmentContext,
+                    key: fragmentContext.stringifyFragment(displayFeature),
+                    title: getFeatureTitle(displayFeature),
+                    icon: getFeatureIcon(displayFeature),
+                  })}
+                </DetectFocus>
+              ))}
             </View>
           </View>
         </Context.Provider>
       </View>
     </PageContainer>
+  );
+}
+
+function DetectFocus({
+  children,
+  onReportedFocus,
+}: {
+  children: ReactNode;
+  onReportedFocus: () => void;
+}) {
+  return (
+    <span
+      style={{
+        display: "flex",
+      }}
+      onFocus={() => {
+        onReportedFocus();
+      }}
+      onClickCapture={() => {
+        onReportedFocus();
+      }}
+    >
+      {children}
+    </span>
   );
 }

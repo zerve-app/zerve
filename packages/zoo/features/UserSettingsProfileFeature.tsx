@@ -10,7 +10,7 @@ import { FeaturePane } from "../components/FeaturePane";
 import { useRouter } from "next/router";
 import { UserFeatureProps } from "../context/UserDashboardContext";
 
-function UserSettingsProfile({ title }: UserFeatureProps) {
+function UserSettingsProfile({ title, icon, isActive }: UserFeatureProps) {
   const conn = useRequiredConnection();
   const { data, isLoading, isFetching, refetch } = useZNodeValue([
     "auth",
@@ -22,7 +22,12 @@ function UserSettingsProfile({ title }: UserFeatureProps) {
   }, [conn.session]);
   const { replace } = useRouter();
   return (
-    <FeaturePane title={title} spinner={isLoading || isFetching}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      isActive={isActive}
+      spinner={isLoading || isFetching}
+    >
       <VStack padded>
         <InfoRow label="Username" value={data?.userId} />
         {conn.session && (

@@ -13,7 +13,7 @@ const StoreNameSchema = {
   title: "Store Name",
 } as const;
 
-function OrgStoresCreate({ entityId, title }: OrgFeatureProps) {
+function OrgStoresCreate({ entityId, title, icon, isActive }: OrgFeatureProps) {
   const conn = useRequiredConnection();
   const queryClient = useQueryClient();
   const { push } = useRouter();
@@ -35,7 +35,12 @@ function OrgStoresCreate({ entityId, title }: OrgFeatureProps) {
     push(`/${entityId}/${value}`);
   });
   return (
-    <FeaturePane title={title} spinner={isLoading}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      isActive={isActive}
+      spinner={isLoading}
+    >
       <JSONSchemaForm
         id="store-create-name"
         onSubmit={handle}

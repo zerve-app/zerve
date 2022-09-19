@@ -16,7 +16,12 @@ const StoreNameSchema = {
   title: "Store Name",
 } as const;
 
-function UserStoresCreate({ entityId, title }: UserFeatureProps) {
+function UserStoresCreate({
+  entityId,
+  title,
+  icon,
+  isActive,
+}: UserFeatureProps) {
   const conn = useRequiredConnection();
   const queryClient = useQueryClient();
   const { push } = useRouter();
@@ -27,7 +32,12 @@ function UserStoresCreate({ entityId, title }: UserFeatureProps) {
     showToast(`Created "${value}" Store`);
   });
   return (
-    <FeaturePane title={title} spinner={isLoading}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      isActive={isActive}
+      spinner={isLoading}
+    >
       <JSONSchemaForm
         id="store-create-name"
         onSubmit={handle}

@@ -6,7 +6,7 @@ import { ChangePasswordButton } from "../components/ZNode";
 import { FeaturePane } from "../components/FeaturePane";
 import { UserFeatureProps } from "../context/UserDashboardContext";
 
-function UserSettingsAuth({ title }: UserFeatureProps) {
+function UserSettingsAuth({ title, icon, isActive }: UserFeatureProps) {
   const conn = useRequiredConnection();
   const { data, isLoading, isFetching } = useZNodeValue([
     "auth",
@@ -14,7 +14,12 @@ function UserSettingsAuth({ title }: UserFeatureProps) {
     "profile",
   ]);
   return (
-    <FeaturePane title={title} spinner={isLoading || isFetching}>
+    <FeaturePane
+      title={title}
+      icon={icon}
+      isActive={isActive}
+      spinner={isLoading || isFetching}
+    >
       <VStack padded>
         {data?.addresses?.map((address) => (
           <InfoRow
