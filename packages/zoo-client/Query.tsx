@@ -5,10 +5,15 @@ import {
   UseQueryOptions,
 } from "react-query";
 import { getZ } from "./ServerCalls";
-import { useConnection, Connection, UnauthorizedSymbol } from "./Connection";
+import {
+  useConnection,
+  Connection,
+  UnauthorizedSymbol,
+  NotFoundSymbol,
+} from "./Connection";
 import { getTypedZ } from "./ServerCalls";
 import { createContext, useContext, useEffect, useMemo } from "react";
-import { GenericError } from "@zerve/zed";
+import { AnyError, GenericError } from "@zerve/zed";
 
 export type QueryOptions = {
   skipLoading?: boolean;
@@ -19,23 +24,16 @@ export function useConnectionRootType(options?: QueryOptions) {
   return useZNodeValue([".type"], options);
 }
 
-export function useConnectionProjects(
-  storePath: string[],
-  options?: QueryOptions,
-) {
-  return useZNode([...storePath, "State"], options);
-}
-
 export function useConnectionQuery<Result>(
   conn: Connection | null,
   path: string[],
   getQuery: () => Promise<Result>,
   options?: Omit<
-    UseQueryOptions<Result, void, Result, QueryKey>,
+    UseQueryOptions<Result, AnyError, Result, QueryKey>,
     "queryKey" | "queryFn"
   >,
 ) {
-  const queryResult = useQuery<Result, void, Result, string[]>(
+  const queryResult = useQuery<Result, AnyError, Result, string[]>(
     path,
     async (ctx: QueryFunctionContext<string[], any>) => {
       const result = await getQuery();

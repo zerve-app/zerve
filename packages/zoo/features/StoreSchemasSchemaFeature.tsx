@@ -24,6 +24,7 @@ import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreSchema } from "../app/StoreClient";
 import { Notice } from "@zerve/zen/Notice";
 import { extractErrorMessage } from "../app/ErrorHandling";
+import { ErrorRow } from "../components/Error";
 
 function StoreSchemasSchema({
   storePath,
@@ -162,13 +163,10 @@ function StoreSchemasSchema({
       }
     >
       {doSave.error ? (
-        <VStack padded>
-          <Notice
-            danger
-            message={extractErrorMessage(doSave.error)}
-            icon="exclamation-circle"
-          />
-        </VStack>
+        <ErrorRow message={extractErrorMessage(doSave.error)} />
+      ) : null}
+      {schemaQuery.error ? (
+        <ErrorRow message={"Could not Load: " + schemaQuery.error.message} />
       ) : null}
       <JSONSchemaEditorContext.Provider value={editorContext}>
         {schemaQuery.data && pathSchema ? (

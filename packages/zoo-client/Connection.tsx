@@ -58,13 +58,14 @@ function _authHeader(auth: [string, string]) {
 }
 
 export const UnauthorizedSymbol = Symbol("Unauthorized");
+export const NotFoundSymbol = Symbol("NotFound");
 
 export async function serverGet<Response>(
   origin: string,
   path: string,
   query?: Record<string, string> | null,
   auth?: [string, string] | null,
-): Promise<Response | typeof UnauthorizedSymbol> {
+): Promise<Response | typeof UnauthorizedSymbol | typeof NotFoundSymbol> {
   const searchParams = query && new URLSearchParams(query);
   const searchString = searchParams?.toString();
   const res = await fetch(
@@ -86,11 +87,7 @@ export async function serverGet<Response>(
       if (res.status === 401) {
         return UnauthorizedSymbol;
       } else if (res.status === 404) {
-        throw new NotFoundError(
-          value?.code || "NotFound",
-          value?.message || "Not Found.",
-          value?.details,
-        );
+        return NotFoundSymbol;
       } else throw new Error("Network Error");
     }
     return value;

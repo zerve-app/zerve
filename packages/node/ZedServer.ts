@@ -264,6 +264,10 @@ export async function startZedServer(
     res: Response,
     promisedValue: Promise<any>,
   ) {
+    if (process.env.SLOW_TEST) {
+      await new Promise((r) => setTimeout(r, 2500));
+    }
+
     await promisedValue
       .then((resolved) => {
         const [response, cacheOptions] = resolved;

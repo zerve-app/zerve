@@ -15,7 +15,7 @@ import {
   VStack,
 } from "@zerve/zen";
 import { pathStartsWith, postZAction } from "@zerve/zoo-client/ServerCalls";
-import { useZNode, useConnectionProjects } from "@zerve/zoo-client/Query";
+import { useZNode } from "@zerve/zoo-client/Query";
 import { useZNodeStateWrite } from "@zerve/zoo-client/Mutation";
 import {
   useConnection,
@@ -198,7 +198,7 @@ export function ZStoreNode({
 }) {
   if (type[".t"] !== "Container" || type?.meta?.zContract !== "Store")
     throw new Error("Unexpected z type info for ZStoreNode");
-  const { data, refetch, isLoading } = useConnectionProjects(path);
+  const { data, refetch, isFetching } = useZNode([...path, "State"], {});
   const list = useMemo(() => {
     return Object.entries(data?.node || {})
       .filter(([childName]) => {
@@ -218,6 +218,7 @@ export function ZStoreNode({
       feature={{ key: "entries" }}
       render={({ isActive }) => (
         <>
+          {isFetching && <Spinner />}
           <StoreChildList
             list={list}
             connection={connection}

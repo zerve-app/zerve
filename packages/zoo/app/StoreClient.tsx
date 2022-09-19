@@ -1,11 +1,13 @@
 import {
   displayStoreFileName,
   expandSchema,
+  NotFoundError,
   ZSchema,
   ZSchemaSchema,
 } from "@zerve/zed";
 import { getValueImport, JSONSchemaEditorContext } from "@zerve/zen";
 import {
+  NotFoundSymbol,
   UnauthorizedSymbol,
   useConnection,
   useRequiredConnection,
@@ -137,7 +139,7 @@ export function useStoreEntrySchema(
   const conn = useRequiredConnection();
   const nodePath = [...storePath, "State", entryName, "schema"];
   const { onUnauthorized } = useContext(ConnectionExceptionContext);
-  const entryQuery = useConnectionQuery(
+  const schemaQuery = useConnectionQuery(
     conn,
     [
       conn.key,
@@ -170,11 +172,12 @@ export function useStoreEntrySchema(
     },
   );
   return {
-    isLoading: entryQuery.isLoading || schemas.isLoading,
-    isFetching: entryQuery.isFetching || schemas.isFetching,
-    data: entryQuery.data,
+    isLoading: schemaQuery.isLoading || schemas.isLoading,
+    isFetching: schemaQuery.isFetching || schemas.isFetching,
+    data: schemaQuery.data,
+    error: schemaQuery.error || schemas.error,
     refetch: () => {
-      entryQuery.refetch();
+      schemaQuery.refetch();
       schemas.refetch();
     },
   };
@@ -205,6 +208,13 @@ export function useStoreEntry(
     async () => {
       if (!conn || options?.skipLoading) return undefined;
       const results = await getZ(conn, nodePath);
+      if (results === NotFoundSymbol) {
+        return {
+          value: NotFoundSymbol,
+          schema: NotFoundSymbol,
+          schemaStore: schemas.data,
+        };
+      }
       if (results === UnauthorizedSymbol) {
         onUnauthorized?.();
         return {
@@ -228,9 +238,11 @@ export function useStoreEntry(
       onError: options?.onError,
     },
   );
+  console.log("queryryyy", entryQuery, schemas);
   return {
     isLoading: entryQuery.isLoading || schemas.isLoading,
     isFetching: entryQuery.isFetching || schemas.isFetching,
+    error: entryQuery.error || schemas.error,
     data: entryQuery.data,
     refetch: () => {
       entryQuery.refetch();

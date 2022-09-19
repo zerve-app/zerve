@@ -329,7 +329,7 @@ export function ObjectEditor({
       {valueKeys.length === 0 &&
       propertyKeyList.length === 0 &&
       additionalProperties === false ? (
-        <ThemedText>Schema disallows additional keys.</ThemedText>
+        <ThemedText>Schema does not allow additional items.</ThemedText>
       ) : null}
       {otherKeys.map((itemName) => {
         if (itemName[0] === "$") return null;

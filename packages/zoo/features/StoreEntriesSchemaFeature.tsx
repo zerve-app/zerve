@@ -18,6 +18,7 @@ import { useUnsavedDeepValue } from "../app/Unsaved";
 import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreEntrySchema } from "../app/StoreClient";
+import { ErrorRow } from "../components/Error";
 
 function StoreEntriesSchema({
   storePath,
@@ -114,6 +115,11 @@ function StoreEntriesSchema({
         ))
       }
     >
+      {entrySchemaQuery.error ? (
+        <ErrorRow
+          message={"Could not Load: " + entrySchemaQuery.error.message}
+        />
+      ) : null}
       <JSONSchemaEditorContext.Provider value={editorContext}>
         {entrySchemaQuery.data ? (
           <VStack padded>

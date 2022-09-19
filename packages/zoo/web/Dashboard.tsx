@@ -290,22 +290,26 @@ export function DashboardPage<Feature>({
                 borderColor: "#ccc",
               }}
             >
-              {displayFeatures.map((displayFeature) => (
-                <DetectFocus
-                  onReportedFocus={() => {
-                    setFocusedFeature(displayFeature);
-                  }}
-                >
-                  {renderFeature({
-                    feature: displayFeature,
-                    isActive: displayFeature === focusedFeature,
-                    fragmentContext,
-                    key: fragmentContext.stringifyFragment(displayFeature),
-                    title: getFeatureTitle(displayFeature),
-                    icon: getFeatureIcon(displayFeature),
-                  })}
-                </DetectFocus>
-              ))}
+              {displayFeatures.map((displayFeature) => {
+                const key = fragmentContext.stringifyFragment(displayFeature);
+                return (
+                  <DetectFocus
+                    key={key}
+                    onReportedFocus={() => {
+                      setFocusedFeature(displayFeature);
+                    }}
+                  >
+                    {renderFeature({
+                      feature: displayFeature,
+                      isActive: displayFeature === focusedFeature,
+                      fragmentContext,
+                      key,
+                      title: getFeatureTitle(displayFeature),
+                      icon: getFeatureIcon(displayFeature),
+                    })}
+                  </DetectFocus>
+                );
+              })}
             </View>
           </View>
         </Context.Provider>

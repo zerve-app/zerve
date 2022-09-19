@@ -36,6 +36,8 @@ import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreEntry } from "../app/StoreClient";
 import { extractErrorMessage } from "../app/ErrorHandling";
+import { NotFoundSymbol } from "@zerve/zoo-client/Connection";
+import { ErrorRow } from "../components/Error";
 
 function EmptyEntryContent({
   entryName,
@@ -175,6 +177,42 @@ function StoreEntriesEntry({
     });
     releaseDirty();
   });
+  let content = null;
+  if (entryQuery.data?.value === NotFoundSymbol) {
+    content = (
+      <VStack padded>
+        <Notice message={`"${entryName}" entry is not here.`} />
+      </VStack>
+    );
+  } else if (
+    !!entryQuery.data?.schema &&
+    isEmptySchema(entryQuery.data?.schema)
+  ) {
+    content = <EmptyEntryContent entryName={entryName} path={path} />;
+  } else if (entryQuery.data?.value !== undefined && entryQuery.data?.schema) {
+    content = (
+      <JSONSchemaEditorContext.Provider value={editorContext}>
+        <VStack padded>
+          {doSave.error ? (
+            <Notice
+              danger
+              message={extractErrorMessage(doSave.error)}
+              icon="exclamation-circle"
+            />
+          ) : null}
+          <JSONSchemaEditor
+            id={`${dirtyId}-${path.join("-")}`}
+            onValue={onPathValue}
+            value={pathValue}
+            activeChild={activeChild}
+            comparisonValue={savedPathValue}
+            schema={pathSchema}
+            schemaStore={entryQuery.data?.schemaStore}
+          />
+        </VStack>
+      </JSONSchemaEditorContext.Provider>
+    );
+  }
   return (
     <FeaturePane
       title={title}
@@ -239,32 +277,10 @@ function StoreEntriesEntry({
         },
       ]}
     >
-      {!(
-        entryQuery.data?.value !== undefined || !entryQuery.data?.schema
-      ) ? null : isEmptySchema(entryQuery.data?.schema) ? (
-        <EmptyEntryContent entryName={entryName} path={path} />
-      ) : (
-        <JSONSchemaEditorContext.Provider value={editorContext}>
-          <VStack padded>
-            {doSave.error ? (
-              <Notice
-                danger
-                message={extractErrorMessage(doSave.error)}
-                icon="exclamation-circle"
-              />
-            ) : null}
-            <JSONSchemaEditor
-              id={`${dirtyId}-${path.join("-")}`}
-              onValue={onPathValue}
-              value={pathValue}
-              activeChild={activeChild}
-              comparisonValue={savedPathValue}
-              schema={pathSchema}
-              schemaStore={entryQuery.data?.schemaStore}
-            />
-          </VStack>
-        </JSONSchemaEditorContext.Provider>
-      )}
+      {entryQuery.error ? (
+        <ErrorRow message={"Could not Load: " + entryQuery.error.message} />
+      ) : null}
+      {content}
     </FeaturePane>
   );
 }
