@@ -4,6 +4,7 @@ import {
   OrgDashboardContext,
   OrgNavigationState,
 } from "../context/OrgDashboardContext";
+import { DashboardZFeature } from "../features/DashboardZFeature";
 import { OrgStoresCreateFeature } from "../features/OrgStoresCreateFeature";
 import { OrgStoresFeature } from "../features/OrgStoresFeature";
 import { DashboardPage } from "./Dashboard";
@@ -52,15 +53,31 @@ export function OrgDashboard({ entityId }: { entityId: string }) {
         return null;
       }}
       renderFeature={({ feature, key, ...props }) => {
-        const userFeatureProps = {
+        const orgFeatureProps = {
           key,
           entityId,
           ...props,
         };
         if (feature?.key === "stores") {
           if (feature?.child === "create")
-            return <OrgStoresCreateFeature {...userFeatureProps} />;
-          return <OrgStoresFeature {...userFeatureProps} />;
+            return <OrgStoresCreateFeature {...orgFeatureProps} />;
+          return <OrgStoresFeature {...orgFeatureProps} />;
+        }
+        if (feature?.key === "members") {
+          return (
+            <DashboardZFeature
+              path={["auth", "user", "orgs", entityId, "members"]}
+              {...orgFeatureProps}
+            />
+          );
+        }
+        if (feature?.key === "settings") {
+          return (
+            <DashboardZFeature
+              path={["auth", "user", "orgs", entityId, "org-settings"]}
+              {...orgFeatureProps}
+            />
+          );
         }
         return null;
       }}
