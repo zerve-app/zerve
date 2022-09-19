@@ -54,6 +54,9 @@ export function useStoreNavigation() {
       backToEntrySchema: (entryName: string, path: string[]) => {
         navigate({ key: "entries", entryName, child: "schema" });
       },
+      backToEntries: () => {
+        navigate({ key: "entries" }, true);
+      },
     }),
     [],
   );

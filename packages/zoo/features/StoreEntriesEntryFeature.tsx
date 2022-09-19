@@ -82,7 +82,7 @@ function StoreEntriesEntry({
     openEntry,
     backToEntry,
     openEntrySchema,
-    replaceToEntries,
+    backToEntries,
     replaceToEntry,
   } = useStoreNavigation();
   // const schemasQuery = useStoreSchemas(storePath);
@@ -102,12 +102,12 @@ function StoreEntriesEntry({
     return getValueExport(editorContext.OverrideFieldComponents);
   }, [editorContext.OverrideFieldComponents]);
 
-  const deleteFile = useDeleteEntry(
+  const deleteEntry = useDeleteEntry(
     storePath,
     useMemo(
       () => ({
         onSuccess: () =>
-          showToast(`${displayStoreFileName(entryName)} Deleted`),
+          showToast(`"${displayStoreFileName(entryName)}" Deleted`),
       }),
       [entryName],
     ),
@@ -233,8 +233,8 @@ function StoreEntriesEntry({
           icon: "trash",
           danger: true,
           onPress: async () => {
-            await deleteFile.mutateAsync(entryName);
-            replaceToEntries();
+            await deleteEntry.mutateAsync(entryName);
+            backToEntries();
           },
         },
       ]}

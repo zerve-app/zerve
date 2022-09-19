@@ -52,6 +52,9 @@ export function useStoreNavigation() {
           pop();
         });
       },
+      backToEntries: () => {
+        pop();
+      },
       backToEntry: (entryName: string, path: string[]) => {
         path.forEach(() => {
           pop();
