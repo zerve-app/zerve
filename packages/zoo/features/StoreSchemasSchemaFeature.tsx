@@ -3,12 +3,9 @@ import {
   useTextInputFormModal,
   VStack,
   JSONSchemaEditor,
-  HStack,
-  Button,
-  Spacer,
   useAsyncHandler,
 } from "@zerve/zen";
-import { memo, useMemo } from "react";
+import { memo, useContext, useMemo } from "react";
 import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteSchema,
@@ -16,7 +13,7 @@ import {
   useSaveStoreSchema,
 } from "@zerve/zoo-client/Mutation";
 import {
-  StoreFeatureLink,
+  StoreDashboardContext,
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
 import { AnyError, prepareStoreFileName } from "@zerve/zed";
@@ -116,6 +113,25 @@ function StoreSchemasSchema({
     });
     releaseDirty();
   });
+  const fragmentContext = useContext(StoreDashboardContext);
+  const activeFragment = fragmentContext?.fragment;
+  let hasChildActive =
+    !!activeFragment &&
+    activeFragment.key === "schemas" &&
+    activeFragment.schema === schemaName;
+  const activeChild =
+    (!!activeFragment &&
+      activeFragment.key === "schemas" &&
+      activeFragment.path &&
+      activeFragment.path.find(
+        (pathTerm: string, index: number, activePath: string[]) => {
+          if (path.length < activePath.length)
+            return hasChildActive && path.length === index;
+          if (path[index] !== pathTerm) hasChildActive = false;
+          return false;
+        },
+      )) ||
+    undefined;
   return (
     <FeaturePane
       title={title}
@@ -157,9 +173,10 @@ function StoreSchemasSchema({
         {schemaQuery.data && pathSchema ? (
           <VStack padded>
             <JSONSchemaEditor
-              id={`schema-${schemaName}-${path.join("-")}`}
+              id={`${dirtyId}-${path.join("-")}`}
               onValue={onPathValue}
               value={pathValue}
+              activeChild={activeChild}
               comparisonValue={savedPathValue}
               schema={pathSchema}
               schemaStore={schemaQuery.data?.schemaStore}

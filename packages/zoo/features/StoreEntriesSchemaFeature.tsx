@@ -4,10 +4,11 @@ import {
   useAsyncHandler,
   VStack,
 } from "@zerve/zen";
-import { memo, useMemo } from "react";
+import { memo, useContext, useMemo } from "react";
 import { FeaturePane } from "../components/FeaturePane";
 import { useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
 import {
+  StoreDashboardContext,
   StoreFeatureLink,
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
@@ -41,6 +42,26 @@ function StoreEntriesSchema({
     };
     return ctx;
   }, []);
+  const fragmentContext = useContext(StoreDashboardContext);
+  const activeFragment = fragmentContext?.fragment;
+  let hasChildActive =
+    !!activeFragment &&
+    activeFragment.key === "entries" &&
+    activeFragment.child === "schema" &&
+    activeFragment.entryName === entryName;
+  const activeChild =
+    (!!activeFragment &&
+      activeFragment.key === "entries" &&
+      activeFragment.path &&
+      activeFragment.path.find(
+        (pathTerm: string, index: number, activePath: string[]) => {
+          if (path.length < activePath.length)
+            return hasChildActive && path.length === index;
+          if (path[index] !== pathTerm) hasChildActive = false;
+          return false;
+        },
+      )) ||
+    undefined;
 
   const dirtyId = `entry-schema-${entryName}`;
 
@@ -96,9 +117,10 @@ function StoreEntriesSchema({
         {entrySchemaQuery.data ? (
           <VStack padded>
             <JSONSchemaEditor
-              id={dirtyId}
+              id={`${dirtyId}-${path.join("-")}`}
               onValue={onPathValue}
               value={pathValue}
+              activeChild={activeChild}
               comparisonValue={savedPathValue}
               schema={pathSchema}
               schemaStore={entrySchemaQuery.data?.schemaStore}

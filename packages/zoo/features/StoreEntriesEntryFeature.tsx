@@ -162,8 +162,6 @@ function StoreEntriesEntry({
         },
       )) ||
     undefined;
-  console.log({ activeFragment, path, entryName, activeChild });
-
   const doSave = useAsyncHandler<void, AnyError>(async () => {
     const internalValue = getDirty();
     const schema = entryQuery.data?.schema;
@@ -255,7 +253,7 @@ function StoreEntriesEntry({
               />
             ) : null}
             <JSONSchemaEditor
-              id={`entry-${entryName}-${path.join("-")}`}
+              id={`${dirtyId}-${path.join("-")}`}
               onValue={onPathValue}
               value={pathValue}
               activeChild={activeChild}

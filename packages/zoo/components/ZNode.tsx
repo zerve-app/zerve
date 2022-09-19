@@ -474,7 +474,6 @@ export function ZActionNode({
   connection: string;
   path: string[];
 }) {
-  console.log("ZActionNode", { type, value });
   const [actionValue, setActionValue] = useState(
     getDefaultSchemaValue(type.payload),
   );

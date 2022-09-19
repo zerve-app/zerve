@@ -236,6 +236,7 @@ export function ObjectEditor({
                 title={`Add ${fieldLabel}`}
                 icon="chevron-right"
                 hasChanged={keyHasChanged}
+                key={propertyName}
                 onPress={() => {
                   const propertySchema = schema.properties?.[propertyName];
                   if (!propertySchema)
@@ -928,6 +929,7 @@ export function OneOfField({
   valueKey,
   onValue,
   schema,
+  isNavHighlight,
   actions,
   onSubmitEditing,
   schemaStore,
@@ -940,6 +942,7 @@ export function OneOfField({
   valueKey: string;
   onValue?: (v: any) => void;
   schema: JSONSchema;
+  isNavHighlight?: boolean;
   actions?: ActionButtonDef[];
   onSubmitEditing?: () => void;
   schemaStore: SchemaStore;
@@ -1010,6 +1013,7 @@ export function OneOfField({
           valueKey={valueKey}
           onValue={onValue}
           schema={matchedSchema}
+          isNavHighlight={isNavHighlight}
           label={label}
           actions={actions}
           labelActions={fieldLabelActions}
@@ -1136,6 +1140,7 @@ export function FormField(fieldProps: FormFieldProps) {
         value={value}
         comparisonValue={comparisonValue}
         schema={schema}
+        isNavHighlight={isNavHighlight}
         label={label}
         labelActions={labelActions}
         onValue={onValue}
@@ -1155,6 +1160,7 @@ export function FormField(fieldProps: FormFieldProps) {
         comparisonValue={comparisonValue}
         valueKey={valueKey}
         schema={schema}
+        isNavHighlight={isNavHighlight}
         schemaStore={schemaStore}
         label={label}
         labelActions={labelActions}
@@ -1171,6 +1177,7 @@ export function FormField(fieldProps: FormFieldProps) {
         value={value}
         comparisonValue={comparisonValue}
         schema={schema}
+        isNavHighlight={isNavHighlight}
         label={label}
         labelActions={labelActions}
         onValue={onValue}
@@ -1483,6 +1490,7 @@ export function JSONSchemaEditor({
             comparisonValue={comparisonValue}
             onValue={onValue}
             onEscape={onEscape}
+            activeChild={activeChild}
             schema={matchedSchema}
             schemaStore={schemaStore}
             label={label}

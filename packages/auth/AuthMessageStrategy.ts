@@ -91,12 +91,10 @@ export function createGenericMessageAuthStrategy<
         if (payload.token) {
           if (token !== payload.token) {
             // verify the user is providing the correct secret token according to our saved authRequest
-            console.log("Requst token does not match");
             throw new Error("Invalid Auth Attempt");
           }
           if (now - config.authTimeoutMs > requestTime) {
             // ensure this validation is happening fast enough, within the configurable authTimeoutMs
-            console.log("Requst timeout has already been reached");
             throw new Error("Invalid Auth Attempt");
           }
           await WriteJSON.call({

@@ -92,17 +92,11 @@ export function validateListKeys(
   value: unknown,
   contextPath: string[] = [],
 ): ValidationError[] {
-  console.log("validateListKeys", contextPath, value);
   if (Array.isArray(value)) {
     let errors: ValidationError[] = [];
     const allKeysSoFar = new Set();
-    console.log("validating array, good! the value is: ", value);
     value.forEach((childValue, childValueIndex) => {
       const key = getListItemKey(childValue, childValueIndex);
-      console.log("checking key", {
-        item: childValue,
-        key,
-      });
       if (allKeysSoFar.has(key)) {
         errors.push({
           instancePath: `/${(contextPath || []).join("/")}/${childValueIndex}`,
