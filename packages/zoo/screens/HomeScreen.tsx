@@ -45,7 +45,7 @@ function ConnectionSection({ connection }: { connection: Connection }) {
         icon={(p) => <Icon name="ellipsis-v" {...p} />}
       />
     ),
-    () => [
+    [
       ...actions,
       {
         key: "open",
