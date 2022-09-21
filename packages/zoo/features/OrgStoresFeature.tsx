@@ -7,6 +7,7 @@ import {
 } from "../context/OrgDashboardContext";
 import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
+import { EmptyContentRow } from "../components/Empty";
 
 function NewStoreButton() {
   const fragmentContext = useContext(OrgDashboardContext);
@@ -39,13 +40,18 @@ function OrgStores({ entityId, title, icon, isActive }: OrgFeatureProps) {
       isActive={isActive}
       spinner={isLoading || isFetching}
     >
-      <NavLinkContentGroup>
-        {data?.children.map((storeName) => (
-          <Link key={storeName} href={`/${entityId}/${storeName}`}>
-            <NavLinkContent title={storeName} icon="briefcase" />
-          </Link>
-        ))}
-      </NavLinkContentGroup>
+      {data?.children && data?.children.length === 0 ? (
+        <EmptyContentRow message="No stores in the org yet." />
+      ) : null}
+      {data?.children && data?.children.length ? (
+        <NavLinkContentGroup>
+          {data?.children.map((storeName) => (
+            <Link key={storeName} href={`/${entityId}/${storeName}`}>
+              <NavLinkContent title={storeName} icon="briefcase" />
+            </Link>
+          ))}
+        </NavLinkContentGroup>
+      ) : null}
       <HStack padded>
         <NewStoreButton />
       </HStack>
