@@ -115,6 +115,10 @@ export async function startApp() {
         throw e;
       }
     },
+    userContainerMeta: {
+      title: "Zerve Admin",
+      icon: "lock",
+    },
     getUserZeds: async (user, { userId }) => {
       return {
         ZerveStore: Store,

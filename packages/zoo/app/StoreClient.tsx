@@ -238,7 +238,6 @@ export function useStoreEntry(
       onError: options?.onError,
     },
   );
-  console.log("queryryyy", entryQuery, schemas);
   return {
     isLoading: entryQuery.isLoading || schemas.isLoading,
     isFetching: entryQuery.isFetching || schemas.isFetching,
