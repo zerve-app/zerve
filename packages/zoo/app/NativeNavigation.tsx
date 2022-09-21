@@ -37,6 +37,9 @@ import {
 import AuthInScreen from "../screens/AuthInScreen";
 import { AppLocation, AppLocationProvider } from "./Location";
 import { UnsavedContext, useUnsaved } from "./Unsaved";
+import { initFocusManager } from "./FocusManager";
+
+initFocusManager();
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
