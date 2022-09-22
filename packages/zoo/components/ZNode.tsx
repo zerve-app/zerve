@@ -293,9 +293,7 @@ export function ChangePasswordButton({
         await postZAction(
           connection,
           [...session.authPath, "user", "setPassword"],
-          {
-            newPassword: password,
-          },
+          password,
         );
       },
     };
