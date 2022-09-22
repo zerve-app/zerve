@@ -272,7 +272,7 @@ export const ObjectSchemaSchema = {
     required: "Required Properties",
     propertyTitles: "Property Titles",
   },
-  required: ["type", "properties", "additionalProperties"],
+  required: ["type", "properties", "additionalProperties", "required"],
   additionalProperties: false,
   default: {
     type: "object",
