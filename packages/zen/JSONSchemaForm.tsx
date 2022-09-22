@@ -18,6 +18,8 @@ import { VStack } from "./Stack";
 import { Paragraph } from "./Text";
 import { useAsyncHandler } from "./useAsyncHandler";
 import { Icon } from "./Icon";
+import { Notice } from "./Notice";
+import { extractErrorMessage } from "./ErrorHandling";
 
 export function JSONSchemaForm({
   id,
@@ -82,7 +84,7 @@ export function JSONSchemaForm({
         }}
       >
         <VStack padded={padded}>
-          {error && <Paragraph danger>{error.message}</Paragraph>}
+          {error && <Notice danger message={extractErrorMessage(error)} />}
           <JSONSchemaEditor
             id={id}
             value={valueState}

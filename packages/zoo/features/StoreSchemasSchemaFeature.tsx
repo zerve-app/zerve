@@ -23,7 +23,7 @@ import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreSchema } from "../app/StoreClient";
 import { Notice } from "@zerve/zen/Notice";
-import { extractErrorMessage } from "../app/ErrorHandling";
+import { extractErrorMessage } from "@zerve/zen/ErrorHandling";
 import { ErrorRow } from "../components/Error";
 
 function StoreSchemasSchema({

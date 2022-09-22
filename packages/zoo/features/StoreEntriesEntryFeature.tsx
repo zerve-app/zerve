@@ -35,7 +35,7 @@ import { useUnsavedDeepValue } from "../app/Unsaved";
 import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreEntry } from "../app/StoreClient";
-import { extractErrorMessage } from "../app/ErrorHandling";
+import { extractErrorMessage } from "@zerve/zen/ErrorHandling";
 import { NotFoundSymbol } from "@zerve/zoo-client/Connection";
 import { ErrorRow } from "../components/Error";
 import { EmptyContentRow } from "../components/Empty";
