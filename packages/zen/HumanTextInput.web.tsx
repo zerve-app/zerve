@@ -253,7 +253,7 @@ export function HumanTextInput(
 }
 HumanTextInput.import = (value: FromSchema<typeof HumanTextSchema>) => {
   const paragraphContent: any[] = [];
-  value.forEach((valueNode) => {
+  value?.forEach((valueNode) => {
     const marks: any[] = [];
     if (valueNode.bold) marks.push({ type: "bold" });
     if (valueNode.italic) marks.push({ type: "italic" });
@@ -294,11 +294,11 @@ HumanTextInput.export = (value) => {
   const output: FromSchema<typeof HumanTextSchema> = [];
   if (value.type !== "doc")
     throw new Error("Unexpected export condition: not a doc node");
-  value.content.forEach((docChild, paragraphIndex) => {
+  value.content?.forEach((docChild, paragraphIndex) => {
     if (docChild.type !== "paragraph")
       throw new Error("Unexpected export condition: not a paragraph node");
     if (paragraphIndex > 0) output.push({ text: RETURN });
-    docChild.content.forEach((paragraphChild) => {
+    docChild.content?.forEach((paragraphChild) => {
       if (paragraphChild.type !== "text")
         throw new Error("Unexpected export condition: not a text node");
       const n: ExportTextNode = { text: paragraphChild.text };
@@ -324,11 +324,11 @@ HumanTextInput.renderAsText = (value) => {
   let outputString = "";
   if (value.type !== "doc")
     throw new Error("Unexpected export condition: not a doc node");
-  value.content.forEach((docChild, paragraphIndex) => {
+  value.content?.forEach((docChild, paragraphIndex) => {
     if (docChild.type !== "paragraph")
       throw new Error("Unexpected export condition: not a paragraph node");
     if (paragraphIndex > 0) output.push({ text: RETURN });
-    docChild.content.forEach((paragraphChild) => {
+    docChild.content?.forEach((paragraphChild) => {
       if (paragraphChild.type !== "text")
         throw new Error("Unexpected export condition: not a text node");
       outputString += paragraphChild.text;
