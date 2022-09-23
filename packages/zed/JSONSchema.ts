@@ -22,6 +22,12 @@ export const EntryNameSchema = {
   title: "Entry Name",
   type: "string",
   pattern: "^([0-9A-Z])([0-9a-zA-Z_])*([0-9a-zA-Z])$",
+  minLength: 2,
+  extraPatterns: {
+    "^([0-9A-Z]).*$": "Must start with a capital leter or a number",
+    "^[0-9A-Za-z]*$":
+      "Invalid characters. Only allowed letters, numbers, and underscores",
+  },
 } as const;
 
 // the metadata that can accompany ANY schema

@@ -1,12 +1,55 @@
 import Ajv from "ajv";
+import { _, KeywordCxt, Options } from "ajv";
 import { FromSchema, JSONSchema } from "json-schema-to-ts";
 import { getListItemKey, ZSchema } from "./JSONSchema";
 import { RequestError } from "./Errors";
 
-const AJV_OPTIONS = { strict: true };
+const AJV_OPTIONS: Options = {
+  //strict: true, // fails when using "discriminator" field as documented by ajv! https://ajv.js.org/json-schema.html#discriminator
+  allErrors: true,
+  discriminator: true,
+};
 
 export const ajv = new Ajv(AJV_OPTIONS);
+
+const ExtraPatternsMetaSchema = {
+  type: "object",
+  additionalProperties: { type: "string" },
+} as const;
+
 ajv.addKeyword("propertyTitles"); // no errors
+ajv.addKeyword({
+  keyword: "extraPatterns",
+  type: "string",
+  metaSchema: ExtraPatternsMetaSchema,
+  validate: function validateExtraPatterns(
+    schema: FromSchema<typeof ExtraPatternsMetaSchema>,
+    data: string,
+    _parentSchema: any,
+    context:
+      | {
+          instancePath: string;
+        }
+      | undefined,
+  ) {
+    let isValid = true;
+    validateExtraPatterns.errors = Object.entries(schema)
+      .map(([patternRegexp, patternError]) => {
+        if (!data.match(new RegExp(patternRegexp))) {
+          isValid = false;
+          return {
+            keyword: "extraPatterns",
+            message: patternError,
+            params: { pattern: patternRegexp },
+            instancePath: context?.instancePath,
+          };
+        }
+        return null;
+      })
+      .filter((err) => !!err);
+    return isValid;
+  },
+});
 
 const rareNonObjectSchemaValidatorMap = new Map();
 const schemaValidatorMap = new WeakMap<ZSchema, Ajv.ValidateFunction>();

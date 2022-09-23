@@ -325,6 +325,9 @@ export async function createZChainState<
   // const availableActionKeys = Object.keys(calculator.actions);
 
   const allActionsSchema = {
+    type: "object",
+    discriminator: { propertyName: "name" },
+    required: ["name"],
     oneOf: Object.entries(calculator.actions).map(([actionKey, actionDef]) => {
       return {
         type: "object",
