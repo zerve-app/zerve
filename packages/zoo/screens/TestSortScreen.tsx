@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 import DraggableFlatList, {
   ScaleDecorator,
   ShadowDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import { TouchableOpacity } from "react-native";
+import { RectButton, BorderlessButton } from "react-native-gesture-handler";
 import ScreenContainer from "../components/ScreenContainer";
 import ScreenHeader from "../components/ScreenHeader";
 import { useSafeArea } from "@zerve/zen";
@@ -46,33 +46,37 @@ function TestSortPage() {
     return (
       <ShadowDecorator>
         <ScaleDecorator>
-          <TouchableOpacity
-            onLongPress={drag}
-            disabled={isActive}
-            onPress={() => {
-              showToast("row pressed");
+          <RectButton
+            onLongPress={() => {
+              drag();
             }}
-            style={[
-              styles.rowItem,
-              {
-                backgroundColor: item.backgroundColor,
-                height: item.height,
-              },
-            ]}
+            onPress={() => {
+              showToast("pressed");
+            }}
           >
-            <Text style={styles.text}>{item.label}</Text>
-            <TouchableOpacity
-              onLongPress={() => {
-                showToast("long pressed");
-              }}
-              style={[]}
-              onPress={() => {
-                showToast("pressed");
-              }}
+            <View
+              style={[
+                styles.rowItem,
+                {
+                  backgroundColor: item.backgroundColor,
+                  height: item.height,
+                },
+              ]}
             >
-              <Text>Long Press me</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
+              <Text style={styles.text}>{item.label}</Text>
+              <BorderlessButton
+                onLongPress={() => {
+                  showToast("long pressed");
+                }}
+                style={[]}
+                onPress={() => {
+                  showToast("pressed");
+                }}
+              >
+                <Text>Long Press me</Text>
+              </BorderlessButton>
+            </View>
+          </RectButton>
         </ScaleDecorator>
       </ShadowDecorator>
     );

@@ -22,11 +22,7 @@ import { useColors } from "./useColors";
 import { Spinner } from "./Spinner";
 import { showErrorToast } from "./Toast";
 import { Icon } from "./Icon";
-import {
-  LongPressGestureHandler,
-  State,
-  TapGestureHandler,
-} from "react-native-gesture-handler";
+import { BaseButton, State } from "react-native-gesture-handler";
 
 export function IconButton({
   icon,
@@ -124,6 +120,7 @@ export function Button({
       { scale: 1 + pressHeight.value * 0.02 },
     ],
   }));
+
   const appendageProps = { color, size: small ? 18 : 24 };
 
   let content = (
@@ -195,17 +192,17 @@ export function Button({
     );
   }
 
-  if (onPress && !disabled) {
+  if ((onPress || onLongPress) && !disabled) {
     content = (
-      <TapGestureHandler
-        maxDurationMs={2000}
+      <BaseButton
         hitSlop={ButtonHitSlop}
+        onPress={onPress ? () => onPress() : undefined}
+        onLongPress={onLongPress}
         onHandlerStateChange={(e) => {
           const { state } = e.nativeEvent;
           if (state === State.BEGAN) {
             pressHeight.value = withTiming(1, { duration: 400 });
           } else if (state === State.ACTIVE) {
-            onPress();
             pressHeight.value = withTiming(-0.5, { duration: 100 });
           } else if (state === State.END) {
             setTimeout(() => {
@@ -217,32 +214,7 @@ export function Button({
         }}
       >
         {content}
-      </TapGestureHandler>
-    );
-  }
-
-  if (onLongPress && !disabled) {
-    content = (
-      <LongPressGestureHandler
-        hitSlop={ButtonHitSlop}
-        onHandlerStateChange={(e) => {
-          const { state } = e.nativeEvent;
-          if (state === State.BEGAN) {
-            pressHeight.value = withTiming(1, { duration: 400 });
-          } else if (state === State.ACTIVE) {
-            onLongPress();
-            pressHeight.value = withTiming(-0.5, { duration: 100 });
-          } else if (state === State.END) {
-            setTimeout(() => {
-              pressHeight.value = withTiming(0, { duration: 250 });
-            }, 100);
-          } else {
-            pressHeight.value = withTiming(0, { duration: 250 });
-          }
-        }}
-      >
-        {content}
-      </LongPressGestureHandler>
+      </BaseButton>
     );
   }
 

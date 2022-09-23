@@ -44,7 +44,7 @@ export function HGroup({ children }: { children: ReactNode }) {
 }
 
 export function Padding({ children }: { children: ReactNode }) {
-  return <View style={{ margin: 12 }}>{children}</View>;
+  return <View style={{ padding: 12, overflow: "visible" }}>{children}</View>;
 }
 
 export function VSpaced({
