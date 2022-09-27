@@ -1,9 +1,8 @@
 import { HomeStackScreenProps } from "../app/Links";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
-import ScreenContainer from "../components/ScreenContainer";
 import NotFoundScreen from "./NotFoundScreen";
 import { ZFeature } from "../features/ZFeature";
-import { View } from "react-native";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
 
 export default function ZNodeScreen({
   navigation,

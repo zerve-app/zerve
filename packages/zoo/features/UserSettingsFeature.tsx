@@ -3,8 +3,8 @@ import {
   UserFeatureLink,
   UserFeatureProps,
 } from "../context/UserDashboardContext";
-import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContentGroup } from "@zerve/zen/NavLink";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function UserSettings({ title, icon, isActive }: UserFeatureProps) {
   return (

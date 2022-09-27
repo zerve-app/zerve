@@ -1,6 +1,6 @@
 import { Icon } from "@zerve/zen";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 import { ComponentProps, memo } from "react";
-import { FeaturePane } from "../components/FeaturePane";
 import { ZLoadedNode } from "../components/ZNode";
 
 export type DashboardZFeatureProps = {

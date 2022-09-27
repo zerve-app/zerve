@@ -5,9 +5,9 @@ import {
   UserDashboardContext,
   UserFeatureProps,
 } from "../context/UserDashboardContext";
-import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
 import { EmptyContentRow } from "../components/Empty";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function NewStoreButton() {
   const fragmentContext = useContext(UserDashboardContext);

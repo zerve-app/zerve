@@ -14,11 +14,11 @@ import {
 import { InfoRow } from "@zerve/zen/Row";
 import { Icon } from "@zerve/zen/Icon";
 import { useNavigation } from "@react-navigation/native";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
 import { clearLocalHistoryStorage } from "../app/History";
 import { showToast } from "@zerve/zen";
 import { connectionStorage } from "../app/ConnectionStorage";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 function AppUpdater() {
   const [update, setUpdate] = useState<null | UpdateCheckResult>(null);

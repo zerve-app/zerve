@@ -1,6 +1,4 @@
 import { ThemedText, VStack } from "@zerve/zen";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
 import { HomeStackScreenProps } from "../app/Links";
 import { useHistoryEvent } from "../app/History";
 import { format } from "date-fns";
@@ -8,6 +6,8 @@ import NotFoundScreen from "./NotFoundScreen";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import { EmptySchemaStore } from "@zerve/zed";
 import { useNavigation } from "@react-navigation/native";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 export default function HistoryEventScreen({
   navigation,

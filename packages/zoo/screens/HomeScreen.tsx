@@ -22,12 +22,12 @@ import {
 import { ZerveLogo } from "../components/ZerveLogo";
 import { Connection, ConnectionProvider } from "@zerve/zoo-client/Connection";
 import { Icon } from "@zerve/zen/Icon";
-import ScreenContainer from "../components/ScreenContainer";
 import { useActionsSheet } from "@zerve/zen";
 import { ZLoadedNode } from "../components/ZNode";
 import { useGlobalNavigation } from "../app/useNavigation";
-import ScreenHeader from "../components/ScreenHeader";
 import { OptionsButton } from "../components/OptionsButton";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "Home">,

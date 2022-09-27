@@ -6,7 +6,6 @@ import {
   useAsyncHandler,
 } from "@zerve/zen";
 import { memo, useContext, useMemo } from "react";
-import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteSchema,
   useRenameSchema,
@@ -25,6 +24,7 @@ import { useStoreSchema } from "../app/StoreClient";
 import { Notice } from "@zerve/zen/Notice";
 import { extractErrorMessage } from "@zerve/zen/ErrorHandling";
 import { ErrorRow } from "../components/Error";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function StoreSchemasSchema({
   storePath,

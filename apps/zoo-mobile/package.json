@@ -24,7 +24,7 @@
     "@zerve/zoo": "*",
     "@zerve/zoo-client": "*",
     "date-fns": "^2.29.2",
-    "expo": "~46.0.9",
+    "expo": "~46.0.13",
     "expo-app-loading": "~2.1.0",
     "expo-application": "~4.2.2",
     "expo-asset": "~8.6.1",

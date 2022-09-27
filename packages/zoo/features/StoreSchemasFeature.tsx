@@ -7,9 +7,9 @@ import {
   StoreFeatureLinkButton,
   StoreFeatureProps,
 } from "../context/StoreDashboardContext";
-import { FeaturePane } from "../components/FeaturePane";
 import { NavLinkContentGroup } from "@zerve/zen/NavLink";
 import { EmptyContentRow } from "../components/Empty";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function StoreSchemas({
   storePath,

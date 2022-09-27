@@ -10,7 +10,6 @@ import {
   reorderConnection,
   useSavedConnections,
 } from "../app/ConnectionStorage";
-import ScreenHeader from "../components/ScreenHeader";
 import DraggableFlatList, {
   ScaleDecorator,
   ShadowDecorator,
@@ -19,6 +18,7 @@ import DraggableFlatList, {
 import { Connection } from "@zerve/zoo-client/Connection";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { insetsPadding } from "@zerve/zen/InsetUtils";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 function ConnectionsScreenHeader() {
   return <ScreenHeader title="Connections" />;

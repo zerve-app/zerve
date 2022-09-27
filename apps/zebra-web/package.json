@@ -13,6 +13,7 @@
     "@expo/next-adapter": "^4.0.12",
     "@expo/vector-icons": "^13.0.0",
     "@zerve/cli": "0.1.0-alpha.5",
+    "@zerve/zen-playground": "*",
     "@zerve/zoo": "*",
     "next": "12.2.5",
     "node-fetch": "^3.2.10",

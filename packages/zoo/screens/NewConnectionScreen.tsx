@@ -1,9 +1,9 @@
 import { Button, Input, VStack } from "@zerve/zen";
 import { SettingsStackScreenProps } from "../app/Links";
 import { createConnection } from "../app/ConnectionStorage";
-import ScreenHeader from "../components/ScreenHeader";
-import ScreenContainer from "../components/ScreenContainer";
 import { useState } from "react";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 export default function NewConnectionScreen({
   navigation,

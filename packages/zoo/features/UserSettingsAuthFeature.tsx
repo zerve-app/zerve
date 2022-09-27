@@ -3,8 +3,8 @@ import { useZNodeValue } from "@zerve/zoo-client/Query";
 import { InfoRow, Title, VStack } from "@zerve/zen";
 import { memo } from "react";
 import { ChangePasswordButton } from "../components/ZNode";
-import { FeaturePane } from "../components/FeaturePane";
 import { UserFeatureProps } from "../context/UserDashboardContext";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function UserSettingsAuth({ title, icon, isActive }: UserFeatureProps) {
   const conn = useRequiredConnection();

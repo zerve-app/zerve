@@ -5,7 +5,6 @@ import {
   VStack,
 } from "@zerve/zen";
 import { memo, useContext, useMemo } from "react";
-import { FeaturePane } from "../components/FeaturePane";
 import { useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
 import {
   StoreDashboardContext,
@@ -19,6 +18,7 @@ import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreEntrySchema } from "../app/StoreClient";
 import { ErrorRow } from "../components/Error";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function StoreEntriesSchema({
   storePath,

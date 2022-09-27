@@ -1,8 +1,11 @@
 import { ComponentProps, ReactNode } from "react";
-import { Icon, Spacer, Spinner, Title, useColors } from "@zerve/zen";
 import { View } from "react-native";
-import { BackButton } from "./BackButton";
+import { BackButton } from "../zoo/components/BackButton";
 import { Pressable } from "react-native";
+import { Icon } from "./Icon";
+import { useColors } from "./useColors";
+import { Title } from "./Text";
+import { Spinner } from "./Spinner";
 
 const MAX_OVERSCROLL_PLUS_LOGO_HEIGHT = 800;
 

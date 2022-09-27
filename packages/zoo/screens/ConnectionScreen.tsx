@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { ActionButtonDef, LinkRowGroup, Paragraph, VStack } from "@zerve/zen";
+import { VStack } from "@zerve/zen";
 import {
   HomeStackParamList,
   HomeStackScreenProps,
@@ -9,8 +8,6 @@ import {
   ConnectionKeyProvider,
   useSavedConnection,
 } from "../app/ConnectionStorage";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";
 import {
   CompositeNavigationProp,
@@ -20,6 +17,8 @@ import { useActionsSheet } from "@zerve/zen";
 import { OptionsButton } from "../components/OptionsButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ZLoadedNode } from "../components/ZNode";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "Connection">,

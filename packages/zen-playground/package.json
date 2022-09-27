@@ -1,0 +1,12 @@
+{
+  "name": "@zerve/zen-playground",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "scripts": {
+    "clean": "rimraf node_modules"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@zerve/zen": "*"
+  }
+}

@@ -6,9 +6,9 @@ import { useZNodeValue } from "@zerve/zoo-client/Query";
 import { InfoRow, Title, VStack } from "@zerve/zen";
 import { memo, useEffect } from "react";
 import { ChangeUsernameButton } from "../components/ZNode";
-import { FeaturePane } from "../components/FeaturePane";
 import { useRouter } from "next/router";
 import { UserFeatureProps } from "../context/UserDashboardContext";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function UserSettingsProfile({ title, icon, isActive }: UserFeatureProps) {
   const conn = useRequiredConnection();

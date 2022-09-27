@@ -2,13 +2,13 @@ import { Card, ThemedText } from "@zerve/zen";
 import { useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import { useHistory } from "../app/History";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
 import { format } from "date-fns";
 import { HomeStackScreenProps } from "../app/Links";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { insetsPadding } from "@zerve/zen/InsetUtils";
 import { useNavigation } from "@react-navigation/native";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 function HistoryScreenHeader() {
   const { goBack } = useNavigation();

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RootStackScreenProps } from "../app/Links";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
-import ScreenContainer from "../components/ScreenContainer";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
 
 export default function JSONInputScreen({
   navigation,

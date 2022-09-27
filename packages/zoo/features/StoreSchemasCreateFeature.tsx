@@ -3,8 +3,8 @@ import { EmptySchemaStore, prepareStoreFileName } from "@zerve/zed";
 import { JSONSchemaForm } from "@zerve/zen";
 import { memo, useCallback } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
-import { FeaturePane } from "../components/FeaturePane";
 import { useStoreNavigation } from "../app/useStoreNavigation";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 const SchemaNameSchema = {
   type: "string",

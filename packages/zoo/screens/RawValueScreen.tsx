@@ -4,8 +4,8 @@ import { useBottomSheet } from "@zerve/zen";
 import { setStringAsync } from "expo-clipboard";
 import { Icon } from "@zerve/zen/Icon";
 import { Pressable } from "react-native";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
 
 function RawValuePage({ navigation, route }: RootStackScreenProps<"RawValue">) {
   const { value, title } = route.params;

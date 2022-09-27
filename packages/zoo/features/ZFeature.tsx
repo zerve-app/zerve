@@ -1,7 +1,6 @@
 import { useActionsSheet } from "@zerve/zen";
 import { useZNode } from "@zerve/zoo-client/Query";
 import { UnauthorizedSymbol } from "@zerve/zoo-client/Connection";
-import ScreenHeader from "../components/ScreenHeader";
 import {
   ErrorBox,
   extractNodeIcon,
@@ -13,6 +12,7 @@ import {
   useGlobalNavigation,
 } from "../app/useNavigation";
 import { OptionsButton } from "../components/OptionsButton";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 export function ZFeature({
   path,

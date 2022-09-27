@@ -11,8 +11,8 @@ import {
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import { EmptySchemaStore, JSONSchema } from "@zerve/zed";
 import { useNavigation } from "@react-navigation/native";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 const testSchema0 = {
   oneOf: [{ type: "number" }, { type: "string" }],

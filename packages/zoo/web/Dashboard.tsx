@@ -18,9 +18,9 @@ import {
   useWindowDimensions,
 } from "@zerve/zen";
 import { FragmentContext, useFragmentNavigationController } from "./Fragment";
-import { NavigationBarWidth, PaneWidth } from "../components/FeaturePane";
 import { FragmentLink } from "./FragmentLink";
 import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
+import { NavigationBarWidth, PaneWidth } from "@zerve/zen/FeaturePane";
 
 export function NavSidebar({
   children,

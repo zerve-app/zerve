@@ -6,8 +6,8 @@ import {
   VStack,
 } from "@zerve/zen";
 import { reportHistoryEvent, useHistory } from "../app/History";
-import ScreenContainer from "../components/ScreenContainer";
 import { useNavigation } from "@react-navigation/native";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
 
 function HistoryList() {
   const a = useHistory(10);

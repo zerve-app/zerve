@@ -1,17 +1,4 @@
-import {
-  Button,
-  Icon,
-  Link,
-  NavBarSpacer,
-  PageContainer,
-  PageSection,
-  Paragraph,
-  showErrorToast,
-  showToast,
-  Spinner,
-  useColors,
-  VStack,
-} from "@zerve/zen";
+import { NavBarSpacer, PageContainer } from "@zerve/zen";
 import React, { createContext } from "react";
 import { AuthHeader } from "@zerve/zoo/components/AuthHeader";
 import {
@@ -21,155 +8,23 @@ import {
 import { DashboardPage } from "@zerve/zoo/web/Dashboard";
 import { FragmentContext } from "@zerve/zoo/web/Fragment";
 import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
-import { FeaturePane } from "@zerve/zoo/components/FeaturePane";
+import { PlaygroundFeatures } from "@zerve/zen-playground/PlaygroundFeatures";
 
 type PlaygroundState = "home" | "toast" | "button" | "spinner";
 
 export const PlaygroundContext =
   createContext<null | FragmentContext<PlaygroundState>>(null);
 
-function PlaygroundHome() {
-  return (
-    <FeaturePane title="Zen UI Playground">
-      <Paragraph>
-        A playground to see the{" "}
-        <Link inline href="https://docs.zerve.app/docs/internal/zen">
-          Zen UI
-        </Link>{" "}
-        in action!
-      </Paragraph>
-      <Paragraph>
-        Browse the{" "}
-        <Link
-          inline
-          href="https://github.com/zerve-app/zerve/blob/main/packages/zen/"
-        >
-          code on GitHub
-        </Link>{" "}
-        to see the full suite of components that power Zerve.
-      </Paragraph>
-      <Paragraph>
-        This is (clearly) a work in progress. The main priority is the Zerve
-        Content System!
-      </Paragraph>
-    </FeaturePane>
-  );
-}
-
-function ToastPlayground() {
-  return (
-    <FeaturePane title="Toast">
-      <PageSection title="Open Toasts">
-        <VStack padded>
-          <Button
-            title="Toast"
-            onPress={() => {
-              showToast("Toast Example");
-            }}
-          />
-          <Button
-            title="Error Toast"
-            onPress={() => {
-              showErrorToast("Error Toast Example");
-            }}
-          />
-        </VStack>
-      </PageSection>
-    </FeaturePane>
-  );
-}
-
-function ButtonPlayground() {
-  const colors = useColors();
-  return (
-    <FeaturePane title="Button">
-      <PageSection title="Modes">
-        <VStack padded>
-          <Button
-            title="Pressable"
-            onPress={() => {
-              showToast("Pressed");
-            }}
-          />
-          <Button
-            title="Long Pressable"
-            onPress={() => {
-              showToast("Pressed");
-            }}
-            onLongPress={() => {
-              showToast("Long Pressed");
-            }}
-          />
-          <Button
-            title="Disabled"
-            disabled
-            onPress={() => {
-              showToast("This does not happen");
-            }}
-          />
-        </VStack>
-      </PageSection>
-      <PageSection title="Variants">
-        <VStack padded>
-          <Button title="Normal" onPress={() => {}} />
-          <Button title="Danger" danger onPress={() => {}} />
-          <Button title="Primary" primary onPress={() => {}} />
-          <Button title="Chromeless" chromeless onPress={() => {}} />
-        </VStack>
-        <PageSection title="Sizes">
-          <VStack padded>
-            <Button title="Normal" onPress={() => {}} />
-            <Button title="Small" small onPress={() => {}} />
-          </VStack>
-        </PageSection>
-        <PageSection title="Tint">
-          <VStack padded>
-            <Button
-              title="Changed Tint"
-              tint={colors.changedTint}
-              onPress={() => {}}
-            />
-          </VStack>
-        </PageSection>
-        <PageSection title="Icons">
-          <VStack padded>
-            <Button
-              title="Trash"
-              danger
-              left={(p) => <Icon {...p} name="trash" />}
-              onPress={() => {}}
-            />
-            <Button
-              title="Refresh"
-              left={(p) => <Icon {...p} name="refresh" />}
-              onPress={() => {}}
-            />
-          </VStack>
-        </PageSection>
-      </PageSection>
-    </FeaturePane>
-  );
-}
-function SpinnerPlayground() {
-  return (
-    <FeaturePane title="Spinner">
-      <PageSection title="Large">
-        <Spinner size="large" />
-      </PageSection>
-      <PageSection title="Small">
-        <Spinner size="small" />
-      </PageSection>
-    </FeaturePane>
-  );
-}
+const PlaygroundFeatureNames = Object.values(PlaygroundFeatures).map(
+  (c) => c.name,
+);
 
 function PlaygroundScreen() {
-  const colors = useColors();
   return (
     <PageContainer>
       <DashboardPage<PlaygroundState>
         Context={PlaygroundContext}
-        defaultFeature="home"
+        defaultFeature={PlaygroundFeatureNames[0]}
         header={
           <>
             <NavBarSpacer />
@@ -177,15 +32,26 @@ function PlaygroundScreen() {
           </>
         }
         renderFeature={({ feature }) => {
-          if (feature === "home") return <PlaygroundHome />;
-          if (feature === "toast") return <ToastPlayground />;
-          if (feature === "button") return <ButtonPlayground />;
-          if (feature === "spinner") return <SpinnerPlayground />;
+          const playground = Object.values(PlaygroundFeatures).find(
+            (c) => c.name === feature,
+          );
+          const Component = playground?.Feature;
+          if (Component) return <Component />;
           return null;
         }}
-        navigation={["home", "toast", "button", "spinner"]}
-        getFeatureTitle={(f) => f}
-        getFeatureIcon={() => "leaf"}
+        navigation={PlaygroundFeatureNames}
+        getFeatureTitle={(feature) => {
+          const Component = Object.values(PlaygroundFeatures).find(
+            (c) => c.name === feature,
+          );
+          return Component?.title || "Playground";
+        }}
+        getFeatureIcon={(feature) => {
+          const Component = Object.values(PlaygroundFeatures).find(
+            (c) => c.name === feature,
+          );
+          return Component?.icon || "leaf";
+        }}
         parseFeatureFragment={(f) => f}
         stringifyFeatureFragment={(f) => f}
       />

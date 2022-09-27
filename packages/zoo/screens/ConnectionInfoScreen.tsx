@@ -13,9 +13,9 @@ import {
   logout,
 } from "../app/ConnectionStorage";
 import { InfoRow } from "@zerve/zen/Row";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
 import NotFoundScreen from "./NotFoundScreen";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 export default function ConnectionInfoScreen({
   navigation,

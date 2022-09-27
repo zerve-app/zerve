@@ -10,7 +10,6 @@ import {
 import { Dialog } from "@zerve/zen/Dialog";
 import { memo } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
-import { FeaturePane } from "../components/FeaturePane";
 import { useMutation, useQueryClient } from "react-query";
 import { useRequiredConnection } from "@zerve/zoo-client/Connection";
 import { postZAction } from "@zerve/zoo-client/ServerCalls";
@@ -20,6 +19,7 @@ import {
   StoreSettings as StoreSettingsType,
 } from "@zerve/zed";
 import { useZNodeValue } from "@zerve/zoo-client/Query";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function RenameStoreDialog({
   onClose,

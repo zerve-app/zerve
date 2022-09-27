@@ -6,10 +6,10 @@ import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import { RectButton, BorderlessButton } from "react-native-gesture-handler";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
 import { useSafeArea } from "@zerve/zen";
 import { showToast } from "@zerve/zen";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 const NUM_ITEMS = 10;
 function getColor(i: number) {

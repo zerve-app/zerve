@@ -18,7 +18,6 @@ import {
   VStack,
 } from "@zerve/zen";
 import { memo, useContext, useMemo } from "react";
-import { FeaturePane } from "../components/FeaturePane";
 import {
   useDeleteEntry,
   useRenameEntry,
@@ -39,6 +38,7 @@ import { extractErrorMessage } from "@zerve/zen/ErrorHandling";
 import { NotFoundSymbol } from "@zerve/zoo-client/Connection";
 import { ErrorRow } from "../components/Error";
 import { EmptyContentRow } from "../components/Empty";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 function EmptyEntryContent({
   entryName,

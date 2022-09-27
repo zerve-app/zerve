@@ -1,8 +1,8 @@
 import { Button, DisclosureSection, Label, VStack } from "@zerve/zen";
 import { useBottomSheet } from "@zerve/zen";
-import ScreenContainer from "../components/ScreenContainer";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 import { showErrorToast, showToast } from "@zerve/zen/Toast";
-import ScreenHeader from "../components/ScreenHeader";
 
 function BottomSheetSection() {
   const onOpen = useBottomSheet<void>(({ onClose }) => (

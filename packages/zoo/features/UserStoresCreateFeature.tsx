@@ -7,9 +7,9 @@ import { EmptySchemaStore, IDSchema } from "@zerve/zed";
 import { JSONSchemaForm, showToast, Title, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { UserFeatureProps } from "../context/UserDashboardContext";
-import { FeaturePane } from "../components/FeaturePane";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
+import { FeaturePane } from "@zerve/zen/FeaturePane";
 
 const StoreNameSchema = {
   ...IDSchema,

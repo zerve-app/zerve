@@ -1,8 +1,8 @@
 import { RootStackScreenProps } from "../app/Links";
-import ScreenContainer from "../components/ScreenContainer";
-import ScreenHeader from "../components/ScreenHeader";
 import { LoginForm } from "../components/Auth";
 import { ConnectionKeyProvider } from "../app/ConnectionStorage";
+import ScreenContainer from "@zerve/zen/ScreenContainer";
+import ScreenHeader from "@zerve/zen/ScreenHeader";
 
 export default function AuthInScreen({
   navigation,
