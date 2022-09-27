@@ -1,10 +1,3 @@
-import {
-  JSONSchemaEditorContext,
-  useTextInputFormModal,
-  VStack,
-  JSONSchemaEditor,
-  useAsyncHandler,
-} from "@zerve/zen";
 import { memo, useContext, useMemo } from "react";
 import {
   useDeleteSchema,
@@ -21,10 +14,14 @@ import { useUnsavedDeepValue } from "../app/Unsaved";
 import { SaveOrDiscardFooter } from "../components/SaveOrDiscardFooter";
 import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreSchema } from "../app/StoreClient";
-import { Notice } from "@zerve/zen/Notice";
 import { extractErrorMessage } from "@zerve/zen/ErrorHandling";
 import { ErrorRow } from "../components/Error";
 import { FeaturePane } from "@zerve/zen/FeaturePane";
+import { JSONSchemaEditorContext } from "@zerve/zen/JSONSchemaEditorUtilities";
+import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
+import { useAsyncHandler } from "@zerve/zen/useAsyncHandler";
+import { VStack } from "@zerve/zen/Stack";
+import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 
 function StoreSchemasSchema({
   storePath,

@@ -1,8 +1,8 @@
 import React from "react";
 import { ZooAppNavigation } from "@zerve/zoo/app/NativeNavigation";
-import { ToastArea, ZenProvider } from "@zerve/zen";
-import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaContextProvider } from "@zerve/zen";
+import { SafeAreaContextProvider } from "@zerve/zen/SafeAreaContextProvider";
+import { ToastArea } from "@zerve/zen/ToastArea";
+import { ZenProvider } from "@zerve/zen/Provider";
 
 // it appears that android doesn't have this built-in function
 if (!String.prototype.replaceAll) {

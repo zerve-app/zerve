@@ -1,7 +1,8 @@
 import { SettingsStackScreenProps } from "../app/Links";
-import { LinkRowGroup, VStack } from "@zerve/zen";
 import ScreenContainer from "@zerve/zen/ScreenContainer";
 import ScreenHeader from "@zerve/zen/ScreenHeader";
+import { VStack } from "@zerve/zen/Stack";
+import { LinkRowGroup } from "@zerve/zen/Row";
 
 export default function KitchenSinkScreen({
   navigation,

@@ -1,6 +1,5 @@
 import { useZNode } from "@zerve/zoo-client/Query";
 import { displayStoreFileName } from "@zerve/zed";
-import { VStack } from "@zerve/zen";
 import { memo, useMemo } from "react";
 import {
   StoreFeatureLink,
@@ -10,6 +9,7 @@ import {
 import { NavLinkContentGroup } from "@zerve/zen/NavLink";
 import { EmptyContentRow } from "../components/Empty";
 import { FeaturePane } from "@zerve/zen/FeaturePane";
+import { VStack } from "@zerve/zen/Stack";
 
 function StoreEntries({ storePath, title, icon, isActive }: StoreFeatureProps) {
   const { isLoading, isFetching, data } = useZNode([...storePath, "State"]);

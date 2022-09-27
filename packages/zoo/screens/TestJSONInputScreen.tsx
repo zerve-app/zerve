@@ -1,18 +1,15 @@
 import { useState } from "react";
 
 import { SettingsStackScreenProps } from "../app/Links";
-import {
-  DisclosureSection,
-  Label,
-  LinkRow,
-  PageTitle,
-  Paragraph,
-} from "@zerve/zen";
 import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 import { EmptySchemaStore, JSONSchema } from "@zerve/zed";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "@zerve/zen/ScreenContainer";
 import ScreenHeader from "@zerve/zen/ScreenHeader";
+import { LinkRow } from "@zerve/zen/Row";
+import { Paragraph } from "@zerve/zen/Text";
+import { DisclosureSection } from "@zerve/zen/Disclosure";
+import { Label } from "@zerve/zen/Label";
 
 const testSchema0 = {
   oneOf: [{ type: "number" }, { type: "string" }],

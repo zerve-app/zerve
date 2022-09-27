@@ -1,7 +1,7 @@
 import { useConnection } from "@zerve/zoo-client/Connection";
 import { ConnectionExceptionContext } from "@zerve/zoo-client/Query";
-import { useModal } from "@zerve/zen";
 import { ReactNode } from "react";
+import { useModal } from "@zerve/zen/Modal";
 import { LoginForm } from "../components/Auth";
 import { setSession } from "./ConnectionStorage";
 

@@ -1,15 +1,13 @@
 import { useRouter } from "next/router";
 import { ScrollView, Text, View } from "react-native";
-import {
-  Button,
-  DisclosureSection,
-  Label,
-  useColors,
-  VStack,
-} from "@zerve/zen";
 
 import { useAppDispatch } from "../../../apps/z-web/stores/Dispatch";
 import { ReactNode } from "react";
+import { DisclosureSection } from "@zerve/zen/Disclosure";
+import { Label } from "@zerve/zen/Label";
+import { useColors } from "@zerve/zen/useColors";
+import { VStack } from "@zerve/zen/Stack";
+import { Button } from "@zerve/zen/Button";
 
 function SmallSection({
   children,

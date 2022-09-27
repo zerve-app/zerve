@@ -1,12 +1,13 @@
 import { useRequiredConnection } from "@zerve/zoo-client/Connection";
 import { postZAction } from "@zerve/zoo-client/ServerCalls";
 import { EmptySchemaStore, IDSchema } from "@zerve/zed";
-import { JSONSchemaForm, useAsyncHandler } from "@zerve/zen";
 import { memo } from "react";
 import { useQueryClient } from "react-query";
 import { useRouter } from "next/router";
 import { OrgFeatureProps } from "../context/OrgDashboardContext";
 import { FeaturePane } from "@zerve/zen/FeaturePane";
+import { JSONSchemaForm } from "@zerve/zen/JSONSchemaForm";
+import { useAsyncHandler } from "@zerve/zen/useAsyncHandler";
 
 const StoreNameSchema = {
   ...IDSchema,

@@ -1,4 +1,5 @@
-import { Button, HStack } from "@zerve/zen";
+import { Button } from "@zerve/zen/Button";
+import { HStack } from "@zerve/zen/Stack";
 
 export function SaveOrDiscardFooter({
   onSave,

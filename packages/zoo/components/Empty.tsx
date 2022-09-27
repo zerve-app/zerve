@@ -1,4 +1,5 @@
-import { Title, VSpaced } from "@zerve/zen";
+import { VSpaced } from "@zerve/zen/Stack";
+import { Title } from "@zerve/zen/Text";
 
 export function EmptyContentRow({ message }: { message: string }) {
   return (

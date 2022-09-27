@@ -1,10 +1,10 @@
 import { useCreateSchema } from "@zerve/zoo-client/Mutation";
 import { EmptySchemaStore, prepareStoreFileName } from "@zerve/zed";
-import { JSONSchemaForm } from "@zerve/zen";
 import { memo, useCallback } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
 import { useStoreNavigation } from "../app/useStoreNavigation";
 import { FeaturePane } from "@zerve/zen/FeaturePane";
+import { JSONSchemaForm } from "@zerve/zen/JSONSchemaForm";
 
 const SchemaNameSchema = {
   type: "string",

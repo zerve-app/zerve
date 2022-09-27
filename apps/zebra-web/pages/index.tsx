@@ -1,12 +1,3 @@
-import {
-  ExternalLinkButton,
-  Icon,
-  NavBar,
-  NavBarSpacer,
-  NavBarZLogo,
-  PageContainer,
-  useColors,
-} from "@zerve/zen";
 import React from "react";
 import { AuthHeader } from "@zerve/zoo/components/AuthHeader";
 import {
@@ -16,6 +7,11 @@ import {
 import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
 import Image from "next/image";
 import { Text, View } from "react-native";
+import { useColors } from "@zerve/zen/useColors";
+import { PageContainer } from "@zerve/zen/Page";
+import { NavBar, NavBarSpacer, NavBarZLogo } from "@zerve/zen/NavBar";
+import { Icon } from "@zerve/zen/Icon";
+import { ExternalLinkButton } from "@zerve/zen/Links";
 
 function HomeScreen() {
   const colors = useColors();

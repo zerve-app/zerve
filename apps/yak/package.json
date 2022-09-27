@@ -30,6 +30,7 @@
     "cross-env": "^7.0.3",
     "eslint-config-next": "^12.2.2",
     "next-compose-plugins": "^2.2.1",
-    "next-transpile-modules": "^9.0.0"
+    "next-transpile-modules": "^9.0.0",
+    "tsconfig": "*"
   }
 }

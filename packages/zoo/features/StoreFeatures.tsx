@@ -1,6 +1,5 @@
 import { displayStoreFileName } from "@zerve/zed";
-import { Icon } from "@zerve/zen";
-import { ComponentProps, ReactNode } from "react";
+import { ReactNode } from "react";
 import {
   StoreFeatureProps,
   StoreNavigationState,

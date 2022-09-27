@@ -1,5 +1,4 @@
 import { useConnection } from "@zerve/zoo-client/Connection";
-import { Spacer, VStack } from "@zerve/zen";
 import { LogoutButton } from "../components/Auth";
 import {
   UserDashboardContext,
@@ -12,10 +11,11 @@ import { UserSettingsFeature } from "../features/UserSettingsFeature";
 import { UserSettingsProfileFeature } from "../features/UserSettingsProfileFeature";
 import { UserStoresCreateFeature } from "../features/UserStoresCreateFeature";
 import { UserStoresFeature } from "../features/UserStoresFeature";
-import { DashboardPage, FeaturePane } from "./Dashboard";
+import { DashboardPage } from "./Dashboard";
 import { UserHeader } from "./DashboardHeader";
 import { useRouter } from "next/router";
 import { AuthHeader } from "../components/AuthHeader";
+import { Spacer, VStack } from "@zerve/zen/Stack";
 
 export function UserDashboard({ entityId }: { entityId: string }) {
   const conn = useConnection();

@@ -1,7 +1,7 @@
 import { RootStackScreenProps } from "../app/Links";
-import { Paragraph } from "@zerve/zen";
 import ScreenContainer from "@zerve/zen/ScreenContainer";
 import ScreenHeader from "@zerve/zen/ScreenHeader";
+import { Paragraph } from "@zerve/zen/Text";
 
 export default function ErrorScreen({
   navigation,

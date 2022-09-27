@@ -1,8 +1,9 @@
 import React, { ReactNode } from "react";
-import { DemoPageContainer, Title } from "@zerve/zen";
 import { Text, View } from "react-native";
 import { useBanner } from "../zerve/DemoStore";
 import { HumanText } from "@zerve/react-native-content/HumanText";
+import { Title } from "@zerve/zen/Text";
+import { DemoPageContainer } from "@zerve/zen/Page";
 
 function QuestionAnswerRow({
   question,

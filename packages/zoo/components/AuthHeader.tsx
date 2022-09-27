@@ -1,12 +1,12 @@
-import {
-  useConnection,
-  useRequiredConnection,
-} from "@zerve/zoo-client/Connection";
-import { Button, HStack, Link, ThemedText } from "@zerve/zen";
+import { useRequiredConnection } from "@zerve/zoo-client/Connection";
 import { View } from "react-native";
 import { useRouter } from "next/router";
 import { isSeeminglyAnonUser } from "./Auth";
 import { useWebAuthModal } from "../app/AuthWeb";
+import { Link } from "@zerve/zen/Link";
+import { ThemedText } from "@zerve/zen/Themed";
+import { Button } from "@zerve/zen/Button";
+import { HStack } from "@zerve/zen/Stack";
 
 function UserProfileIcon() {
   return (

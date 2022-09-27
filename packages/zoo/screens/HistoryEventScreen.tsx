@@ -1,4 +1,3 @@
-import { ThemedText, VStack } from "@zerve/zen";
 import { HomeStackScreenProps } from "../app/Links";
 import { useHistoryEvent } from "../app/History";
 import { format } from "date-fns";
@@ -8,6 +7,8 @@ import { EmptySchemaStore } from "@zerve/zed";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "@zerve/zen/ScreenContainer";
 import ScreenHeader from "@zerve/zen/ScreenHeader";
+import { VStack } from "@zerve/zen/Stack";
+import { ThemedText } from "@zerve/zen/Themed";
 
 export default function HistoryEventScreen({
   navigation,

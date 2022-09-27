@@ -1,10 +1,12 @@
-import { NavBar, PageContainer, Title } from "@zerve/zen";
 import React from "react";
 import {
   getWebRootServerProps,
   WebPathRootServerProps,
 } from "@zerve/zoo/web/ZooWebServer";
 import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
+import { PageContainer } from "@zerve/zen/Page";
+import { Title } from "@zerve/zen/Text";
+import { NavBar } from "@zerve/zen/NavBar";
 
 function HomeScreen() {
   return (

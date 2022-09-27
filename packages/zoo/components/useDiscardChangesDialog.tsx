@@ -1,5 +1,5 @@
-import { useModal } from "@zerve/zen";
 import { Dialog } from "@zerve/zen/Dialog";
+import { useModal } from "@zerve/zen/Modal";
 
 export function useDiscardChangesDialog(discardChanges: () => void) {
   const openModal = useModal<() => void>(

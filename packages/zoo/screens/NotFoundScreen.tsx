@@ -1,4 +1,4 @@
-import { Paragraph } from "@zerve/zen";
+import { Paragraph } from "@zerve/zen/Text";
 import ScreenContainer from "@zerve/zen/ScreenContainer";
 import ScreenHeader from "@zerve/zen/ScreenHeader";
 

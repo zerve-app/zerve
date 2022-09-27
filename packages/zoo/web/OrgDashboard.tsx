@@ -1,4 +1,4 @@
-import { NavBarSpacer } from "@zerve/zen";
+import { NavBarSpacer } from "@zerve/zen/NavBar";
 import { AuthHeader } from "../components/AuthHeader";
 import {
   OrgDashboardContext,

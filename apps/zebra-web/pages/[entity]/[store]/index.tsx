@@ -13,7 +13,7 @@ import {
 } from "@zerve/zoo/web/ZooWebServer";
 import { GetServerSideProps } from "next";
 import { AuthorizedArea } from "@zerve/zoo/app/AuthorizedArea";
-import { ModalProvider } from "@zerve/zen";
+import { ModalProvider } from "@zerve/zen/Modal";
 
 type PageProps = WebPathRootServerProps & StoreDashboardProps;
 

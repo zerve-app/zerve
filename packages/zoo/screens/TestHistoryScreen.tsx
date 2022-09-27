@@ -1,13 +1,11 @@
-import {
-  Button,
-  DisclosureSection,
-  Label,
-  ThemedText,
-  VStack,
-} from "@zerve/zen";
 import { reportHistoryEvent, useHistory } from "../app/History";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "@zerve/zen/ScreenContainer";
+import { ThemedText } from "@zerve/zen/Themed";
+import { DisclosureSection } from "@zerve/zen/Disclosure";
+import { VStack } from "@zerve/zen/Stack";
+import { Button } from "@zerve/zen/Button";
+import { Label } from "@zerve/zen/Label";
 
 function HistoryList() {
   const a = useHistory(10);

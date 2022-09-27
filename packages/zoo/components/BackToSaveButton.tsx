@@ -1,4 +1,4 @@
-import { Button } from "@zerve/zen";
+import { Button } from "@zerve/zen/Button";
 
 export function BackToSaveButton({ onPress }: { onPress: () => void }) {
   return (

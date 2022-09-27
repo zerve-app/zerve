@@ -10,12 +10,12 @@ import {
   getFeatureTitle,
   renderFeature,
 } from "../features/StoreFeatures";
-import { ModalProvider } from "@zerve/zen";
 import {
   CompositeNavigationProp,
   useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { ModalProvider } from "@zerve/zen/Modal";
 
 type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeStackParamList, "StoreFeature">,

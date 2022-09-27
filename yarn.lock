@@ -18843,7 +18843,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"promise@npm:^8.0.3":
+"promise@npm:^8.0.3, promise@npm:^8.2.0":
   version: 8.2.0
   resolution: "promise@npm:8.2.0"
   dependencies:
@@ -19706,6 +19706,51 @@ __metadata:
   bin:
     react-native: cli.js
   checksum: 4f7cfcd0d614cc6fe897a49197bd036210625c5eb547342ac7ebea45ab5febae73d6a9a7438f08f454d1e02c2e041b3f910461c4a6e5c6e0e44f5cfe70405990
+  languageName: node
+  linkType: hard
+
+"react-native@npm:0.69.6":
+  version: 0.69.6
+  resolution: "react-native@npm:0.69.6"
+  dependencies:
+    "@jest/create-cache-key-function": ^27.0.1
+    "@react-native-community/cli": ^8.0.4
+    "@react-native-community/cli-platform-android": ^8.0.4
+    "@react-native-community/cli-platform-ios": ^8.0.4
+    "@react-native/assets": 1.0.0
+    "@react-native/normalize-color": 2.0.0
+    "@react-native/polyfills": 2.0.0
+    abort-controller: ^3.0.0
+    anser: ^1.4.9
+    base64-js: ^1.1.2
+    event-target-shim: ^5.0.1
+    hermes-engine: ~0.11.0
+    invariant: ^2.2.4
+    jsc-android: ^250230.2.1
+    memoize-one: ^5.0.0
+    metro-react-native-babel-transformer: 0.70.3
+    metro-runtime: 0.70.3
+    metro-source-map: 0.70.3
+    mkdirp: ^0.5.1
+    nullthrows: ^1.1.1
+    pretty-format: ^26.5.2
+    promise: ^8.2.0
+    react-devtools-core: 4.24.0
+    react-native-codegen: ^0.69.2
+    react-native-gradle-plugin: ^0.0.7
+    react-refresh: ^0.4.0
+    react-shallow-renderer: 16.15.0
+    regenerator-runtime: ^0.13.2
+    scheduler: ^0.21.0
+    stacktrace-parser: ^0.1.3
+    use-sync-external-store: ^1.0.0
+    whatwg-fetch: ^3.0.0
+    ws: ^6.1.4
+  peerDependencies:
+    react: 18.0.0
+  bin:
+    react-native: cli.js
+  checksum: d050b9f0389362368cd1286c02dd46cd84def9fcbf4774dcedd5cbc3aa9ad594de48f22c5458ec257c07646d79722256bc837b25205c3a52752d5c5b6a7873f4
   languageName: node
   linkType: hard
 
@@ -24244,6 +24289,7 @@ __metadata:
     react-native: 0.69.5
     react-native-safe-area-context: ^4.3.3
     react-native-web: ~0.18.7
+    tsconfig: "*"
   languageName: unknown
   linkType: soft
 
@@ -24456,7 +24502,7 @@ __metadata:
     moti: ^0.18.0
     react: 18.0.0
     react-dom: 18.2.0
-    react-native: 0.69.5
+    react-native: 0.69.6
     react-native-draggable-flatlist: 4.0.0-beta.12
     react-native-gesture-handler: ~2.6.0
     react-native-keyboard-aware-scroll-view: ^0.9.5

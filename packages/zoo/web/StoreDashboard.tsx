@@ -6,7 +6,6 @@ import {
 import { DashboardPage } from "./Dashboard";
 import { OrgHeader, ProjectHeader, UserHeader } from "./DashboardHeader";
 import { useRouter } from "next/router";
-import { NavBarSpacer, NavigateInterceptContext } from "@zerve/zen";
 import { AuthHeader } from "../components/AuthHeader";
 import {
   allowedToNavigateToFeatureWithDirty,
@@ -18,6 +17,8 @@ import {
 } from "../features/StoreFeatures";
 import { useDiscardChangesDialog } from "../components/useDiscardChangesDialog";
 import { UnsavedContext, useUnsaved } from "../app/Unsaved";
+import { NavigateInterceptContext } from "@zerve/zen/Link";
+import { NavBarSpacer } from "@zerve/zen/NavBar";
 
 export type StoreDashboardProps = {
   href: string;

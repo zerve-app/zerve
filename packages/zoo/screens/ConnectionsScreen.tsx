@@ -1,5 +1,4 @@
 import { ComponentFactory, ReactNode, useMemo } from "react";
-import { Button, Icon, LinkRow, Padding, useColors } from "@zerve/zen";
 import { RootStackParamList, SettingsStackParamList } from "../app/Links";
 import {
   CompositeNavigationProp,
@@ -19,6 +18,10 @@ import { Connection } from "@zerve/zoo-client/Connection";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { insetsPadding } from "@zerve/zen/InsetUtils";
 import ScreenHeader from "@zerve/zen/ScreenHeader";
+import { useColors } from "@zerve/zen/useColors";
+import { LinkRow } from "@zerve/zen/Row";
+import { Padding } from "@zerve/zen/Stack";
+import { Button } from "@zerve/zen/Button";
 
 function ConnectionsScreenHeader() {
   return <ScreenHeader title="Connections" />;

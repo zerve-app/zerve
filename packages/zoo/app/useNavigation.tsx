@@ -2,15 +2,10 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { useConnection } from "@zerve/zoo-client/Connection";
 import { WEB_PRIMARY_CONN } from "./ConnectionStorage";
-import { Title, useModal } from "@zerve/zen";
-import { JSONSchemaEditor } from "@zerve/zen";
-import { EmptySchemaStore, SchemaStore } from "@zerve/zed";
-import { useFragmentNavigate } from "../web/Fragment";
-import {
-  StoreDashboardContext,
-  StoreNavigationState,
-} from "../context/StoreDashboardContext";
+import { SchemaStore } from "@zerve/zed";
 import { useWebAuthModal } from "./AuthWeb";
+import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
+import { Title } from "@zerve/zen/Text";
 
 function JSONInputModal({
   title,

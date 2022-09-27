@@ -5,18 +5,15 @@ import {
 } from "@zerve/zoo-client/Connection";
 import { postZAction } from "@zerve/zoo-client/ServerCalls";
 import { EmailSchema, EmptySchemaStore, ZSchema } from "@zerve/zed";
-import {
-  AsyncButton,
-  Button,
-  Icon,
-  JSONSchemaEditorContext,
-  JSONSchemaForm,
-  PageSection,
-  showToast,
-  VStack,
-} from "@zerve/zen";
 import { useState } from "react";
 import { forceLocalLogout, logout, setSession } from "../app/ConnectionStorage";
+import { PageSection } from "@zerve/zen/Page";
+import { VStack } from "@zerve/zen/Stack";
+import { JSONSchemaForm } from "@zerve/zen/JSONSchemaForm";
+import { showToast } from "@zerve/zen/Toast";
+import { AsyncButton, Button } from "@zerve/zen/Button";
+import { JSONSchemaEditorContext } from "@zerve/zen/JSONSchemaEditorUtilities";
+import { Icon } from "@zerve/zen/Icon";
 
 const LoginStrategies = [
   // {

@@ -15,7 +15,10 @@
     "preserveWatchOutput": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "paths": {
+      "@zerve/zen/*": ["../../packages/zen/*"]
+    }
   },
   "exclude": ["node_modules"]
 }

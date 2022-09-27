@@ -1,8 +1,9 @@
-import { Icon, Link } from "@zerve/zen";
 import { ComponentProps } from "react";
 import { Text, View } from "react-native";
 
 import Svg, { SvgProps, Path } from "react-native-svg";
+import { Icon } from "@zerve/zen/Icon";
+import { Link } from "@zerve/zen/Link";
 import { getUserDisplayName } from "../components/Auth";
 
 function DashboardHeaderItem({

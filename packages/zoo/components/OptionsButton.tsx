@@ -1,6 +1,5 @@
-import React from "react";
-
-import { Icon, IconButton } from "@zerve/zen";
+import { IconButton } from "@zerve/zen/Button";
+import { Icon } from "@zerve/zen/Icon";
 
 export function OptionsButton({ onOptions }: { onOptions: () => void }) {
   return (

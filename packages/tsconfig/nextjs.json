@@ -14,7 +14,10 @@
     "esModuleInterop": true,
     "module": "esnext",
     "isolatedModules": true,
-    "jsx": "react"
+    "jsx": "react",
+    "paths": {
+      "@zerve/zen/*": ["../../packages/zen/*"]
+    }
   },
   "include": ["src", "next-env.d.ts"],
   "exclude": ["node_modules"]

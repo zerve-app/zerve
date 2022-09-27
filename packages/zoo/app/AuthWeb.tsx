@@ -1,5 +1,5 @@
+import { useModal } from "@zerve/zen/Modal";
 import { LoginForm } from "../components/Auth";
-import { useModal } from "@zerve/zen";
 
 export function useWebAuthModal(onAuthenticated?: (userId: string) => void) {
   const openLogin = useModal<{ connection: string; path: string[] }>(

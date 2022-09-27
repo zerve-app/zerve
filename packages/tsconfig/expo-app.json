@@ -20,12 +20,9 @@
     "noImplicitThis": true,
     "noImplicitReturns": true,
     "resolveJsonModule": true,
-
     "paths": {
       "@zerve/zen/*": ["../../packages/zen/*"]
     }
   },
-  "include": [
-    "../../packages/**/*.tsx"
-  ]
+  "include": ["../../packages/**/*.tsx"]
 }

@@ -1,9 +1,3 @@
-import {
-  bigShadow,
-  ToastPresenter,
-  useColors,
-  useColorScheme,
-} from "@zerve/zen";
 import { ReactNode, useEffect, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { Platform, View } from "react-native";
@@ -11,6 +5,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { MotiView } from "moti";
 import { AnimatePresence } from "moti";
+import { useColors } from "./useColors";
+import { useColorScheme } from "./useColorScheme";
+import { ToastPresenter } from "./Toast";
+import { bigShadow } from "./Style";
 
 function ScrollWithFooter({
   children,

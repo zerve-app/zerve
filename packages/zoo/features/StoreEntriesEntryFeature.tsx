@@ -4,19 +4,6 @@ import {
   isEmptySchema,
   prepareStoreFileName,
 } from "@zerve/zed";
-import {
-  getValueExport,
-  HumanTextInput,
-  JSONSchemaEditor,
-  JSONSchemaEditorContext,
-  Label,
-  showToast,
-  Title,
-  useAsyncHandler,
-  useTextInputFormModal,
-  VSpaced,
-  VStack,
-} from "@zerve/zen";
 import { memo, useContext, useMemo } from "react";
 import {
   useDeleteEntry,
@@ -39,6 +26,17 @@ import { NotFoundSymbol } from "@zerve/zoo-client/Connection";
 import { ErrorRow } from "../components/Error";
 import { EmptyContentRow } from "../components/Empty";
 import { FeaturePane } from "@zerve/zen/FeaturePane";
+import { VStack } from "@zerve/zen/Stack";
+import { Label } from "@zerve/zen/Label";
+import { HumanTextInput } from "@zerve/zen/HumanTextInput";
+import {
+  getValueExport,
+  JSONSchemaEditorContext,
+} from "@zerve/zen/JSONSchemaEditorUtilities";
+import { showToast } from "@zerve/zen/Toast";
+import { useTextInputFormModal } from "@zerve/zen/TextInputFormModal";
+import { useAsyncHandler } from "@zerve/zen/useAsyncHandler";
+import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 
 function EmptyEntryContent({
   entryName,

@@ -1,9 +1,3 @@
-import {
-  JSONSchemaEditor,
-  JSONSchemaEditorContext,
-  useAsyncHandler,
-  VStack,
-} from "@zerve/zen";
 import { memo, useContext, useMemo } from "react";
 import { useSaveEntrySchema } from "@zerve/zoo-client/Mutation";
 import {
@@ -19,6 +13,10 @@ import { BackToSaveButton } from "../components/BackToSaveButton";
 import { useStoreEntrySchema } from "../app/StoreClient";
 import { ErrorRow } from "../components/Error";
 import { FeaturePane } from "@zerve/zen/FeaturePane";
+import { JSONSchemaEditorContext } from "@zerve/zen/JSONSchemaEditorUtilities";
+import { useAsyncHandler } from "@zerve/zen/useAsyncHandler";
+import { VStack } from "@zerve/zen/Stack";
+import { JSONSchemaEditor } from "@zerve/zen/JSONSchemaEditor";
 
 function StoreEntriesSchema({
   storePath,

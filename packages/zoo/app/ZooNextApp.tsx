@@ -1,8 +1,10 @@
 import Head from "next/head";
 import "raf/polyfill";
 import { AppProps } from "next/app";
-import { ModalProvider, ToastPresenter, useColors } from "@zerve/zen";
-import { SafeAreaContextProvider } from "@zerve/zen";
+import { useColors } from "@zerve/zen/useColors";
+import { SafeAreaContextProvider } from "@zerve/zen/SafeAreaContextProvider";
+import { ModalProvider } from "@zerve/zen/Modal";
+import { ToastPresenter } from "@zerve/zen/Toast";
 
 // FIXME need reanimated update, see https://github.com/software-mansion/react-native-reanimated/issues/3355
 // @ts-ignore

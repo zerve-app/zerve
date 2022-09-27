@@ -1,12 +1,3 @@
-import {
-  Button,
-  HStack,
-  Label,
-  SwitchInput,
-  Title,
-  useModal,
-  VStack,
-} from "@zerve/zen";
 import { Dialog } from "@zerve/zen/Dialog";
 import { memo } from "react";
 import { StoreFeatureProps } from "../context/StoreDashboardContext";
@@ -20,6 +11,12 @@ import {
 } from "@zerve/zed";
 import { useZNodeValue } from "@zerve/zoo-client/Query";
 import { FeaturePane } from "@zerve/zen/FeaturePane";
+import { HStack, VStack } from "@zerve/zen/Stack";
+import { Label } from "@zerve/zen/Label";
+import { SwitchInput } from "@zerve/zen/Input";
+import { Title } from "@zerve/zen/Text";
+import { Button } from "@zerve/zen/Button";
+import { useModal } from "@zerve/zen/Modal";
 
 function RenameStoreDialog({
   onClose,

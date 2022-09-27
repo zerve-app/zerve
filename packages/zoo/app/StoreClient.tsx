@@ -1,11 +1,9 @@
 import {
   displayStoreFileName,
   expandSchema,
-  NotFoundError,
   ZSchema,
   ZSchemaSchema,
 } from "@zerve/zed";
-import { getValueImport, JSONSchemaEditorContext } from "@zerve/zen";
 import {
   NotFoundSymbol,
   UnauthorizedSymbol,
@@ -19,6 +17,10 @@ import {
 } from "@zerve/zoo-client/Query";
 import { getZ } from "@zerve/zoo-client/ServerCalls";
 import { useContext, useMemo } from "react";
+import {
+  getValueImport,
+  JSONSchemaEditorContext,
+} from "@zerve/zen/JSONSchemaEditorUtilities";
 
 export function schemaStoreToSchema(
   schemaStore: Record<string, ZSchema>,

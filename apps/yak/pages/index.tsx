@@ -1,21 +1,15 @@
 import { GetStaticProps } from "next";
 import React, { ReactNode } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import {
-  PageContainer,
-  NavBar,
-  NavBarSpacer,
-  NavBarZLogo,
-  ThemedText,
-  ExternalLinkButton,
-  Link,
-  Icon,
-  LinkButton,
-  HStack,
-  useColors,
-} from "@zerve/zen";
 import { LinearGradient } from "expo-linear-gradient";
 import Image from "next/image";
+import { useColors } from "@zerve/zen/useColors";
+import { Link } from "@zerve/zen/Link";
+import { NavBar, NavBarSpacer, NavBarZLogo } from "@zerve/zen/NavBar";
+import { HStack } from "@zerve/zen/Stack";
+import { PageContainer } from "@zerve/zen/Page";
+import { LinkButton } from "@zerve/zen/Links";
+import { Icon } from "@zerve/zen/Icon";
 
 function FooterLink({
   title,

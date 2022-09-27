@@ -1,4 +1,3 @@
-import { Card, ThemedText } from "@zerve/zen";
 import { useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import { useHistory } from "../app/History";
@@ -9,6 +8,8 @@ import { insetsPadding } from "@zerve/zen/InsetUtils";
 import { useNavigation } from "@react-navigation/native";
 import ScreenContainer from "@zerve/zen/ScreenContainer";
 import ScreenHeader from "@zerve/zen/ScreenHeader";
+import { Card } from "@zerve/zen/Card";
+import { ThemedText } from "@zerve/zen/Themed";
 
 function HistoryScreenHeader() {
   const { goBack } = useNavigation();

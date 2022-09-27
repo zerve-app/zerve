@@ -1,11 +1,3 @@
-import {
-  AsyncButton,
-  Button,
-  Icon,
-  PageSection,
-  Paragraph,
-  VStack,
-} from "@zerve/zen";
 import { SettingsStackScreenProps } from "../app/Links";
 import {
   destroyConnection,
@@ -16,6 +8,10 @@ import { InfoRow } from "@zerve/zen/Row";
 import NotFoundScreen from "./NotFoundScreen";
 import ScreenContainer from "@zerve/zen/ScreenContainer";
 import ScreenHeader from "@zerve/zen/ScreenHeader";
+import { VStack } from "@zerve/zen/Stack";
+import { PageSection } from "@zerve/zen/Page";
+import { AsyncButton, Button } from "@zerve/zen/Button";
+import { Paragraph } from "@zerve/zen/Text";
 
 export default function ConnectionInfoScreen({
   navigation,
@@ -51,7 +47,6 @@ export default function ConnectionInfoScreen({
             Delete connection to this server. This is dangerous, but you can
             re-add it later.
           </Paragraph>
-
           <Button
             onPress={() => {
               destroyConnection(route.params.connection);

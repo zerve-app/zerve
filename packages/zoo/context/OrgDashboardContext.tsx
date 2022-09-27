@@ -1,5 +1,5 @@
-import { Icon } from "@zerve/zen";
 import { ComponentProps, createContext } from "react";
+import { Icon } from "@zerve/zen/Icon";
 import { NavFeatureLink } from "../web/Dashboard";
 import { FragmentContext } from "../web/Fragment";
 

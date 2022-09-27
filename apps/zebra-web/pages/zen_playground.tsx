@@ -1,4 +1,3 @@
-import { NavBarSpacer, PageContainer } from "@zerve/zen";
 import React, { createContext } from "react";
 import { AuthHeader } from "@zerve/zoo/components/AuthHeader";
 import {
@@ -9,6 +8,8 @@ import { DashboardPage } from "@zerve/zoo/web/Dashboard";
 import { FragmentContext } from "@zerve/zoo/web/Fragment";
 import { WebPageProvider } from "@zerve/zoo/web/WebPageProvider";
 import { PlaygroundFeatures } from "@zerve/zen-playground/PlaygroundFeatures";
+import { PageContainer } from "@zerve/zen/Page";
+import { NavBarSpacer } from "@zerve/zen/NavBar";
 
 type PlaygroundState = "home" | "toast" | "button" | "spinner";
 
