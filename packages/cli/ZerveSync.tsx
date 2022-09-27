@@ -161,7 +161,7 @@ ${indent(
       function serializeTypedef(schema: ZSchema, name: string): string {
         return `${serializeSchemaHint(
           schema,
-        )}type ${name} = ${serializeSchemaType(schema)};`;
+        )}export type ${name} = ${serializeSchemaType(schema)};`;
       }
 
       const storeSchemas = Object.fromEntries(
