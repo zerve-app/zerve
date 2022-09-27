@@ -217,7 +217,7 @@ export const RefSchemaSchema = {
     $ref: "Schema",
     ...SchemaMetaTitles,
   },
-  required: ["$ref"],
+  required: ["$ref", "title"],
   additionalProperties: false,
 } as const;
 export type ZRefSchema = FromSchema<typeof RefSchemaSchema>;
@@ -317,6 +317,7 @@ export const ZSchemaSchema = {
     BooleanSchemaSchema,
     // IntegerSchemaSchema,
     NumberSchemaSchema,
+    RefSchemaSchema,
     // ConstSchemaSchema, // disabled for now because the union dropdown broken when selecting object type
   ],
 } as const;

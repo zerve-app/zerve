@@ -38,7 +38,7 @@
   },
   "zerve": {
     "dynamicSync": {
-      "DemoStore": "https://alpha.zerve.app/.z/store/ev/zerve"
+      "DemoStore": "http://localhost:4888/.z/store/evv/test"
     }
   }
 }

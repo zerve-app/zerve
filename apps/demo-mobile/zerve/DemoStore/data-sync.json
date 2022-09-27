@@ -1,3 +1,28 @@
 {
-  "Banner": "Alpha Banner"
+  "MyText": "",
+  "MySwitch": false,
+  "MyNumber": 0,
+  "MyTextList": [],
+  "MyLimitedObj": {
+    "num": 0,
+    "bool": false
+  },
+  "MyEmpty": null,
+  "MyObjWithAddtlBools": {},
+  "MyRefEntry": 0,
+  "ThisIsHuman": [
+    {
+      "text": "a ",
+      "$key": "m8wenh"
+    },
+    {
+      "text": "b c",
+      "bold": true,
+      "$key": "k4rp6j"
+    },
+    {
+      "text": " de",
+      "$key": "qf3se2"
+    }
+  ]
 }

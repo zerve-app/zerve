@@ -1,9 +1,140 @@
 {
-  "schemas": {},
+  "schemas": {
+    "ANumberSchema": {
+      "type": "number",
+      "$id": "https://type.zerve.link/ANumberSchema"
+    },
+    "SlugText": {
+      "type": "null",
+      "$id": "https://type.zerve.link/SlugText"
+    },
+    "ObjSch": {
+      "type": "object",
+      "properties": {
+        "A": {
+          "type": "null"
+        },
+        "B": {
+          "type": "null"
+        },
+        "$key": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "$key"
+      ],
+      "$id": "https://type.zerve.link/ObjSch"
+    },
+    "HumanText": {
+      "$id": "https://type.zerve.link/HumanText",
+      "title": "HumanText",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "$key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "bold": {
+            "type": "boolean"
+          },
+          "italic": {
+            "type": "boolean"
+          },
+          "strike": {
+            "type": "boolean"
+          },
+          "underline": {
+            "type": "boolean"
+          },
+          "code": {
+            "type": "boolean"
+          },
+          "linkHref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "$key"
+        ]
+      },
+      "readOnly": true
+    }
+  },
   "files": {
-    "Banner": {
-      "title": "Text",
-      "type": "string"
+    "MyText": {
+      "type": "string",
+      "title": "Text"
+    },
+    "MySwitch": {
+      "type": "boolean"
+    },
+    "MyNumber": {
+      "type": "number"
+    },
+    "MyTextList": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "title": "Text"
+      }
+    },
+    "MyLimitedObj": {
+      "type": "object",
+      "properties": {
+        "num": {
+          "type": "number",
+          "title": "NumberTitle",
+          "description": "NumberDescription"
+        },
+        "bool": {
+          "type": "boolean"
+        },
+        "text": {
+          "type": "string",
+          "title": "Text"
+        },
+        "empty": {
+          "type": "null"
+        }
+      },
+      "additionalProperties": false,
+      "title": "HasATitle",
+      "description": "HasADescription",
+      "propertyTitles": {},
+      "required": [
+        "num",
+        "bool"
+      ]
+    },
+    "MyEmpty": {
+      "type": "null"
+    },
+    "MyObjWithAddtlBools": {
+      "type": "object",
+      "properties": {
+        "aNumber": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "MyRefEntry": {
+      "title": "ANumberSchema",
+      "$ref": "https://type.zerve.link/ANumberSchema"
+    },
+    "ThisIsHuman": {
+      "title": "HumanText",
+      "$ref": "https://type.zerve.link/HumanText"
     }
   }
 }

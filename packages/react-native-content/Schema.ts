@@ -25,7 +25,7 @@ export const HumanTextSchema = {
       code: BooleanSchema,
       linkHref: StringSchema,
     },
-    required: ["text"],
+    required: ["text", "$key"],
   },
 } as const;
 

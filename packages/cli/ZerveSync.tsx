@@ -9,7 +9,7 @@ import {
 } from "fs-extra";
 import { join } from "path";
 import fetch from "node-fetch";
-import { compile, JSONSchema } from "json-schema-to-typescript";
+import { ZSchema } from "@zerve/zed";
 
 const projectPath = process.cwd();
 const packagePath = join(projectPath, "package.json");
@@ -50,30 +50,19 @@ if (!existsSync(join(projectPath, Z_GENERATED_CONST))) {
 
 let hasChangedAny = false;
 
-function stripSchemaTitles(schema?: JSONSchema): undefined | JSONSchema {
-  if (!schema) return schema;
-  if (typeof schema !== "object") return schema;
-  if (schema.type === "object") {
-    return {
-      ...schema,
-      additionalProperties: stripSchemaTitles(schema.additionalProperties),
-      properties: Object.fromEntries(
-        Object.entries(schema.properties).map(([key, childSchema]) => [
-          key,
-          stripSchemaTitles(childSchema),
-        ]),
-      ),
-      title: undefined,
-    };
-  }
-  if (schema.type === "array") {
-    return {
-      ...schema,
-      items: stripSchemaTitles(schema.items),
-      title: undefined,
-    };
-  }
-  return { ...schema, title: undefined };
+const NEWLINE = `
+`;
+
+function indent(input: string): string {
+  return "  " + input.split(NEWLINE).join(`${NEWLINE}  `);
+}
+
+function jsComment(input: string): string {
+  return (
+    `/**${NEWLINE} * ` +
+    input.split(NEWLINE).join(`${NEWLINE} * `) +
+    `${NEWLINE} */`
+  );
 }
 
 function writeFileIfNeeded(
@@ -107,7 +96,6 @@ Promise.all(
         hasChangedAny = true;
       }
       const zStoreFullData = await res.json();
-      // console.log("zStoreFullData: ", zStoreFullData);
       const { $schemas: zStoreSchemas, ...zStoreData } = zStoreFullData;
       const zEntryValues = Object.fromEntries(
         Object.entries(zStoreData).map(([entryName, file]) => [
@@ -121,89 +109,72 @@ Promise.all(
           file.schema,
         ]),
       );
-      const refStoreSchemas = Object.fromEntries(
-        Object.entries(zStoreSchemas).map(([schemaName, schema]) => [
-          schema["$id"],
+
+      function serializeSchemaHint(schema: ZSchema): string {
+        if (schema.title && schema.description) {
+          return `${jsComment(
+            `${schema.title}${NEWLINE}${NEWLINE}${schema.description}`,
+          )}${NEWLINE}`;
+        }
+        if (schema.title && !schema.description) {
+          return `${jsComment(schema.title)}${NEWLINE}`;
+        }
+        if (schema.description) {
+          return `${jsComment(schema.description)}${NEWLINE}`;
+        }
+        return "";
+      }
+
+      function serializeSchemaType(schema: ZSchema): string {
+        if (schema.type === "null") return `null`;
+        if (schema.type === "string") return `string`;
+        if (schema.type === "boolean") return `boolean`;
+        if (schema.type === "number") return `number`;
+        if (schema.type === "array")
+          return `${serializeSchemaType(schema.items)}[]`;
+        if (schema.type === "object") {
+          const required = new Set(schema.required);
+          const propertiesType = `{
+${indent(
+  Object.entries(schema.properties)
+    .map(([propertyName, propertySchema]) => {
+      const isRequired = required.has(propertyName);
+      return `${serializeSchemaHint(propertySchema)}${propertyName}${
+        isRequired ? "" : "?"
+      }: ${serializeSchemaType(propertySchema)};`;
+    })
+    .join(NEWLINE),
+)}
+}`;
+          if (schema.additionalProperties) {
+            return `${propertiesType} & {
+  [key: string]: ${serializeSchemaType(schema.additionalProperties)}
+}`;
+          } else return propertiesType;
+        }
+        if (schema.$ref) {
+          return schema.title;
+        }
+        return "never";
+      }
+
+      function serializeTypedef(schema: ZSchema, name: string): string {
+        return `${serializeSchemaHint(
           schema,
-        ]),
-      );
+        )}type ${name} = ${serializeSchemaType(schema)};`;
+      }
 
-      const schemaSchemas = Object.fromEntries(
-        await Promise.all(
-          Object.entries(zStoreSchemas).map(async ([schemaName, schema]) => {
-            const strippedSchema = stripSchemaTitles(schema);
-            const compiledSchema = await compile(
-              { ...strippedSchema, $id: schemaName },
-              schemaName,
-              {
-                bannerComment: "",
-                declareExternallyReferenced: false,
-                $refOptions: {
-                  resolve: {
-                    http: {
-                      read({ url, extension }, callback?) {
-                        callback?.(null, JSON.stringify(refStoreSchemas[url]));
-                      },
-                    },
-                    external: true,
-                  },
-                },
-              },
-            );
-            return [schemaName, compiledSchema];
-          }),
-        ),
+      const storeSchemas = Object.fromEntries(
+        Object.entries(zStoreSchemas).map(([schemaName, storeSchema]) => {
+          const serialized = serializeTypedef(storeSchema, schemaName);
+          return [schemaName, { serialized }];
+        }),
       );
-
       const entrySchemas = Object.fromEntries(
-        await Promise.all(
-          Object.entries(zEntrySchemas).map(async ([entryName, fileSchema]) => {
-            const interfaceName = `${capitalize(entryName)}FileSchema`;
-            if (fileSchema.$ref) {
-              const parsedRef = String(fileSchema.$ref).match(
-                /^(https?):\/\/([^\/]+)\/(.+)$/,
-              );
-              if (!parsedRef) {
-                throw new Error(
-                  `Could not parse $ref type of "${entryName}" (${fileSchema.$ref})`,
-                );
-              }
-              const typeName = parsedRef[3];
-              return [
-                entryName,
-                {
-                  label: typeName,
-                  value: `export type ${interfaceName} = ${typeName};`,
-                },
-              ];
-            }
-            const interfaceValue = await compile(
-              { ...fileSchema, title: interfaceName },
-              interfaceName,
-              {
-                bannerComment: "",
-                declareExternallyReferenced: false,
-                $refOptions: {
-                  resolve: {
-                    http: {
-                      read({ url, extension }, callback?) {
-                        callback?.(null, JSON.stringify(refStoreSchemas[url]));
-                      },
-                    },
-                    external: true,
-                  },
-                },
-              },
-            );
-            return [
-              entryName,
-              {
-                label: interfaceName,
-                value: interfaceValue,
-              },
-            ];
-          }),
-        ),
+        Object.entries(zEntrySchemas).map(([entryName, entrySchema]) => {
+          const serialized = serializeTypedef(entrySchema, `${entryName}Entry`);
+          return [entryName, { serialized }];
+        }),
       );
 
       const zClientFileData = `// Do not touch this file. It is generated by Zerve-Sync
@@ -217,10 +188,13 @@ const zStoreProtocol = "${protocol}";
 const zStoreOrigin = "${origin}";
 const zStorePath = "${path}";
 
-${Object.values(schemaSchemas).join("\n")}
+${Object.values(storeSchemas)
+  .map((s) => s.serialized)
+  .join(`${NEWLINE}${NEWLINE}`)}
+
 ${Object.values(entrySchemas)
-  .map((s) => s.value)
-  .join("\n")}
+  .map((s) => s.serialized)
+  .join(`${NEWLINE}${NEWLINE}`)}
 
 export const zClient = createZStoreClient(
   zStoreProtocol,
@@ -236,9 +210,9 @@ ${Object.entries(zEntrySchemas)
     ([entryName, fileSchema]) =>
       `  ${capitalize(entryName)}: zClient.createAccessor<${capitalize(
         entryName,
-      )}FileSchema>("${entryName}"),`,
+      )}Entry>("${entryName}"),`,
   )
-  .join("\n")}
+  .join(`${NEWLINE}`)}
 }
 
 ${Object.entries(zEntrySchemas)
@@ -248,7 +222,7 @@ ${Object.entries(zEntrySchemas)
         entryName,
       )}.use;`,
   )
-  .join("\n")}
+  .join(`${NEWLINE}`)}
 
 `;
       writeFileIfNeeded(

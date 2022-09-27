@@ -5,13 +5,82 @@ import * as zStoreData from './data-sync.json';
 import * as zStoreSchema from './schema-sync.json';
 import { createZStoreClient } from '@zerve/client/StoreClient';
 
-const zStoreProtocol = "https://";
-const zStoreOrigin = "alpha.zerve.app";
-const zStorePath = ".z/store/ev/zerve";
+const zStoreProtocol = "http://";
+const zStoreOrigin = "localhost:4888";
+const zStorePath = ".z/store/evv/test";
 
+type ANumberSchema = number;
 
-export type BannerFileSchema = string;
+type SlugText = null;
 
+type ObjSch = {
+  A?: null;
+  B?: null;
+  $key: string;
+};
+
+/**
+ * HumanText
+ */
+type HumanText = {
+  $key: string;
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  strike?: boolean;
+  underline?: boolean;
+  code?: boolean;
+  linkHref?: string;
+}[];
+
+/**
+ * Text
+ */
+type MyTextEntry = string;
+
+type MySwitchEntry = boolean;
+
+type MyNumberEntry = number;
+
+type MyTextListEntry = string[];
+
+/**
+ * HasATitle
+ * 
+ * HasADescription
+ */
+type MyLimitedObjEntry = {
+  /**
+   * NumberTitle
+   * 
+   * NumberDescription
+   */
+  num: number;
+  bool: boolean;
+  /**
+   * Text
+   */
+  text?: string;
+  empty?: null;
+};
+
+type MyEmptyEntry = null;
+
+type MyObjWithAddtlBoolsEntry = {
+  aNumber?: number;
+} & {
+  [key: string]: boolean
+};
+
+/**
+ * ANumberSchema
+ */
+type MyRefEntryEntry = ANumberSchema;
+
+/**
+ * HumanText
+ */
+type ThisIsHumanEntry = HumanText;
 
 export const zClient = createZStoreClient(
   zStoreProtocol,
@@ -22,8 +91,24 @@ export const zClient = createZStoreClient(
 );
 
 export const zAccessors = {
-  Banner: zClient.createAccessor<BannerFileSchema>("Banner"),
+  MyText: zClient.createAccessor<MyTextEntry>("MyText"),
+  MySwitch: zClient.createAccessor<MySwitchEntry>("MySwitch"),
+  MyNumber: zClient.createAccessor<MyNumberEntry>("MyNumber"),
+  MyTextList: zClient.createAccessor<MyTextListEntry>("MyTextList"),
+  MyLimitedObj: zClient.createAccessor<MyLimitedObjEntry>("MyLimitedObj"),
+  MyEmpty: zClient.createAccessor<MyEmptyEntry>("MyEmpty"),
+  MyObjWithAddtlBools: zClient.createAccessor<MyObjWithAddtlBoolsEntry>("MyObjWithAddtlBools"),
+  MyRefEntry: zClient.createAccessor<MyRefEntryEntry>("MyRefEntry"),
+  ThisIsHuman: zClient.createAccessor<ThisIsHumanEntry>("ThisIsHuman"),
 }
 
-export const useBanner = zAccessors.Banner.use;
+export const useMyText = zAccessors.MyText.use;
+export const useMySwitch = zAccessors.MySwitch.use;
+export const useMyNumber = zAccessors.MyNumber.use;
+export const useMyTextList = zAccessors.MyTextList.use;
+export const useMyLimitedObj = zAccessors.MyLimitedObj.use;
+export const useMyEmpty = zAccessors.MyEmpty.use;
+export const useMyObjWithAddtlBools = zAccessors.MyObjWithAddtlBools.use;
+export const useMyRefEntry = zAccessors.MyRefEntry.use;
+export const useThisIsHuman = zAccessors.ThisIsHuman.use;
 
