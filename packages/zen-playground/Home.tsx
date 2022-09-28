@@ -34,4 +34,4 @@ export const HomePlayground = {
   icon: "home",
   name: "home",
   title: "Home",
-};
+} as const;

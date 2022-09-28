@@ -79,4 +79,4 @@ export const ActionButtonSheetPlayground = {
   icon: "chevron-circle-down",
   name: "action-button-sheet",
   title: "Action Buttons",
-};
+} as const;

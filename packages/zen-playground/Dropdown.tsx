@@ -70,4 +70,4 @@ export const DropdownPlayground = {
   icon: "chevron-down",
   name: "dropdown",
   title: "Dropdown",
-};
+} as const;

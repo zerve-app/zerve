@@ -16,9 +16,7 @@ type PlaygroundState = "home" | "toast" | "button" | "spinner";
 export const PlaygroundContext =
   createContext<null | FragmentContext<PlaygroundState>>(null);
 
-const PlaygroundFeatureNames = Object.values(PlaygroundFeatures).map(
-  (c) => c.name,
-);
+const PlaygroundFeatureNames = PlaygroundFeatures.map((c) => c.name);
 
 function PlaygroundScreen() {
   return (
@@ -33,24 +31,18 @@ function PlaygroundScreen() {
           </>
         }
         renderFeature={({ feature }) => {
-          const playground = Object.values(PlaygroundFeatures).find(
-            (c) => c.name === feature,
-          );
+          const playground = PlaygroundFeatures.find((c) => c.name === feature);
           const Component = playground?.Feature;
           if (Component) return <Component />;
           return null;
         }}
         navigation={PlaygroundFeatureNames}
         getFeatureTitle={(feature) => {
-          const Component = Object.values(PlaygroundFeatures).find(
-            (c) => c.name === feature,
-          );
+          const Component = PlaygroundFeatures.find((c) => c.name === feature);
           return Component?.title || "Playground";
         }}
         getFeatureIcon={(feature) => {
-          const Component = Object.values(PlaygroundFeatures).find(
-            (c) => c.name === feature,
-          );
+          const Component = PlaygroundFeatures.find((c) => c.name === feature);
           return Component?.icon || "leaf";
         }}
         parseFeatureFragment={(f) => f}

@@ -48,7 +48,6 @@ function AppUpdater() {
 export default function SettingsScreen({
   navigation,
 }: SettingsStackScreenProps<"Settings">) {
-  const { navigate } = useNavigation();
   return (
     <ScreenContainer scroll>
       <ScreenHeader title="App Settings" backButtonCancelStyle />
@@ -68,6 +67,13 @@ export default function SettingsScreen({
             icon="shower"
             onPress={() => {
               navigation.navigate("KitchenSink");
+            }}
+          />
+          <LinkRow
+            title="Zen Playground"
+            icon="puzzle-piece"
+            onPress={() => {
+              navigation.navigate("ZenPlayground", { feature: null });
             }}
           />
         </VStack>
@@ -124,7 +130,7 @@ export default function SettingsScreen({
             title="Raw Manifest"
             left={(p) => <MaterialCommunityIcons {...p} name="code-json" />}
             onPress={() => {
-              navigate("RawValue", {
+              navigation.navigate("RawValue", {
                 title: `App Manifest`,
                 value: manifest,
               });

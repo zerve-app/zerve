@@ -8,8 +8,17 @@ import { ModalPlayground } from "./Modal";
 import { ActionButtonSheetPlayground } from "./ActionButtonSheet";
 import { DropdownPlayground } from "./Dropdown";
 import { IconsPlayground } from "./Icons";
+import { ComponentProps, FC } from "react";
+import { Icon } from "@zerve/zen/Icon";
 
-export const PlaygroundFeatures = {
+export type PlaygroundFeature = {
+  title: string;
+  name: string;
+  icon: ComponentProps<typeof Icon>["name"];
+  Feature: FC;
+};
+
+export const PlaygroundFeatures = [
   HomePlayground,
   ButtonPlayground,
   SpinnerPlayground,
@@ -20,4 +29,4 @@ export const PlaygroundFeatures = {
   ActionButtonSheetPlayground,
   DropdownPlayground,
   IconsPlayground,
-};
+] as const;

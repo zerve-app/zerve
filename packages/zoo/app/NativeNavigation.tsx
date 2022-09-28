@@ -38,6 +38,7 @@ import AuthInScreen from "../screens/AuthInScreen";
 import { AppLocation, AppLocationProvider } from "./Location";
 import { UnsavedContext, useUnsaved } from "./Unsaved";
 import { initFocusManager } from "./FocusManager";
+import ZenPlaygroundScreen from "../screens/ZenPlaygroundScreen";
 
 initFocusManager();
 
@@ -118,6 +119,11 @@ function SettingsNavigator() {
       <SettingsStack.Screen
         name="TestUI"
         component={TestUIScreen}
+        options={DefaultScreenOptions}
+      />
+      <SettingsStack.Screen
+        name="ZenPlayground"
+        component={ZenPlaygroundScreen}
         options={DefaultScreenOptions}
       />
       <SettingsStack.Screen

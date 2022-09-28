@@ -83,4 +83,4 @@ export const ButtonPlayground = {
   icon: "hand-o-right",
   title: "Button",
   name: "button",
-};
+} as const;

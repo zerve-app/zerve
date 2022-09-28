@@ -68,4 +68,4 @@ export const InputPlayground = {
   icon: "file-text",
   title: "Input",
   name: "Input",
-};
+} as const;

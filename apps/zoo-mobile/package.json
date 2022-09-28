@@ -21,6 +21,7 @@
     "@react-navigation/stack": "^6.2.3",
     "@zerve/zed": "*",
     "@zerve/zen": "*",
+    "@zerve/zen-playground": "*",
     "@zerve/zoo": "*",
     "@zerve/zoo-client": "*",
     "date-fns": "^2.29.2",

@@ -18,6 +18,7 @@ export function PageSection({
         <ThemedText
           style={{
             flex: 1,
+            fontSize: 16,
             marginHorizontal: 12,
             marginVertical: 4,
             marginTop: 12,

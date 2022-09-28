@@ -1,12 +1,18 @@
 import {
+  CompositeNavigationProp,
+  CompositeScreenProps,
   LinkingOptions,
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 import { GenericError } from "@zerve/zed";
 import { StoreNavigationState } from "../context/StoreDashboardContext";
+import { PlaygroundFeatureName } from "../screens/ZenPlaygroundScreen";
 
 declare global {
   namespace ReactNavigation {
@@ -22,6 +28,7 @@ export type SettingsStackParamList = {
   KitchenSink: undefined;
   TestSort: undefined;
   TestUI: undefined;
+  ZenPlayground: { feature: PlaygroundFeatureName | null };
   TestHistory: undefined;
   TestJSONInput: undefined;
 };
@@ -62,12 +69,25 @@ export type RootStackParamList = {
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
+export type RootStackNavigationProps<Screen extends keyof RootStackParamList> =
+  NativeStackNavigationProp<RootStackParamList, Screen>;
+
 export type HomeStackScreenProps<Screen extends keyof HomeStackParamList> =
   NativeStackScreenProps<HomeStackParamList, Screen>;
 
 export type SettingsStackScreenProps<
   Screen extends keyof SettingsStackParamList,
-> = NativeStackScreenProps<SettingsStackParamList, Screen>;
+> = CompositeScreenProps<
+  NativeStackScreenProps<SettingsStackParamList, Screen>,
+  RootStackScreenProps<"SettingsStack">
+>;
+
+export type SettingsStackNavigationProps<
+  Screen extends keyof SettingsStackParamList,
+> = CompositeNavigationProp<
+  NativeStackNavigationProp<SettingsStackParamList, Screen>,
+  RootStackNavigationProps<"SettingsStack">
+>;
 
 export const navigationLinking: LinkingOptions<RootStackParamList> = {
   prefixes: [Linking.makeUrl("/")],

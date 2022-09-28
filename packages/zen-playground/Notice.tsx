@@ -38,4 +38,4 @@ export const NoticePlayground = {
   icon: "exclamation-triangle",
   name: "notice",
   title: "Notice",
-};
+} as const;

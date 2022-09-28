@@ -70,4 +70,4 @@ export const ModalPlayground = {
   icon: "window-maximize",
   name: "modal",
   title: "Modal",
-};
+} as const;

@@ -78,4 +78,4 @@ export const IconsPlayground = {
   icon: "star",
   name: "icons",
   title: "Icons",
-};
+} as const;

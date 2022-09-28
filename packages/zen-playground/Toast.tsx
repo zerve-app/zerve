@@ -31,4 +31,4 @@ export const ToastPlayground = {
   icon: "bell",
   name: "toast",
   title: "Toast",
-};
+} as const;
