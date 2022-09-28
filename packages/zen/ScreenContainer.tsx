@@ -9,6 +9,7 @@ import { useColors } from "./useColors";
 import { useColorScheme } from "./useColorScheme";
 import { ToastPresenter } from "./Toast";
 import { bigShadow } from "./Style";
+import { NestableScrollContainer } from "react-native-draggable-flatlist";
 
 function ScrollWithFooter({
   children,
@@ -26,7 +27,7 @@ function ScrollWithFooter({
   const scheme = useColorScheme();
   return (
     <>
-      <ScrollView
+      <NestableScrollContainer
         style={{
           flex: 1,
           backgroundColor: colors.backgroundDim,
@@ -52,7 +53,7 @@ function ScrollWithFooter({
         >
           {children}
         </View>
-      </ScrollView>
+      </NestableScrollContainer>
       <BlurView // behind status bar
         tint={scheme}
         style={{

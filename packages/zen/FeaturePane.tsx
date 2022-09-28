@@ -1,5 +1,6 @@
 import { ComponentProps, ReactNode } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import { NestableScrollContainer } from "react-native-draggable-flatlist";
 import { ActionButtonDef } from "./ActionButton";
 import { useActionsSheet } from "./ActionButtonSheet";
 import { Icon } from "./Icon";
@@ -85,13 +86,13 @@ export function FeaturePane({
           <Spinner style={{ position: "absolute", right: 10, bottom: 10 }} />
         )}
       </View>
-      <ScrollView
+      <NestableScrollContainer
         style={{ backgroundColor: colors.backgroundDim, flex: 1 }}
         contentContainerStyle={{}}
         scrollEnabled={true}
       >
         {children}
-      </ScrollView>
+      </NestableScrollContainer>
       {footer}
     </View>
   );

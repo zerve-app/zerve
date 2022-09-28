@@ -12,6 +12,7 @@ import { VStack } from "@zerve/zen/Stack";
 import { PageSection } from "@zerve/zen/Page";
 import { AsyncButton, Button } from "@zerve/zen/Button";
 import { Paragraph } from "@zerve/zen/Text";
+import { Icon } from "@zerve/zen/Icon";
 
 export default function ConnectionInfoScreen({
   navigation,

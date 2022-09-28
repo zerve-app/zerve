@@ -13,6 +13,13 @@ if (process.browser) {
   window._frameTimestamp = null;
 }
 
+if (!global.setImmediate) {
+  // This shameful hack needed for React-Native-Gesture-Handler I think
+  global.setImmediate = (t) => {
+    setTimeout(t, 0);
+  };
+}
+
 export default function ZooNextApp({ Component, pageProps }: AppProps) {
   const colors = useColors();
   return (

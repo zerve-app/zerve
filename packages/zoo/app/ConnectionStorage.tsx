@@ -109,6 +109,10 @@ export function mutateConnections(
   connectionStorage.mutateStorage("Connections", DefaultConnections, mutator);
 }
 
+export function setConnections(connections: Connection[]) {
+  connectionsNode.set(connections);
+}
+
 export function destroyConnection(key: string) {
   mutateConnections((connections) =>
     connections.filter((conn) => conn.key !== key),

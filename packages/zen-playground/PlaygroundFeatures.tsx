@@ -10,6 +10,7 @@ import { DropdownPlayground } from "./Dropdown";
 import { IconsPlayground } from "./Icons";
 import { ComponentProps, FC } from "react";
 import { Icon } from "@zerve/zen/Icon";
+import { OrderableButtonsPlayground } from "./OrderableButtons";
 
 export type PlaygroundFeature = {
   title: string;
@@ -29,4 +30,5 @@ export const PlaygroundFeatures = [
   ActionButtonSheetPlayground,
   DropdownPlayground,
   IconsPlayground,
+  OrderableButtonsPlayground,
 ] as const;
