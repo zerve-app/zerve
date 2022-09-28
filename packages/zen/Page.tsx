@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { View } from "react-native";
 import { ThemedText } from "./Themed";
 import { useColors } from "./useColors";
@@ -18,6 +18,7 @@ export function PageSection({
         <ThemedText
           style={{
             flex: 1,
+            fontSize: 16,
             marginHorizontal: 12,
             marginVertical: 4,
             marginTop: 12,

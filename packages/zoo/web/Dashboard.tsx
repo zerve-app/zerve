@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { View, ScrollView, useWindowDimensions } from "react-native";
+import { View, ScrollView } from "react-native";
 import { FragmentContext, useFragmentNavigationController } from "./Fragment";
 import { FragmentLink } from "./FragmentLink";
 import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
@@ -17,6 +17,7 @@ import { ButtonContent } from "@zerve/zen/Button";
 import { Icon } from "@zerve/zen/Icon";
 import { PageContainer } from "@zerve/zen/Page";
 import { NavBar, NavBarZLogo } from "@zerve/zen/NavBar";
+import { useWindowDimensions } from "@zerve/zen/useWindowDimensions";
 
 export function NavSidebar({
   children,

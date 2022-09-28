@@ -3,7 +3,6 @@ import {
   JSONSchema,
   FromSchema,
   EmptySchemaStore,
-  NullSchema,
   isEmptySchema,
   SchemaStore,
   GenericError,
@@ -12,7 +11,6 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Button } from "./Button";
 import { JSONSchemaEditor } from "./JSONSchemaEditor";
-import { useModal } from "./Modal";
 import { Spinner } from "./Spinner";
 import { HStack, VStack } from "./Stack";
 import { Title } from "./Text";

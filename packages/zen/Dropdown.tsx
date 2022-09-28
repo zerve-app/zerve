@@ -105,7 +105,7 @@ export function DropdownUnmemo({
   id,
   allowUnselect,
 }: {
-  options: DropdownOption[];
+  options: DropdownOption[] | readonly DropdownOption[];
   value: string | null;
   id: string;
   onOptionSelect: (optionValue: string) => void;
@@ -115,7 +115,7 @@ export function DropdownUnmemo({
 }) {
   const selectedOption = options.find((opt) => opt.value === value);
   const { background, text, secondaryText } = useColors();
-  const allOptions: DropdownOption[] =
+  const allOptions: DropdownOption[] | readonly DropdownOption[] =
     selectedOption === undefined || allowUnselect
       ? [{ value: UNSELECTED_ITEM_KEY, title: unselectedLabel }, ...options]
       : options;

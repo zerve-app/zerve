@@ -6057,6 +6057,9 @@ __metadata:
   resolution: "@zerve/zen-playground@workspace:packages/zen-playground"
   dependencies:
     "@zerve/zen": "*"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
   languageName: unknown
   linkType: soft
 

@@ -6,6 +6,10 @@
     "clean": "rimraf node_modules"
   },
   "sideEffects": false,
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "dependencies": {
     "@zerve/zen": "*"
   }

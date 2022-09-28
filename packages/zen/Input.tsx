@@ -101,6 +101,7 @@ export function SwitchInput({
         backgroundColor: tint || undefined,
         borderRadius: Layout.borderRadius,
         padding: Layout.paddingHorizontal,
+        opacity: disabled ? 0.8 : 1,
       }}
     >
       {label != null && <Label>{label}</Label>}
