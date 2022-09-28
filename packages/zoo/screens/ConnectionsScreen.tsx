@@ -22,6 +22,7 @@ import { useColors } from "@zerve/zen/useColors";
 import { LinkRow } from "@zerve/zen/Row";
 import { Padding } from "@zerve/zen/Stack";
 import { Button } from "@zerve/zen/Button";
+import { Icon } from "@zerve/zen/Icon";
 
 function ConnectionsScreenHeader() {
   return <ScreenHeader title="Connections" />;
