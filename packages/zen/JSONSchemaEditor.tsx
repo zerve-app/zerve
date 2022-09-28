@@ -39,6 +39,16 @@ import { Dropdown } from "./Dropdown";
 import { useActionsSheet } from "./ActionButtonSheet";
 import { Input, SwitchInput } from "./Input";
 import { Notice } from "./Notice";
+import {
+  NestableDraggableFlatList,
+  ScaleDecorator,
+  ShadowDecorator,
+} from "react-native-draggable-flatlist";
+import {
+  BaseButton,
+  LongPressGestureHandler,
+} from "react-native-gesture-handler";
+import { showToast } from "./Toast";
 
 function AddButton({
   onPress,
@@ -448,18 +458,17 @@ export function ArrayEditor({
       }}
     />
   ) : null;
-  if (!Array.isArray(value))
+  const colors = useColors();
+  const listData = useMemo(() => {
     return (
-      <>
-        <ThemedText>Value is not an array</ThemedText>
-        <HGroup>{addButton}</HGroup>
-      </>
-    );
-  return (
-    <VStack>
-      {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
-      {value.map((childValue, childValueIndex) => {
+      value?.map?.((childValue, childValueIndex) => {
         const key = getListItemKey(childValue, childValueIndex);
+        const childCompareValue =
+          comparisonValue === undefined
+            ? undefined
+            : comparisonValue?.[childValueIndex] === undefined
+            ? MissingValueSymbol
+            : comparisonValue?.[childValueIndex];
         const actions: ActionButtonDef[] = [];
         if (onValue) {
           actions.push({
@@ -473,39 +482,77 @@ export function ArrayEditor({
             },
           });
         }
-        const childCompareValue =
-          comparisonValue === undefined
-            ? undefined
-            : comparisonValue?.[childValueIndex] === undefined
-            ? MissingValueSymbol
-            : comparisonValue?.[childValueIndex];
-        return (
-          <FormField
-            key={key}
-            id={`${id}_${key}`}
-            label={key}
-            isNavHighlight={key === activeChild}
-            value={childValue}
-            comparisonValue={childCompareValue}
-            valueKey={key}
-            schema={schema.items}
-            schemaStore={schemaStore}
-            actions={actions}
-            onValue={
-              onValue
-                ? (childV) => {
-                    const newValue = [...value];
-                    newValue[childValueIndex] = childV;
-                    onValue(newValue);
-                  }
-                : undefined
-            }
-            onEscape={onEscape}
-          />
-        );
-      })}
+        return {
+          key,
+          value: childValue,
+          childValueIndex,
+          comparisonValue: childCompareValue,
+          actions,
+          schema: schema.items,
+        };
+      }) || []
+    );
+  }, [value, comparisonValue, schema]);
+  if (!Array.isArray(value))
+    return (
+      <>
+        <ThemedText>Value is not an array</ThemedText>
+        <HGroup>{addButton}</HGroup>
+      </>
+    );
+  return (
+    <>
+      {value.length === 0 && <ThemedText>List is empty.</ThemedText>}
+      <NestableDraggableFlatList
+        keyExtractor={(item) => item.key}
+        data={listData}
+        onDragEnd={({ from, to }) => {
+          const newValue = [...value];
+          const [item] = newValue.splice(from, 1);
+          newValue.splice(to, 0, item);
+          onValue(newValue);
+        }}
+        renderItem={({ item, drag }) => {
+          return (
+            <Pressable
+              onLongPress={() => {
+                drag();
+              }}
+            >
+              <View style={{ backgroundColor: colors.backgroundDim }}>
+                <ShadowDecorator>
+                  <ScaleDecorator>
+                    <FormField
+                      key={item.key}
+                      id={`${id}_${item.key}`}
+                      label={item.key}
+                      isNavHighlight={item.key === activeChild}
+                      value={item.value}
+                      comparisonValue={item.comparisonValue}
+                      valueKey={item.key}
+                      schema={schema.items}
+                      schemaStore={schemaStore}
+                      actions={item.actions}
+                      onValue={
+                        onValue
+                          ? (childV) => {
+                              const newValue = [...value];
+                              newValue[item.childValueIndex] = childV;
+                              onValue(newValue);
+                            }
+                          : undefined
+                      }
+                      onEscape={onEscape}
+                    />
+                  </ScaleDecorator>
+                </ShadowDecorator>
+              </View>
+            </Pressable>
+          );
+        }}
+      />
       <HGroup>{!!onValue && addButton}</HGroup>
-    </VStack>
+    </>
   );
 }
 
