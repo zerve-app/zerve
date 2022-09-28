@@ -1,6 +1,4 @@
 import { FeaturePane } from "@zerve/zen/FeaturePane";
-import { PageSection } from "@zerve/zen/Page";
-import { VStack } from "@zerve/zen/Stack";
 import { OrderableButtons } from "@zerve/zen/OrderableButtons";
 import { useState } from "react";
 import { showToast } from "../zen/Toast";
