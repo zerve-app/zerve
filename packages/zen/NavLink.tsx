@@ -46,7 +46,17 @@ export function NavLinkContent({
         alignItems: "center",
       }}
     >
-      {icon && <Icon name={icon} color="#464646" />}
+      {icon && (
+        <View
+          style={{
+            height: 24,
+            width: 24,
+            alignItems: "center",
+          }}
+        >
+          <Icon name={icon} color="#464646" size={24} />
+        </View>
+      )}
       <Text
         style={{
           color: colors.text,
