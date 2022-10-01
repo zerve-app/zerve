@@ -13,6 +13,7 @@ import { PageSection } from "@zerve/zen/Page";
 import { AsyncButton, Button } from "@zerve/zen/Button";
 import { Paragraph } from "@zerve/zen/Text";
 import { Icon } from "@zerve/zen/Icon";
+import { LogoutButton } from "../components/Auth";
 
 export default function ConnectionInfoScreen({
   navigation,
@@ -33,12 +34,7 @@ export default function ConnectionInfoScreen({
         <PageSection title="Session">
           <VStack padded>
             <InfoRow label="Identity" value={session.userLabel} />
-            <AsyncButton
-              title="Log Out"
-              onPress={async () => {
-                await logout(conn, session);
-              }}
-            />
+            <LogoutButton connection={conn} session={session} />
           </VStack>
         </PageSection>
       )}
