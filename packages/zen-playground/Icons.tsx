@@ -6,7 +6,7 @@ import { IconValues } from "./IconValues";
 import { Icon } from "@zerve/zen/Icon";
 import { useColors } from "@zerve/zen/useColors";
 import { Paragraph } from "@zerve/zen/Text";
-import { Link } from "@zerve/zen/Link";
+import { TextLink } from "@zerve/zen/TextLink";
 
 export function IconsPlaygroundFeature() {
   const colors = useColors();
@@ -14,31 +14,29 @@ export function IconsPlaygroundFeature() {
     <FeaturePane title="Icons">
       <Paragraph>
         Zen currently utilizes{" "}
-        <Link inline href="https://fontawesome.com/v4/icons/" external>
+        <TextLink href="https://fontawesome.com/v4/icons/" external>
           FontAwesome 4
-        </Link>
+        </TextLink>
         . Imported through{" "}
-        <Link
-          inline
+        <TextLink
           href="https://www.npmjs.com/package/@expo/vector-icons"
           external
         >
           @expo/vector-icons
-        </Link>{" "}
+        </TextLink>{" "}
         (with special thanks to{" "}
-        <Link
-          inline
+        <TextLink
           href="https://github.com/oblador/react-native-vector-icons"
           external
         >
           react-native-vector-icons
-        </Link>
+        </TextLink>
         ).
       </Paragraph>
       <Paragraph>
-        <Link inline href="https://icons.expo.fyi/" external>
+        <TextLink href="https://icons.expo.fyi/" external>
           Browse all available icons here
-        </Link>
+        </TextLink>
       </Paragraph>
 
       <PageSection title="Size">

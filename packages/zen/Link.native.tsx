@@ -1,14 +1,22 @@
-import React, { ReactNode } from "react";
-import { Pressable } from "react-native";
+import { ReactNode, useCallback } from "react";
+import { Linking, Pressable } from "react-native";
 
 export function Link({
   href,
   children,
-  nativePress,
+  onPress,
 }: {
   href: string;
   children: ReactNode;
-  nativePress: () => void;
+  onPress?: () => void;
 }) {
-  return <Pressable onPress={nativePress}>{children}</Pressable>;
+  const handlePress = useCallback(() => {
+    return (
+      onPress ||
+      (() => {
+        Linking.openURL(href);
+      })
+    );
+  }, [onPress, href]);
+  return <Pressable onPress={handlePress}>{children}</Pressable>;
 }

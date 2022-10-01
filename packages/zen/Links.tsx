@@ -28,14 +28,14 @@ export function ExternalLinkButton({
 
 export function LinkButton({
   href,
-  nativePress,
+  onPress,
   ...buttonContentProps
 }: {
   href: string;
-  nativePress: () => void;
+  onPress: () => void;
 } & ButtonContentProps) {
   return (
-    <Link href={href} nativePress={nativePress}>
+    <Link href={href} onPress={onPress}>
       <ButtonContent textAlign="left" {...buttonContentProps} />
     </Link>
   );

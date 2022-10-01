@@ -5,17 +5,15 @@ export const NavigateInterceptContext = createContext<
   null | ((href: string) => boolean)
 >(null);
 
-export function Link({
+export function TextLink({
   href,
   children,
   external,
-  inline,
   onPress,
 }: {
   href: string;
   children: ReactNode;
   external?: boolean;
-  inline?: boolean;
   onPress?: () => void;
 }) {
   const { push } = useRouter();
@@ -41,7 +39,7 @@ export function Link({
       }}
       style={{
         textDecoration: "none",
-        display: inline ? "inline" : "block",
+        display: "inline",
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import { Link } from "@zerve/zen/Link";
+import { TextLink } from "@zerve/zen/TextLink";
 import { Paragraph } from "@zerve/zen/Text";
 import { FeaturePane } from "@zerve/zen/FeaturePane";
 
@@ -7,19 +7,16 @@ export function HomePlaygroundFeature() {
     <FeaturePane title="Zen UI Playground">
       <Paragraph>
         A playground to see the{" "}
-        <Link inline href="https://docs.zerve.app/docs/internal/zen">
+        <TextLink href="https://docs.zerve.app/docs/internal/zen">
           Zen UI
-        </Link>{" "}
+        </TextLink>{" "}
         in action!
       </Paragraph>
       <Paragraph>
         Browse the{" "}
-        <Link
-          inline
-          href="https://github.com/zerve-app/zerve/blob/main/packages/zen/"
-        >
+        <TextLink href="https://github.com/zerve-app/zerve/blob/main/packages/zen/">
           code on GitHub
-        </Link>{" "}
+        </TextLink>{" "}
         to see the full suite of components that power Zerve.
       </Paragraph>
       <Paragraph>

@@ -669,13 +669,13 @@ export function ZReferenceListNode({
         return (
           <VPadding>
             <LinkButton
-              nativePress={() => {
+              onPress={() => {
                 openZ(item.path);
               }}
               left={item.icon ? (p) => <Icon {...p} name={item.icon} /> : null}
               title={item.name}
               key={item.key}
-              href="uhh"
+              href={`/${item.path.join("/")}`}
             />
           </VPadding>
         );

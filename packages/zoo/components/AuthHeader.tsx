@@ -33,12 +33,7 @@ export function AuthHeader() {
     const { userLabel, userId } = session;
     const url = `/${userId}`;
     return (
-      <Link
-        href={url}
-        nativePress={() => {
-          // not needed because we are on web
-        }}
-      >
+      <Link href={url}>
         <View style={{ flexDirection: "row", marginLeft: 40 }}>
           <ThemedText
             style={{ alignSelf: "center", fontWeight: "bold", fontSize: 16 }}
