@@ -3,7 +3,14 @@ import React, { createContext, useContext, useMemo, useState } from "react";
 import { ReactNode } from "react";
 import { BlurView } from "expo-blur";
 import { AbsoluteFill, bigShadow } from "./Style";
-import { Pressable, View } from "react-native";
+import {
+  Alert,
+  Keyboard,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import Animated, {
   Easing,
   useAnimatedKeyboard,
@@ -11,6 +18,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useColorScheme } from "./useColorScheme";
 import { useColors } from "./useColors";
+import { FullWindowOverlay } from "react-native-screens";
 
 // danger, this stuff is .native only o_O
 type ModalCtx = {
@@ -34,7 +42,15 @@ export function useModal<Options>(
   };
 }
 
-type ModalState = { content: ReactNode };
+function generateKey() {
+  const length = 6;
+  return (Math.random().toString(36) + "00000000000000000").slice(
+    2,
+    length + 2,
+  );
+}
+
+type ModalState = { content: ReactNode; key: string };
 
 export function ModalProvider({ children }: { children: ReactNode }) {
   const [openModals, setOpenModals] = useState<ModalState[]>([]);
@@ -44,29 +60,8 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   }));
   const colorScheme = useColorScheme();
   const colors = useColors();
-  return (
-    <ModalNativeContext.Provider
-      value={useMemo(
-        () => ({
-          openModal: (
-            renderModal: (props: { onClose: () => void }) => ReactNode,
-          ) => {
-            const modalState = {
-              content: renderModal({
-                onClose: () => {
-                  setOpenModals((modals) =>
-                    modals.filter((m) => m !== modalState),
-                  );
-                },
-              }),
-            } as const;
-            setOpenModals((modals) => [...modals, modalState] as ModalState[]);
-          },
-        }),
-        [],
-      )}
-    >
-      {children}
+  let modalPresenter = (
+    <>
       <AnimatePresence>
         {openModals.length ? (
           <MotiView
@@ -86,6 +81,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
                 ...AbsoluteFill,
               }}
               onPress={() => {
+                Keyboard.dismiss();
                 setOpenModals((modals) => modals.slice(0, -1));
               }}
             >
@@ -93,9 +89,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             </Pressable>
           </MotiView>
         ) : null}
+      </AnimatePresence>
+      <AnimatePresence>
         {openModals.map((openModal, index) => (
           <MotiView
-            key={index}
+            key={openModal.key}
             style={{ ...AbsoluteFill, justifyContent: "center" }}
             from={{ opacity: 0, translateY: 100 }}
             animate={{ opacity: 1, translateY: 0 }}
@@ -132,6 +130,44 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           </MotiView>
         ))}
       </AnimatePresence>
+    </>
+  );
+  if (Platform.OS === "ios") {
+    modalPresenter = (
+      <FullWindowOverlay
+        style={StyleSheet.absoluteFill}
+        pointerEvents="box-none"
+      >
+        {modalPresenter}
+      </FullWindowOverlay>
+    );
+  }
+  return (
+    <ModalNativeContext.Provider
+      value={useMemo(
+        () => ({
+          openModal: (
+            renderModal: (props: { onClose: () => void }) => ReactNode,
+          ) => {
+            const modalState = {
+              content: renderModal({
+                onClose: () => {
+                  Keyboard.dismiss();
+                  setOpenModals((modals) =>
+                    modals.filter((m) => m !== modalState),
+                  );
+                },
+              }),
+              key: generateKey(),
+            } as const;
+            setOpenModals((modals) => [...modals, modalState] as ModalState[]);
+          },
+        }),
+        [],
+      )}
+    >
+      {children}
+      {modalPresenter}
     </ModalNativeContext.Provider>
   );
 }

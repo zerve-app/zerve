@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { BackHandler, View } from "react-native";
+import { BackHandler, Platform, StyleSheet, View } from "react-native";
 import BottomSheet, {
   useBottomSheetDynamicSnapPoints,
 } from "@gorhom/bottom-sheet";
@@ -23,6 +23,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useColors } from "./useColors";
 import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
 import { BlurView } from "expo-blur";
+import { FullWindowOverlay } from "react-native-screens";
 
 export type BottomSheetContext = {
   open: <O>(
@@ -101,55 +102,78 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
       layerVisibility.value = withTiming(0, { duration: 250 });
     }
   }, [isOpen]);
+  let sheetContent = null;
+  if (sheetConfig) {
+    sheetContent = (
+      <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+        <BottomSheet
+          style={[bigShadow, { elevation: 12 }]}
+          key={sheetConfig.key}
+          enablePanDownToClose
+          ref={bottomSheetRef}
+          handleComponent={null}
+          handleStyle={{
+            backgroundColor: colors.backgroundDim,
+          }}
+          backgroundStyle={{
+            backgroundColor: "transparent",
+          }}
+          snapPoints={animatedSnapPoints}
+          handleHeight={animatedHandleHeight}
+          contentHeight={animatedContentHeight}
+          index={0}
+          onChange={handleSheetChanges}
+        >
+          <BlurView
+            onLayout={handleContentLayout}
+            style={{
+              // backgroundColor: "orange",
+              ...smallShadow,
+            }}
+          >
+            <SafeAreaView edges={["right", "bottom", "left"]}>
+              {sheetConfig.children}
+            </SafeAreaView>
+          </BlurView>
+        </BottomSheet>
+      </View>
+    );
+  }
+  let fadeOverlay = <Animated.View style={layerStyles} pointerEvents="none" />;
+  let touchOverlay = isOpen ? (
+    <Pressable style={{ ...AbsoluteFill }} onPress={context.close}>
+      <View
+        style={{
+          ...AbsoluteFill,
+          // why do we need a background color here? good question! if not for this bg color, android allows touches through to the underlying content O_o
+          backgroundColor: "#ffffff01",
+          // I guess RN "optimizes" this and removes the view if not for the bg color. so we make it very subtle
+        }}
+      />
+    </Pressable>
+  ) : null;
+
+  if (Platform.OS === "ios") {
+    // to render over screens:
+    return (
+      <BottomSheetCtx.Provider value={context}>
+        <FullWindowOverlay style={StyleSheet.absoluteFill}>
+          {fadeOverlay}
+          {touchOverlay}
+          {sheetContent}
+        </FullWindowOverlay>
+        {children}
+      </BottomSheetCtx.Provider>
+    );
+  }
+
   return (
     <BottomSheetCtx.Provider value={context}>
       <View style={{ flex: 1 }}>
         {children}
-        <Animated.View style={layerStyles} pointerEvents="none" />
-        {isOpen ? (
-          <Pressable style={{ ...AbsoluteFill }} onPress={context.close}>
-            <View
-              style={{
-                ...AbsoluteFill,
-                // why do we need a background color here? good question! if not for this bg color, android allows touches through to the underlying content O_o
-                backgroundColor: "#ffffff01",
-                // I guess RN "optimizes" this and removes the view if not for the bg color. so we make it very subtle
-              }}
-            />
-          </Pressable>
-        ) : null}
-        {sheetConfig && (
-          <BottomSheet
-            style={[bigShadow, { elevation: 12 }]}
-            key={sheetConfig.key}
-            enablePanDownToClose
-            ref={bottomSheetRef}
-            handleComponent={null}
-            handleStyle={{
-              backgroundColor: colors.backgroundDim,
-            }}
-            backgroundStyle={{
-              backgroundColor: "transparent",
-            }}
-            snapPoints={animatedSnapPoints}
-            handleHeight={animatedHandleHeight}
-            contentHeight={animatedContentHeight}
-            index={0}
-            onChange={handleSheetChanges}
-          >
-            <BlurView
-              onLayout={handleContentLayout}
-              style={{
-                // backgroundColor: "orange",
-                ...smallShadow,
-              }}
-            >
-              <SafeAreaView edges={["right", "bottom", "left"]}>
-                {sheetConfig.children}
-              </SafeAreaView>
-            </BlurView>
-          </BottomSheet>
-        )}
+        {fadeOverlay}
+        {touchOverlay}
+        {sheetContent}
       </View>
     </BottomSheetCtx.Provider>
   );

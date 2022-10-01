@@ -3,7 +3,7 @@ import { Icon } from "./Icon";
 import { VStack } from "./Stack";
 import { Button } from "./Button";
 import { useColors } from "./useColors";
-import { Alert, ColorValue } from "react-native";
+import { ColorValue } from "react-native";
 
 export type DropdownOption = {
   value: boolean | string | number;
