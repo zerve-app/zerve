@@ -19,7 +19,10 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useColors } from "./useColors";
 import { AbsoluteFill, bigShadow, smallShadow } from "./Style";
 import { BlurView } from "expo-blur";
@@ -51,7 +54,8 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
   const layerStyles = useAnimatedStyle(() => ({
     ...AbsoluteFill,
     opacity: layerVisibility.value * 0.7,
-    backgroundColor: colors.background,
+    backgroundColor:
+      Platform.OS === "android" ? colors.tint : colors.background,
   }));
   const bottomSheetRef = useRef<BottomSheet>(null);
   const handleSheetChanges = useCallback((index: number) => {
@@ -102,12 +106,22 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
       layerVisibility.value = withTiming(0, { duration: 250 });
     }
   }, [isOpen]);
+  const ContentContainerView = Platform.select({
+    ios: BlurView,
+    default: View,
+  });
+  const insets = useSafeAreaInsets();
   let sheetContent = null;
   if (sheetConfig) {
     sheetContent = (
       <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
         <BottomSheet
-          style={[bigShadow, { elevation: 12 }]}
+          style={Platform.select({
+            android: {},
+            default: {
+              ...bigShadow,
+            },
+          })}
           key={sheetConfig.key}
           enablePanDownToClose
           ref={bottomSheetRef}
@@ -124,17 +138,22 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
           index={0}
           onChange={handleSheetChanges}
         >
-          <BlurView
+          <ContentContainerView
             onLayout={handleContentLayout}
             style={{
-              // backgroundColor: "orange",
-              ...smallShadow,
+              paddingBottom: insets.bottom,
+              paddingLeft: insets.left,
+              paddingRight: insets.right,
+              ...Platform.select({
+                android: {
+                  backgroundColor: colors.background,
+                },
+                default: {},
+              }),
             }}
           >
-            <SafeAreaView edges={["right", "bottom", "left"]}>
-              {sheetConfig.children}
-            </SafeAreaView>
-          </BlurView>
+            {sheetConfig.children}
+          </ContentContainerView>
         </BottomSheet>
       </View>
     );
