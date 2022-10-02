@@ -18,9 +18,10 @@ export function ZenPlaygroundFeature() {
     <ScreenContainer scroll>
       <ScreenHeader title="Zen UI Playground" />
       <NavLinkContentGroup>
-        {Object.values(PlaygroundFeatures).map((feature) => {
+        {Object.values(PlaygroundFeatures).map((feature, index) => {
           return (
             <NavLink
+              key={index}
               icon={feature.icon}
               title={feature.title}
               onPress={() => {
