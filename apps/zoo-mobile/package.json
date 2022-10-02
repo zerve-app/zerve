@@ -25,6 +25,7 @@
     "@zerve/zoo": "*",
     "@zerve/zoo-client": "*",
     "date-fns": "^2.29.3",
+    "eas-cli": "^2.1.0",
     "expo": "~46.0.13",
     "expo-app-loading": "~2.1.0",
     "expo-application": "~4.2.2",
