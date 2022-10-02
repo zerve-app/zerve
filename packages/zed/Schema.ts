@@ -24,6 +24,7 @@ export function getDefaultSchemaValue(
   }
   if (usableSchema.default) return usableSchema.default; // maybe this should be validated? idk.
   if (usableSchema.const !== undefined) return usableSchema.const;
+  if (usableSchema.type === "null") return null;
   if (usableSchema.type === "boolean") return false;
   if (usableSchema.type === "number") return 0;
   if (usableSchema.type === "integer") return 0;

@@ -185,7 +185,7 @@ function ExperimentalSchemas({
   return (
     <>
       {AllExperimentalSchemas.map((experimentalSchemaName) => (
-        <HStack>
+        <HStack key={experimentalSchemaName}>
           <Label>{experimentalSchemaName}</Label>
           <SwitchInput
             value={!!settings?.enabledSchemas?.[experimentalSchemaName]}
