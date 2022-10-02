@@ -111,10 +111,14 @@ export function Button({
     padding: small ? 8 : 12,
     paddingHorizontal: small ? 12 : 18,
     minHeight: small ? 30 : 50,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: pressHeight.value * 0.25,
-    shadowColor: chromeless ? undefined : "#111",
+    ...(Platform.OS === "android"
+      ? { evolution: 1 }
+      : {
+          shadowRadius: 3,
+          shadowOffset: { width: 0, height: 3 },
+          shadowOpacity: pressHeight.value * 0.25,
+          shadowColor: chromeless ? undefined : "#111",
+        }),
     transform: [
       { translateY: -pressHeight.value * 3 },
       { scale: 1 + pressHeight.value * 0.02 },
