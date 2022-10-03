@@ -17,7 +17,13 @@ const ExtraPatternsMetaSchema = {
   additionalProperties: { type: "string" },
 } as const;
 
-ajv.addKeyword("propertyTitles"); // no errors
+// ignore extra form/schema fields:
+ajv.addKeyword("propertyTitles");
+ajv.addKeyword("inputType");
+ajv.addKeyword("placeholder");
+ajv.addKeyword("submitLabel");
+ajv.addKeyword("submitIcon");
+
 ajv.addKeyword({
   keyword: "extraPatterns",
   type: "string",
