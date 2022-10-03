@@ -153,6 +153,7 @@ export type UserData = FromSchema<typeof UserDataSchema>;
 const UsernameSchema = {
   title: "Username",
   type: "string",
+  minLength: 3,
 } as const;
 
 export type Username = FromSchema<typeof UsernameSchema>;

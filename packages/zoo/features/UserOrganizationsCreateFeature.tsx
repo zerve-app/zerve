@@ -12,6 +12,7 @@ import { JSONSchemaForm } from "@zerve/zen/JSONSchemaForm";
 const OrgNameSchema = {
   type: "string",
   title: "Organization Name",
+  minLength: 3,
 } as const;
 
 function UserOrganizationsCreate({
