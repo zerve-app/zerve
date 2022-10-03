@@ -133,14 +133,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     </>
   );
   if (Platform.OS === "ios") {
-    modalPresenter = (
-      <FullWindowOverlay
-        style={StyleSheet.absoluteFill}
-        pointerEvents="box-none"
-      >
-        {modalPresenter}
-      </FullWindowOverlay>
-    );
+    modalPresenter = <FullWindowOverlay>{modalPresenter}</FullWindowOverlay>;
   }
   return (
     <ModalNativeContext.Provider

@@ -176,7 +176,7 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
     // to render over screens:
     return (
       <BottomSheetCtx.Provider value={context}>
-        <FullWindowOverlay style={StyleSheet.absoluteFill}>
+        <FullWindowOverlay>
           {fadeOverlay}
           {touchOverlay}
           {sheetContent}

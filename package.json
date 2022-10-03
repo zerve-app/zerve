@@ -88,7 +88,6 @@
     "react-dom": "18.2.0",
     "react-refresh": "^0.14.0",
     "react-native-web": "0.18.6",
-    "@react-navigation/core@6.3.0": "patch:@react-navigation/core@npm:6.3.0#.yarn/patches/@react-navigation-core-npm-6.3.0-ea7ae41b00.patch",
-    "react-native-screens@3.17.0": "patch:react-native-screens@npm:3.17.0#.yarn/patches/react-native-screens-npm-3.17.0-9ec4b089a4.patch"
+    "react-native-reanimated": "2.10.0"
   }
 }
