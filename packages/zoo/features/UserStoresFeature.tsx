@@ -42,7 +42,7 @@ function UserStores({ entityId, title, icon, isActive }: UserFeatureProps) {
       spinner={isLoading || isFetching}
     >
       {data?.children && data?.children.length === 0 ? (
-        <EmptyContentRow message="No stores in the org yet." />
+        <EmptyContentRow message="No stores here yet." />
       ) : null}
       {data?.children?.length ? (
         <NavLinkContentGroup>
