@@ -137,7 +137,7 @@ export function NavBreadcrumbLink<FeatureState>({
             <Icon name={icon} color="#464646" size={24} />
           </View>
         )}
-        {title && (
+        {title ? (
           <Text
             style={{
               color: colors.text,
@@ -148,7 +148,7 @@ export function NavBreadcrumbLink<FeatureState>({
           >
             {title}
           </Text>
-        )}
+        ) : null}
       </View>
     </FragmentLink>
   );
