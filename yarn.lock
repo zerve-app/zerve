@@ -24853,6 +24853,8 @@ __metadata:
     react-dom: 18.2.0
     react-native: 0.69.5
     react-native-draggable-flatlist: 4.0.0-beta.12
+    react-native-gesture-handler: ~2.6.2
+    react-native-reanimated: ^2.10.0
     react-native-safe-area-context: ^4.4.1
     react-native-web: ~0.18.7
     tsconfig: "*"
