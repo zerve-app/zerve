@@ -114,7 +114,7 @@ function NavigationSidebar<FeatureState>({
   getFeatureTitle,
   footer,
   activeFeatures,
-  defaultFeature,
+  activeDefaultFeatures,
 }: {
   navigation: Array<FeatureState>;
   Context: Context<null | FragmentContext<FeatureState>>;
@@ -124,7 +124,7 @@ function NavigationSidebar<FeatureState>({
   ) => ComponentProps<typeof Icon>["name"] | null;
   footer?: ReactNode;
   activeFeatures: Array<FeatureState>;
-  defaultFeature?: FeatureState;
+  activeDefaultFeatures?: FeatureState[] | null;
 }) {
   const fragmentContext = useContext(Context);
   if (!fragmentContext)
@@ -134,8 +134,9 @@ function NavigationSidebar<FeatureState>({
   const topParent = activeFeatures[0];
   const topParentKey =
     topParent && fragmentContext.stringifyFragment(topParent);
-  const defaultFeatureKey =
-    defaultFeature && fragmentContext.stringifyFragment(defaultFeature);
+  const activeDefaultFeatureKey =
+    activeDefaultFeatures?.[0] &&
+    fragmentContext.stringifyFragment(activeDefaultFeatures?.[0]);
   const displayNavItems: ReactNode[] = [];
   navigation.forEach((nav) => {
     const fragmentKey = fragmentContext.stringifyFragment(nav);
@@ -148,8 +149,8 @@ function NavigationSidebar<FeatureState>({
         key={fragmentKey}
         displayActive={
           fragmentContext.fragmentString === "" &&
-          !!defaultFeatureKey &&
-          defaultFeatureKey === fragmentKey
+          !!activeDefaultFeatureKey &&
+          activeDefaultFeatureKey === fragmentKey
         }
       />,
     );
@@ -242,10 +243,11 @@ export function DashboardPage<Feature>({
   const displayNavSidebar = wideEnoughForNavigation || !feature;
   let activeFeatures: Feature[] = [...parentFeatures];
   if (feature) activeFeatures.push(feature);
-  const displayFeatures =
-    activeFeatures.length || !defaultFeature
-      ? activeFeatures.slice(-visiblePaneCount)
-      : [defaultFeature];
+  const activeDefaultFeatures =
+    wideEnoughForNavigation && !!defaultFeature ? [defaultFeature] : [];
+  const displayFeatures = activeFeatures.length
+    ? activeFeatures.slice(-visiblePaneCount)
+    : activeDefaultFeatures;
   return (
     <PageContainer>
       <NavBar>
@@ -268,7 +270,7 @@ export function DashboardPage<Feature>({
               getFeatureIcon={getFeatureIcon}
               getFeatureTitle={getFeatureTitle}
               footer={navigationFooter}
-              defaultFeature={defaultFeature}
+              activeDefaultFeatures={activeDefaultFeatures}
               activeFeatures={activeFeatures}
             />
           ) : null}
@@ -280,34 +282,36 @@ export function DashboardPage<Feature>({
               justifyContent: "center",
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                borderLeftWidth: 1,
-                borderColor: "#ccc",
-              }}
-            >
-              {displayFeatures.map((displayFeature) => {
-                const key = fragmentContext.stringifyFragment(displayFeature);
-                return (
-                  <DetectFocus
-                    key={key}
-                    onReportedFocus={() => {
-                      setFocusedFeature(displayFeature);
-                    }}
-                  >
-                    {renderFeature({
-                      feature: displayFeature,
-                      isActive: displayFeature === focusedFeature,
-                      fragmentContext,
-                      key,
-                      title: getFeatureTitle(displayFeature),
-                      icon: getFeatureIcon(displayFeature),
-                    })}
-                  </DetectFocus>
-                );
-              })}
-            </View>
+            {displayFeatures.length ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  borderLeftWidth: 1,
+                  borderColor: "#ccc",
+                }}
+              >
+                {displayFeatures.map((displayFeature) => {
+                  const key = fragmentContext.stringifyFragment(displayFeature);
+                  return (
+                    <DetectFocus
+                      key={key}
+                      onReportedFocus={() => {
+                        setFocusedFeature(displayFeature);
+                      }}
+                    >
+                      {renderFeature({
+                        feature: displayFeature,
+                        isActive: displayFeature === focusedFeature,
+                        fragmentContext,
+                        key,
+                        title: getFeatureTitle(displayFeature),
+                        icon: getFeatureIcon(displayFeature),
+                      })}
+                    </DetectFocus>
+                  );
+                })}
+              </View>
+            ) : null}
           </View>
         </Context.Provider>
       </View>
