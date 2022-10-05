@@ -100,10 +100,11 @@ export function StoreDashboard({
         <DashboardPage<StoreNavigationState>
           Context={StoreDashboardContext}
           onIntercept={(
-            feature: StoreNavigationState,
-            navigateFeature: (feature: StoreNavigationState) => void,
+            feature: StoreNavigationState | null,
+            navigateFeature: (feature: StoreNavigationState | null) => void,
           ) => {
             if (
+              feature &&
               allowedToNavigateToFeatureWithDirty(feature, unsaved.getDirtyId())
             ) {
               return true;
@@ -191,6 +192,7 @@ export function StoreDashboard({
             }
             return [];
           }}
+          rootIcon="briefcase"
         />
       </NavigateInterceptContext.Provider>
     </UnsavedContext.Provider>

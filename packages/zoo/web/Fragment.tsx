@@ -13,7 +13,7 @@ export type FragmentContext<FragmentState> = {
   stringifyFragment: (feature: FragmentState) => string;
   parseFragment: (fragment: string) => FragmentState | null;
   navigateFragment: (
-    fragmentState: FragmentState,
+    fragmentState: FragmentState | null,
     shouldReplace?: boolean,
   ) => void;
   fragment: FragmentState | null;
@@ -29,7 +29,7 @@ export function useFragmentNavigate<FragmentState>(
       "Cannot useFragmentNavigate outside the valid FragmentContext",
     );
   return useCallback(
-    (feature: FragmentState, shouldReplace?: boolean) => {
+    (feature: FragmentState | null, shouldReplace?: boolean) => {
       fragmentContext.navigateFragment(feature, shouldReplace);
     },
     [fragmentContext.navigateFragment],
@@ -37,7 +37,7 @@ export function useFragmentNavigate<FragmentState>(
 }
 
 export type FragmentLinkProps<FragmentState> = {
-  to: FragmentState;
+  to: FragmentState | null;
   children: ReactNode;
   Context: Context<null | FragmentContext<FragmentState>>;
   // you'd think bg color would be in styles. But the focus ring must be visible on web, so it is important for the link itself to have the background color set :-D
@@ -49,8 +49,8 @@ export function useFragmentNavigationController<FragmentState>(
   parseFragment: (fragment: string) => FragmentState | null,
   onFeature?: (fragment: FragmentState | null, fragmentString: string) => void,
   onIntercept?: (
-    fragment: FragmentState,
-    navigateFeature: (f: FragmentState) => void,
+    fragment: FragmentState | null,
+    navigateFeature: (f: FragmentState | null) => void,
   ) => boolean,
 ): readonly [FragmentState | null, string, FragmentContext<FragmentState>] {
   const { push, replace, pathname, query } = useRouter();
@@ -59,13 +59,13 @@ export function useFragmentNavigationController<FragmentState>(
     () => parseFragment(fragmentString),
     [parseFragment, fragmentString],
   );
-  function navigateFragment(to: FragmentState, shouldReplace?: boolean) {
+  function navigateFragment(to: FragmentState | null, shouldReplace?: boolean) {
     const shouldAllow = !onIntercept || onIntercept?.(to, navigateFragment);
     if (!shouldAllow) return;
     const navAct = shouldReplace ? replace : push;
     navAct({
       pathname,
-      query: { ...query, _: stringifyFragment(to) },
+      query: { ...query, _: to ? stringifyFragment(to) : "" },
     });
   }
   const fragmentContext = useMemo(

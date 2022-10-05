@@ -113,6 +113,7 @@ export function OrgDashboard({ entityId }: { entityId: string }) {
         }
         return [];
       }}
+      rootIcon="building"
     />
   );
 }

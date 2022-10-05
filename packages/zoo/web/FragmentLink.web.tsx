@@ -18,7 +18,7 @@ export function FragmentLink<FragmentState>({
         // its important for the link itself to have the background color set, not the children. this allows the focus ring to be visible on web
         backgroundColor,
       }}
-      href={`?_=${stringifyFragment(to)}`}
+      href={to ? `?_=${stringifyFragment(to)}` : "?"}
       onClickCapture={(e) => {
         if (e.metaKey) {
           // user is *probably* pressing this key to open the link in a new tab

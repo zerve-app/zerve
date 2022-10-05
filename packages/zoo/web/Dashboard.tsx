@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import { FragmentContext, useFragmentNavigationController } from "./Fragment";
 import { FragmentLink } from "./FragmentLink";
 import { NavLinkContent, NavLinkContentGroup } from "@zerve/zen/NavLink";
@@ -82,6 +82,74 @@ export function NavFeatureLink<FeatureState>({
         isActive={isActive}
         inset={inset}
       />
+    </FragmentLink>
+  );
+}
+
+export function NavBreadcrumbLink<FeatureState>({
+  title,
+  icon,
+  to,
+  Context,
+  displayActive,
+}: {
+  title: string;
+  icon?: ComponentProps<typeof Icon>["name"] | null;
+  to: FeatureState | null;
+  Context: Context<null | FragmentContext<FeatureState>>;
+  displayActive?: boolean;
+}) {
+  const colors = useColors();
+  const fragmentContext = useContext(Context);
+  if (!fragmentContext)
+    throw new Error("Cannot render NavLink outside of a FragmentContext");
+  const isActive =
+    displayActive || to === null
+      ? fragmentContext.fragmentString === ""
+      : fragmentContext.fragmentString ===
+        fragmentContext.stringifyFragment(to);
+  const backgroundColor = isActive ? colors.activeTint : colors.background;
+
+  return (
+    <FragmentLink<FeatureState>
+      to={to}
+      Context={Context}
+      backgroundColor={backgroundColor}
+    >
+      <View
+        style={{
+          paddingVertical: 14,
+          paddingHorizontal: 18,
+          flexDirection: "row",
+          borderRightWidth: 1,
+          borderRightColor: `${colors.secondaryText}33`,
+          alignItems: "center",
+        }}
+      >
+        {icon && (
+          <View
+            style={{
+              height: 24,
+              width: 24,
+              alignItems: "center",
+            }}
+          >
+            <Icon name={icon} color="#464646" size={24} />
+          </View>
+        )}
+        {title && (
+          <Text
+            style={{
+              color: colors.text,
+              fontSize: 16,
+              marginLeft: 16,
+              textDecorationLine: "none",
+            }}
+          >
+            {title}
+          </Text>
+        )}
+      </View>
     </FragmentLink>
   );
 }
@@ -178,6 +246,56 @@ function NavigationSidebar<FeatureState>({
   );
 }
 
+function BreadcrumbNavigation<FeatureState>({
+  Context,
+  getFeatureIcon,
+  getFeatureTitle,
+  activeFeatures,
+  rootIcon,
+}: {
+  Context: Context<null | FragmentContext<FeatureState>>;
+  getFeatureTitle: (feature: FeatureState) => string;
+  getFeatureIcon: (
+    feature: FeatureState,
+  ) => ComponentProps<typeof Icon>["name"] | null;
+  activeFeatures: Array<FeatureState>;
+  rootIcon: ComponentProps<typeof Icon>["name"];
+}) {
+  const colors = useColors();
+  const fragmentContext = useContext(Context);
+  if (!fragmentContext)
+    throw new Error(
+      "Cannot render NavigationSidebar outside of a FragmentContext",
+    );
+  return (
+    <ScrollView
+      horizontal
+      style={{
+        maxHeight: 53,
+        alignSelf: "stretch",
+        flexDirection: "row",
+        borderColor: `${colors.secondaryText}33`,
+        borderTopWidth: 1,
+      }}
+    >
+      <NavBreadcrumbLink Context={Context} title="" icon={rootIcon} to={null} />
+      {activeFeatures.map((feature) => {
+        const childFragmentKey =
+          feature === null ? "" : fragmentContext.stringifyFragment(feature);
+        return (
+          <NavBreadcrumbLink
+            Context={Context}
+            key={childFragmentKey}
+            title={getFeatureTitle(feature)}
+            icon={getFeatureIcon(feature)}
+            to={feature}
+          />
+        );
+      })}
+    </ScrollView>
+  );
+}
+
 export function DashboardPage<Feature>({
   Context,
   header,
@@ -188,6 +306,7 @@ export function DashboardPage<Feature>({
   getFeatureTitle,
   getFeatureIcon,
   getParentFeatures,
+  rootIcon,
   stringifyFeatureFragment,
   parseFeatureFragment,
   navigationFooter,
@@ -205,7 +324,7 @@ export function DashboardPage<Feature>({
   }) => ReactNode;
   navigation: Array<Feature>;
   onIntercept?: (
-    feature: Feature,
+    feature: Feature | null,
     navigateFeature: (feature: Feature) => void,
   ) => boolean;
   onFeature?: (feature: Feature | null, fragmentString: string) => void;
@@ -215,6 +334,7 @@ export function DashboardPage<Feature>({
     feature: Feature,
   ) => ComponentProps<typeof Icon>["name"] | null;
   getParentFeatures?: (feature: Feature) => Array<Feature>;
+  rootIcon?: ComponentProps<typeof Icon>["name"];
   stringifyFeatureFragment: (feature: Feature) => string;
   parseFeatureFragment: (fragment: string) => Feature | null;
   defaultFeature?: Feature;
@@ -254,15 +374,24 @@ export function DashboardPage<Feature>({
         <NavBarZLogo />
         {header}
       </NavBar>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          borderTopWidth: 1,
-          borderColor: "#ddd",
-        }}
-      >
-        <Context.Provider value={fragmentContext}>
+      <Context.Provider value={fragmentContext}>
+        {!wideEnoughForNavigation && !!feature ? (
+          <BreadcrumbNavigation
+            Context={Context}
+            getFeatureIcon={getFeatureIcon}
+            getFeatureTitle={getFeatureTitle}
+            rootIcon={rootIcon || "home"}
+            activeFeatures={activeFeatures}
+          />
+        ) : null}
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            borderTopWidth: 1,
+            borderColor: "#ddd",
+          }}
+        >
           {displayNavSidebar ? (
             <NavigationSidebar
               Context={Context}
@@ -274,6 +403,7 @@ export function DashboardPage<Feature>({
               activeFeatures={activeFeatures}
             />
           ) : null}
+
           <View
             style={{
               alignSelf: "stretch",
@@ -313,8 +443,8 @@ export function DashboardPage<Feature>({
               </View>
             ) : null}
           </View>
-        </Context.Provider>
-      </View>
+        </View>
+      </Context.Provider>
     </PageContainer>
   );
 }

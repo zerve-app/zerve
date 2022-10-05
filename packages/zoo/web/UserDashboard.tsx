@@ -148,6 +148,7 @@ export function UserDashboard({ entityId }: { entityId: string }) {
         }
         return [];
       }}
+      rootIcon="user"
     />
   );
 }
