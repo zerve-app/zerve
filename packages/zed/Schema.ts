@@ -24,13 +24,16 @@ export function getDefaultSchemaValue(
   }
   if (usableSchema.default) return usableSchema.default; // maybe this should be validated? idk.
   if (usableSchema.const !== undefined) return usableSchema.const;
-  if (usableSchema.type === "null") return null;
-  if (usableSchema.type === "boolean") return false;
-  if (usableSchema.type === "number") return 0;
-  if (usableSchema.type === "integer") return 0;
-  if (usableSchema.type === "string") return "";
-  if (usableSchema.type === "array") return []; // todo: handle tuples..
-  if (usableSchema.type === "object") {
+  let type = Array.isArray(usableSchema.type)
+    ? usableSchema.type[0]
+    : usableSchema.type;
+  if (type === "null") return null;
+  if (type === "boolean") return false;
+  if (type === "number") return 0;
+  if (type === "integer") return 0;
+  if (type === "string") return "";
+  if (type === "array") return []; // todo: handle tuples..
+  if (type === "object") {
     const required = new Set(usableSchema.required || []);
     return Object.fromEntries(
       Object.entries(usableSchema.properties || {})

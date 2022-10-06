@@ -11,6 +11,7 @@ import {
   expandSchema,
   exploreUnionSchema,
   getDefaultSchemaValue,
+  getHumanLabelOfSchema,
   getListItemKey,
   isLeafType,
   JSONSchema,
@@ -507,20 +508,6 @@ export function ArrayEditor({
       <HGroup>{!!onValue && addButton}</HGroup>
     </VStack>
   );
-}
-
-function getHumanLabelOfSchema(schema: JSONSchema) {
-  if (schema === false) return "Never";
-  if (schema === true) return "Any";
-  if (schema.title) return schema.title;
-  if (schema.type === "null") return "Empty";
-  if (schema.type === "array") return "List";
-  if (schema.type === "object") return "Object";
-  if (schema.type === "number") return "Number";
-  if (schema.type === "string") return "Text";
-  if (schema.type === "boolean") return "Switch";
-  if (schema.const !== undefined) return ""; // constant does not need a human label
-  return "?";
 }
 
 function ValueLine({ value, schema }: { value: any; schema: any }) {

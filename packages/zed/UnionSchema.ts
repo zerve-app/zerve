@@ -1,7 +1,20 @@
 import { JSONSchema } from "json-schema-to-ts";
-import { JSONSchema7 } from "json-schema-to-ts/lib/definitions";
 import { getDefaultSchemaValue } from "./Schema";
 import { EmptySchemaStore, SchemaStore } from "./Validate";
+
+export function getHumanLabelOfSchema(schema: JSONSchema) {
+  if (schema === false) return "Never";
+  if (schema === true) return "Any";
+  if (schema.title) return schema.title;
+  if (schema.type === "null") return "Empty";
+  if (schema.type === "array") return "List";
+  if (schema.type === "object") return "Object";
+  if (schema.type === "number") return "Number";
+  if (schema.type === "string") return "Text";
+  if (schema.type === "boolean") return "Switch";
+  if (schema.const !== undefined) return ""; // constant does not need a human label
+  return "?";
+}
 
 export const AllJSONSchemaTypes = [
   "string",
@@ -117,7 +130,7 @@ export function exploreUnionSchema(
     distinctTypeOptions.size === 0 &&
     aggregateTypeOptions.values().next().value === "object";
 
-  function getTitle(optionSchema: JSONSchema, optionSchemaIndex: nmber) {
+  function getTitle(optionSchema: JSONSchema, optionSchemaIndex: number) {
     if (typeof optionSchema !== "object") return "?";
     if (optionSchema.const !== undefined) {
       return `${optionSchema.const}`;
@@ -128,6 +141,8 @@ export function exploreUnionSchema(
     ) {
       return optionSchema?.properties?.title?.const;
     }
+    const baseTypeLabel = getHumanLabelOfSchema(optionSchema);
+    if (!unionKeys.length) return baseTypeLabel;
     const constsValue = unionKeys
       .map((unionKey) => {
         const value = unionConstProperties[optionSchemaIndex][unionKey];
@@ -137,7 +152,7 @@ export function exploreUnionSchema(
       .filter(Boolean)
       .join(", ");
     if (isAlwaysObject) return constsValue;
-    return `${optionSchema.type} ${constsValue}`;
+    return `${baseTypeLabel} ${constsValue}`;
   }
   const options = optionSchemas.map(
     (optionSchema, optionSchemaIndex: number) => {

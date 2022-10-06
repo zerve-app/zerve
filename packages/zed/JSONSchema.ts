@@ -99,19 +99,6 @@ export const NumberSchema = {
   type: "number",
 } as const;
 
-// export const IntegerSchemaSchema = {
-//   type: "object",
-//   title: "Number (Integer)",
-//   properties: {
-//     type: { const: "integer" },
-//     ...SchemaMeta,
-//     default: { type: "integer" }, // uhh this implies the need of a more powerful generic/recursion o_O
-//   },
-//   required: ["type"],
-//   additionalProperties: false,
-// } as const;
-// export type ZIntegerSchema = FromSchema<typeof IntegerSchemaSchema>;
-
 export const CapitalizeSchema = {
   enum: ["characters", "words", "sentences", "none"],
   default: "none",
@@ -226,7 +213,6 @@ export const PrimitiveSchemaSchema = {
   oneOf: [
     NullSchemaSchema,
     BooleanSchemaSchema,
-    // IntegerSchemaSchema,
     NumberSchemaSchema,
     StringSchemaSchema,
   ],
@@ -235,10 +221,7 @@ export type PrimitiveSchema = FromSchema<typeof PrimitiveSchemaSchema>;
 
 export const LeafSchemaSchema = {
   title: "Schema",
-  oneOf: [
-    ...PrimitiveSchemaSchema.oneOf,
-    // ConstSchemaSchema // disabled for now because the union dropdown broken when selecting object type
-  ],
+  oneOf: [...PrimitiveSchemaSchema.oneOf, ConstSchemaSchema],
 } as const;
 export type LeafSchema = FromSchema<typeof LeafSchemaSchema>;
 
@@ -308,6 +291,7 @@ export const ArraySchemaSchema = {
   },
 } as const;
 
+// this is used by the schema editor UI
 export const ZSchemaSchema = {
   oneOf: [
     NullSchemaSchema,
@@ -315,10 +299,9 @@ export const ZSchemaSchema = {
     ArraySchemaSchema,
     StringSchemaSchema,
     BooleanSchemaSchema,
-    // IntegerSchemaSchema,
     NumberSchemaSchema,
-    RefSchemaSchema,
-    // ConstSchemaSchema, // disabled for now because the union dropdown broken when selecting object type
+    // RefSchemaSchema, // ref schemas are injected later in StoreClient/schemaStoreToSchema
+    ConstSchemaSchema, // disabled for now because the union dropdown broken when selecting object type
   ],
 } as const;
 
