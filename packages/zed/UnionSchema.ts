@@ -1,4 +1,5 @@
 import { JSONSchema } from "json-schema-to-ts";
+import { getListItemKey } from "./JSONSchema";
 import { getDefaultSchemaValue } from "./Schema";
 import { EmptySchemaStore, SchemaStore } from "./Validate";
 
@@ -237,7 +238,10 @@ export function lookUpValue(value: any, childPath: string | string[]): any {
     throw new Error(`Can not look up "${pathTerm}" within empty value.`);
   if (Array.isArray(value)) {
     const foundChildByKey = value.find(
-      (v) => typeof v === "object" && v !== null && v.$key === pathTerm,
+      (v, vIndex) =>
+        typeof v === "object" &&
+        v !== null &&
+        getListItemKey(v, vIndex) === pathTerm,
     );
     if (foundChildByKey) return foundChildByKey;
     const foundByIndex = value.find((v, i) => pathTerm === `Item ${i}`);
