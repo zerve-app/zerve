@@ -55,7 +55,23 @@ export function exploreUnionSchema(
   if (typeof schema !== "object" || !schema.oneOf)
     throw new Error("Cannot exploreUnionSchema without schema .oneOf");
   // schema has oneOf and we need to understand how children are differentiated
-  const optionSchemas = schema.oneOf;
+  const definedOptionSchemas = schema.oneOf;
+  const optionSchemas = definedOptionSchemas.map((optionSchema) => {
+    if (optionSchema.$ref) {
+      const refSchema = Object.values(schemaStore || {}).find(
+        (s) => s.$id === optionSchema.$ref,
+      );
+      if (refSchema)
+        return {
+          ...refSchema,
+          title: optionSchema.title || refSchema.title,
+        };
+      throw new Error(
+        `Cannot look up oneOf schema with $ref "${optionSchema.$ref}"`,
+      );
+    }
+    return optionSchema;
+  });
   const aggregateTypeOptions = new Set<AllJSONSchemaType>([]);
   const distinctTypeOptions = new Set<AllJSONSchemaType>([]);
   optionSchemas.forEach((optionSchema: JSONSchema, index: number) => {

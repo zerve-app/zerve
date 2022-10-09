@@ -1445,7 +1445,7 @@ export function JSONSchemaEditor({
     throw new Error("Schema was not properly expanded");
 
   if (expandedSchema.oneOf) {
-    const unionOptions = exploreUnionSchema(expandedSchema);
+    const unionOptions = exploreUnionSchema(expandedSchema, schemaStore);
     const matched = unionOptions.match(value);
     const matchedComparison =
       comparisonValue !== undefined && unionOptions.match(comparisonValue);
