@@ -168,6 +168,10 @@
         {
           "type": "null",
           "title": "Empty"
+        },
+        {
+          "title": "ObjSch",
+          "$ref": "https://type.zerve.link/ObjSch"
         }
       ],
       "title": "Bool or green",

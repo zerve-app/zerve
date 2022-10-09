@@ -96,7 +96,7 @@ export type MyListOfObjSchemasEntry = ObjSch[];
  * 
  * oneOf schema example
  */
-export type MyConstEntry = boolean | `Green` | null;
+export type MyConstEntry = boolean | `Green` | null | ObjSch;
 
 export const zClient = createZStoreClient(
   zStoreProtocol,

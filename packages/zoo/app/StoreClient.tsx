@@ -83,6 +83,23 @@ export function schemaStoreToSchema(
               },
             },
           };
+        } else if (zSubSchema.title === "One Of Schema") {
+          return {
+            ...zSubSchema,
+            properties: {
+              ...zSubSchema.properties,
+              oneOf: {
+                ...zSubSchema.properties.oneOf,
+                items: {
+                  ...zSubSchema.properties.oneOf.items,
+                  oneOf: [
+                    ...zSubSchema.properties.oneOf.items.oneOf,
+                    ...refSchemas,
+                  ],
+                },
+              },
+            },
+          };
         } else {
           return zSubSchema;
         }
