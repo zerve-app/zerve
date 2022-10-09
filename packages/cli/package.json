@@ -1,11 +1,12 @@
 {
   "name": "@zerve/cli",
-  "version": "0.1.0-alpha.7",
+  "version": "0.1.0-alpha.8",
   "license": "Apache-2.0",
   "scripts": {
     "prepare": "yarn build",
     "build": "esbuild ./ZerveSync --bundle --platform=node --outdir=dist --log-level=error && chmod +x ./dist/ZerveSync.js",
-    "clean": "rimraf dist node_modules"
+    "clean": "rimraf dist node_modules",
+    "publish": "yarn npm publish"
   },
   "bin": {
     "zerve-sync": "./dist/ZerveSync.js"
