@@ -155,6 +155,19 @@ ${indent(
         if (schema.$ref) {
           return schema.title;
         }
+        if (schema.const !== undefined) {
+          if (typeof schema.const === "string") return "`" + schema.const + "`";
+          if (typeof schema.const === "number")
+            return JSON.stringify(schema.const);
+          if (typeof schema.const === "boolean")
+            return JSON.stringify(schema.const);
+        }
+        if (schema.oneOf) {
+          // note, we loose the title/description of the sub schemas here :(
+          return schema.oneOf
+            .map((subSchema) => serializeSchemaType(subSchema))
+            .join(" | ");
+        }
         return "never";
       }
 
