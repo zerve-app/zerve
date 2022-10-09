@@ -192,9 +192,7 @@ export function exploreUnionSchema(
       if (typeof value === "object") {
         let walkingKeyMap = unionKeyMap || {};
         unionKeys.forEach((unionKey) => {
-          if (!walkingKeyMap) debugger;
-          schema;
-          value;
+          if (!walkingKeyMap) return;
           if (typeof walkingKeyMap === "number") return;
           const theValue = value[unionKey];
           const nextWalk =
@@ -334,6 +332,9 @@ export function expandSchema(
   if (schema === false) return false;
   let schemaObj = schema;
   if (schemaObj === true) schemaObj = {};
+  if (!schemaObj) {
+    debugger;
+  }
   if (schemaObj.$ref) {
     const refSchema = Object.values(schemaStore || {}).find(
       (s) => s.$id === schemaObj.$ref,
