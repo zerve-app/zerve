@@ -9,20 +9,27 @@ const zStoreProtocol = "http://";
 const zStoreOrigin = "localhost:4888";
 const zStorePath = ".z/store/evv/test";
 
-type ANumberSchema = number;
+export type ANumberSchema = number;
 
-type SlugText = null;
+/**
+ * Text
+ */
+export type SlugText = string;
 
-type ObjSch = {
+export type ObjSch = {
   A?: null;
   B?: null;
   $key: string;
+  /**
+   * Text
+   */
+  Key?: string;
 };
 
 /**
  * HumanText
  */
-type HumanText = {
+export type HumanText = {
   $key: string;
   text: string;
   bold?: boolean;
@@ -36,20 +43,20 @@ type HumanText = {
 /**
  * Text
  */
-type MyTextEntry = string;
+export type MyTextEntry = string;
 
-type MySwitchEntry = boolean;
+export type MySwitchEntry = boolean;
 
-type MyNumberEntry = number;
+export type MyNumberEntry = number;
 
-type MyTextListEntry = string[];
+export type MyTextListEntry = string[];
 
 /**
  * HasATitle
  * 
  * HasADescription
  */
-type MyLimitedObjEntry = {
+export type MyLimitedObjEntry = {
   /**
    * NumberTitle
    * 
@@ -64,9 +71,9 @@ type MyLimitedObjEntry = {
   empty?: null;
 };
 
-type MyEmptyEntry = null;
+export type MyEmptyEntry = null;
 
-type MyObjWithAddtlBoolsEntry = {
+export type MyObjWithAddtlBoolsEntry = {
   aNumber?: number;
 } & {
   [key: string]: boolean
@@ -75,12 +82,21 @@ type MyObjWithAddtlBoolsEntry = {
 /**
  * ANumberSchema
  */
-type MyRefEntryEntry = ANumberSchema;
+export type MyRefEntryEntry = ANumberSchema;
 
 /**
  * HumanText
  */
-type ThisIsHumanEntry = HumanText;
+export type ThisIsHumanEntry = HumanText;
+
+export type MyListOfObjSchemasEntry = ObjSch[];
+
+/**
+ * Bool or green
+ * 
+ * oneOf schema example
+ */
+export type MyConstEntry = boolean | `Green` | null;
 
 export const zClient = createZStoreClient(
   zStoreProtocol,
@@ -100,6 +116,8 @@ export const zAccessors = {
   MyObjWithAddtlBools: zClient.createAccessor<MyObjWithAddtlBoolsEntry>("MyObjWithAddtlBools"),
   MyRefEntry: zClient.createAccessor<MyRefEntryEntry>("MyRefEntry"),
   ThisIsHuman: zClient.createAccessor<ThisIsHumanEntry>("ThisIsHuman"),
+  MyListOfObjSchemas: zClient.createAccessor<MyListOfObjSchemasEntry>("MyListOfObjSchemas"),
+  MyConst: zClient.createAccessor<MyConstEntry>("MyConst"),
 }
 
 export const useMyText = zAccessors.MyText.use;
@@ -111,4 +129,6 @@ export const useMyEmpty = zAccessors.MyEmpty.use;
 export const useMyObjWithAddtlBools = zAccessors.MyObjWithAddtlBools.use;
 export const useMyRefEntry = zAccessors.MyRefEntry.use;
 export const useThisIsHuman = zAccessors.ThisIsHuman.use;
+export const useMyListOfObjSchemas = zAccessors.MyListOfObjSchemas.use;
+export const useMyConst = zAccessors.MyConst.use;
 

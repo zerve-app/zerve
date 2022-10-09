@@ -2,7 +2,13 @@
   "MyText": "",
   "MySwitch": false,
   "MyNumber": 0,
-  "MyTextList": [],
+  "MyTextList": [
+    "b",
+    "c",
+    "newItem",
+    "de",
+    "ok then nice"
+  ],
   "MyLimitedObj": {
     "num": 0,
     "bool": false
@@ -24,5 +30,16 @@
       "text": " de",
       "$key": "qf3se2"
     }
-  ]
+  ],
+  "MyListOfObjSchemas": [
+    {
+      "$key": "other",
+      "Key": "other"
+    },
+    {
+      "$key": "great",
+      "Key": "great"
+    }
+  ],
+  "MyConst": false
 }

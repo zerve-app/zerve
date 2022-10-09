@@ -5,7 +5,12 @@
       "$id": "https://type.zerve.link/ANumberSchema"
     },
     "SlugText": {
-      "type": "null",
+      "type": "string",
+      "title": "Text",
+      "capitalize": "none",
+      "inputType": "numeric",
+      "placeholder": "",
+      "default": "",
       "$id": "https://type.zerve.link/SlugText"
     },
     "ObjSch": {
@@ -19,6 +24,10 @@
         },
         "$key": {
           "type": "string"
+        },
+        "Key": {
+          "type": "string",
+          "title": "Text"
         }
       },
       "additionalProperties": false,
@@ -135,6 +144,34 @@
     "ThisIsHuman": {
       "title": "HumanText",
       "$ref": "https://type.zerve.link/HumanText"
+    },
+    "MyListOfObjSchemas": {
+      "type": "array",
+      "items": {
+        "title": "ObjSch",
+        "$ref": "https://type.zerve.link/ObjSch"
+      }
+    },
+    "MyConst": {
+      "$z": "$OneOf",
+      "oneOf": [
+        {
+          "type": "boolean",
+          "title": "Switch"
+        },
+        {
+          "$z": "$const",
+          "const": "Green",
+          "title": "Lol Im greeeen",
+          "description": "hahaha aaaa"
+        },
+        {
+          "type": "null",
+          "title": "Empty"
+        }
+      ],
+      "title": "Bool or green",
+      "description": "oneOf schema example"
     }
   }
 }
