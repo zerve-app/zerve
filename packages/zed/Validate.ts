@@ -23,6 +23,7 @@ ajv.addKeyword("inputType");
 ajv.addKeyword("placeholder");
 ajv.addKeyword("submitLabel");
 ajv.addKeyword("submitIcon");
+ajv.addKeyword("$z");
 
 ajv.addKeyword({
   keyword: "extraPatterns",
@@ -110,6 +111,7 @@ function getSchemaStoreValidator(
 ) {
   const schemasAjv = new Ajv(AJV_OPTIONS);
   schemasAjv.addKeyword("propertyTitles"); // no errors
+  schemasAjv.addKeyword("$z"); // no errors
   Object.entries(schemaStore).forEach(([schemaName, schema]) => {
     schemasAjv.addSchema(
       {

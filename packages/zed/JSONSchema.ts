@@ -43,7 +43,7 @@ const SchemaMetaTitles = {
 
 export const NullSchemaSchema = {
   type: "object",
-  title: "Empty",
+  title: "Empty Schema",
   properties: {
     type: { const: "null", title: "Empty" },
     ...SchemaMeta,
@@ -51,6 +51,10 @@ export const NullSchemaSchema = {
   propertyTitles: {
     ...SchemaMetaTitles,
     type: "Type",
+  },
+  default: {
+    type: "null",
+    title: "Empty",
   },
   required: ["type"],
   additionalProperties: false,
@@ -90,6 +94,10 @@ export const NumberSchemaSchema = {
     ...SchemaMetaTitles,
     type: "Type",
     default: "Default",
+  },
+  default: {
+    type: "number",
+    title: "Number",
   },
   required: ["type"],
   additionalProperties: false,
@@ -168,6 +176,10 @@ export const BooleanSchemaSchema = {
     type: "Type",
     default: "Default",
   },
+  default: {
+    type: "boolean",
+    title: "Switch",
+  },
   required: ["type"],
   additionalProperties: false,
 } as const;
@@ -180,13 +192,14 @@ export const ConstSchemaSchema = {
   type: "object",
   title: "Static Value",
   properties: {
+    $z: { const: "$const" },
     const: {
       type: ["string", "boolean", "number"],
     },
     ...SchemaMeta,
   },
   additionalProperties: false,
-  required: ["const"],
+  required: ["$z", "const"],
   propertyTitles: {
     ...SchemaMetaTitles,
     const: "Constant Value",
@@ -197,6 +210,7 @@ export const RefSchemaSchema = {
   title: "Schema Reference",
   type: "object",
   properties: {
+    $z: { const: "$ref" },
     $ref: { type: "string", title: "Reference" },
     ...SchemaMeta,
   },
@@ -204,7 +218,7 @@ export const RefSchemaSchema = {
     $ref: "Schema",
     ...SchemaMetaTitles,
   },
-  required: ["$ref", "title"],
+  required: ["$z", "$ref", "title"],
   additionalProperties: false,
 } as const;
 export type ZRefSchema = FromSchema<typeof RefSchemaSchema>;
@@ -224,6 +238,31 @@ export const LeafSchemaSchema = {
   oneOf: [...PrimitiveSchemaSchema.oneOf, ConstSchemaSchema],
 } as const;
 export type LeafSchema = FromSchema<typeof LeafSchemaSchema>;
+
+export const OneOfSchemaSchema = {
+  title: "One Of Schema",
+  description: "Match one of these schemas",
+  type: "object",
+  properties: {
+    $z: { const: "$OneOf" },
+    oneOf: {
+      type: "array",
+      items: LeafSchemaSchema,
+    },
+    ...SchemaMeta,
+  },
+  additionalProperties: false,
+  propertyTitles: {
+    oneOf: "One of Schemas",
+    ...SchemaMetaTitles,
+  },
+  required: ["$z", "oneOf"],
+};
+
+// export const MultiSchemaSchema = {
+//   ...LeafSchemaSchema,
+//   oneOf: [...LeafSchemaSchema.oneOf, OneOfSchemaSchema],
+// };
 
 export const DisabledSchema = { const: false, title: "Disabled" } as const;
 export const TrueSchema = { const: true } as const;
@@ -302,6 +341,7 @@ export const ZSchemaSchema = {
     NumberSchemaSchema,
     // RefSchemaSchema, // ref schemas are injected later in StoreClient/schemaStoreToSchema
     ConstSchemaSchema, // disabled for now because the union dropdown broken when selecting object type
+    OneOfSchemaSchema,
   ],
 } as const;
 
