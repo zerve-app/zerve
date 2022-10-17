@@ -13,6 +13,7 @@ import {
   StringSchema,
   BooleanSchema,
   ZContainerMeta,
+  zAnnotateCache,
 } from "@zerve/zed";
 import { randomBytes, createHash } from "crypto";
 import {
@@ -343,6 +344,7 @@ export async function createAuth<
   handleUserIdChange?: (prevUserId: string, userId: string) => Promise<void>;
   userContainerMeta: ZContainerMeta;
 }) {
+  console.log("createAtuh");
   const zContainerMeta = {
     ...AuthContainerContractMeta,
     strategies: Object.keys(strategies),
@@ -388,37 +390,40 @@ export async function createAuth<
   );
 
   function getProfileGetter(userId: string) {
-    return createZGettable(AuthProfileSchema, async () => {
-      const userDataPath = joinPath(usersFilesPath, userId, "entity.json");
-      const userData: UserData = await ReadJSON.call(userDataPath);
-      const addresses = await Promise.all(
-        userData.authenticatorIds.map(async (authenticatorId) => {
-          const authenticator = await ReadJSON.call(
-            joinPath(
-              authenticationFilesPath,
-              authenticatorId,
-              "authenticator.json",
-            ),
-          );
-          const { strategyName } = authenticator;
-          const authStrategyRecord = await ReadJSON.call(
-            joinPath(
-              authFilesPath,
-              "strategies",
-              authenticator.strategyName,
-              `${authenticator.strategyKey}.json`,
-            ),
-          );
-          const { address } = authStrategyRecord;
-          return { strategyName, address };
-        }),
-      );
-      return {
-        userId,
-        addresses,
-        hasPassword: !!userData.passwordDigest && !!userData.passwordSalt,
-      };
-    });
+    return zAnnotateCache(
+      createZGettable(AuthProfileSchema, async () => {
+        const userDataPath = joinPath(usersFilesPath, userId, "entity.json");
+        const userData: UserData = await ReadJSON.call(userDataPath);
+        const addresses = await Promise.all(
+          userData.authenticatorIds.map(async (authenticatorId) => {
+            const authenticator = await ReadJSON.call(
+              joinPath(
+                authenticationFilesPath,
+                authenticatorId,
+                "authenticator.json",
+              ),
+            );
+            const { strategyName } = authenticator;
+            const authStrategyRecord = await ReadJSON.call(
+              joinPath(
+                authFilesPath,
+                "strategies",
+                authenticator.strategyName,
+                `${authenticator.strategyKey}.json`,
+              ),
+            );
+            const { address } = authStrategyRecord;
+            return { strategyName, address };
+          }),
+        );
+        return {
+          userId,
+          addresses,
+          hasPassword: !!userData.passwordDigest && !!userData.passwordSalt,
+        };
+      }),
+      { isVolatile: true },
+    );
   }
 
   const authenticationFilesPath = joinPath(authFilesPath, "authentications");
@@ -484,6 +489,7 @@ export async function createAuth<
     userId: string,
     authPassword: string,
   ): Promise<StoredSession> {
+    console.log("UHHWTFFF");
     ensureNoPathEscape(userId);
     ensureNoPathEscape(authPassword);
     const [sessionId, sessionToken] = authPassword.split(".");
@@ -513,6 +519,7 @@ export async function createAuth<
         {},
       );
     }
+    console.log("SESS");
     return session;
   }
 
