@@ -153,6 +153,12 @@ export async function startApp() {
     fromEmail: process.env.FROM_EMAIL || `Zerve Admin <admin@zerve.app>`,
   });
 
+  const ServersStoreData = await createCoreData(
+    joinPath(dataDir, "serversData"),
+  );
+
+  const ServerStoreSchemas = {};
+
   const [zAuth, { createEntity, getEntity, writeEntity }] = await createAuth({
     strategies: {
       Email: await createEmailAuthStrategy(Email),
@@ -234,10 +240,12 @@ export async function startApp() {
       StoreData,
       joinPath(getEntityStoreDir(entityId, storeId), `StoreCache`),
       `Store`,
-      enabledSchemas,
       {
-        title: storeId,
-        icon: "briefcase",
+        meta: {
+          title: storeId,
+          icon: "briefcase",
+        },
+        storeSchemas: enabledSchemas,
       },
     );
     const newMemoryStore = { store, settings: storeSettings };
@@ -251,6 +259,25 @@ export async function startApp() {
 
   function getEntityStoreDir(userId: string, storeId: string): string {
     return joinPath(getUserDir(userId), "stores", storeId);
+  }
+
+  function getServerGroup(entityId: string, contextPath: string[]) {
+    if (!secrets.AdminUsername || entityId !== secrets.AdminUsername) {
+      return {};
+    }
+    const servers = createGeneralStore(
+      ServersStoreData,
+      joinPath(dataDir, "serversDataCache", entityId),
+      `Servers-${entityId}`,
+      {
+        storeSchemas: ServerStoreSchemas,
+        meta: {
+          title: `${entityId} Servers`,
+          icon: "server",
+        },
+      },
+    );
+    return { servers };
   }
 
   function getStoreGroup(entityId: string, contextPath: string[]) {
@@ -461,6 +488,8 @@ export async function startApp() {
       },
     );
 
+    const serverGroup = getServerGroup(userId, authUserPath);
+
     const orgs = createZGettableGroup(
       async (orgId: string) => {
         const orgEntity = await getEntity(orgId);
@@ -475,7 +504,8 @@ export async function startApp() {
         return createZMetaContainer(
           {
             orgId: createZStatic(orgId),
-            ...getStoreGroup(orgId, [...authUserPath, "orgs", orgId]),
+            ...getStoreGroup(orgId, orgPath),
+            ...getServerGroup(orgId, orgPath),
             index: createZStatic({
               zContract: "ReferenceList",
               items: [
@@ -704,6 +734,7 @@ export async function startApp() {
         },
       ),
       ...storeGroup,
+      ...serverGroup,
     };
   }
   async function doesEntityStoreExist(entityId: string, storeId: string) {

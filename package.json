@@ -43,6 +43,7 @@
     "docs": "yarn workspace @zerve/docs start",
     "pkg:publish": "node ./scripts/publish.js",
     "pkg:pack": "node ./scripts/pack.js",
+    "test": "yarn workspace integration-test run test",
     "z:native": "cd apps/expo && yarn start",
     "z:watch": "yarn workspaces foreach -pi run watch",
     "z:web": "yarn build && yarn workspace zapp dev",

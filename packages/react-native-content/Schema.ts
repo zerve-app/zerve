@@ -8,6 +8,10 @@ export const StringSchema = {
   type: "string",
 } as const;
 
+export const NumberSchema = {
+  type: "number",
+} as const;
+
 export const HumanTextSchema = {
   $id: "https://type.zerve.link/HumanText",
   title: "HumanText",

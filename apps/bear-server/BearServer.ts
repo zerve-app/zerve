@@ -25,7 +25,7 @@ export async function startApp() {
     Data,
     joinPath(dataDir, "PublicStoreCache"),
     "PublicStore",
-    { HumanText: HumanTextSchema },
+    { storeSchemas: { HumanText: HumanTextSchema } },
   );
 
   const zRoot = createZContainer({

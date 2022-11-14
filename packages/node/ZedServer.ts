@@ -76,7 +76,7 @@ export async function startZedServer(
   port: number,
   zed: AnyZed,
   onEvent?: (name: string, event: any) => void,
-) {
+): Promise<{ close: () => void }> {
   const app = express();
 
   const connectedClients: Map<string, Client> = new Map();
@@ -726,7 +726,7 @@ export async function startZedServer(
   app.use("/.z", zHandler);
   app.use("/.z/*", zHandler);
 
-  await new Promise<void>((resolve, reject) => {
+  return await new Promise<{ close: () => void }>((resolve, reject) => {
     const httpServer = createServer();
     const wsServer = new WebSocketServer({ server: httpServer });
     wsServer.on("connection", (socket) => {
@@ -748,10 +748,14 @@ export async function startZedServer(
         // console.log(message);
       });
     });
+    function close() {
+      console.log("Stopping Server.");
+      httpServer.close();
+    }
     httpServer.on("request", app);
     httpServer.listen(port, () => {
-      console.log(`Server  at http://localhost:${port}`);
-      resolve();
+      console.log(`Server at http://localhost:${port}`);
+      resolve({ close });
     });
   });
 }

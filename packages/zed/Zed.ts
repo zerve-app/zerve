@@ -156,7 +156,7 @@ export type ZContainerMeta = ZCommonMeta & {
 
 export function createZMetaContainer<Zeds extends Record<string, AnyZed>>(
   z: Zeds,
-  meta: Meta,
+  meta: ZContainerMeta | undefined,
 ): ZContainer<Zeds> {
   return {
     zType: "Container",

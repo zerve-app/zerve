@@ -1,0 +1,23 @@
+{
+  "name": "integration-test",
+  "private": true,
+  "version": "0.0.0",
+  "types": "index.ts",
+  "main": "index.ts",
+  "scripts": {
+    "test": "yarn build && node ./build/IntegrationTest.js",
+    "store-server:build": "esbuild ./TestStoreServer.ts --bundle --platform=node --outfile=build/TestStoreServer.js --log-level=error",
+    "store-server:run": "node ./build/TestStoreServer.js",
+    "build": "esbuild ./IntegrationTest.ts --bundle --platform=node --outfile=build/IntegrationTest.js --log-level=error"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^16.11.51",
+    "@types/rimraf": "^3.0.2",
+    "concurrently": "^7.2.0",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.14.39",
+    "nodemon": "^2.0.16"
+  }
+}

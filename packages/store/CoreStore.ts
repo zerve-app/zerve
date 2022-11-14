@@ -121,11 +121,14 @@ export async function createGeneralStore(
   data: CoreDataModule,
   cacheFilesPath: string,
   docName: string,
-  inputSolidSchemas?: Record<string, JSONSchema>,
-  meta?: ZContainerMeta,
+  opts?: {
+    storeSchemas?: Record<string, JSONSchema>;
+    entrySchemas?: Record<string, JSONSchema>;
+    meta?: ZContainerMeta;
+  },
 ) {
-  const solidSchemas = Object.fromEntries(
-    Object.entries(inputSolidSchemas || {}).map(([schemaName, schema]) => [
+  const staticStoreSchemas = Object.fromEntries(
+    Object.entries(opts?.storeSchemas || {}).map(([schemaName, schema]) => [
       schemaName,
       {
         ...schema,
@@ -147,7 +150,7 @@ export async function createGeneralStore(
     };
     const schemaStore = {
       ...(state.$schemas || EmptySchemaStore),
-      ...solidSchemas,
+      ...staticStoreSchemas,
     };
     validateNode(node, schemaStore);
     return {
@@ -178,7 +181,7 @@ export async function createGeneralStore(
           };
           const schemaStore = {
             ...(state.$schemas || EmptySchemaStore),
-            ...solidSchemas,
+            ...staticStoreSchemas,
           };
           validateNode(node, schemaStore);
           return {
@@ -278,13 +281,13 @@ export async function createGeneralStore(
     docName,
     GenericCalculator,
     (storeState) =>
-      solidSchemas
+      staticStoreSchemas
         ? {
             ...storeState,
             $schemas: {
               // maybe these should be reversed?:
               ...storeState.$schemas,
-              ...solidSchemas,
+              ...staticStoreSchemas,
             },
           }
         : storeState,
@@ -300,7 +303,7 @@ export async function createGeneralStore(
     if (storeNodeValue.schema != null) {
       validateWithSchemaStore(storeNodeValue.schema, input.value, {
         ...storeSchemas,
-        ...solidSchemas,
+        ...staticStoreSchemas,
       });
     }
   }
@@ -310,7 +313,7 @@ export async function createGeneralStore(
     storeValue: any, // uh fix this
   ) {
     const storeSchemas = storeValue?.["$schemas"] || EmptySchemaStore;
-    const schemaStore = { ...storeSchemas, ...solidSchemas };
+    const schemaStore = { ...storeSchemas, ...staticStoreSchemas };
     if (input.value === undefined) {
       const storeEntryValue = storeValue[input.name];
       if (input.schema != null) {
@@ -357,7 +360,7 @@ export async function createGeneralStore(
       Dispatch,
     },
     {
-      ...(meta || {}),
+      ...(opts?.meta || {}),
       zContract: "Store",
     },
   );
