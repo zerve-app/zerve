@@ -7,6 +7,8 @@ import {
   EmptySchemaStore,
   JSONSchema,
   EntryNameSchema,
+  RequestError,
+  getDefaultSchemaValue,
 } from "@zerve/zed";
 import CoreChain, { createZChainStateCalculator } from "@zerve/chain";
 import { CoreDataModule } from "@zerve/data";
@@ -103,18 +105,6 @@ const RenameSchemaActionSchema = {
   required: ["prevName", "newName"],
 } as const;
 
-function validateNode(
-  node: FromSchema<typeof NodeSchema>,
-  schemas: SchemaStore,
-) {
-  if (typeof node !== "object") throw new Error("Invalid Store Node");
-  if (node.value === undefined) throw new Error("Store Node value missing");
-  if (node.schema === null) {
-    return;
-  }
-  validateWithSchemaStore(node.schema, node.value, schemas);
-}
-
 export type GeneralStoreModule = Awaited<ReturnType<typeof createGeneralStore>>;
 
 export async function createGeneralStore(
@@ -127,6 +117,26 @@ export async function createGeneralStore(
     meta?: ZContainerMeta;
   },
 ) {
+  function validateNode(
+    name: string,
+    node: FromSchema<typeof NodeSchema>,
+    schemas: SchemaStore,
+  ) {
+    if (typeof node !== "object") throw new Error("Invalid Store Node");
+    if (node.value === undefined) throw new Error("Store Node value missing");
+    const staticSchema = opts?.entrySchemas?.[name];
+    if (staticSchema) {
+      // this entry has a static schema defined
+      validateWithSchemaStore(staticSchema, node.value, schemas);
+    } else {
+      // the entry [can] have a dynamic schema
+      if (node.schema === null) {
+        return;
+      }
+      validateWithSchemaStore(node.schema, node.value, schemas);
+    }
+  }
+
   const staticStoreSchemas = Object.fromEntries(
     Object.entries(opts?.storeSchemas || {}).map(([schemaName, schema]) => [
       schemaName,
@@ -152,7 +162,7 @@ export async function createGeneralStore(
       ...(state.$schemas || EmptySchemaStore),
       ...staticStoreSchemas,
     };
-    validateNode(node, schemaStore);
+    validateNode(name, node, schemaStore);
     return {
       ...state,
       [name]: node,
@@ -183,7 +193,7 @@ export async function createGeneralStore(
             ...(state.$schemas || EmptySchemaStore),
             ...staticStoreSchemas,
           };
-          validateNode(node, schemaStore);
+          validateNode(name, node, schemaStore);
           return {
             ...state,
             [name]: node,
@@ -280,24 +290,52 @@ export async function createGeneralStore(
     cacheFilesPath,
     docName,
     GenericCalculator,
-    (storeState) =>
-      staticStoreSchemas
-        ? {
-            ...storeState,
-            $schemas: {
-              // maybe these should be reversed?:
-              ...storeState.$schemas,
-              ...staticStoreSchemas,
-            },
-          }
-        : storeState,
+    (storeState) => {
+      const schemaStore = {
+        ...storeState.$schemas,
+        ...(staticStoreSchemas || {}),
+      };
+      const staticEntrySchemas = opts?.entrySchemas || {};
+      const missingStaticEntries = new Set(Object.keys(staticEntrySchemas));
+      return {
+        ...Object.fromEntries(
+          Object.entries(storeState).map(([entryName, entryData]) => {
+            missingStaticEntries.delete(entryName);
+            if (staticEntrySchemas[entryName]) {
+              return [
+                entryName,
+                {
+                  value: entryData.value,
+                  schema: staticEntrySchemas[entryName],
+                },
+              ];
+            }
+            return [entryName, entryData];
+          }),
+        ),
+        ...Object.fromEntries(
+          Array.from(missingStaticEntries).map((entryName) => {
+            const schema = staticEntrySchemas[entryName];
+            return [
+              entryName,
+              {
+                value: getDefaultSchemaValue(schema, schemaStore),
+                schema,
+              },
+            ];
+          }),
+        ),
+        $schemas: schemaStore,
+      };
+    },
   );
 
   async function validateWriteValue(
     input: FromSchema<typeof WriteValueActionSchema>,
   ): Promise<void> {
     const storeState = await genStore.z.State.get();
-    const storeNodeValue = storeState[input.name];
+    const storeNodeValue =
+      opts?.entrySchemas?.[input.name] || storeState[input.name];
     const storeSchemas = storeState["$schemas"] || EmptySchemaStore;
 
     if (storeNodeValue.schema != null) {
@@ -328,6 +366,11 @@ export async function createGeneralStore(
     input: FromSchema<typeof WriteSchemaValueActionSchema>,
   ): Promise<void> {
     const storeValue = await genStore.z.State.get();
+    if (opts?.entrySchemas?.[input.name]) {
+      throw new RequestError(
+        `Value named "${input.name}" has an immutable schema.`,
+      );
+    }
     validateWrite(input, storeValue);
   }
 
@@ -335,10 +378,31 @@ export async function createGeneralStore(
     input: FromSchema<typeof WriteSchemaValueActionSchema>,
   ): Promise<void> {
     const storeValue = await genStore.z.State.get();
+    if (opts?.entrySchemas?.[input.name]) {
+      throw new RequestError(
+        `Value named "${input.name}" has been pre-defined in this store.`,
+      );
+    }
     if (storeValue[input.name]) {
       throw new Error(`Value named "${input.name}" already exists in store.`);
     }
     validateWrite(input, storeValue);
+  }
+
+  async function validateDelete(
+    input: FromSchema<typeof DeleteActionSchema>,
+  ): Promise<void> {
+    const storeValue = await genStore.z.State.get();
+    if (storeValue[input.name] === undefined) {
+      throw new RequestError(
+        `Store value named "${input.name}" is already empty.`,
+      );
+    }
+    if (opts?.entrySchemas?.[input.name]) {
+      throw new RequestError(
+        `Cannot delete "${input.name}" as it is pre-defined in this store.`,
+      );
+    }
   }
 
   const Dispatch = createZAction(
@@ -350,6 +414,7 @@ export async function createGeneralStore(
       if (action.name === "WriteValue") await validateWriteValue(action.value);
       if (action.name === "WriteSchemaValue")
         await validateWriteSchemaValue(action.value);
+      if (action.name === "Delete") await validateDelete(action.value);
       return await genStore.z.Dispatch.call(action);
     },
   );

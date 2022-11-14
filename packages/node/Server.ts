@@ -10,7 +10,7 @@ export function createJSONHandler(
         res.status(200).send(responseValue);
       })
       .catch((e) => {
-        console.error(e);
+        // console.error(e);
         res.status(e.httpStatus || 500).send(
           JSON.stringify({
             message: e.message,

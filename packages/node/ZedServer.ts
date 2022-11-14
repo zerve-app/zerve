@@ -285,7 +285,7 @@ export async function startZedServer(
         res.status(200).send(responseValue);
       })
       .catch((e) => {
-        console.error(e);
+        // console.error(e);
         if (e.httpStatus === 401) {
           res.header("WWW-Authenticate", "Basic realm=AuthTokenRequired");
         }

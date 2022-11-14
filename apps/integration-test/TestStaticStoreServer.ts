@@ -2,9 +2,9 @@ import { createCoreData } from "@zerve/data";
 import { createGeneralStore } from "@zerve/store";
 import { startZedServer } from "@zerve/node";
 import { join as joinPath } from "path";
-import { TestStoreSchemas } from "./TestStoreSchemas";
+import { TestStoreSchemas, TestEntrySchemas } from "./TestStoreSchemas";
 
-const dataDir = joinPath(process.cwd(), "test-data/basic");
+const dataDir = joinPath(process.cwd(), "test-data/static");
 
 async function startServer() {
   const Data = await createCoreData(dataDir);
@@ -13,7 +13,10 @@ async function startServer() {
     Data,
     joinPath(dataDir, "TestStoreCache"),
     "TestStore",
-    { storeSchemas: TestStoreSchemas },
+    {
+      storeSchemas: TestStoreSchemas,
+      entrySchemas: TestEntrySchemas,
+    },
   );
 
   return await startZedServer(Number(process.env.PORT) || 9999, TestStore);

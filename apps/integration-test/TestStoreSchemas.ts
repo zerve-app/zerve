@@ -16,3 +16,13 @@ export const TestStoreSchemasPublic = Object.fromEntries(
     { ...value, readOnly: true },
   ]),
 );
+
+export const TestEntrySchemas = {
+  TestList: {
+    type: "array",
+    items: {
+      $ref: "https://type.zerve.link/TestObj",
+      title: "TestObj",
+    },
+  },
+};

@@ -4,7 +4,7 @@ import { StringSchema } from "@zerve/zed";
 import rimraf from "rimraf";
 import { join as joinPath } from "path";
 
-import { TestStoreSchemasPublic } from "./TestStoreSchemas";
+import { TestStoreSchemasPublic, TestEntrySchemas } from "./TestStoreSchemas";
 
 type Closable = { close: () => void };
 
@@ -21,7 +21,6 @@ async function startTestServer(
   scriptName: string,
   port: number,
 ): Promise<Closable> {
-  console.log("---- startTestServer");
   await execFile(
     "npx",
     [
@@ -29,7 +28,7 @@ async function startTestServer(
       `./${scriptName}.ts`,
       "--bundle",
       "--platform=node",
-      "--outfile=build/TestStoreServer.js",
+      `--outfile=build/${scriptName}.js`,
       "--log-level=error",
     ],
     {},
@@ -67,7 +66,7 @@ async function startTestServer(
 async function get(port: number, path: string) {
   const res = await fetch(`http://localhost:${port}/.z/${path}`);
   const json = await res.json();
-  return json;
+  return { body: json, status: res.status };
 }
 
 async function post(port: number, path: string, data: any) {
@@ -80,7 +79,7 @@ async function post(port: number, path: string, data: any) {
     },
   });
   const json = await res.json();
-  return json;
+  return { body: json, status: res.status };
 }
 
 function expectEqual(value: any, expectedValueToEqual: any, note?: string) {
@@ -96,7 +95,7 @@ function expectEqual(value: any, expectedValueToEqual: any, note?: string) {
 async function runStoreTest() {
   const port = 9899;
   await new Promise<void>((resolve, reject) =>
-    rimraf(joinPath(process.cwd(), "test-data"), (err) => {
+    rimraf(joinPath(process.cwd(), "test-data/basic"), (err) => {
       if (err) reject(err);
       else resolve();
     }),
@@ -105,13 +104,13 @@ async function runStoreTest() {
   try {
     const rootQuery = await get(port, "");
     expectEqual(
-      rootQuery,
+      rootQuery.body,
       { children: ["Dispatch", "State"] },
       "rootQuery get output",
     );
     const stateQuery = await get(port, "State");
     expectEqual(
-      stateQuery,
+      stateQuery.body,
       { $schemas: TestStoreSchemasPublic },
       "stateQuery get output",
     );
@@ -124,7 +123,130 @@ async function runStoreTest() {
       },
     });
     const e1 = await get(port, "State/E1/value");
-    expectEqual(e1, "Hello world");
+    expectEqual(e1.body, "Hello world");
+    expectEqual(
+      (await post(port, "Dispatch", { name: "Delete", value: { name: "E1" } }))
+        .status,
+      200,
+      "may delete the entry",
+    );
+    expectEqual(
+      (await get(port, "State/E1")).status,
+      404,
+      "deleted value is not found",
+    );
+    server.close();
+  } catch (e) {
+    server.close();
+    throw e;
+  }
+}
+
+async function runStaticStoreTest() {
+  const port = 9897;
+  await new Promise<void>((resolve, reject) =>
+    rimraf(joinPath(process.cwd(), "test-data/static"), (err) => {
+      if (err) reject(err);
+      else resolve();
+    }),
+  );
+  const server = await startTestServer("TestStaticStoreServer", port);
+  try {
+    const rootQuery = await get(port, "");
+    expectEqual(
+      rootQuery.body,
+      { children: ["Dispatch", "State"] },
+      "rootQuery get output",
+    );
+    const fullStateQuery = await get(port, "State");
+    expectEqual(
+      fullStateQuery.body,
+      {
+        $schemas: TestStoreSchemasPublic,
+        // referencing TestStoreEntrySchemas
+        TestList: {
+          value: [],
+          schema: TestEntrySchemas.TestList,
+        },
+      },
+      "full static stateQuery get output",
+    );
+    const stateQuery = await get(port, "State/TestList");
+    expectEqual(stateQuery.status, 200, "static state query succeeds");
+    expectEqual(
+      stateQuery.body,
+      {
+        value: [],
+        schema: TestEntrySchemas.TestList,
+      },
+      "initial stateQuery get output",
+    );
+    const failedCreate = await post(port, "Dispatch", {
+      name: "CreateValue",
+      value: {
+        name: "TestList",
+        schema: StringSchema,
+        value: "Hello world",
+      },
+    });
+    expectEqual(failedCreate.status, 400, "CreateValue fails for static value");
+    const failedWrite = await post(port, "Dispatch", {
+      name: "WriteSchemaValue",
+      value: {
+        name: "TestList",
+        schema: StringSchema,
+        value: "Hello world",
+      },
+    });
+    expectEqual(
+      failedWrite.status,
+      400,
+      "WriteSchemaValue fails for static value",
+    );
+    const write = await post(port, "Dispatch", {
+      name: "WriteValue",
+      value: {
+        name: "TestList",
+        value: [{ r: 1 }],
+      },
+    });
+    expectEqual(write.status, 200, "Write succeeds for static value");
+
+    expectEqual(
+      (await get(port, "State/TestList/value")).body,
+      [{ r: 1 }],
+      "written static list get value",
+    );
+    expectEqual(
+      (
+        await post(port, "Dispatch", {
+          name: "Delete",
+          value: { name: "TestList" },
+        })
+      ).status,
+      400,
+      "may not delete a static entry",
+    );
+    expectEqual(
+      (
+        await post(port, "Dispatch", {
+          name: "WriteValue",
+          value: {
+            name: "TestList",
+            value: [{ r: 100 }, { r: 200 }],
+          },
+        })
+      ).status,
+      200,
+      "wrote static list 2",
+    );
+    expectEqual(
+      (await get(port, "State/TestList/value")).body,
+      [{ r: 100 }, { r: 200 }],
+      "written static list get value",
+    );
+    // const e1 = await get(port, "State/E1/value");
+    // expectEqual(e1, "Hello world");
     server.close();
   } catch (e) {
     server.close();
@@ -154,8 +276,10 @@ async function handleTests(tests: Record<string, () => Promise<void>>) {
 }
 
 async function runAllTests() {
+  await execFile("rm", ["-rf", "test-data"], {});
   await handleTests({
-    storeTest: () => runStoreTest(),
+    storeBasic: () => runStoreTest(),
+    staticStore: () => runStaticStoreTest(),
   });
 }
 
