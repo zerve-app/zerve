@@ -18,6 +18,7 @@ export * from "./Workflow";
 export * from "./JSONSchemaComponents";
 export * from "./StoreSettings";
 export * from "./Cache";
+export * from "./CoreStoreClient";
 
 export const Z_PROTOCOL_VERSION = "0.1.0";
 

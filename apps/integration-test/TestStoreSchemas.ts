@@ -1,4 +1,4 @@
-import { NumberSchema } from "@zerve/zed";
+import { NumberSchema, createSchemaRef } from "@zerve/zed";
 
 const TestObjSchema = {
   type: "object",
@@ -20,9 +20,6 @@ export const TestStoreSchemasPublic = Object.fromEntries(
 export const TestEntrySchemas = {
   TestList: {
     type: "array",
-    items: {
-      $ref: "https://type.zerve.link/TestObj",
-      title: "TestObj",
-    },
+    items: createSchemaRef("TestObj"),
   },
 };

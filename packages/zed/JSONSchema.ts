@@ -64,6 +64,21 @@ export const NullSchema = {
   type: "null",
 } as const;
 
+export function NullableSchema(schema: JSONSchema) {
+  if (schema === true) return true;
+  if (schema === false) {
+    return NullSchema;
+  }
+  if (schema.oneOf) {
+    return {
+      oneOf: [NullSchema, ...schema.oneOf],
+    };
+  }
+  return {
+    oneOf: [NullSchema, schema],
+  };
+}
+
 export function isEmptySchema(schema: JSONSchema) {
   if (schema === undefined) return true;
   if (schema === true) return false;

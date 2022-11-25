@@ -8,6 +8,7 @@ import {
   createZStatic,
   NullSchema,
   NumberSchema,
+  NullableSchema,
   AnyZed,
   StringSchema,
   createZGettableGroup,
@@ -25,6 +26,8 @@ import {
   zAnnotateCache,
   createZMetaContainer,
   ActionResponseSchema,
+  createStoreRef,
+  createSchemaRef,
 } from "@zerve/zed";
 import { mkdirp, pathExists, readdir } from "fs-extra";
 import {
@@ -157,7 +160,16 @@ export async function startApp() {
     joinPath(dataDir, "serversData"),
   );
 
-  const ServerStoreSchemas = {};
+  const ServerStoreSchemas = {
+    Server: {
+      type: "object",
+      properties: {
+        ip: NullableSchema(StringSchema),
+        privateKey: NullableSchema(StringSchema),
+        publicKey: NullableSchema(StringSchema),
+      },
+    },
+  } as const;
 
   const [zAuth, { createEntity, getEntity, writeEntity }] = await createAuth({
     strategies: {
@@ -271,6 +283,12 @@ export async function startApp() {
       `Servers-${entityId}`,
       {
         storeSchemas: ServerStoreSchemas,
+        entrySchemas: {
+          Servers: {
+            type: "object",
+            additionalProperties: createSchemaRef("Server"),
+          },
+        },
         meta: {
           title: `${entityId} Servers`,
           icon: "server",
