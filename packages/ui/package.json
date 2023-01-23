@@ -1,0 +1,27 @@
+{
+  "name": "@zerve/ui",
+  "version": "0.0.1",
+  "sideEffects": [
+    "*.css"
+  ],
+  "private": true,
+  "types": "./types/index",
+  "main": "src/index.tsx",
+  "module:jsx": "src",
+  "files": [
+    "types",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tamagui-build",
+    "watch": "tamagui-build --watch"
+  },
+  "dependencies": {
+    "@tamagui/lucide-icons": "^1.0.1-rc.5",
+    "@zerve/config": "*",
+    "tamagui": "^1.0.1-rc.1.5"
+  },
+  "devDependencies": {
+    "@tamagui/build": "^1.0.1-rc.1.5"
+  }
+}

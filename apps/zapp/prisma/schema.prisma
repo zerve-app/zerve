@@ -1,0 +1,199 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+enum NodeType {
+  STRING
+  INT
+  BOOLEAN
+  OBJECT
+  ARRAY
+}
+
+model Node {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  type      NodeType
+  key       String
+  value     String?
+  parentId  String?
+  parent    Node?    @relation("ParentNode", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nodeId    String?
+  children  Node[]   @relation("ParentNode")
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  @@unique([parentId, key])
+}
+
+// Necessary for Next auth
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token_expires_in Int? // for github
+
+  @@unique([provider, providerAccountId])
+}
+
+model Entity {
+  id                  String             @id @default(cuid())
+  key                 String             @unique
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  name                String
+  image               String?
+  billingUser         User?              @relation(fields: [billingUserId], references: [id])
+  billingUserId       String?
+  subscriptionId      String?
+  subscriptionPlanKey String?
+  subscriptionStatus  String?
+  members             EntityMembership[]
+  projects            Project[]
+  teams               EntityTeam[]
+  EntityTeamInvite    EntityTeamInvite[]
+}
+
+model EntityMembership {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  entity        Entity   @relation(fields: [entityId], references: [id])
+  entityId      String
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  isEntityAdmin Boolean  @default(false)
+
+  @@unique([entityId, userId])
+}
+
+model EntityTeam {
+  id                   String                 @id @default(cuid())
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  key                  String
+  entity               Entity                 @relation(fields: [entityId], references: [id])
+  entityId             String
+  EntityTeamMembership EntityTeamMembership[]
+
+  @@unique([entityId, key])
+}
+
+model EntityTeamInvite {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  token      String   @unique
+  email      String
+  fromUserId String
+  fromUser   User     @relation(fields: [fromUserId], references: [id])
+  entityId   String
+  entity     Entity   @relation(fields: [entityId], references: [id])
+
+  @@unique([entityId, email])
+  @@index([email])
+}
+
+model EntityTeamMembership {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  entityTeam   EntityTeam @relation(fields: [entityTeamId], references: [id])
+  entityTeamId String
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String
+
+  @@unique([entityTeamId, userId])
+}
+
+model Project {
+  id        String         @id @default(cuid())
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  key       String
+  entity    Entity         @relation(fields: [entityId], references: [id])
+  entityId  String
+  nodes     Node[]
+  servers   Server[]
+  assets    ProjectAsset[]
+
+  @@unique([entityId, key])
+}
+
+model ProjectAsset {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  key           String
+  size          Int
+  contentType   String
+  extension     String
+  isDirectory   Boolean        @default(false)
+  projectId     String
+  project       Project        @relation(fields: [projectId], references: [id])
+  parentAssetId String?
+  parentAsset   ProjectAsset?  @relation("ProjectAssetChild", fields: [parentAssetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children      ProjectAsset[] @relation("ProjectAssetChild")
+
+  @@unique([projectId, parentAssetId, key])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String?                @unique
+  emailVerified         DateTime?
+  image                 String?
+  stripeCustomerId      String?
+  accounts              Account[]
+  sessions              Session[]
+  entities              EntityMembership[]
+  teams                 EntityTeamMembership[]
+  billingEntities       Entity[]
+  entityTeamSentInvites EntityTeamInvite[]
+}
+
+model Server {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  label     String
+  linodeId  String?
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

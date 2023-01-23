@@ -1,0 +1,78 @@
+import { DocLayout } from 'app/components/DocLayout'
+
+# Frequently Asked Questions
+
+### Why Zerve?
+
+Zerve makes it easy to build and deploy your next software product using popular open source technologies.
+
+### How does it Scale?
+
+Boosted apps use Next.js which can scale by running the application on many servers at once, or run on the edge using a platform such as Vercel.
+
+We also depend on PostgreSQL which is known to be one of the most robust and scalable databases, which has a wide variety of providers.
+
+### Does Zerve help me use Databases databases?
+
+Zerve build upont tools like prisma and postgres to offer you a simple database experience.
+
+Boosted apps can use a variety of affordable Postgres providers such as Railway, Heroku, and Digital Ocean.
+
+### What are the Zerve products?
+
+Zerve Content System is a simple database for your applications, and Zerve Boosted is a starter kit for building your next SaaS.
+
+Both are open source
+
+### How do I use this with what is Tak?
+
+### Does Boosted have a native app?
+
+One day Boosted will have a native app, but for now it is a web app.
+
+### What does subscription include?
+
+Both plans "Indie" and "Startup" grant access to the following:
+
+- Access latest Boosted Source Code
+- Exclusive and Preview Content
+- Private Support Channel
+- Usage of Zerve Content System
+
+### What is the [Open Source Code] Moratorium?
+
+Zerve Code is Open Sourced 7 days after the changes land in the main branch.
+
+### What license do you get if you subscribe?
+
+You get the full open source license to source code under the moratorium. Legally this means you have permission to re-publish the code publicly.
+
+We ask you not to share the code publicly until the 7-day moratorium is passed.
+
+### What happens if a subscriber re-publishes code publicly before the moratorium is over?
+
+Although this is legal for a subscriber to do under the open source license, this will impair our ability acquire subscribers and fund Zerve.
+
+If we find a subscriber regularly or blatantly doing this, we will end their membership immediately.
+
+### Who created Zerve?
+
+Zerve was created by [Eric Vicenti](https://twitter.com/EricVicenti), a software engineer and entrepreneur.
+
+### Where is Zerve Hosted?
+
+Currently:
+
+- [Cloudflare](https://cloudflare.com) - CDN + Asset Storage
+- [Render](https://render.com) - App Host
+- [Neon](https://neon.tech) - PostgreSQL DB Host
+
+### Do you have a Terms of Service and Privacy Policy?
+
+Yes: [Terms of Service](/terms-of-service) and [Privacy Policy](/privacy-policy)
+
+export default ({ children }) => (
+  <DocLayout footer title="FAQ">
+    {children}
+  </DocLayout>
+)

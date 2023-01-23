@@ -1,16 +1,19 @@
 {
-  "name": "@zerve/config",
-  "version": "0.0.0",
   "license": "Apache-2.0",
-  "main": "index.js",
-  "files": [
-    "eslint-preset.js"
-  ],
-  "scripts": {
-    "clean": "rimraf node_modules"
-  },
+  "version": "0.0.0",
+  "name": "@zerve/config",
+  "main": "tamagui.config.ts",
+  "private": true,
   "dependencies": {
+    "@tamagui/animations-react-native": "^1.0.1-rc.1.5",
+    "@tamagui/font-inter": "^1.0.1-rc.1.5",
+    "@tamagui/react-native-media-driver": "^1.0.1-rc.1.5",
+    "@tamagui/shorthands": "^1.0.1-rc.1.5",
+    "@tamagui/theme-base": "^1.0.1-rc.1.5",
     "eslint-config-next": "^12.0.7",
     "eslint-config-prettier": "^8.3.0"
+  },
+  "scripts": {
+    "clean": "rimraf node_modules"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "app/*": ["./packages/app/*"],
+      "@zerve/ui/*": ["./packages/ui/*"],
+      "@zerve/config/*": ["./packages/config/*"]
+    }
+  },
+  "extends": "expo/tsconfig.base"
+}

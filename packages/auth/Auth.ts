@@ -344,7 +344,6 @@ export async function createAuth<
   handleUserIdChange?: (prevUserId: string, userId: string) => Promise<void>;
   userContainerMeta: ZContainerMeta;
 }) {
-  console.log("createAtuh");
   const zContainerMeta = {
     ...AuthContainerContractMeta,
     strategies: Object.keys(strategies),
@@ -489,7 +488,6 @@ export async function createAuth<
     userId: string,
     authPassword: string,
   ): Promise<StoredSession> {
-    console.log("UHHWTFFF");
     ensureNoPathEscape(userId);
     ensureNoPathEscape(authPassword);
     const [sessionId, sessionToken] = authPassword.split(".");
@@ -519,7 +517,6 @@ export async function createAuth<
         {},
       );
     }
-    console.log("SESS");
     return session;
   }
 

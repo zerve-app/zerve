@@ -1,0 +1,67 @@
+---
+title: Env Variables
+---
+
+Env Variables allow you to pass secrets and configuration into your app.
+
+This guide will show an env variable can be added
+
+### Use Case: Secrets
+
+A common use case for secret env variables is API keys to connect to other services
+
+### Use Case: Configuration
+
+Env variables may also be used for configuring one app in another context.
+
+## Adding Env Variables
+
+For our example, we will add a secret API key for Stripe.
+
+### 1. Edit Schema
+
+Boosted apps use a Zod schema to validate the environment variables when the app starts up.
+
+The schema is located at `apps/zapp/src/env/schema.mjs`
+
+### 2. Add Variable Locally
+
+Edit your `.env` file to add the variable for your local development.
+
+### 3. Add Variable Production
+
+Add the variable in the settings of your production environment
+
+### 4. Use Variable
+
+Consume the variable from your server code:
+
+```ts
+import { env } from 'src/env/server.mjs'
+
+... new Stripe(env.STRIPE_SECRET_KEY, { ...
+```
+
+And now your Stripe API key is fully set up!
+
+## Public Env Variables
+
+A public env variable is one that is safe to expose to the client.
+
+To add a public env variable, modify the "clientSchema" section of the schema file. Each public variable must be prefixed with `NEXT_PUBLIC_` for Next to allow the client to see it.
+
+```ts
+export const clientSchema = z.object({
+  NEXT_PUBLIC_MEDIA_HOST: z.string(),
+  ...
+```
+
+> Note: Also add your public variable to the `clientEnv` at the bottom, or else type safety will break
+
+Then your variable may be accessed on the client side:
+
+```ts
+import { env } from '/apps/zapp/src/env/client.mjs'
+
+env.NEXT_PUBLIC_MEDIA_HOST
+```

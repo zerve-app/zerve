@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port=8000",
-    "build": "next build",
+    "build:disabled": "next build",
     "start": "next start",
     "lint": "next lint",
     "clean": "rimraf node_modules .next .expo",
